@@ -1,6 +1,6 @@
 # @forgesworn/qr
 
-> QR code encoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes, optional UTF-8 ECI, SVG output. Output is checked byte for byte against ZXing and read back by jsQR in tests. No decoder yet.
+> QR code encoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes, optional UTF-8 ECI, SVG, canvas and terminal output. Output is checked byte for byte against ZXing and read back by jsQR in tests. No decoder yet.
 
 ESM only, Node.js 22.13+.
 
@@ -16,6 +16,8 @@ npm install @forgesworn/qr
 - `QrCode` - `{ version, ecc, mask, mode, size, modules }`; `modules` is a row-major Uint8Array, 1 = dark, no quiet zone.
 - `isDark(qr, x, y): boolean`
 - `toSvg(qr, { margin = 4, dark = '#000', light = '#fff' | null, title? }): string`
+- `drawCanvas(canvas, qr, { width = 8 px per module, margin = 4, dark, light | null }): void` - any HTMLCanvasElement or OffscreenCanvas; resizes it to width square.
+- `toTerminal(qr, { margin = 4, ink = 'light' | 'dark' }): string` - half-block text; 'light' ink for dark terminal backgrounds.
 
 ## Example
 

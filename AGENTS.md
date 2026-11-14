@@ -35,7 +35,7 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 ## Repository Structure
 
 - `src/encode.ts` - mode, version, bit stream, Reed-Solomon, matrix, masks.
-- `src/svg.ts` - SVG renderer.
+- `src/svg.ts`, `src/canvas.ts`, `src/terminal.ts` - renderers.
 - `src/tables.ts` - Table 9 error correction blocks and Annex E centres.
 - `vectors/encode-vectors.json` - module matrices from ZXing core 3.5.3.
 - `vectors/generator/` - the Java generator; `.cache/` holds the

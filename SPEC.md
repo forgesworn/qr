@@ -77,6 +77,13 @@ makes the same choice, so masks chosen here match it.
 A square of `17 + 4 * version` modules, row-major, 1 for dark, with no
 quiet zone. Renderers add the quiet zone; the default is four modules.
 
+Renderers are not covered by the vectors and need not match byte for byte
+across ports, but must keep these properties: the quiet zone is light;
+a canvas or bitmap renderer puts module edges on whole pixels (edge of
+module `i` at `round(i * width / side)`); a terminal renderer packs two
+module rows per line with U+2580 (upper half), U+2584 (lower half), U+2588
+(full) and space, inking light modules by default.
+
 ## Vectors
 
 `vectors/encode-vectors.json` holds module matrices produced by ZXing core
