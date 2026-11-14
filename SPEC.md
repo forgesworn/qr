@@ -124,3 +124,13 @@ read. The TypeScript pipeline, for reference:
    ECI, structured append (header skipped) and FNC1 (indicators skipped).
    Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
    otherwise or under ECI 1 or 3.
+
+## Decode fixtures
+
+`vectors/decode-frames/` holds 36 synthetic frames as 8-bit greyscale PNG,
+and `vectors/decode-frames.json` gives each one's exact text, the drawing
+parameters, and whether this decoder and jsQR read it when the frames were
+made. A port must read every frame marked `"typescript": true`. The frames
+are drawn by `test/fixtures.test.ts` (`QR_WRITE_FIXTURES=1` regenerates
+them); every payload in them is made up. Real photographs will join them as
+a separate set.

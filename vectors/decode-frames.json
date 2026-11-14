@@ -1,0 +1,631 @@
+{
+ "note": "Synthetic frames for decoder ports. Each PNG is 8-bit greyscale; text is the exact payload. \"typescript\" and \"jsqr\" record which decoders read it when the frames were made. All payloads are made up.",
+ "frames": [
+  {
+   "file": "frame-01.png",
+   "text": "https://example.com/r/00aa79c2f02b?k=Rm0_GUQq1Sh3XOtNz1TC7E",
+   "ecc": "Q",
+   "version": 5,
+   "shot": {
+    "scale": 3,
+    "seed": 1
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-02.png",
+   "text": "bunker://91b051c79416ff06a298e7c2bfba7cc4c7e99d524cbcaeee00cf11c07505c2d9?relay=wss%3A%2F%2Frelay.example.com&secret=4e1513e57a1f339b",
+   "ecc": "H",
+   "version": 11,
+   "shot": {
+    "scale": 6,
+    "seed": 2
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-03.png",
+   "text": "nostrconnect://236e1c45486595bf4a5a782428a1d69f65b5e70ddd4d171309d44278ab0464ea?relay=wss%3A%2F%2Frelay.example.com&secret=70534fdd&name=Example",
+   "ecc": "M",
+   "version": 8,
+   "shot": {
+    "scale": 5,
+    "seed": 3
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-04.png",
+   "text": "LIGHTNING:LNBC35MJR3REJ4AZKKDP4EL7YRQ1CZCM4CX95GEX9CD3XE7M7UXGVPD48K90WG9RMPJ6D91DQTN61F56L74LWSFZ9RK04UYDHKEF740W0JWF6X9QFVK4E7TEV1G090ADQW2J62D4DC6K1PU9D33ML50N1XUZ15CRV19HJSPF3ZF6PL2AHNW0C95PXS4TFE1N4L0RFH0YNXA0MK7CMJDQNWS5SRNAVZGKEHL611XEMJ6JQNM4544L8TZJ",
+   "ecc": "H",
+   "version": 13,
+   "shot": {
+    "scale": 6,
+    "seed": 4
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-05.png",
+   "text": "906526156318738632106559819785534336428767492338",
+   "ecc": "L",
+   "version": 2,
+   "shot": {
+    "scale": 5,
+    "seed": 5
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-06.png",
+   "text": "https://example.com/r/a6e6bef48661?k=zY86wTRZStTR7SIkk57wyK&h=qRUmy0hFf5qoCfVNnNp5vUBuihFAFvOMuvs5s6Di9OZxAM41jeIP-bydsoT0oNgZ3wzzvv6GUAgXqqIcnfYCAnJINEOasqCRG71Sufxfk21-UccI8iCE2WQ2edYZIL9lOxWaag1vA5Hu1xRzf",
+   "ecc": "H",
+   "version": 15,
+   "shot": {
+    "scale": 4,
+    "seed": 6
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-07.png",
+   "text": "https://example.com/r/4a9edd459603?k=Oq-YklRN72ATKowhW273Cj",
+   "ecc": "Q",
+   "version": 5,
+   "shot": {
+    "scale": 2.91,
+    "angle": 62,
+    "perspective": 0.17,
+    "noise": 39,
+    "blur": 1,
+    "shade": 0.7,
+    "invert": false,
+    "mirror": false,
+    "seed": 7
+   },
+   "typescript": false,
+   "jsqr": false
+  },
+  {
+   "file": "frame-08.png",
+   "text": "bunker://0701e38f666f4954f4c293fd53f56629ba06d39a90bee8fce402cb484740d971?relay=wss%3A%2F%2Frelay.example.com&secret=d5618494e184939a",
+   "ecc": "L",
+   "version": 6,
+   "shot": {
+    "scale": 5.93,
+    "angle": 319.2,
+    "perspective": 0.02,
+    "noise": 10,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 8
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-09.png",
+   "text": "nostrconnect://78cee99fa422e39fc89f6afcafc03d6854fe56b610488a463e24908240716a6f?relay=wss%3A%2F%2Frelay.example.com&secret=6e84e5a8&name=Example",
+   "ecc": "Q",
+   "version": 10,
+   "shot": {
+    "scale": 4.06,
+    "angle": 176.4,
+    "perspective": 0.2,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 9
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-10.png",
+   "text": "LIGHTNING:LNBCQKLGYH54S3CNQ8YGJKE3VWKQS4HP9001R6URKTLSLKMPF7XJC1AN6VD060RHY9Q977MDGX0P04PY5N8654S0HNNMMZFVP7UUMZR4MWZ9QQE372DDE9FV5FEXS5RLHUPTPJ9ZAJJJ0AKHWEUXNMA0XC8X4XG6EFJCDKM7CMAU11PCDY8QPVPP49E0UPDZDTSLUAKEZVL6G73JVEAPGD89G4L7R20Y82YRDU3AXR43U74RGUTR97ZH4N71EURZYSKXMNP19RDJ7PQF9RJUF15ARE5",
+   "ecc": "H",
+   "version": 15,
+   "shot": {
+    "scale": 5.49,
+    "angle": 348.3,
+    "perspective": 0.13,
+    "noise": 7,
+    "blur": 0,
+    "shade": 0.52,
+    "invert": false,
+    "mirror": false,
+    "seed": 10
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-11.png",
+   "text": "283993164723637978747133565601815628479695391914",
+   "ecc": "L",
+   "version": 2,
+   "shot": {
+    "scale": 4.51,
+    "angle": 224.5,
+    "perspective": 0.18,
+    "noise": 0,
+    "blur": 1,
+    "invert": false,
+    "mirror": false,
+    "seed": 11
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-12.png",
+   "text": "https://example.com/r/87ba0a1c6b98?k=XndzqBY33PNqXxW4KuIZm3&h=EJ36kfZ92R9LjWc6DR_Vfb13rLqMrvKWkpodqSt6TjxAvscl6Aa7J7MH_i1fvkuDcto0TRBk1AMaUfjLLDXfbqmLZB7KUmrEVmdXTKAhPA9oWZDb8etuv1GndFJ_UH8WUsymLDkxQdRjC59DscYhK5-ZjrMgxPL0zcPTCV3zf71",
+   "ecc": "H",
+   "version": 16,
+   "shot": {
+    "scale": 5.73,
+    "angle": 146.9,
+    "perspective": 0.05,
+    "noise": 14,
+    "blur": 1,
+    "invert": false,
+    "mirror": false,
+    "seed": 12
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-13.png",
+   "text": "https://example.com/r/acf064edfd5a?k=VharwWiaf5p_oB9K_UWxUW",
+   "ecc": "L",
+   "version": 4,
+   "shot": {
+    "scale": 5.16,
+    "angle": 94.8,
+    "perspective": 0.03,
+    "noise": 0,
+    "blur": 0,
+    "shade": 0.46,
+    "invert": false,
+    "mirror": false,
+    "seed": 13
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-14.png",
+   "text": "bunker://91e22b2d65e8e5f2189d2b6fb35eda47467690cc6614e602ceb86b6bfc1720d0?relay=wss%3A%2F%2Frelay.example.com&secret=85f628ac03182467",
+   "ecc": "L",
+   "version": 6,
+   "shot": {
+    "scale": 3.44,
+    "angle": 289.3,
+    "perspective": 0.22,
+    "noise": 8,
+    "blur": 1,
+    "shade": 0.42,
+    "invert": false,
+    "mirror": false,
+    "seed": 14
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-15.png",
+   "text": "nostrconnect://0e541bbea5fb16e80d0b6747563a9eb3ba5b36ef091772115a0ba642b7f193f9?relay=wss%3A%2F%2Frelay.example.com&secret=359225da&name=Example",
+   "ecc": "Q",
+   "version": 10,
+   "shot": {
+    "scale": 5.09,
+    "angle": 26.2,
+    "perspective": 0.03,
+    "noise": 40,
+    "blur": 0,
+    "shade": 0.36,
+    "invert": false,
+    "mirror": false,
+    "seed": 15
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-16.png",
+   "text": "LIGHTNING:LNBC1D3V4ZX0RF879XK513GS4319X7LQLTTL07V7C4DSZTUUL8M3UCPUHPSWD7A314X8M1T8PD60CGL14R85QZ38CMLKXH1LDL7SVM47FF4HYWJCW4352WNCF93P9TTY9REVY72ZDT4XPL49TAE6J97Z1P1KZUYZGCSLEPPYUH7M4Y8HXF2SXWKM0J9996ALQCC902V3MFLYRA4M7SPNGW98N8VT6H1SS",
+   "ecc": "Q",
+   "version": 11,
+   "shot": {
+    "scale": 4.5,
+    "angle": 71.6,
+    "perspective": 0.11,
+    "noise": 0,
+    "blur": 1,
+    "shade": 0.59,
+    "invert": false,
+    "mirror": false,
+    "seed": 16
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-17.png",
+   "text": "808737513840761445206494221553642494497346845236",
+   "ecc": "Q",
+   "version": 2,
+   "shot": {
+    "scale": 4.76,
+    "angle": 137.7,
+    "perspective": 0.19,
+    "noise": 0,
+    "blur": 1,
+    "invert": false,
+    "mirror": false,
+    "seed": 17
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-18.png",
+   "text": "https://example.com/r/314d0bbb642c?k=VTsnFbgcVujK5YybNOelcH&h=_f5P-fQ0rXwGfwGDpYDzbR3u37AtBLZUID1zKR-60BDCvBjRjUGaDEZxoSTd0c1kRSIdDQdumdxA38ncp9Bc7HKU55dez7ow5u-u",
+   "ecc": "L",
+   "version": 8,
+   "shot": {
+    "scale": 4.82,
+    "angle": 135.7,
+    "perspective": 0.27,
+    "noise": 29,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 18
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-19.png",
+   "text": "https://example.com/r/51df979528cb?k=8iE6Uv6uJulfBTtMNCzXT7",
+   "ecc": "M",
+   "version": 4,
+   "shot": {
+    "scale": 2.79,
+    "angle": 211.5,
+    "perspective": 0.08,
+    "noise": 8,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 19
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-20.png",
+   "text": "bunker://24d099776a6151d8099f31f21d07e7595bf6b7437845ba55798745861f3050e6?relay=wss%3A%2F%2Frelay.example.com&secret=58db25db234ed3f0",
+   "ecc": "H",
+   "version": 11,
+   "shot": {
+    "scale": 5.08,
+    "angle": 112.3,
+    "perspective": 0.01,
+    "noise": 28,
+    "blur": 1,
+    "shade": 0.73,
+    "invert": false,
+    "mirror": false,
+    "seed": 20
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-21.png",
+   "text": "nostrconnect://dc363f981d5223fe8165558d4230d98b84df87dc76c0ac06b49be20a796d3c8e?relay=wss%3A%2F%2Frelay.example.com&secret=61704833&name=Example",
+   "ecc": "M",
+   "version": 8,
+   "shot": {
+    "scale": 4.83,
+    "angle": 130,
+    "perspective": 0.13,
+    "noise": 20,
+    "blur": 1,
+    "invert": true,
+    "mirror": false,
+    "seed": 21
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-22.png",
+   "text": "LIGHTNING:LNBCR6W0YG0VDCYKY59DC5YY37H2AT67E2JGAGJYVKA6UTK8HDM0NJ5JK0WYF5PF46TF8XUSXYRNU8EKH7RQM266T0V7REZFY5NJQR4W7P2DUPD0RFQCRKUNXV7KC8LDWMADZR7YDGP2251VY3JSPF8ZG0E51MT4WM6LPG6UE3HZFVX5TSDWDSYGFYCRCJSDWLPUH0FSR42SK69Q08HNW7RN8YNJF4EKSDCTE6N4C2GRRN924V6ZK5RDU5FA9SKWC6R6JDXPMAELYTUKQ8UTVKGQKQ",
+   "ecc": "Q",
+   "version": 12,
+   "shot": {
+    "scale": 4.42,
+    "angle": 232.4,
+    "perspective": 0.12,
+    "noise": 2,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 22
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-23.png",
+   "text": "692360079665554910795672127776392733844926115804",
+   "ecc": "L",
+   "version": 2,
+   "shot": {
+    "scale": 2.63,
+    "angle": 102.8,
+    "perspective": 0.16,
+    "noise": 0,
+    "blur": 1,
+    "shade": 0.49,
+    "invert": false,
+    "mirror": false,
+    "seed": 23
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-24.png",
+   "text": "https://example.com/r/56d7931cdeae?k=mzJYPD3uabUzjNITKEdqKy&h=kb0Kw_0s3osRhTtisz1aaOVFGBEpDidLEbrJJVhPnxh-VAl3uel2t7vXCZlFQqydh9MdDtJ_vBUQT3OtDQ2XJEAEr-qUX57OZv5kxlI9QUqrlj_q7U9rYpAjCZ6ZIu8tJ8W-1ARXpcuSD4DJfRRhRU8ekJi4Cwq8JHNL7",
+   "ecc": "Q",
+   "version": 13,
+   "shot": {
+    "scale": 4.49,
+    "angle": 100.5,
+    "perspective": 0.12,
+    "noise": 0,
+    "blur": 0,
+    "shade": 0.39,
+    "invert": false,
+    "mirror": false,
+    "seed": 24
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-25.png",
+   "text": "https://example.com/r/d13ae65b395d?k=RyxrvKOs_F54X7f0lYA_HK",
+   "ecc": "L",
+   "version": 4,
+   "shot": {
+    "scale": 5.03,
+    "angle": 266.9,
+    "perspective": 0.27,
+    "noise": 9,
+    "blur": 0,
+    "shade": 0.67,
+    "invert": false,
+    "mirror": false,
+    "seed": 25
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-26.png",
+   "text": "bunker://67b51a3f1ed47ff897907853969ae8fd87fefea57b61e0f4dd5cc2f98a588375?relay=wss%3A%2F%2Frelay.example.com&secret=4891c0f55ceedc35",
+   "ecc": "H",
+   "version": 11,
+   "shot": {
+    "scale": 4.24,
+    "angle": 341.8,
+    "perspective": 0.11,
+    "noise": 0,
+    "blur": 0,
+    "shade": 0.72,
+    "invert": true,
+    "mirror": false,
+    "seed": 26
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-27.png",
+   "text": "nostrconnect://63f08ed3f24f28a9b3b7a7ebd3acfaa55b97c264ea37b13b802a94b0751b9bcd?relay=wss%3A%2F%2Frelay.example.com&secret=a086e544&name=Example",
+   "ecc": "H",
+   "version": 12,
+   "shot": {
+    "scale": 4.47,
+    "angle": 278.2,
+    "perspective": 0.06,
+    "noise": 0,
+    "blur": 0,
+    "shade": 0.67,
+    "invert": false,
+    "mirror": false,
+    "seed": 27
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-28.png",
+   "text": "LIGHTNING:LNBC7NUECDAJNX5CFQQMAXTNGMXWGPEE2EQAS4AFFU53JQLT70UGGY0M52T0ZSF54NV33QQ6R5SRUR7UR0LQ770GJFVYYA95SAAG9LTE3P362YHWS2JMQ0V0GTG73LXA5VCRXNGJ0QF9THCRC343HAUXN5FG82WSR03W4GTYUJHWKPGJUCTNRU9QLJV96EF273PFJCYTM8D0XZ4NSKRA1XQQET",
+   "ecc": "M",
+   "version": 9,
+   "shot": {
+    "scale": 5.82,
+    "angle": 71.6,
+    "perspective": 0.04,
+    "noise": 3,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 28
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-29.png",
+   "text": "428424654154486150812969838777727518014372256631",
+   "ecc": "L",
+   "version": 2,
+   "shot": {
+    "scale": 2.98,
+    "angle": 317.9,
+    "perspective": 0.28,
+    "noise": 5,
+    "blur": 0,
+    "invert": false,
+    "mirror": true,
+    "seed": 29
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-30.png",
+   "text": "https://example.com/r/3010372c3934?k=tjFLWIWjR-3SASGfiJBdxF&h=3GuBH2ijV5NH0s5Vkfgxzj4OsgPr1Omy-BzQSwVk4QWzpUJvb_hKOAPT2Y_6R2N6li2QUzCGjczT7v7PwsGCosC",
+   "ecc": "L",
+   "version": 7,
+   "shot": {
+    "scale": 2.66,
+    "angle": 6.7,
+    "perspective": 0.3,
+    "noise": 9,
+    "blur": 0,
+    "shade": 0.66,
+    "invert": false,
+    "mirror": false,
+    "seed": 30
+   },
+   "typescript": false,
+   "jsqr": false
+  },
+  {
+   "file": "frame-31.png",
+   "text": "https://example.com/r/3773d552be51?k=BhdLfy2WuekH60luqxdguz",
+   "ecc": "L",
+   "version": 4,
+   "shot": {
+    "scale": 3.3,
+    "angle": 167.2,
+    "perspective": 0.13,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 31
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-32.png",
+   "text": "bunker://37f11b6f8467162fbe9eb25270ede143feecbc2fb39133e7c2faeb7c11792cf3?relay=wss%3A%2F%2Frelay.example.com&secret=42af5d61de6bd7b1",
+   "ecc": "H",
+   "version": 11,
+   "shot": {
+    "scale": 3.49,
+    "angle": 57.1,
+    "perspective": 0.27,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": true,
+    "seed": 32
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-33.png",
+   "text": "nostrconnect://64bb7351f60ac8c36d20c300a3192a2428c2e784e16e07db476edfe01c01db2d?relay=wss%3A%2F%2Frelay.example.com&secret=227a1a10&name=Example",
+   "ecc": "L",
+   "version": 7,
+   "shot": {
+    "scale": 4.87,
+    "angle": 101.5,
+    "perspective": 0.12,
+    "noise": 0,
+    "blur": 0,
+    "invert": true,
+    "mirror": false,
+    "seed": 33
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-34.png",
+   "text": "LIGHTNING:LNBC3A9SYMMEP0DJ4Z379M01QCREHHRJEV10ZVLMF1JTF40ELLP8SFKFFD44GJYNKTVYK4XTS9C86AA2NE1PWH57S1LZ5KVMC0EJS8C7NU00M3H4R3UR3E961WKR1TA66J1S8RA5NVZ1MVM0SLPVN2RML3Z1T804XH708FHD706Z2VG7YP7Q9PJAJDA27WD1P39RMHS5QL4734L4XF53GV1EW2KV6CKL3LQNWCC4EGST0JA2RU43AGSMM160T6KD49XN",
+   "ecc": "L",
+   "version": 8,
+   "shot": {
+    "scale": 3,
+    "angle": 21.2,
+    "perspective": 0.17,
+    "noise": 15,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "seed": 34
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-35.png",
+   "text": "674637143486275575212079851024115171355542178961",
+   "ecc": "L",
+   "version": 2,
+   "shot": {
+    "scale": 4.58,
+    "angle": 282.7,
+    "perspective": 0.24,
+    "noise": 0,
+    "blur": 0,
+    "shade": 0.37,
+    "invert": false,
+    "mirror": true,
+    "seed": 35
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-36.png",
+   "text": "https://example.com/r/800d07dc113a?k=857DgYVpHpcKzJw80zZ8Yv&h=ehEXTPICnbbrQUK2EQxUUOKVdXpwtVZTaTKe5Er4Tbva2pB_XFIK0-Zum8bAm-emHtDvhPddAG-V11FX5Q2YtpdH6QRa61MyZJG71ve6AN1VSBMicdCpuJNG0l4ADMlK",
+   "ecc": "M",
+   "version": 10,
+   "shot": {
+    "scale": 5.65,
+    "angle": 235.7,
+    "perspective": 0.21,
+    "noise": 19,
+    "blur": 0,
+    "invert": true,
+    "mirror": false,
+    "seed": 36
+   },
+   "typescript": true,
+   "jsqr": false
+  }
+ ]
+}
