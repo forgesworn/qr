@@ -1,6 +1,6 @@
 # @forgesworn/qr
 
-> QR code encoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes, optional UTF-8 ECI, SVG, canvas and terminal output. Output is checked byte for byte against ZXing and read back by jsQR in tests. No decoder yet.
+> QR code encoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes, optional UTF-8 ECI, SVG, canvas and terminal output. Tests compare 114 symbols module for module with ZXing and read output back with jsQR. No decoder yet.
 
 ESM only, Node.js 22.13+.
 
