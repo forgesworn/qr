@@ -38,6 +38,10 @@
     "zero-dependency"
   ],
   "author": "forgesworn",
+  "funding": {
+    "type": "lightning",
+    "url": "lightning:profusemeat89@walletofsatoshi.com"
+  },
   "license": "MIT",
   "sideEffects": false,
   "engines": {
