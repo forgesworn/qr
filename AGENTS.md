@@ -6,8 +6,9 @@ Instructions in this file apply to the entire repository.
 
 `@forgesworn/qr`: a QR code encoder with no runtime dependencies, for
 browsers, workers and Node. ESM only, Node.js `>=22.13`. SPEC.md defines
-the encoder exactly; Kotlin and Rust ports are planned to the same spec and
-the same vectors. A decoder is planned and is not here yet.
+the encoder exactly. The decoder is in `src/` too. A pure-JVM Kotlin port of
+both is in `kotlin/`; a Rust port is planned to the same spec and the same
+vectors.
 
 ## Commands
 
@@ -18,6 +19,7 @@ npm test                  # vitest: tables, ZXing vectors, jsQR round trips, API
 npm run typecheck         # src and test, no emit
 npm run check             # typecheck + test
 npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK needed)
+(cd kotlin && ./gradlew test)   # the Kotlin port against the same vectors and frames
 ```
 
 ## Rules
@@ -41,6 +43,10 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 - `vectors/generator/` - the Java generator; `.cache/` holds the
   hash-checked jar and is not committed.
 - `test/` - Vitest suites.
+- `kotlin/core/src/main/kotlin/dev/forgesworn/qr/` - the Kotlin port; it is
+  vendored as a unit, so keep it self-contained (no Android or third-party
+  imports). `kotlin/core/src/test/` reads `vectors/` and uses ZXing as a
+  test-only oracle.
 
 ## Release
 

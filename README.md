@@ -89,6 +89,30 @@ laptop, so throttle camera loops.
 
 `decodeModules(modules, size)` reads a module grid you already have.
 
+## Kotlin
+
+A pure-JVM port of the encoder and decoder lives in `kotlin/` (module `core`,
+package `dev.forgesworn.qr`, JVM 17, no dependencies beyond the Kotlin standard
+library). It is checked against the same vectors and frames as the TypeScript
+library. The sources are in `kotlin/core/src/main/kotlin` and are written to be
+vendored as they stand.
+
+```kotlin
+import dev.forgesworn.qr.*
+
+val qr = encode("https://example.com", EncodeOptions(ecc = ErrorCorrection.Q))
+qr.isDark(0, 0) // modules are row by row, no quiet zone
+
+// luminance: one byte a pixel, 0 black to 255 white, as a camera's Y plane gives
+val found = decode(luminance, width, height, rowStride = stride)
+found?.text
+```
+
+`decode` returns `null` when it finds no readable code. There is also a
+`decode(IntArray, ...)` overload for packed ARGB pixels and
+`decodeModules(modules, size)` for a module grid. Run the tests with
+`cd kotlin && ./gradlew test`.
+
 ## Development
 
 ```bash

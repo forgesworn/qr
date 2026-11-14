@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Kotlin port of the encoder and decoder in `kotlin/`, pure JVM 17, checked
+  against the shared encode vectors and decode frames, with ZXing as a
+  test-only oracle; a `kotlin` job in CI.
+
 ## 0.1.0
 
 - First release: encoder (versions 1-40, levels L/M/Q/H, numeric,

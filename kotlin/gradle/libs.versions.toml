@@ -1,0 +1,12 @@
+[versions]
+kotlin = "2.0.21"
+junit = "4.13.2"
+# Test-time oracle only; never a dependency of the library.
+zxing = "3.5.3"
+
+[libraries]
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
