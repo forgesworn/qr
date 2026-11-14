@@ -1,6 +1,6 @@
 # @forgesworn/qr
 
-> QR code encoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes, optional UTF-8 ECI, SVG, canvas and terminal output. Tests compare 114 symbols module for module with ZXing and read output back with jsQR. No decoder yet.
+> QR code encoder and decoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes, optional UTF-8 ECI, SVG, canvas and terminal output. The decoder reads RGBA or greyscale camera frames, including rotated, tilted, mirrored and inverted codes. Tests compare 114 symbols module for module with ZXing, read output back with jsQR, and require the decoder to read at least as many synthetic distorted frames as jsQR.
 
 ESM only, Node.js 22.13+.
 
@@ -18,15 +18,20 @@ npm install @forgesworn/qr
 - `toSvg(qr, { margin = 4, dark = '#000', light = '#fff' | null, title? }): string`
 - `drawCanvas(canvas, qr, { width = 8 px per module, margin = 4, dark, light | null }): void` - any HTMLCanvasElement or OffscreenCanvas; resizes it to width square.
 - `toTerminal(qr, { margin = 4, ink = 'light' | 'dark' }): string` - half-block text; 'light' ink for dark terminal backgrounds.
+- `decode(image: { data, width, height }, { rowStride?, channels?: 1 | 4, inversion?: 'normal' | 'inverted' | 'both' }): DecodeResult | undefined` - data is RGBA (ImageData) or greyscale; result `{ text, bytes, version, ecc, mask, eci, corrected, mirrored, inverted, location }`; undefined when no readable code is found.
+- `decodeModules(modules, size)` - reads a row-major module grid (no quiet zone), straight or mirrored.
 
 ## Example
 
 ```ts
 import { encode, toSvg } from '@forgesworn/qr'
 const svg = toSvg(encode('https://example.com/', { ecc: 'Q' }))
+
+import { decode } from '@forgesworn/qr'
+const text = decode(ctx.getImageData(0, 0, w, h))?.text
 ```
 
 ## Docs
 
 - [README](https://github.com/forgesworn/qr/blob/main/README.md)
-- [SPEC](https://github.com/forgesworn/qr/blob/main/SPEC.md): exact encoder behaviour for ports
+- [SPEC](https://github.com/forgesworn/qr/blob/main/SPEC.md): exact encoder behaviour for ports, and the decoder's pipeline

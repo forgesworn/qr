@@ -1,0 +1,263 @@
+import {
+  ALPHANUMERIC,
+  blocksFor,
+  countBand,
+  EC_ORDER,
+  FORMAT_COORDS,
+  formatBits,
+  Grid,
+  maskBit,
+  versionBits,
+  type ErrorCorrection,
+} from './encode.js'
+import { correct } from './rs.js'
+import { fromUtf8, isUtf8 } from './text.js'
+
+/** What a symbol says, once read. */
+export interface Payload {
+  /** The decoded text. */
+  readonly text: string
+  /** The payload as bytes: byte-mode data as stored, numeric and alphanumeric as ASCII. */
+  readonly bytes: Uint8Array
+  readonly version: number
+  readonly ecc: ErrorCorrection
+  readonly mask: number
+  /** ECI assignment numbers in the order they appeared; empty if none. */
+  readonly eci: readonly number[]
+  /** Codewords Reed-Solomon had to correct. */
+  readonly corrected: number
+}
+
+/** Reads modules through a callback: true for dark, x across, y down. */
+export type ModuleReader = (x: number, y: number) => boolean
+
+const FORMATS: readonly { bits: number; ecc: ErrorCorrection; mask: number }[] = EC_ORDER.flatMap((ecc) =>
+  [0, 1, 2, 3, 4, 5, 6, 7].map((mask) => ({ bits: formatBits(ecc, mask), ecc, mask })),
+)
+const VERSIONS: readonly { bits: number; version: number }[] = Array.from({ length: 34 }, (_, i) => ({
+  bits: versionBits(i + 7),
+  version: i + 7,
+}))
+
+function popcount(n: number): number {
+  let c = 0
+  for (; n !== 0; n &= n - 1) c++
+  return c
+}
+
+function nearest<T extends { bits: number }>(table: readonly T[], reads: readonly number[]): T | undefined {
+  let best: T | undefined
+  let distance = 4 // both codes correct up to three bit errors
+  for (const read of reads) {
+    for (const entry of table) {
+      const d = popcount(entry.bits ^ read)
+      if (d < distance) {
+        distance = d
+        best = entry
+      }
+    }
+  }
+  return best
+}
+
+/** The version a symbol of `size` modules declares, when its version blocks can be read. */
+export function readVersion(read: ModuleReader, size: number): number | undefined {
+  if (size < 45) return (size - 17) / 4
+  let bottomLeft = 0
+  let topRight = 0
+  for (let k = 17; k >= 0; k--) {
+    const i = Math.floor(k / 3)
+    const j = k % 3
+    bottomLeft = (bottomLeft << 1) | (read(i, size - 11 + j) ? 1 : 0)
+    topRight = (topRight << 1) | (read(size - 11 + j, i) ? 1 : 0)
+  }
+  return nearest(VERSIONS, [bottomLeft, topRight])?.version
+}
+
+/**
+ * Decodes a symbol from its modules. `size` must be 17 + 4v; for version 7
+ * and up the version blocks decide, and a size that disagrees fails.
+ * Returns undefined when the symbol cannot be read.
+ */
+export function readSymbol(read: ModuleReader, size: number): Payload | undefined {
+  if (size < 21 || size > 177 || (size - 17) % 4 !== 0) return undefined
+  const version = readVersion(read, size)
+  if (version === undefined || 17 + 4 * version !== size) return undefined
+
+  let first = 0
+  let second = 0
+  for (let i = 14; i >= 0; i--) {
+    const [x, y] = FORMAT_COORDS[i]!
+    first = (first << 1) | (read(x, y) ? 1 : 0)
+    second = (second << 1) | (read(i < 8 ? size - 1 - i : 8, i < 8 ? 8 : size - 7 + (i - 8)) ? 1 : 0)
+  }
+  const format = nearest(FORMATS, [first, second])
+  if (format === undefined) return undefined
+
+  const grid = new Grid(version)
+  const [ecPerBlock, g1, d1, g2] = blocksFor(version, format.ecc)
+  const blockCount = g1 + g2
+  const total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
+  const stream = new Uint8Array(total)
+  let bit = 0
+  let upward = true
+  for (let right = size - 1; right >= 1 && bit < total * 8; right -= 2) {
+    if (right === 6) right = 5
+    for (let step = 0; step < size; step++) {
+      const y = upward ? size - 1 - step : step
+      for (let i = 0; i < 2; i++) {
+        const x = right - i
+        if (grid.isReserved(x, y) || bit >= total * 8) continue
+        if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
+        bit++
+      }
+    }
+    upward = !upward
+  }
+
+  const blocks: Uint8Array[] = []
+  for (let b = 0; b < blockCount; b++) blocks.push(new Uint8Array((b < g1 ? d1 : d1 + 1) + ecPerBlock))
+  let k = 0
+  for (let i = 0; i <= d1; i++) {
+    for (let b = 0; b < blockCount; b++) if (i < (b < g1 ? d1 : d1 + 1)) blocks[b]![i] = stream[k++]!
+  }
+  for (let i = 0; i < ecPerBlock; i++) {
+    for (let b = 0; b < blockCount; b++) blocks[b]![(b < g1 ? d1 : d1 + 1) + i] = stream[k++]!
+  }
+  const data = new Uint8Array(g1 * d1 + g2 * (d1 + 1))
+  let corrected = 0
+  for (let b = 0, offset = 0; b < blockCount; b++) {
+    const fixed = correct(blocks[b]!, ecPerBlock)
+    if (fixed < 0) return undefined
+    corrected += fixed
+    const length = b < g1 ? d1 : d1 + 1
+    data.set(blocks[b]!.subarray(0, length), offset)
+    offset += length
+  }
+
+  const parsed = parse(data, version)
+  if (parsed === undefined) return undefined
+  return { ...parsed, version, ecc: format.ecc, mask: format.mask, corrected }
+}
+
+class Bits {
+  private position = 0
+  constructor(private readonly data: Uint8Array) {}
+
+  get available(): number {
+    return this.data.length * 8 - this.position
+  }
+
+  read(count: number): number {
+    if (count > this.available) throw new RangeError('Ran off the end of the data')
+    let value = 0
+    for (let i = 0; i < count; i++, this.position++) {
+      value = (value << 1) | ((this.data[this.position >>> 3]! >>> (7 - (this.position & 7))) & 1)
+    }
+    return value
+  }
+}
+
+interface Run {
+  eci: number | undefined
+  bytes: number[]
+}
+
+const KANJI_COUNT_BITS = [8, 10, 12] as const
+
+function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8Array; eci: number[] } | undefined {
+  const bits = new Bits(data)
+  const band = countBand(version)
+  const runs: Run[] = [{ eci: undefined, bytes: [] }]
+  const eci: number[] = []
+  const out: number[] = []
+  const emit = (byte: number) => {
+    runs[runs.length - 1]!.bytes.push(byte)
+    out.push(byte)
+  }
+  try {
+    while (bits.available >= 4) {
+      const mode = bits.read(4)
+      if (mode === 0) break
+      if (mode === 1) {
+        let count = bits.read([10, 12, 14][band]!)
+        for (; count >= 3; count -= 3) {
+          const v = bits.read(10)
+          if (v > 999) return undefined
+          for (const c of String(v).padStart(3, '0')) emit(c.charCodeAt(0))
+        }
+        if (count > 0) {
+          const v = bits.read(count === 2 ? 7 : 4)
+          if (v >= (count === 2 ? 100 : 10)) return undefined
+          for (const c of String(v).padStart(count, '0')) emit(c.charCodeAt(0))
+        }
+      } else if (mode === 2) {
+        let count = bits.read([9, 11, 13][band]!)
+        for (; count >= 2; count -= 2) {
+          const v = bits.read(11)
+          if (v >= 45 * 45) return undefined
+          emit(ALPHANUMERIC.charCodeAt(Math.floor(v / 45)))
+          emit(ALPHANUMERIC.charCodeAt(v % 45))
+        }
+        if (count === 1) {
+          const v = bits.read(6)
+          if (v >= 45) return undefined
+          emit(ALPHANUMERIC.charCodeAt(v))
+        }
+      } else if (mode === 4) {
+        const count = bits.read([8, 16, 16][band]!)
+        for (let i = 0; i < count; i++) emit(bits.read(8))
+      } else if (mode === 8) {
+        // Kanji: kept as its Shift_JIS bytes; the text shows U+FFFD for each.
+        const count = bits.read(KANJI_COUNT_BITS[band])
+        for (let i = 0; i < count; i++) {
+          const v = bits.read(13)
+          let sjis = (Math.floor(v / 0xc0) << 8) | v % 0xc0
+          sjis += sjis < 0x1f00 ? 0x8140 : 0xc140
+          out.push(sjis >>> 8, sjis & 0xff)
+          runs.push({ eci: -1, bytes: [] }, { eci: runs[runs.length - 1]!.eci, bytes: [] })
+        }
+      } else if (mode === 7) {
+        const first = bits.read(8)
+        const value =
+          (first & 0x80) === 0
+            ? first
+            : (first & 0xc0) === 0x80
+              ? ((first & 0x3f) << 8) | bits.read(8)
+              : (first & 0xe0) === 0xc0
+                ? ((first & 0x1f) << 16) | bits.read(16)
+                : -1
+        if (value < 0) return undefined
+        eci.push(value)
+        runs.push({ eci: value, bytes: [] })
+      } else if (mode === 3) {
+        bits.read(16) // structured append: position, total and parity; one symbol is read alone
+      } else if (mode === 5) {
+        // FNC1 in first position: GS1 data follows in ordinary segments
+      } else if (mode === 9) {
+        bits.read(8) // FNC1 in second position: application indicator
+      } else {
+        return undefined
+      }
+    }
+  } catch {
+    return undefined
+  }
+  let text = ''
+  for (const run of runs) text += run.eci === -1 ? '�' : decodeRun(run)
+  return { text, bytes: Uint8Array.from(out), eci }
+}
+
+/** ECI 26 is UTF-8; 3 and 1 are Latin-1. Without ECI, valid UTF-8 is taken as UTF-8, else Latin-1. */
+function decodeRun(run: Run): string {
+  const bytes = Uint8Array.from(run.bytes)
+  if (run.eci === 3 || run.eci === 1) return latin1(bytes)
+  if (run.eci === 26 || isUtf8(bytes)) return fromUtf8(bytes)
+  return latin1(bytes)
+}
+
+function latin1(bytes: Uint8Array): string {
+  let s = ''
+  for (const b of bytes) s += String.fromCharCode(b)
+  return s
+}

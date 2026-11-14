@@ -50,11 +50,11 @@ export function isDark(qr: QrCode, x: number, y: number): boolean {
   return qr.modules[y * qr.size + x] === 1
 }
 
-const ALPHANUMERIC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'
-const EC_ORDER: readonly ErrorCorrection[] = ['L', 'M', 'Q', 'H']
+export const ALPHANUMERIC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'
+export const EC_ORDER: readonly ErrorCorrection[] = ['L', 'M', 'Q', 'H']
 const EC_FORMAT_BITS: Record<ErrorCorrection, number> = { L: 1, M: 0, Q: 3, H: 2 }
 const MODE_BITS: Record<Mode, number> = { numeric: 1, alphanumeric: 2, byte: 4 }
-const COUNT_BITS: Record<Mode, readonly [number, number, number]> = {
+export const COUNT_BITS: Record<Mode, readonly [number, number, number]> = {
   numeric: [10, 12, 14],
   alphanumeric: [9, 11, 13],
   byte: [8, 16, 16],
@@ -135,7 +135,7 @@ function validVersion(v: number): boolean {
   return Number.isInteger(v) && v >= 1 && v <= 40
 }
 
-function countBand(version: number): 0 | 1 | 2 {
+export function countBand(version: number): 0 | 1 | 2 {
   return version <= 9 ? 0 : version <= 26 ? 1 : 2
 }
 
@@ -226,7 +226,7 @@ function chooseVersion(mode: Mode, payload: Payload, eci: boolean, ecc: ErrorCor
   throw new QrCapacityError(`Data does not fit any version at level ${ecc}`)
 }
 
-function blocksFor(version: number, ecc: ErrorCorrection): readonly [number, number, number, number] {
+export function blocksFor(version: number, ecc: ErrorCorrection): readonly [number, number, number, number] {
   return EC_BLOCKS[version - 1]![EC_ORDER.indexOf(ecc)]!
 }
 
@@ -240,8 +240,8 @@ function push(bits: number[], value: number, length: number): void {
 }
 
 // Reed-Solomon over GF(256), primitive polynomial x^8 + x^4 + x^3 + x^2 + 1.
-const EXP = new Uint8Array(512)
-const LOG = new Uint8Array(256)
+export const EXP = new Uint8Array(512)
+export const LOG = new Uint8Array(256)
 for (let i = 0, x = 1; i < 255; i++) {
   EXP[i] = x
   LOG[x] = i
@@ -250,7 +250,7 @@ for (let i = 0, x = 1; i < 255; i++) {
 }
 for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255]!
 
-function gfMul(a: number, b: number): number {
+export function gfMul(a: number, b: number): number {
   return a === 0 || b === 0 ? 0 : EXP[LOG[a]! + LOG[b]!]!
 }
 
@@ -304,12 +304,12 @@ function interleave(codewords: Uint8Array, version: number, ecc: ErrorCorrection
 }
 
 /** Format information coordinates (x, y) for bits 0 to 14, beside the top-left finder. */
-const FORMAT_COORDS: readonly (readonly [number, number])[] = [
+export const FORMAT_COORDS: readonly (readonly [number, number])[] = [
   [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8],
   [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8],
 ]
 
-class Grid {
+export class Grid {
   readonly size: number
   private readonly base: Uint8Array
   private readonly reserved: Uint8Array
@@ -354,6 +354,11 @@ class Grid {
         }
       }
     }
+  }
+
+  /** True for finder, separator, timing, alignment, format and version modules. */
+  isReserved(x: number, y: number): boolean {
+    return this.reserved[y * this.size + x] === 1
   }
 
   private fn(x: number, y: number, dark: number): void {
@@ -425,7 +430,7 @@ class Grid {
   }
 }
 
-function maskBit(mask: number, x: number, y: number): boolean {
+export function maskBit(mask: number, x: number, y: number): boolean {
   switch (mask) {
     case 0: return (x + y) % 2 === 0
     case 1: return y % 2 === 0
@@ -438,14 +443,14 @@ function maskBit(mask: number, x: number, y: number): boolean {
   }
 }
 
-function formatBits(ecc: ErrorCorrection, mask: number): number {
+export function formatBits(ecc: ErrorCorrection, mask: number): number {
   const data = (EC_FORMAT_BITS[ecc] << 3) | mask
   let rem = data
   for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537)
   return ((data << 10) | rem) ^ 0x5412
 }
 
-function versionBits(version: number): number {
+export function versionBits(version: number): number {
   let rem = version
   for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1f25)
   return (version << 12) | rem

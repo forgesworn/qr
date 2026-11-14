@@ -1,4 +1,4 @@
-# Encoder specification
+# Specification
 
 This is what every implementation of `@forgesworn/qr` (TypeScript now,
 Kotlin and Rust later) must do, so that the same input gives the same
@@ -91,3 +91,36 @@ module rows per line with U+2580 (upper half), U+2584 (lower half), U+2588
 capacity, every mask, every level, all three modes, both count-length band
 edges, the empty string and UTF-8 with ECI. ZXing is a development-time
 oracle only and is not part of the package.
+
+## Decoder
+
+The decoder is not bound by the vectors in the same way: ports may find
+codes differently, but must return the same payload for any symbol they
+read. The TypeScript pipeline, for reference:
+
+1. Luminance: RGBA to grey as `(77 R + 150 G + 29 B) >> 8`, with alpha
+   blended onto white, so a code drawn on a transparent canvas reads.
+2. Binarisation: 8x8 blocks; each block's threshold is the mean of the
+   block averages in the 5x5 blocks around it; a block with a range of 24
+   or less borrows its neighbours' level. Pictures under 40 pixels a side
+   use one global threshold.
+3. Finders: row scans for 1:1:3:1:1 runs, each checked down the column,
+   back across the row and along a diagonal, with a strict and then a looser
+   ratio tolerance. Centres within a module of each other merge.
+4. Triples: three finders of similar module size forming a near right
+   isosceles triangle; the cross product puts the top-right finder on the
+   right.
+5. Size and alignment: size from finder distances over module size,
+   rounded to `1 (mod 4)`. From version 2, alignment candidates are found
+   near the corner the finders imply, and ranked by how well the 5x5 pattern
+   around each matches along the code's axes; the parallelogram corner is
+   the last resort. Sizes four and eight modules either side are retried.
+6. Sampling: a perspective map from module centres to the picture, then
+   format and version information, unmasking and Reed-Solomon correction
+   (section 7.5 and annex B). A failed read is retried transposed, for
+   mirrored codes, and the whole search is repeated on the inverted
+   picture.
+7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
+   ECI, structured append (header skipped) and FNC1 (indicators skipped).
+   Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
+   otherwise or under ECI 1 or 3.
