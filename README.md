@@ -6,7 +6,7 @@ alphanumeric and byte modes (mixed in one symbol where that saves bits),
 optional UTF-8 ECI, and SVG, canvas and terminal output. The decoder reads
 a code from camera or screenshot pixels.
 
-The tests compare 147 symbols module for module with an independent encoder,
+The tests compare 148 symbols module for module with an independent encoder,
 covering every version and mask and mixed-segment symbols, and have an
 independent decoder read back random payloads and every renderer's output.
 Both are test-time oracles; neither ships in the package.

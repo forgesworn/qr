@@ -1,6 +1,6 @@
 # @forgesworn/qr
 
-> QR code encoder and decoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes with optimal mixed segmentation, optional UTF-8 ECI, SVG, canvas and terminal output. The decoder reads RGBA or greyscale camera frames, including rotated, tilted, mirrored and inverted codes. Tests compare 147 symbols module for module with an independent encoder, read output back with an independent decoder, require the decoder to read at least as many synthetic distorted frames as that decoder, and hold a floor on a set of 185 real photographs.
+> QR code encoder and decoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes with optimal mixed segmentation, optional UTF-8 ECI, SVG, canvas and terminal output. The decoder reads RGBA or greyscale camera frames, including rotated, tilted, mirrored and inverted codes. Tests compare 148 symbols module for module with an independent encoder, read output back with an independent decoder, require the decoder to read at least as many synthetic distorted frames as that decoder, and hold a floor on a set of 185 real photographs.
 
 ESM only, Node.js 22.13+.
 

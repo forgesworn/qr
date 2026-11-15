@@ -21,7 +21,7 @@ class EncodeVectorsTest {
 
     @Test
     fun hasAllVectorsAndCoversEveryVersionAndMask() {
-        assertEquals(147, vectors.size)
+        assertEquals(148, vectors.size)
         assertEquals(40, vectors.map { it.version }.toSet().size)
         assertEquals(8, vectors.map { it.mask }.toSet().size)
         assertTrue(segments.values.count { it.size > 1 } >= 30)

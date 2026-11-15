@@ -157,12 +157,13 @@ module rows per line with U+2580 (upper half), U+2584 (lower half), U+2588
 
 ## Vectors
 
-`vectors/encode-vectors.json` holds 147 symbols produced with an
+`vectors/encode-vectors.json` holds 148 symbols produced with an
 independent reference encoder, pinned by version and hash in
 `scripts/generate-vectors.sh`. Each gives the input and options, the
 version, mask, widest mode, segment list, stream length in bits before
 the terminator, and the module rows. They cover every version at full
-capacity, every mask, every level, all three modes, both count field
+capacity, version 23 at both level H and level L (where the blocks are
+of two sizes), every mask, every level, all three modes, both count field
 band edges, the empty string, UTF-8 with ECI, every ordered pair of
 modes in a mixed stream, three modes in one stream, ties, mixed
 segments either side of versions 9/10 and 26/27 (chosen and fixed),

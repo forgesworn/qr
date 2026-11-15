@@ -43,4 +43,45 @@ class ZxingRoundTripTest {
         }
         assertEquals(problems.joinToString("\n"), 0, problems.size)
     }
+
+    /**
+     * Every version at every level, filled to the last byte, and every mask at
+     * version 23 (level L there has two block sizes, 121 and 122 data
+     * codewords). The reference decoder reads the module grid directly, so a
+     * miss is the encoder's and not a detector's.
+     */
+    @Test
+    fun referenceDecoderReadsEveryVersionAndLevelAtFullCapacity() {
+        val random = Random(23)
+        val letters = "abcdefghijklmnopqrstuvwxyz -_.~/?=&".toList()
+        val problems = ArrayList<String>()
+        var cells = 0
+        for (version in 1..40) {
+            for (ecc in ErrorCorrection.values()) {
+                val b = blocksFor(version, ecc)
+                val codewords = b[1] * b[2] + b[3] * (b[2] + 1)
+                // A byte segment's header is 4 bits of mode and 8 or 16 of count.
+                val capacity = codewords - if (version <= 9) 2 else 3
+                val text = String(CharArray(capacity) { letters[random.nextInt(letters.size)] })
+                val masks: List<Int?> = if (version == 23) (0..7).toList() else listOf(null)
+                for (mask in masks) {
+                    cells++
+                    val qr = encode(text, EncodeOptions(ecc = ecc, version = version, mask = mask, mode = Mode.BYTE))
+                    val name = "v$version$ecc mask ${qr.mask}"
+                    if (qr.version != version) problems.add("$name: version ${qr.version}")
+                    if (zxingReadModules(qr.modules, qr.size) != text) problems.add("reference $name")
+                    if (decodeModules(qr.modules, qr.size)?.text != text) problems.add("kotlin $name")
+                }
+            }
+        }
+        assertEquals(188, cells)
+        assertEquals(problems.joinToString("\n"), 0, problems.size)
+        // One byte more must not fit.
+        try {
+            encode("a".repeat(1092), EncodeOptions(ecc = ErrorCorrection.L, version = 23, mode = Mode.BYTE))
+            throw AssertionError("1,092 bytes fitted version 23 level L")
+        } catch (_: QrCapacityError) {
+            // Expected: the cell holds 1,091.
+        }
+    }
 }

@@ -131,6 +131,9 @@ public final class GenerateVectors {
     for (String[] p : payments) {
       for (String ecc : LEVELS) cases.add(new Case(p[0] + "-" + ecc, p[1], ecc, null, null, false, null));
     }
+    // Version 23 full at level L: four blocks of 121 data codewords and five
+    // of 122, a cell the rotation above meets only at level H.
+    cases.add(new Case("full-v23-L", fill("byte", 23, "L", 123), "L", 23, null, false, "byte"));
 
     StringBuilder out = new StringBuilder();
     out.append("{\n  \"description\": \"QR encode vectors: module matrices built by an independent reference encoder from the stated segment list (scripts/generate-vectors.sh), no quiet zone. rows are hex, one string per row, most significant bit first, padded to whole bytes. bits is the stream length before the terminator; reference is the reference encoder's own minimal segmentation (version and bits), for ASCII text without ECI.\",\n");
