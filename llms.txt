@@ -1,6 +1,6 @@
 # @forgesworn/qr
 
-> QR code encoder and decoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes with optimal mixed segmentation, optional UTF-8 ECI, SVG, canvas and terminal output. The decoder reads RGBA or greyscale camera frames, including rotated, tilted, mirrored and inverted codes. Tests compare 148 symbols module for module with an independent encoder, read output back with an independent decoder, require the decoder to read at least as many synthetic distorted frames as that decoder, and hold a floor on a set of 185 real photographs.
+> QR code encoder and decoder with no dependencies, for browsers, workers and Node. Versions 1-40, levels L/M/Q/H, numeric, alphanumeric and byte modes with optimal mixed segmentation, optional UTF-8 ECI, SVG, canvas and terminal output. The decoder reads RGBA or greyscale camera frames, including rotated, tilted, mirrored and inverted codes. Tests compare 148 symbols module for module with an independent encoder, read output back with an independent decoder, require the decoder to read at least as many synthetic distorted frames as that decoder, and hold a floor on a set of 184 real photographs, none of which may decode to the wrong text.
 
 ESM only, Node.js 22.13+.
 
@@ -18,7 +18,7 @@ npm install @forgesworn/qr
 - `toSvg(qr, { margin = 4, dark = '#000', light = '#fff' | null, title? }): string`
 - `drawCanvas(canvas, qr, { width = 8 px per module, margin = 4, dark, light | null }): void` - any HTMLCanvasElement or OffscreenCanvas; resizes it to width square.
 - `toTerminal(qr, { margin = 4, ink = 'light' | 'dark' }): string` - half-block text; 'light' ink for dark terminal backgrounds.
-- `decode(image: { data, width, height }, { rowStride?, channels?: 1 | 4, inversion?: 'normal' | 'inverted' | 'both' }): DecodeResult | undefined` - data is RGBA (ImageData) or greyscale; result `{ text, bytes, version, ecc, mask, eci, corrected, mirrored, inverted, location, structuredAppend?, fnc1? }`; `text` follows the ECI, else UTF-8, Shift_JIS or Latin-1 by content; `structuredAppend` is `{ index, total, parity }`, `fnc1` is `{ position: 'first' | 'second', applicationIndicator? }`; undefined when no readable code is found.
+- `decode(image: { data, width, height }, { rowStride?, channels?: 1 | 4, inversion?: 'normal' | 'inverted' | 'both' }): DecodeResult | undefined` - data is RGBA (ImageData) or greyscale; result `{ text, bytes, version, ecc, mask, eci, corrected, mirrored, inverted, location, structuredAppend?, fnc1? }`; `text` follows the ECI, else UTF-8, Shift_JIS or Latin-1 by content, and kanji and hanzi segments read as text; `structuredAppend` is `{ index, total, parity }`, `fnc1` is `{ position: 'first' | 'second', applicationIndicator? }`; undefined when no readable code is found.
 - `decodeModules(modules, size)` - reads a row-major module grid (no quiet zone), straight or mirrored.
 
 ## Example

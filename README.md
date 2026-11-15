@@ -98,7 +98,8 @@ whether the code was `mirrored` or `inverted`, and its `version`, `ecc` and
 
 `text` follows the symbol's ECI when it has one. Without one, byte data is
 UTF-8 when it is valid UTF-8, Shift_JIS when it has the shape of Shift_JIS
-text, and Latin-1 otherwise; kanji segments read as text. `bytes` is there
+text, and Latin-1 otherwise; kanji and hanzi segments read as text. `bytes`
+is there
 for payloads that are not text. `structuredAppend` (`{ index, total,
 parity }`) is present when the code is one part of a split message, and
 `fnc1` when it carries an FNC1 indicator (GS1 and industry formats);
