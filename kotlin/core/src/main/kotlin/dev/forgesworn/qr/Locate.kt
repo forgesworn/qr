@@ -32,8 +32,9 @@ internal class Placement(
 /**
  * Work the search does, counted for tests that bound it: pixels stepped in
  * cross-checks, stored candidates compared while merging, pixels in the
- * windows searched for alignment patterns, maps sampled, and maps read again
- * by the second look.
+ * windows searched for alignment patterns, maps sampled, maps read again
+ * by the second look, those of them read through a mesh, and the points the
+ * mesh probed looking for alignment patterns.
  */
 internal class Work {
     var steps = 0L
@@ -41,6 +42,8 @@ internal class Work {
     var scanned = 0L
     var maps = 0L
     var second = 0L
+    var meshes = 0L
+    var probed = 0L
 }
 
 /** Mirrors the sign of a JavaScript comparator result: NaN and zero both mean "equal". */
@@ -555,6 +558,28 @@ private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): 
     return best
 }
 
+/** The symbol's size in modules from its finders' spacing, rounded to 1 (mod 4); null when the modules are under a pixel. */
+internal fun estimateSize(image: BitImage, triple: Array<Finder>): Int? {
+    val topLeft = triple[0].point()
+    val topRight = triple[1].point()
+    val bottomLeft = triple[2].point()
+    val acrossSize = runModuleSize(image, topLeft, topRight)
+    val downSize = runModuleSize(image, topLeft, bottomLeft)
+    if (!((acrossSize + downSize) / 2 >= 1)) return null
+    return sizeFrom(topLeft, topRight, bottomLeft, acrossSize, downSize)
+}
+
+private fun sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossSize: Double, downSize: Double): Int {
+    // Each side counted in its own modules, which perspective can make differ.
+    val size = floor((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2 + 0.5).toInt() + 7
+    return when (size and 3) {
+        0 -> size + 1
+        2 -> size - 1
+        3 -> size - 2
+        else -> size
+    }
+}
+
 /**
  * Turns three finders into sampling maps: one through each likely alignment
  * pattern (when the version has one), then one through the fourth corner.
@@ -568,18 +593,7 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
     val downSize = runModuleSize(image, topLeft, bottomLeft)
     val moduleSize = (acrossSize + downSize) / 2
     if (!(moduleSize >= 1)) return emptyList()
-    var size: Int
-    if (sizeHint != null) {
-        size = sizeHint
-    } else {
-        // Each side counted in its own modules, which perspective can make differ.
-        size = floor((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2 + 0.5).toInt() + 7
-        when (size and 3) {
-            0 -> size++
-            2 -> size--
-            3 -> size -= 2
-        }
-    }
+    val size = sizeHint ?: sizeFrom(topLeft, topRight, bottomLeft, acrossSize, downSize)
     if (size < 21 || size > 177) return emptyList()
     // A plane seen in perspective: along a side whose far end is w times as far
     // from the camera, modules shrink by w squared. The finders' module sizes so

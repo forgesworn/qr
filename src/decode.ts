@@ -1,6 +1,6 @@
 import { binarise, invert, thresholds, toLuminance, type BitImage } from './binarise.js'
-import { finderTriples, findFinders, locate, type Location, type Point, type Work } from './locate.js'
-import { agreement, keep, secondLook, type Candidate } from './refine.js'
+import { estimateSize, finderTriples, findFinders, locate, type Finder, type Location, type Point, type Work } from './locate.js'
+import { agreement, keep, secondLook, sized, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
 
 /** Pixels to read: RGBA (4 bytes a pixel, as ImageData gives) or greyscale (1 byte a pixel). */
@@ -92,7 +92,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   const levels = thresholds(luminance)
   for (const candidate of candidates) {
     if (work) work.second++
-    const result = secondLook(luminance, levels, candidate)
+    const result = secondLook(luminance, levels, candidate, work)
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location) }
   }
   return undefined
@@ -113,10 +113,13 @@ function search(image: BitImage, inverted: boolean, candidates: Candidate[], wor
     const triples = finderTriples(image, findFinders(image, tolerance, work)).slice(0, MAX_TRIPLES)
     for (const triple of triples) {
       const first = locate(image, triple, undefined, work)
-      if (first.length === 0) continue
+      // An estimate past version 40 by no more than the retries reach still
+      // tries the sizes of 177 or less among them.
+      const size = first.length > 0 ? first[0]!.size : over(image, triple)
+      if (size === undefined) continue
       // The size estimate can be a version out; try the neighbours too.
       for (const delta of [0, -4, 4, -8, 8]) {
-        for (const location of delta === 0 ? first : locate(image, triple, first[0]!.size + delta, work)) {
+        for (const location of delta === 0 ? first : locate(image, triple, size + delta, work)) {
           if (work) work.maps++
           const result = read(image, location, inverted, candidates)
           if (result) return result
@@ -125,6 +128,12 @@ function search(image: BitImage, inverted: boolean, candidates: Candidate[], wor
     }
   }
   return undefined
+}
+
+/** The size estimate when it is past 177 by at most the retries' 8; otherwise undefined. */
+function over(image: BitImage, triple: readonly [Finder, Finder, Finder]): number | undefined {
+  const size = estimateSize(image, triple)
+  return size !== undefined && size > 177 && size <= 177 + 8 ? size : undefined
 }
 
 function read(image: BitImage, location: Location, inverted: boolean, candidates: Candidate[]): DecodeResult | undefined {
@@ -143,7 +152,7 @@ function read(image: BitImage, location: Location, inverted: boolean, candidates
   const mirrored = readSymbol((x, y) => modules[x * size + y] === 1, size)
   if (mirrored) return { ...mirrored, mirrored: true, inverted, location: where(location) }
   const agreed = agreement(modules, size)
-  if (agreed) keep(candidates, { location, inverted, ...agreed })
+  if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
   return undefined
 }
 

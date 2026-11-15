@@ -119,7 +119,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     val levels = thresholds(luminance)
     for (candidate in candidates) {
         if (work != null) work.second++
-        val p = secondLook(luminance, levels, candidate) ?: continue
+        val p = secondLook(luminance, levels, candidate, work) ?: continue
         return result(p, mirrored = candidate.agreed.mirrored, inverted = candidate.inverted, location = where(candidate.location))
     }
     return null
@@ -133,10 +133,12 @@ private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<R
         val triples = finderTriples(image, findFinders(image, tolerance, work)).take(MAX_TRIPLES)
         for (triple in triples) {
             val first = locate(image, triple, null, work)
-            if (first.isEmpty()) continue
+            // An estimate past version 40 by no more than the retries reach still
+            // tries the sizes of 177 or less among them.
+            val size = if (first.isNotEmpty()) first[0].size else over(image, triple) ?: continue
             // The size estimate can be a version out; try the neighbours too.
             for (delta in intArrayOf(0, -4, 4, -8, 8)) {
-                for (location in if (delta == 0) first else locate(image, triple, first[0].size + delta, work)) {
+                for (location in if (delta == 0) first else locate(image, triple, size + delta, work)) {
                     if (work != null) work.maps++
                     val result = read(image, location, inverted, candidates)
                     if (result != null) return result
@@ -145,6 +147,12 @@ private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<R
         }
     }
     return null
+}
+
+/** The size estimate when it is past 177 by at most the retries' 8; otherwise null. */
+private fun over(image: BitImage, triple: Array<Finder>): Int? {
+    val size = estimateSize(image, triple) ?: return null
+    return if (size > 177 && size <= 177 + 8) size else null
 }
 
 private fun read(image: BitImage, location: Placement, inverted: Boolean, candidates: MutableList<Retry>): DecodeResult? {
@@ -165,7 +173,7 @@ private fun read(image: BitImage, location: Placement, inverted: Boolean, candid
     val mirrored = readSymbol({ x, y -> modules[x * size + y].toInt() == 1 }, size)
     if (mirrored != null) return result(mirrored, mirrored = true, inverted = inverted, location = where(location))
     val agreed = agreement(modules, size)
-    if (agreed != null) keep(candidates, Retry(location, inverted, agreed))
+    if (agreed != null && sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
     return null
 }
 

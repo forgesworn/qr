@@ -256,9 +256,13 @@ While the search runs, each map whose straight and transposed reads both
 fail is a candidate if its two format copies, as sampled in step 6, lie
 within 2 bits of the same format word, in the same orientation (straight
 before transposed, and within each the first word in level and mask
-order). The 4 candidates with the smallest such distance are kept,
-earliest first on a tie. A random grid passes this test with a chance of
-about 32 x (121 / 32768)^2 x 2, under 1 in 1000.
+order). A map is no candidate when its version information, read in that
+orientation as in Version information, decodes to a version of another
+size; when neither copy decodes the map stays a candidate, and the
+version never chooses a size or adds a read. The 4 candidates with the
+smallest such distance are kept, earliest first on a tie. A random grid
+passes this test with a chance of about 32 x (121 / 32768)^2 x 2, under
+1 in 1000.
 
 Once both polarities have found nothing, each kept candidate is read once
 more, in order:
@@ -267,7 +271,28 @@ more, in order:
    pixel the point falls in, less the grey there, interpolated bilinearly
    between pixel centres (at `i + 0.5`); negated on the inverted picture.
    Positive is dark. A point outside the picture is light.
-2. Timing: along row 6, from column 8 to `size - 9`, each module's run of
+2. Mesh, from version 7, whose alignment patterns form a lattice of n by n
+   centres (n of 3 or more, Annex E): the three lattice points at the finders,
+   (6, 6), (`size - 7`, 6) and (6, `size - 7`), are placed by the map with no
+   offset. The others are taken in order of their lattice steps to the nearest
+   of those three (the least of `q + r`, `n - 1 - q + r` and `q + n - 1 - r`
+   for lattice column q and row r), then row by row. Each is given a
+   prediction, the mean offset of its four lattice neighbours already placed,
+   and is looked for at every offset from it up to 3 modules either way, in
+   quarter modules: at each, the 25 module centres of the pattern are probed
+   through the map, and the offsets where the most of them have the pattern's
+   colour (dark centre, light ring, dark ring) are kept, along with that
+   count. The pattern is found when at least 24 of the 25 match, the kept
+   offsets lie within three quarters of a module of their mean along each
+   axis, and that mean is at least a quarter module inside the window; its
+   offset is then the prediction plus that mean. Otherwise it is doubtful and
+   its offset is the prediction alone. With none found the map is left as it
+   is. Otherwise each map point (x, y) is moved by the offsets at the four
+   corners of the lattice cell it falls in, interpolated bilinearly, with x
+   and y held to the first and last lattice centres beyond them, and the steps
+   below use the moved map. The mesh reads function patterns only, never data
+   modules.
+3. Timing: along row 6, from column 8 to `size - 9`, each module's run of
    the colour it should have is found near where the last module's centre
    was (starting at 0): the nearest point of that colour within 12/16 of a
    module either side, in sixteenths, then extended a sixteenth at a time,
@@ -278,7 +303,7 @@ more, in order:
    their neighbours (from 0 at the finders), and the same is done down
    column 6. Module `(x, y)` then sits at map point `(x + column offset of
    x, y + row offset of y)`.
-3. Edges: at those points every module is sampled with the probe. For each
+4. Edges: at those points every module is sampled with the probe. For each
    pair of neighbouring modules, across or down, that differ, the edge is
    looked for from the first centre towards the second in sixteenths: the
    first sample of the other colour, interpolated linearly with the one
@@ -287,7 +312,7 @@ more, in order:
    between two columns (or rows) are fitted by least squares to a line in
    the row (or column) index, zero with fewer than three. Each module moves
    by the mean of the lines on its two sides (one at the symbol's edge).
-4. The moved centres are sampled with the probe and read as in step 6, in
+5. The moved centres are sampled with the probe and read as in step 6, in
    the orientation the candidate's format copies agreed in only. The result
    counts only if its level and mask are the ones they agreed on.
 
@@ -314,20 +339,29 @@ among them.
   picture and on its inverse).
 - Each triple is tried at 5 sizes, each giving at most 4 alignment maps and
   2 corner maps: at most 720 maps for the whole search, each sampling at
-  most size x size modules, straight and transposed.
+  most size x size modules, straight and transposed. Only sizes from 21 to
+  177 give maps. An estimate of 181 or 185, past 177 by no more than the
+  retries reach, still has its retries tried, and those of 177 or less
+  give maps; any other estimate outside 21 to 177 gives none.
 - Each size searches for the alignment pattern in square windows reaching
   4, 8 and then 16 modules around at most two estimates, clipped to the
   picture, stopping after the first reach that finds a near-perfect match.
 - The second look reads at most 4 maps again, each sampled three times
   (timing, edges, final) plus one sixteenth-step search per timing module
   and per boundary between unlike modules.
+- The mesh probes at most 46 lattice points a second look (version 40 has
+  49, three of them at the finders), each at 25 x 25 offsets of 25 modules:
+  at most 2,875,000 points a frame, each interpolating four pixels, whatever
+  the picture's size.
 
 Both ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,
-maps sampled, maps read again by the second look) without exposing the
+maps sampled, maps read again by the second look, those read through a
+mesh, points the mesh probed) without exposing the
 counter: a picture of finder patterns on a 10-pixel pitch, or of 1:1:3:1:1
 stripes, costs under 1.5 counted steps a pixel at 800x800 and at
-1600x1600, and noise stays within the map cap and the second look's.
+1600x1600, and noise stays within the map cap, the second look's and the
+mesh's.
 
 ### Version information
 
@@ -486,4 +520,11 @@ versions 1 to 12 and all four levels, a third of them version 1. Each is drawn
 straight with noise, some mirrored or inverted. Every one must read as
 nothing or as its own text, and every one damaged past its parity as
 nothing. Frames with no symbol (noise, flat, stripes, a checkerboard and a
-lattice of finder patterns) must read as nothing.
+lattice of finder patterns) must read as nothing. A further 30, from a
+seed of their own, are of versions 7 to 40, one block a few codewords past
+its parity, drawn bent by a lens (`bent` in `test/photo.ts`); each must read
+as nothing, and the second look must have read nearly all of them through a
+mesh. Another 10, also from a seed of their own, are of version 40, damaged
+the same way and drawn bent so that nearly every one's size estimate runs
+past 177; each must read as nothing, and most must reach the mesh through
+the retries below the estimate.

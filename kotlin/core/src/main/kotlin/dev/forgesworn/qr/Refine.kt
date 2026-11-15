@@ -1,5 +1,6 @@
 package dev.forgesworn.qr
 
+import kotlin.math.abs
 import kotlin.math.floor
 
 // The second look (SPEC.md, decoder step 8): when the ordinary search finds
@@ -46,6 +47,19 @@ internal fun agreement(modules: ByteArray, size: Int): Agreement? {
         }
     }
     return best
+}
+
+/**
+ * False when a version block, read in the orientation the format copies
+ * agreed in, decodes to a version whose size is not the map's: readSymbol
+ * rejects such a map, so it is no candidate. A block that does not decode
+ * leaves the size to decide, as in readSymbol.
+ */
+internal fun sized(modules: ByteArray, size: Int, mirrored: Boolean): Boolean {
+    val version =
+        if (mirrored) readVersion({ x, y -> modules[x * size + y].toInt() == 1 }, size)
+        else readVersion({ x, y -> modules[y * size + x].toInt() == 1 }, size)
+    return version == null || 17 + 4 * version == size
 }
 
 /** Keeps the best SECOND_LOOKS candidates: least distance first, then the order found. */
@@ -205,12 +219,150 @@ private class Line(points: List<Double>) {
     fun at(t: Int): Double = a + b * t
 }
 
-/** Reads one candidate again; the result must keep the level and mask its format copies agreed on. */
-internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry): Payload? {
-    val location = candidate.location
-    val mirrored = candidate.agreed.mirrored
+/** Furthest an alignment pattern is looked for from its prediction, in modules either way. */
+private const val REACH = 3
+
+/** Steps of the search, a quarter module. */
+private const val QUARTER = 4
+
+/** Of the 25 modules of an alignment pattern, how many must match for it to count as found. */
+private const val FOUND = 24
+
+/**
+ * The map bent onto the alignment patterns the picture shows (decoder step 8,
+ * the mesh). Each pattern of the version's lattice is looked for near where
+ * its neighbours, already placed, say it is, working outward from the
+ * finders; its offset from the map, in modules, is the centre of the offsets
+ * where the most of its 25 modules match. A pattern matched by fewer than
+ * FOUND modules, or whose best offsets spread or reach the window's edge, is
+ * doubtful and takes its neighbours' prediction. Offsets between lattice
+ * points are interpolated bilinearly, and held at the outermost row and
+ * column beyond them. Null below version 7, or when no pattern is found.
+ */
+private fun mesh(location: Placement, probe: Probe, work: Work?): Placement? {
     val size = location.size
+    val version = (size - 17) / 4
+    if (version < 1 || version > 40) return null
+    val c = ALIGNMENT_CENTRES[version - 1]
+    if (c.size < 3) return null
+    val n = c.size
+    val ox = DoubleArray(n * n)
+    val oy = DoubleArray(n * n)
+    // 0 not yet placed; 1 a finder's corner, placed by the map; 2 found; 3 predicted.
+    val state = IntArray(n * n)
+    state[0] = 1
+    state[n - 1] = 1
+    state[(n - 1) * n] = 1
+    // Lattice steps to the nearest finder; row, then column, on a tie.
+    fun away(i: Int): Int {
+        val q = i % n
+        val r = i / n
+        return minOf(q + r, n - 1 - q + r, q + n - 1 - r)
+    }
+    val order = (0 until n * n).filter { state[it] == 0 }.sortedWith(compareBy<Int>({ away(it) }, { it }))
+    val steps = REACH * QUARTER
+    var found = 0
+    for (i in order) {
+        val q = i % n
+        val r = i / n
+        // The prediction: the mean offset of the neighbours already placed.
+        var px = 0.0
+        var py = 0.0
+        var k = 0
+        for ((a, b) in arrayOf(intArrayOf(q - 1, r), intArrayOf(q + 1, r), intArrayOf(q, r - 1), intArrayOf(q, r + 1))) {
+            if (a < 0 || b < 0 || a >= n || b >= n || state[b * n + a] == 0) continue
+            px += ox[b * n + a]
+            py += oy[b * n + a]
+            k++
+        }
+        if (k > 0) {
+            px /= k
+            py /= k
+        }
+        val cx = c[q] + px
+        val cy = c[r] + py
+        var best = -1
+        var sx = 0
+        var sy = 0
+        var count = 0
+        var low = 0
+        var high = 0
+        var lowY = 0
+        var highY = 0
+        for (j in -steps..steps) {
+            for (s in -steps..steps) {
+                val u = s.toDouble() / QUARTER
+                val v = j.toDouble() / QUARTER
+                var score = 0
+                for (b in -2..2) {
+                    for (a in -2..2) {
+                        val p = location.at(cx + u + a, cy + v + b)
+                        if ((probe.at(p.x, p.y) > 0) == (maxOf(abs(a), abs(b)) != 1)) score++
+                    }
+                }
+                if (score > best) {
+                    best = score
+                    sx = 0
+                    sy = 0
+                    count = 0
+                    low = s
+                    high = s
+                    lowY = j
+                    highY = j
+                }
+                if (score == best) {
+                    sx += s
+                    sy += j
+                    count++
+                    low = minOf(low, s)
+                    high = maxOf(high, s)
+                    lowY = minOf(lowY, j)
+                    highY = maxOf(highY, j)
+                }
+            }
+        }
+        if (work != null) work.probed += ((2 * steps + 1) * (2 * steps + 1) * 25).toLong()
+        // In quarter modules: the best offsets' centre, and how far they spread from it.
+        val mx = sx.toDouble() / count
+        val my = sy.toDouble() / count
+        val spread = maxOf(maxOf(mx - low, high - mx), maxOf(my - lowY, highY - my))
+        if (best >= FOUND && spread <= 3 && abs(mx) <= steps - 1 && abs(my) <= steps - 1) {
+            ox[i] = px + mx / QUARTER
+            oy[i] = py + my / QUARTER
+            state[i] = 2
+            found++
+        } else {
+            ox[i] = px
+            oy[i] = py
+            state[i] = 3
+        }
+    }
+    if (found == 0) return null
+    if (work != null) work.meshes++
+    fun cell(z: Double): Pair<Int, Double> {
+        val t = maxOf(c[0].toDouble(), minOf(c[n - 1].toDouble(), z))
+        var i = 0
+        while (i < n - 2 && t > c[i + 1]) i++
+        return Pair(i, (t - c[i]) / (c[i + 1] - c[i]))
+    }
+    val bent = { x: Double, y: Double ->
+        val (i, s) = cell(x)
+        val (j, t) = cell(y)
+        val o = j * n + i
+        val dx = (1 - t) * ((1 - s) * ox[o] + s * ox[o + 1]) + t * ((1 - s) * ox[o + n] + s * ox[o + n + 1])
+        val dy = (1 - t) * ((1 - s) * oy[o] + s * oy[o + 1]) + t * ((1 - s) * oy[o + n] + s * oy[o + n + 1])
+        location.at(x + dx, y + dy)
+    }
+    return Placement(location.topLeft, location.topRight, location.bottomLeft, location.alignment, size, bent)
+}
+
+/** Reads one candidate again; the result must keep the level and mask its format copies agreed on. */
+internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null): Payload? {
+    val mirrored = candidate.agreed.mirrored
     val probe = Probe(image, t, candidate.inverted)
+    // 0. From version 7, the map bent onto the alignment patterns it can find.
+    val location = mesh(candidate.location, probe, work) ?: candidate.location
+    val size = location.size
     // 1. The timing patterns: shift whole columns and rows by what they show.
     val cols = walk(size, { k -> location.project(k, 6) }, { k -> location.project(k + 1, 6) }, probe)
     val rows = walk(size, { k -> location.project(6, k) }, { k -> location.project(6, k + 1) }, probe)
