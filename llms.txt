@@ -32,7 +32,23 @@ import { decode } from '@forgesworn/qr'
 const text = decode(ctx.getImageData(0, 0, w, h))?.text
 ```
 
+## Common mistakes
+
+- ESM only: `import`, never `require`.
+- `decode` takes pixels (`{ data, width, height }`, RGBA or grey), not an `<img>` or `<video>`: draw to a canvas and pass `getImageData(...)`.
+- `decode` and `decodeModules` return `undefined`, not `null`, when nothing reads; they throw only for arguments that cannot be a picture.
+- `isDark(qr, x, y)`: column then row.
+- `encode` is synchronous; `toSvg` returns a string, not an element.
+- `modules` has no quiet zone: add 4 modules of margin in your own drawing.
+- Options that shape the symbol (`ecc`, `version`, `mask`, `mode`) go to `encode`; options for how it looks (`margin`, `dark`, `light`, `width`, `title`) go to the renderer.
+- Throttle camera loops to a few scans a second.
+
+## Recipes and migration
+
+The README has complete, typechecked recipes (SVG, canvas and PNG download, terminal, custom drawing, payment links, bytes, capacity errors, camera scanning, uploaded images, workers, Node, greyscale planes) and tables for migrating from `qrcode`, `qrcode-generator`, `jsQR` and camera-wrapping scanners.
+
 ## Docs
 
-- [README](https://github.com/forgesworn/qr/blob/main/README.md)
+- [README](https://github.com/forgesworn/qr/blob/main/README.md): recipes, the full API, common mistakes and migration tables
 - [SPEC](https://github.com/forgesworn/qr/blob/main/SPEC.md): exact encoder behaviour for ports, and the decoder's pipeline
+- [Vectors](https://github.com/forgesworn/qr/blob/main/vectors/README.md): what a port in another language checks itself against
