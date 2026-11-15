@@ -121,3 +121,41 @@ export function kanjiText(sjis: number): string {
   const text = decoderFor('shift_jis')?.decode(Uint8Array.of(sjis >>> 8, sjis & 0xff))
   return text === undefined || text.includes('\ufffd') ? '\ufffd' : text
 }
+
+/**
+ * Whether bytes that are not valid UTF-8 and carry no ECI look like Shift_JIS
+ * rather than Latin-1. Scanning left to right, a byte below 0x80 is skipped;
+ * 0xA1 to 0xDF is a half-width katakana; 0x81 to 0x9F or 0xE0 to 0xEF followed
+ * by 0x40 to 0x7E or 0x80 to 0xFC is a double-byte character; anything else of
+ * 0x80 or more (0x80, 0xA0, 0xF0 to 0xFF, or a lead without a trail) rules
+ * Shift_JIS out. With none ruled out, it is Shift_JIS if the bytes hold three
+ * katakana in a row, three double-byte characters in a row, or a double-byte
+ * character whose lead is 0x81 to 0x9F (a control in Latin-1, so never text
+ * there); otherwise it is Latin-1.
+ */
+export function looksShiftJis(bytes: Uint8Array): boolean {
+  let kana = 0
+  let pairs = 0
+  let strong = false
+  for (let i = 0; i < bytes.length; ) {
+    const b = bytes[i]!
+    if (b < 0x80) {
+      kana = 0
+      pairs = 0
+      i++
+    } else if (b >= 0xa1 && b <= 0xdf) {
+      pairs = 0
+      if (++kana >= 3) strong = true
+      i++
+    } else if ((b >= 0x81 && b <= 0x9f) || (b >= 0xe0 && b <= 0xef)) {
+      const t = bytes[i + 1]
+      if (t === undefined || t < 0x40 || t === 0x7f || t > 0xfc) return false
+      kana = 0
+      if (++pairs >= 3 || b <= 0x9f) strong = true
+      i += 2
+    } else {
+      return false
+    }
+  }
+  return strong
+}

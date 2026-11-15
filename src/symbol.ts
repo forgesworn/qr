@@ -11,7 +11,7 @@ import {
   type ErrorCorrection,
 } from './encode.js'
 import { correct } from './rs.js'
-import { fromEci, fromUtf8, isUtf8, kanjiText } from './text.js'
+import { fromEci, fromUtf8, isUtf8, kanjiText, looksShiftJis } from './text.js'
 
 /** What a symbol says, once read. */
 export interface Payload {
@@ -318,7 +318,8 @@ function parse(data: Uint8Array, version: number): Parsed | undefined {
 /**
  * ECI 26 is UTF-8; 3 and 1 are Latin-1; the other assignments the platform
  * knows (text.ts) are read as that set. Without an ECI, or where the platform
- * lacks the set, valid UTF-8 is taken as UTF-8, else Latin-1.
+ * lacks the set, valid UTF-8 is taken as UTF-8, else Latin-1; with no ECI at
+ * all, bytes that look like Shift_JIS (looksShiftJis) are read as that.
  */
 function decodeRun(run: Run): string {
   if (run.fixed !== undefined) return run.fixed
@@ -329,7 +330,12 @@ function decodeRun(run: Run): string {
     const text = fromEci(run.eci, bytes)
     if (text !== undefined) return text
   }
-  return isUtf8(bytes) ? fromUtf8(bytes) : latin1(bytes)
+  if (isUtf8(bytes)) return fromUtf8(bytes)
+  if (run.eci === undefined && looksShiftJis(bytes)) {
+    const text = fromEci(20, bytes)
+    if (text !== undefined && !text.includes('\ufffd')) return text
+  }
+  return latin1(bytes)
 }
 
 function latin1(bytes: Uint8Array): string {

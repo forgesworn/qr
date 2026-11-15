@@ -327,7 +327,8 @@ private fun parse(data: IntArray, version: Int): Parsed? {
 /**
  * ECI 26 is UTF-8; 3 and 1 are Latin-1; other assignments the runtime knows
  * (Text.kt) are read as that set. Without an ECI, or where the runtime lacks
- * the set, valid UTF-8 is taken as UTF-8, else Latin-1.
+ * the set, valid UTF-8 is taken as UTF-8, else Latin-1; with no ECI at all,
+ * bytes that look like Shift_JIS (looksShiftJis) are read as that.
  */
 private fun decodeRun(run: Run): String {
     if (run.fixed != null) return run.fixed
@@ -338,7 +339,12 @@ private fun decodeRun(run: Run): String {
         val text = fromEci(run.eci, bytes)
         if (text != null) return text
     }
-    return if (isUtf8(bytes)) fromUtf8(bytes) else latin1(bytes)
+    if (isUtf8(bytes)) return fromUtf8(bytes)
+    if (run.eci == null && looksShiftJis(bytes)) {
+        val text = fromEci(20, bytes)
+        if (text != null && !text.contains('�')) return text
+    }
+    return latin1(bytes)
 }
 
 private fun latin1(bytes: IntArray): String {

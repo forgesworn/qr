@@ -124,7 +124,9 @@ read. The TypeScript pipeline, for reference:
    ECI, structured append and FNC1 (both reported; see below).
    Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
    otherwise or under ECI 1 or 3. Kanji and the other ECIs follow
-   "Text for kanji and other ECIs" below.
+   "Text for kanji and other ECIs" below. A byte run with no ECI in force
+   that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
+   test under "Shift_JIS without an ECI" below.
 
 ### Structured append and FNC1
 
@@ -190,6 +192,35 @@ Every port must agree on these:
 and UTF-16 samples. The Kotlin tests read the same file; with
 `windows-31j` for Shift_JIS, `x-windows-950`, `GB18030`, `x-windows-949` and
 `x-iso-8859-11` they agree on all of it, apart from the two sets the JDK lacks.
+
+### Shift_JIS without an ECI
+
+Many codes carry Shift_JIS in byte mode with no ECI. For a byte run with no
+ECI in force (each run between kanji characters or ECI designators is judged
+alone) that is not valid UTF-8, a port decides between Shift_JIS and Latin-1
+by this rule, which uses byte shapes only.
+
+Scan left to right. A byte below 0x80 ends any run of katakana or of
+double-byte characters. A byte from 0xA1 to 0xDF is a half-width katakana and
+extends the katakana run. A byte from 0x81 to 0x9F or 0xE0 to 0xEF is a lead:
+it must be followed by a trail from 0x40 to 0x7E or 0x80 to 0xFC, and the two
+together are one double-byte character that extends the double-byte run (and
+ends a katakana run). Any other byte of 0x80 or more (0x80, 0xA0, 0xF0 to
+0xFF), a lead at the end of the run and a lead with any other trail rule
+Shift_JIS out at once. If nothing rules it out, the run is Shift_JIS when it
+has three katakana in a row, or three double-byte characters in a row, or any
+double-byte character whose lead is 0x81 to 0x9F (those are control
+characters in Latin-1, so they do not occur in Latin-1 text). Otherwise it is
+Latin-1.
+
+When the run passes, its text is the platform's Shift_JIS reading of the whole
+run; if the platform lacks Shift_JIS, or the reading holds U+FFFD, the text is
+Latin-1 as before. `bytes` is unchanged.
+
+Judged ambiguous and read as Latin-1: one or two katakana-range bytes alone
+(a lone `A5` is a yen sign, and `B1 B2` is two Latin-1 symbols), and a short
+double-byte run led by 0xE0 to 0xEF. Judged ambiguous and read as Shift_JIS:
+three high symbols or capitals in a row from 0xA1 to 0xDF, such as `C0 C9 C8`.
 
 ## Decode fixtures
 
