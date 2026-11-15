@@ -9,7 +9,7 @@ export type Mode = 'numeric' | 'alphanumeric' | 'byte'
 export interface EncodeOptions {
   /** Error correction level. Default `'M'`. */
   ecc?: ErrorCorrection
-  /** Exact version, 1-40. Default: the smallest version, from `minVersion`, that fits. */
+  /** Exact version, 1-40, not below `minVersion`. Default: the smallest version, from `minVersion`, that fits. */
   version?: number
   /** Smallest version to consider when choosing one. Default 1. */
   minVersion?: number
@@ -45,9 +45,10 @@ export class QrCapacityError extends RangeError {
   override readonly name = 'QrCapacityError'
 }
 
-/** True if the module at column `x`, row `y` is dark. */
+/** True if the module at column `x`, row `y` is dark; false outside the symbol (the quiet zone is light). */
 export function isDark(qr: QrCode, x: number, y: number): boolean {
-  return qr.modules[y * qr.size + x] === 1
+  return Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0 && x < qr.size && y < qr.size &&
+    qr.modules[y * qr.size + x] === 1
 }
 
 export const ALPHANUMERIC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:'
@@ -76,6 +77,7 @@ export function encode(data: string | Uint8Array, options: EncodeOptions = {}): 
   }
   const minVersion = options.minVersion ?? 1
   if (!validVersion(minVersion)) throw new RangeError('minVersion must be an integer from 1 to 40')
+  if (fixedVersion !== undefined && fixedVersion < minVersion) throw new RangeError('Version is below minVersion')
 
   const mode = chooseMode(data, options.mode)
   const payload = segmentBits(data, mode)

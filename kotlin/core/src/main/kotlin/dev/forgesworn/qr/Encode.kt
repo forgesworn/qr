@@ -12,7 +12,8 @@ enum class Mode { NUMERIC, ALPHANUMERIC, BYTE }
  * Options for [encode].
  *
  * @property ecc Error correction level. Default [ErrorCorrection.M].
- * @property version Exact version, 1-40. Default: the smallest version, from [minVersion], that fits.
+ * @property version Exact version, 1-40, not below [minVersion]. Default: the smallest version, from
+ *   [minVersion], that fits.
  * @property minVersion Smallest version to consider when choosing one. Default 1.
  * @property mask Mask pattern, 0-7. Default: the pattern with the lowest penalty score.
  * @property mode Data mode. Default for text: numeric if every character is a digit, alphanumeric if
@@ -44,8 +45,8 @@ class QrCode(
     val size: Int,
     val modules: ByteArray,
 ) {
-    /** True if the module at column [x], row [y] is dark. */
-    fun isDark(x: Int, y: Int): Boolean = modules[y * size + x].toInt() == 1
+    /** True if the module at column [x], row [y] is dark; false outside the symbol, as the quiet zone is light. */
+    fun isDark(x: Int, y: Int): Boolean = x in 0 until size && y in 0 until size && modules[y * size + x].toInt() == 1
 
     override fun toString(): String = "QrCode(version=$version, ecc=$ecc, mask=$mask, mode=$mode, size=$size)"
 }
@@ -53,7 +54,7 @@ class QrCode(
 /** Thrown when the data does not fit the requested or any version. */
 class QrCapacityError(message: String) : IllegalArgumentException(message)
 
-/** True if the module at column [x], row [y] of [qr] is dark. */
+/** True if the module at column [x], row [y] of [qr] is dark; false outside the symbol. */
 fun isDark(qr: QrCode, x: Int, y: Int): Boolean = qr.isDark(x, y)
 
 internal const val ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ \$%*+-./:"
@@ -92,6 +93,7 @@ private fun encodeData(text: String?, bytes: ByteArray?, options: EncodeOptions)
     }
     val minVersion = options.minVersion
     if (!validVersion(minVersion)) throw IllegalArgumentException("minVersion must be an integer from 1 to 40")
+    if (fixedVersion != null && fixedVersion < minVersion) throw IllegalArgumentException("Version is below minVersion")
 
     val mode = chooseMode(text, options.mode)
     val payload = segmentBits(text, bytes, mode)

@@ -28,7 +28,9 @@ Level M unless the caller names one. The version is the smallest, from
 4-bit mode, character count in the width for that version band:
 1-9, 10-26, 27-40) and the data, and whose count field can hold the
 character count. A requested version that cannot hold the data is an
-error, never a silent upgrade.
+error, never a silent upgrade. A requested version below `minVersion` is
+an argument error (`RangeError`, `IllegalArgumentException` in Kotlin),
+not a capacity error.
 
 ## Bit stream and error correction
 
@@ -76,6 +78,8 @@ makes the same choice, so masks chosen here match it.
 
 A square of `17 + 4 * version` modules, row-major, 1 for dark, with no
 quiet zone. Renderers add the quiet zone; the default is four modules.
+`isDark(x, y)` is false for any coordinate outside the square, negative,
+too large or (in TypeScript) not an integer, as the quiet zone is light.
 
 Renderers are not covered by the vectors and need not match byte for byte
 across ports, but must keep these properties: the quiet zone is light;

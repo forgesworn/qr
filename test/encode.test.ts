@@ -13,6 +13,20 @@ describe('encode', () => {
   it('defaults to level M and honours minVersion', () => {
     expect(encode('a').ecc).toBe('M')
     expect(encode('a', { minVersion: 5 }).version).toBe(5)
+    expect(encode('A', { version: 10, minVersion: 10 }).version).toBe(10)
+  })
+
+  it('rejects a fixed version below minVersion', () => {
+    expect(() => encode('A', { version: 5, minVersion: 10 })).toThrow(RangeError)
+    expect(() => encode('A', { version: 5, minVersion: 10 })).not.toThrow(QrCapacityError)
+  })
+
+  it('treats everything outside the symbol as light', () => {
+    const qr = encode('a', { version: 2 })
+    expect(qr.modules[qr.size]).toBe(1) // (0, 1) is in the top-left finder
+    for (const [x, y] of [[qr.size, 0], [-1, 0], [0, -1], [0, qr.size], [qr.size, qr.size - 1], [0.5, 0], [0, 0.5], [NaN, 0], [0, Infinity]]) {
+      expect(isDark(qr, x!, y!)).toBe(false)
+    }
   })
 
   it('draws the three finders and the dark module', () => {
