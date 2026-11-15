@@ -196,11 +196,62 @@ What the oracle backs, and what it does not:
   the reference encoder's minimal mode, which need not break ties the
   same way.
 
+## Encoder details
+
+What the sections above leave open, as the Rust port's author found on
+writing it from them; `vectors/encode-vectors.json` fixes each.
+
+1. Arguments are checked in this order, and the first failure is the
+   error: the data's type, the level, the mask, the version, `minVersion`,
+   a version below `minVersion`, the mode against the data, and only then
+   whether the data fits.
+2. The empty string is one segment of no characters: of the named mode
+   when one is named, otherwise a byte segment.
+3. The terminator is four zero bits, or as many as the version's data
+   capacity leaves room for.
+4. Function patterns are laid down in this order: the three finder
+   patterns with their separators, the dark module, the alignment
+   patterns, the timing patterns, the format and version areas. An
+   alignment pattern is left out when its centre module is already taken,
+   which is so at (6, 6), (size - 7, 6) and (6, size - 7); the pairs of
+   centres are taken row by row. A timing module already taken by an
+   alignment pattern is left as that pattern has it; timing modules run
+   from 8 to size - 9, dark at even places.
+5. Data fills pairs of columns from the right: columns size - 1 and
+   size - 2, and so on down to 8 and 7, then 5 and 4, 3 and 2, 1 and 0.
+   In each row of a pair the right module is filled before the left.
+6. With x the column and y the row, a data module is turned over when its
+   mask pattern's condition holds; function modules are never masked:
+   - 0: `(x + y) mod 2 = 0`
+   - 1: `y mod 2 = 0`
+   - 2: `x mod 3 = 0`
+   - 3: `(x + y) mod 3 = 0`
+   - 4: `(floor(y / 2) + floor(x / 3)) mod 2 = 0`
+   - 5: `(x y) mod 2 + (x y) mod 3 = 0`
+   - 6: `((x y) mod 2 + (x y) mod 3) mod 2 = 0`
+   - 7: `((x + y) mod 2 + (x y) mod 3) mod 2 = 0`
+7. N3 is scored at every place where the seven modules `1011101` lie
+   wholly inside the symbol along a row or a column: 40 when the four
+   modules before them are inside the symbol and light, or the four after
+   are, and 40 only once when both are. Places that overlap are each
+   scored.
+8. The version information is the version in its top six bits and the
+   BCH remainder in the twelve below, with no mask pattern applied to it.
+
+The renderers are not specified to the character: an SVG or a terminal
+drawing may differ between ports as long as it shows the same modules.
+The Rust port matches the TypeScript's strings because it was easy to.
+
 ## Decoder
 
 The decoder is not bound by the vectors in the same way: ports may find
 codes differently, but must return the same payload for any symbol they
-read. The TypeScript pipeline, for reference:
+read. A port that follows the pipeline below exactly can be held to
+`vectors/conformance.json` a stage at a time, results and work counts
+included, and the evidence gathered on this pipeline that it does not read
+wrong text then applies to it; the Kotlin port and the Rust front end do.
+The sections after the list give the detail that takes. The TypeScript
+pipeline:
 
 1. Luminance: RGBA to grey as `(77 R + 150 G + 29 B) >> 8`, with alpha
    blended onto white, so a code drawn on a transparent canvas reads.
@@ -257,8 +308,8 @@ read. The TypeScript pipeline, for reference:
 7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
    hanzi (kept as GB2312 bytes), ECI, structured append and FNC1 (both
    reported; see below).
-   Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
-   otherwise or under ECI 1 or 3. Kanji and the other ECIs follow
+   Byte text is UTF-8 under ECI 26, Latin-1 under ECI 1 or 3, and with
+   no ECI in force UTF-8 when it is valid UTF-8 and Latin-1 otherwise. Kanji and the other ECIs follow
    "Text for kanji and other ECIs" below. A byte run with no ECI in force
    that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
    test under "Shift_JIS without an ECI" below.
@@ -267,13 +318,330 @@ read. The TypeScript pipeline, for reference:
 9. Reduced size: only when the second look has found nothing too, the
    picture shrunk and searched again. See below.
 
+### Arithmetic
+
+Real numbers are IEEE 754 doubles, and each expression is evaluated in the
+order written. A length is `sqrt(dx * dx + dy * dy)`, never a library
+`hypot`, whose last place differs between platforms. Rounding to a whole
+number is `floor(x + 0.5)`. Sorts keep the order of equal items.
+
+### Binarisation, exactly
+
+Step 2, as `vectors/conformance.json` checks it (`bits`).
+
+1. A picture under 40 pixels on either side has one threshold,
+   `(min + max) / 2` over all its pixels, and when `max - min` is under 24
+   no pixel is dark.
+2. Otherwise there are `ceil(width / 8)` by `ceil(height / 8)` blocks.
+   Block (bx, by) covers the 8 x 8 pixels from `min(8 bx, width - 8)`,
+   `min(8 by, height - 8)`, so the last block of a row or column overlaps
+   the one before it.
+3. Levels, taken block by block along each row, top row first. A block's
+   level is the mean of its 64 pixels. If its `max - min` is 24 or less it
+   is flat: its level is `min / 2`, and when it has a block above and a
+   block to its left, `around = (above + 2 left + above-left) / 4` from the
+   levels already taken, and the level is `around` if `min < around`.
+4. A block's threshold is the mean of the 25 levels of the 5 x 5 blocks
+   centred on (`bx` held to 2 .. across - 3, `by` held to 2 .. down - 3):
+   near an edge the window moves in, it is not cut. The 25 are summed a row
+   at a time, left to right, top row first, and divided by 25.
+5. A pixel is dark when it is at or below its block's threshold. Where
+   blocks overlap, the later block in the order of 3 decides.
+
+### Finder scan, exactly
+
+Step 3, as `vectors/conformance.json` checks it (`finders`), run once with
+tolerance 0.5 and once with 0.8 in each polarity.
+
+1. Rows `skip - 1`, `2 skip - 1`, ... are scanned, with
+   `skip = floor(height / 200)` held to 1 .. 3.
+2. Along a row, five counts hold the lengths of dark, light, dark, light,
+   dark runs. A dark run is added to the dark place in hand, moving on to
+   the next dark place if a light run was counted last. A light run is
+   added to the next light place, unless the fifth count is in hand: then
+   the five are tested (3 and 4) with `end` the x of that light run's first
+   pixel. If they pass, the counts are cleared and the light run less its
+   first pixel becomes the second count, with the first count zero; a light
+   run of one pixel leaves all five zero, and the next dark run is the
+   first count. If they fail, the third, fourth and fifth counts become the
+   first, second and third, and the light run the fourth. A row that ends
+   with the fifth count in hand is tested with `end = width`.
+3. Ratio test with a tolerance: all five counts non-zero and their total at
+   least 7; with `module = total / 7` and `slack = module * tolerance`, each
+   outer count is under `slack` from `module` and the centre count under
+   `3 slack` from `3 module`.
+4. A row sighting that passes the ratio test is checked three ways, each a
+   walk from a start pixel: back through the dark centre, then a light run
+   while it is no longer than `limit`, then a dark run likewise; then
+   forward from the pixel after the start through the rest of the centre, a
+   light run while it is shorter than `limit`, and a dark run likewise. The
+   walk fails if a light run leaves the picture, if a backward run exceeds
+   `limit` or a forward one reaches it, or if the centre passes
+   `2 total` (on the diagonal, `32 (limit + 1)`), where `total` is the row
+   sighting's. Its five counts must pass the ratio test, and the walk gives
+   the centre as `end - c4 - c3 - c2 / 2` from the start, `end` being the
+   steps forward to the first pixel past the last run. `steps` counts the
+   five counts of every walk, failed ones too.
+   - Down the column through (`floor(cx)`, y), where
+     `cx = end - c4 - c3 - c2 / 2` from the row and `limit` is the row's
+     centre count: fails if its total is `2 total` or more, or half of
+     `total` or less. It gives `cy`.
+   - Back across the row through (`floor(cx)`, `floor(cy)`), same limit:
+     fails if `5 |its total - total| >= 2 total`. It gives `cx` again, as
+     `floor(cx)` plus the walk's centre.
+   - Down the diagonal (1, 1) through (`floor(cx)`, `floor(cy)`), with
+     twice the limit and the tolerance plus 0.25; no test of its total.
+5. A sighting that passes has module size `total / 7`. It merges into the
+   earliest stored candidate within one of its module sizes in x and in y
+   whose module size is within 1, or within a quarter of the candidate's:
+   x, y and module size become running means, `(old * count + new) /
+   (count + 1)`, and the count goes up. Otherwise it is stored with count
+   1. Candidates are filed by where they now lie in 16-pixel cells, column
+   `min(floor(width / 16), floor(max(0, x) / 16))` and row
+   `floor(max(0, y) / 16)`, and only the cells the square of one module
+   size around the sighting touches are looked in; `compared` counts every
+   candidate looked at.
+6. The candidates are returned most-sighted first, equal counts in the
+   order first stored.
+
+### Triples, exactly
+
+Step 4, as `vectors/conformance.json` checks it (`triples`).
+
+1. The pool is the first 12 candidates of the finder scan, in its order.
+   Every three of them are considered, by their places i < j < k with i
+   slowest and k fastest.
+2. A three is dropped when the largest of its module sizes is more than 3
+   times the smallest.
+3. With a, b, c the three in pool order: the top-left is a when side bc is
+   at least as long as ab and as ca; else b when ca is at least as long as
+   ab; else c. The other two are then (b, c), (c, a) or (a, b).
+4. Each side from the top-left is counted in modules: its length over the
+   module size along it (below). The three is dropped unless both counts
+   are 10 or more; a count that is not a number drops it.
+5. With u and v the two sides as vectors from the top-left, and `one` and
+   `other` their counts: `cos = |u . v| / |u| / |v|` and
+   `mismatch = |one - other| / max(one, other)`. The three is dropped when
+   `cos > 0.5` or `mismatch > 0.25`.
+6. When `u.x * v.y - u.y * v.x` is negative the two are exchanged, so the
+   top-right comes before the bottom-left.
+7. The score is `cos + mismatch - 0.01 * min(the three counts of sightings
+   added, 15)`. Triples are returned lowest score first, equal scores in the
+   order considered.
+
+The module size along the line from finder P to finder Q is
+`(run(P, Q) + run(Q, P)) / 14`, or the other run over 7 when one of them
+is not a number.
+
+`run(P, Q)` is the length of the dark, light, dark stretch through P's
+centre along that line. From `s = (floor(P.x), floor(P.y))` a walk goes
+towards `t = (floor(Q.x), floor(Q.y))`, and another the same distance the
+other way, towards `o = s - (t - s)` brought inside the picture: with
+`scale` starting at 1, a coordinate of o below 0 makes it at most
+`s / (s - o)` in that coordinate, one at or past the picture's size makes
+it at most `(size - 1 - s) / (o - s)`, and o becomes
+`floor(s + (o - s) * scale)` in each coordinate. The run is the forward
+walk plus the backward walk less 1, and not a number if either is not.
+
+A walk from s to t steps one pixel at a time along the longer axis of the
+line (x and y are exchanged first when `|t.y - s.y| > |t.x - s.x|`), from s
+to t inclusive, with `error = -dx / 2` raised by `dy` each step and, when
+it passes 0, the other coordinate moved one towards t and `error` lowered
+by `dx`; the walk ends if that coordinate is already t's. It ends too on
+leaving the picture. Along it a light pixel is awaited, then a dark one,
+then a light one, each wait beginning after the pixel that ended the last. The
+walk's value is the distance from s to the pixel that ends the third wait,
+`sqrt` of the squares of the two differences; if the walk ends during the
+third wait, the distance from s to one step past t along the longer axis;
+otherwise it is not a number.
+
+### Size and sampling maps, exactly
+
+Step 5, as `vectors/conformance.json` checks it (`triples[].size` and
+`placements`). TL, TR and BL are the three finder centres.
+
+1. `across` and `down` are the module sizes along TL to TR and TL to BL.
+   There is no size, and no map, unless `(across + down) / 2 >= 1`.
+2. `size = floor((|TL TR| / across + |TL BL| / down) / 2 + 0.5) + 7`,
+   then moved to 1 (mod 4): up 1 from a remainder of 0, down 1 from 2,
+   down 2 from 3. A retry uses the size it is given in place of this. Maps
+   are made only for sizes 21 to 177.
+3. `wr = sqrt(run(TL, TR) / run(TR, TL))` and
+   `wd = sqrt(run(TL, BL) / run(BL, TL))`, each taken as 1 outside 0.5 to 2
+   or when not a number. With `steps = size - 7`, the module point (x, y)
+   measured from TL's centre lies at
+   `(TL + a (wr TR - TL) + b (wd BL - TL)) / w` with `a = x / steps`,
+   `b = y / steps`, `w = 1 + a (wr - 1) + b (wd - 1)`: the perspective
+   point.
+4. The fourth corner is tried at `P = TR - TL + BL` and then at
+   `C = the perspective point (steps, steps)`, the second only when it is
+   a pixel or more from the first.
+5. From size 25, alignment centres are looked for. `G` is the perspective
+   point `(steps - 3, steps - 3)` and `F = TL + (1 - 3 / steps) (P - TL)`;
+   the estimates are G, and then F when it is more than
+   `(across + down) / 2` from G. `u` and `v` are the perspective points
+   `(steps - 2, steps - 3)` and `(steps - 3, steps - 2)` less G;
+   `u0 = (TR - TL) / steps`, `v0 = (BL - TL) / steps`. With
+   `det = |u.x v.y - u.y v.x|`, a module's run is
+   `wide = det / max(|u.y|, |v.y|)` along a row and
+   `tall = det / max(|u.x|, |v.x|)` down a column.
+6. For a reach of 4, then 8, then 16 modules, and for each estimate E in
+   turn, the window search (7) gives candidates in its order. One within
+   `(across + down) / 4` of a candidate already scored is passed over.
+   Each other is scored (8) along u and v and along u0 and v0, keeping the
+   better, with `away` its distance from the nearer estimate. No wider
+   reach is tried once a candidate has scored 23 or more. Those scoring 20
+   or more are kept, best score first, then least `away`, then the order
+   scored; the first four are used.
+7. The window search: with `m = max(wide, tall)` and
+   `radius = ceil(reach * m)`, the window runs from
+   `floor(E - radius)` to `ceil(E + radius)` in each coordinate, cut to the
+   picture, and is skipped when it is narrower or shorter than `3 m`; its
+   pixels are added to `scanned`. Each row is taken from its top, left to
+   right, after passing any dark run the window's left edge cuts. Its runs
+   then alternate light, dark, light, the last ending at the window's right
+   edge. Whenever a light run ends a light, dark, light three whose
+   lengths are each less than `0.6 wide` from `wide`, `cx` is the centre
+   of the dark run, and the column through `floor(cx)` is walked from that
+   row: up and down through the dark run, then through the light runs
+   beyond, none leaving the window. If those three lengths are each less
+   than `0.6 tall` from `tall`, `cy` is the centre of the column's dark
+   run, and (cx, cy) joins the first stored candidate within `m` of it in
+   both coordinates, as a running mean with its count raised, or is stored
+   with count 1. The candidates are returned in order of their distance
+   from E in units of `m`, with 3 added for a count of 1, equal values in
+   the order stored.
+8. The score of a centre along steps `u` and `v` is the most, over the
+   scales 0.85, 1 and 1.15, of the 25 modules (i, j) from -2 to 2 each
+   that match: the pixel at `floor(centre + (i u + j v) * scale)` is dark
+   exactly when `max(|i|, |j|)` is not 1. A point outside the picture is
+   light.
+9. The maps, in the order tried: one through each alignment centre kept,
+   then one through each fourth corner. A map takes the module points
+   (3.5, 3.5), (far, 3.5), A and (3.5, far), with `far = size - 3.5`, to
+   TL, TR, the target and BL: for an alignment centre
+   `A = (size - 6.5, size - 6.5)`, for a corner `A = (far, far)`.
+10. Its matrix is `S(picture points) x adjoint(S(module points))`, a 3 x 3
+    product with each entry's three terms added left to right. For four
+    points p0 to p3, with `d3 = p0 - p1 + p2 - p3`, `d1 = p1 - p2`,
+    `d2 = p3 - p2`, `den = d1.x d2.y - d2.x d1.y`,
+    `g = (d3.x d2.y - d2.x d3.y) / den` and
+    `h = (d1.x d3.y - d3.x d1.y) / den`, S is, row by row,
+    `p1.x - p0.x + g p1.x`, `p3.x - p0.x + h p3.x`, `p0.x`;
+    `p1.y - p0.y + g p1.y`, `p3.y - p0.y + h p3.y`, `p0.y`; `g`, `h`, 1.
+    When d3 is zero in both coordinates it is `p1.x - p0.x`,
+    `p2.x - p1.x`, `p0.x`; `p1.y - p0.y`, `p2.y - p1.y`, `p0.y`; 0, 0, 1.
+    The adjoint of the rows (a, b, c), (d, e, f), (g, h, i) is
+    `ei - fh`, `ch - bi`, `bf - ce`; `fg - di`, `ai - cg`, `cd - af`;
+    `dh - eg`, `bg - ah`, `ae - bd`.
+11. Module (x, y) is sampled at
+    `((m0 X + m1 Y + m2) / w, (m3 X + m4 Y + m5) / w)` with
+    `w = m6 X + m7 Y + m8`, `X = x + 0.5` and `Y = y + 0.5`.
+
+### The search, exactly
+
+Steps 3 to 6 as one loop, which fixes `result` and `work`.
+
+1. In each polarity the option allows, the picture first and then its
+   inverse, and for tolerance 0.5 and then 0.8: the finder scan, the
+   triples, and the first 6 of them.
+2. For each triple, the maps at its own size are made. The estimate is the
+   size of the first of them; with none, the size of step 5 when it is 181
+   or 185; otherwise the triple is passed over.
+3. For the estimate and then 4 below, 4 above, 8 below and 8 above it, the
+   maps at that size are made (the first size's are not made twice), and
+   each in turn is sampled and read.
+4. Before a map is sampled, one is taken from the frame's 720 and from the
+   size's own allowance (the whole 720 at full size, 30 at a reduced
+   size), and `maps` is counted, and `reduced` at a reduced size. With
+   either at nothing, the search of that polarity ends there, whatever
+   maps and triples were left.
+5. Sampling: each module (x, y) of the size is the pixel at the floor of
+   its sample point, light when that point is outside the picture.
+6. The grid is read as below; if it does not read, it is read transposed,
+   module (x, y) taken from (y, x), and a read then is `mirrored`. The
+   first read ends the search, with the three finder centres and the
+   alignment centre of its map as the location.
+
+### Reading a symbol, exactly
+
+What `decodeModules` does to a grid, and step 6 to each sampled one;
+`vectors/conformance.json` checks it (`symbols`).
+
+1. The size is 21 to 177 and 1 (mod 4). The version is as "Version
+   information" says. Its two blocks are read most significant bit first:
+   for k from 17 down to 0, with `i = floor(k / 3)` and `j = k mod 3`, the
+   bottom-left copy's bit is module (i, size - 11 + j) and the top-right
+   copy's is module (size - 11 + j, i).
+2. The two copies of the format word are read most significant bit first,
+   bit i from 14 down to 0. The first copy's bit i is the module at place i
+   of (8, 0), (8, 1), (8, 2), (8, 3), (8, 4), (8, 5), (8, 7), (8, 8),
+   (7, 8), (5, 8), (4, 8), (3, 8), (2, 8), (1, 8), (0, 8). The second
+   copy's is module (size - 1 - i, 8) for i under 8, and
+   (8, size - 7 + (i - 8)) otherwise. The format is the nearest of the 32
+   format words, taken in the order of levels L, M, Q, H and within each
+   masks 0 to 7, within 3 bits of either copy: the first copy is compared
+   with all 32 and then the second, and a word replaces the one in hand
+   only when it is strictly nearer. With none within 3 bits the grid does
+   not read.
+3. The bit stream is the data modules in the order the encoder places them
+   (two columns at a time from the right, the pair stepping left over
+   column 6, upwards first and then alternately, the right module of each
+   pair first, function modules passed over), the first eight times the
+   version's total codewords of them. A bit is 1 when its module, dark as
+   1, differs from the mask pattern's value there. Codewords fill most
+   significant bit first.
+4. The codewords are dealt back into blocks: data codeword i of each block
+   in turn, for i from 0 up, a block joining only while it has one; then
+   check codeword i of each block in turn. Table 9 gives, for the version
+   and level, the check codewords a block and the two groups of blocks, the
+   second with one more data codeword than the first; its values, and the
+   alignment pattern centres of Annex E, are in `vectors/conformance.json`
+   under `tables`.
+5. A block reads when some codeword of its Reed-Solomon code (GF(256) by
+   `0x11D`, generator roots 2^0 to 2^(check codewords - 1)) differs from
+   it in e places with `2 e` no more than its check codewords; there is at
+   most one, and the block becomes it. With none the grid does not read,
+   and it does not read when e is past the block's capacity under step 6
+   of the pipeline. `corrected` is the sum of e over the blocks.
+6. The data codewords of the blocks, in block order, are the data. All
+   zero, the grid does not read.
+7. Segments are parsed from the first bit while 4 bits or more remain; the
+   count's length goes by the version: 1 to 9, 10 to 26, 27 to 40.
+   - `0000` ends the data.
+   - `0001`, numeric: a count of 10, 12 or 14 bits; each three digits 10
+     bits and at most 999; a last two 7 bits and under 100; a last one 4
+     bits and under 10.
+   - `0010`, alphanumeric: a count of 9, 11 or 13 bits; each pair 11 bits
+     and under 2025, the first character `floor(v / 45)` and the second
+     `v mod 45`; a last one 6 bits and under 45.
+   - `0100`, bytes: a count of 8, 16 or 16 bits, then the bytes.
+   - `1000`, kanji: a count of 8, 10 or 12 bits; each character 13 bits,
+     v, standing for the Shift_JIS pair
+     `(floor(v / 0xC0) << 8 | v mod 0xC0)` plus `0x8140` when that is under
+     `0x1F00`, else plus `0xC140`.
+   - `1101`, hanzi: as "Text for kanji and other ECIs" says.
+   - `0111`, ECI: a byte `0xxxxxxx` is the assignment; `10xxxxxx` and one
+     more byte give 14 bits; `110xxxxx` and two more give 21; any other
+     first byte and the grid does not read.
+   - `0011`, `0101` and `1001`: structured append and FNC1, as below.
+   - Any other mode, a value past the limits above, or data that ends
+     inside a segment: the grid does not read.
+8. `bytes` is the digits and characters of numeric and alphanumeric
+   segments as ASCII, byte segments as they are, and the pairs of kanji
+   and hanzi. `text` is made run by run, a run being the bytes between one
+   ECI designator, kanji or hanzi character and the next, as step 7 of
+   the pipeline and the sections on text say.
+
 ### Second look
 
 While the search runs, each map whose straight and transposed reads both
 fail is a candidate if its two format copies, as sampled in step 6, lie
-within 2 bits of the same format word, in the same orientation (straight
-before transposed, and within each the first word in level and mask
-order). A map is no candidate when its version information, read in that
+within 2 bits of the same format word, in the same orientation. The
+distance of a word is the larger of its distances from the two copies, and
+the word and orientation taken are those of least distance: on a tie the
+straight orientation before the transposed, and within one the first word
+in level and mask order. A map is no candidate when its version information, read in that
 orientation as in Version information, decodes to a version of another
 size; when neither copy decodes the map stays a candidate, and the
 version never chooses a size or adds a read. The 4 candidates with the
@@ -336,6 +704,80 @@ more, in order:
 The first such read that passes is the result, with the candidate's
 location, polarity and orientation. Nothing else is relaxed: format,
 version, Reed-Solomon and segment checks are those of step 6.
+
+### Second look, exactly
+
+What the section above leaves open; `vectors/conformance.json` checks it
+through the `result` and `work` of the pictures that need a second look.
+
+1. Candidates are kept for one size at a time: the picture, and each
+   reduced size, starts with none, and looks again only at its own. The 4
+   second looks are for the frame, shared by every size. A candidate goes
+   into the list after the last one whose distance is no greater, and the
+   list is cut to 4. Both polarities of a size are searched before any
+   second look, and their candidates share the one list.
+2. The probe at (x, y): outside the picture, or with a coordinate that is
+   not a number, it is -1 in either polarity. Otherwise, with
+   `fx = x - 0.5` and `fy = y - 0.5`: `x0 = floor(fx)` held to
+   0 .. width - 1, `x1 = min(width - 1, x0 + 1)`, `ax = fx - x0` held to
+   0 .. 1, and the same down; the grey is
+   `(g(x0, y0) (1 - ax) + g(x1, y0) ax) (1 - ay) +
+   (g(x0, y1) (1 - ax) + g(x1, y1) ax) ay`, and the probe is the
+   threshold of the pixel (`floor(x)`, `floor(y)`) less that grey, negated
+   on the inverted picture. A pixel in the last 8 columns takes the last
+   block of its row of blocks, and one in the last 8 rows the last row of
+   blocks. Dark is above zero.
+3. The mesh takes the lattice points in order of their steps to the
+   nearest finder and then of `row * n + column`. A point's prediction is
+   the mean offset of those of its left, right, upper and lower
+   neighbours that have been placed, at a finder, found or doubtful
+   alike, and zero with none. Offsets are tried row by row, from -12 to 12
+   quarter modules down and within each across. A higher score than any
+   before starts the kept set afresh; an equal one joins it. With `mx` and
+   `my` the kept offsets' means in quarter modules, the pattern is found
+   when the score is 24 or 25, no kept offset is more than 3 quarters from
+   the mean along either axis, and `|mx|` and `|my|` are 11 or less. For
+   every lattice point but the three at the finders `probed` grows by
+   25 x 25 x 25, found or not, and `meshes` grows by one when any is
+   found.
+4. A point (x, y) of the bent map lies in the lattice cell found for each
+   coordinate apart: the coordinate is held to the first and last centres,
+   and the cell is the first whose upper centre is not below it, so a
+   point on a centre belongs to the cell below it; `s` and `t` are its
+   fractions across and down that cell. Its offset is
+   `(1 - t) ((1 - s) o00 + s o10) + t ((1 - s) o01 + s o11)` in each of x
+   and y, o being the cell's four corner offsets, and it is mapped as
+   (x, y) itself plus that offset, not the held coordinates.
+5. The timing walk measures along the line from one module's centre to
+   the next one's, in units of that step. For module k from 8 to
+   `size - 9`, dark when k is even: the seed is the last measured offset
+   (0 at first) if the probe there has the module's colour; if not, for
+   1 to 12 sixteenths in turn, that far below it and then that far above.
+   With no seed the module is not measured. The run is extended a
+   sixteenth at a time, downwards while it is less than 1.6 below the seed
+   and upwards while less than 1.6 above; its width is its two ends'
+   difference plus a sixteenth, and it measures nothing under 0.4 or over
+   1.6. Light is a probe of zero or less.
+6. The median of a module and its two neighbours, of those measured, is
+   the larger when there are two. An unmeasured module between the nearest
+   values l to its left and r to its right, modules 0 to 7 and the last 8
+   counting as 0, is `lv + ((rv - lv) * (k - l)) / (r - l)`.
+7. An edge is looked for at 0 to 16 sixteenths of the way from the first
+   centre to the second. With `previous` the last probe of the first
+   module's colour and `d` the first of the other, the fraction is
+   `previous / (previous - d)`, held to 0 .. 1, or a half when they are
+   equal, and the offset is the sixteenths before it plus that fraction of
+   one, less a half. All 17 of the first colour is no edge.
+8. The line through a boundary's points (index, offset), taken in order of
+   index: with n points and sums `sx`, `sy`, `sxx`, `sxy`, the slope is
+   `(n sxy - sx sy) / (n sxx - sx sx)`, zero when that divisor is zero,
+   and the value at t is `(sy - slope sx) / n + slope t`.
+9. Module (x, y) moves across by the mean of the lines of the boundaries
+   on its left and right, evaluated at y, or by the one line it has at the
+   symbol's edge; down likewise, evaluated at x. It is read at the map
+   point `(x + column offset + that, y + row offset + that)`.
+
+### Reduced size
 
 ### Reduced size
 
@@ -509,12 +951,17 @@ Every port must agree on these:
   GB 18030 (a superset of GB 2312 and GBK), 30 EUC-KR, 33 UTF-16LE. Ill-formed
   input becomes U+FFFD, and a leading byte order mark is kept.
 - An ECI with no entry above, and any ECI whose character set the platform
-  lacks, is read as if no ECI were present: valid UTF-8 is UTF-8, else
-  Latin-1. This is the one thing left to the platform, with the exact
-  mapping tables of the sets above; a platform's tables may differ from
-  another's for rare code points (the JVM lacks ISO 8859-10 and -14 on a
-  standard JDK, for instance, and Node 22 lacks ISO 8859-16, and so each
-  falls back for those).
+  lacks, is never guessed at: the symbol has said what its bytes are, and
+  reading them as something else would be a wrong text. Under one of the
+  single-byte sets (ECI 4 to 13, 15 to 18, 21, 22 and 24), which are all
+  ASCII below 0x80, those bytes are their ASCII characters and every other
+  byte is U+FFFD. Under any other ECI every byte is U+FFFD. `bytes` and
+  `eci` still hold what the symbol carries, for a caller that can read it.
+- What is left to the platform is which of the sets above it has, and
+  their exact mapping tables; a platform's tables may differ from another's
+  for rare code points. The JVM lacks ISO 8859-10 and -14 on a standard
+  JDK, for instance, Node 22 lacks ISO 8859-16, and the Rust port has none
+  but the ones read by hand.
 
 `test/charsets.json` records the JavaScript platform's text for every
 13-bit kanji value and every 13-bit hanzi value (U+0000 where it makes the

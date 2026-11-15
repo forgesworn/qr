@@ -113,9 +113,25 @@ private fun decodeWith(charset: java.nio.charset.Charset, bytes: IntArray): Stri
         .toString()
 }
 
+/** The single-byte sets among the ECIs: ISO 8859 and the Windows code pages, all of them ASCII below 0x80. */
+private val SINGLE_BYTE: Set<Int> = setOf(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 21, 22, 24)
+
+/**
+ * Text for bytes under an ECI this runtime cannot read, or one that names no
+ * set this decoder knows: never a guess at another character set. Under a
+ * single-byte set the ASCII bytes are certain and are kept; every other
+ * byte, and every byte under any other ECI, is U+FFFD.
+ */
+internal fun unread(eci: Int, bytes: IntArray): String {
+    val ascii = eci in SINGLE_BYTE
+    val s = StringBuilder()
+    for (b in bytes) s.append(if (ascii && b < 0x80) b.toChar() else '\ufffd')
+    return s.toString()
+}
+
 /**
  * Text for [bytes] under an ECI assignment other than 1, 3 and 26, or null
- * when the runtime lacks the character set (the caller then falls back).
+ * when the runtime lacks the character set (the caller then uses [unread]).
  */
 internal fun fromEci(eci: Int, bytes: IntArray): String? {
     if (eci == 27 || eci == 170) {

@@ -404,10 +404,7 @@ private fun decodeRun(run: Run): String {
     val bytes = run.bytes.toIntArray()
     if (run.eci == 3 || run.eci == 1) return latin1(bytes)
     if (run.eci == 26) return fromUtf8(bytes)
-    if (run.eci != null && bytes.isNotEmpty()) {
-        val text = fromEci(run.eci, bytes)
-        if (text != null) return text
-    }
+    if (run.eci != null && bytes.isNotEmpty()) return fromEci(run.eci, bytes) ?: unread(run.eci, bytes)
     if (isUtf8(bytes)) return fromUtf8(bytes)
     if (run.eci == null && looksShiftJis(bytes)) {
         val text = fromEci(20, bytes)

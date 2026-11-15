@@ -356,7 +356,7 @@ describe('no false reads', () => {
     // Damage past the parity reads as nothing, and the second look ran on nearly every one.
     expect(tally.codewords.nothing).toBe(tally.codewords.trials)
     expect(tally.codewords.secondLook).toBeGreaterThanOrEqual(0.9 * tally.codewords.trials)
-  }, 30_000)
+  })
 
   it('reads damaged large symbols through the mesh as nothing', () => {
     // A seed of its own, so the frames above stay as they were.
@@ -375,7 +375,7 @@ describe('no false reads', () => {
     }
     // The mesh was reached on nearly every one.
     expect(meshed).toBeGreaterThanOrEqual(0.9 * trials)
-  }, 30_000)
+  })
 
   it('reads damaged version 40 symbols estimated past 177 as nothing', () => {
     // Under the lens the finders' modules look small, so the estimate runs past
@@ -400,7 +400,7 @@ describe('no false reads', () => {
     // retries below it took most of them to the second look's mesh.
     expect(past).toBeGreaterThanOrEqual(0.9 * trials)
     expect(meshed).toBeGreaterThanOrEqual(0.7 * trials)
-  }, 30_000)
+  })
 
   it('reads damaged close-up symbols at reduced size as nothing or their own text', () => {
     // A seed of its own. Nothing reads these at full size, so the reduced-size
@@ -469,7 +469,7 @@ describe('no false reads', () => {
     }
     // The finder tiles at least are mapped at reduced size.
     expect(reached).toBeGreaterThanOrEqual(2)
-  }, 30_000)
+  })
 
   it('reads frames at and around the smallest reduced size as nothing', () => {
     for (const frame of emptySmall(prng(41))) {
@@ -479,7 +479,7 @@ describe('no false reads', () => {
       expect(work.reduced).toBeLessThanOrEqual(REDUCED_MAPS)
       expect(work.second).toBeLessThanOrEqual(4)
     }
-  }, 30_000)
+  })
 
   it('reads frames with no symbol as nothing', () => {
     for (const frame of empty(prng(31))) {

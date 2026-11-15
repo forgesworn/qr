@@ -85,8 +85,15 @@ export function edgesOf(image: BitImage): Edges {
 
 const dark = (image: BitImage, x: number, y: number): boolean => image.data[y * image.width + x] === 1
 
+/**
+ * The length of (dx, dy) as sqrt(dx * dx + dy * dy): two products, a sum and
+ * a square root, which every language rounds the same way. A library's
+ * hypot may differ in the last place from one platform to the next.
+ */
+const length = (dx: number, dy: number): number => Math.sqrt(dx * dx + dy * dy)
+
 function distance(a: Point, b: Point): number {
-  return Math.hypot(a.x - b.x, a.y - b.y)
+  return length(a.x - b.x, a.y - b.y)
 }
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
@@ -367,7 +374,7 @@ export function finderTriples(image: BitImage, finders: readonly Finder[]): [Fin
         const uy = p.y - topLeft.y
         const vx = q.x - topLeft.x
         const vy = q.y - topLeft.y
-        const cos = Math.abs(ux * vx + uy * vy) / Math.hypot(ux, uy) / Math.hypot(vx, vy)
+        const cos = Math.abs(ux * vx + uy * vy) / length(ux, uy) / length(vx, vy)
         const mismatch = Math.abs(one - other) / Math.max(one, other)
         if (cos > 0.5 || mismatch > 0.25) continue
         // In picture coordinates (y down) top-right x bottom-left is positive.
@@ -405,7 +412,7 @@ function blackWhiteBlack(image: BitImage, from: Point, to: Point): number {
       const ry = steep ? x : y
       if (rx < 0 || ry < 0 || rx >= image.width || ry >= image.height) break
       if ((state === 1) === dark(image, rx, ry)) {
-        if (state === 2) return Math.hypot(x - sx, y - sy)
+        if (state === 2) return length(x - sx, y - sy)
         state++
       }
       error += dy
@@ -415,7 +422,7 @@ function blackWhiteBlack(image: BitImage, from: Point, to: Point): number {
         error -= dx
       }
     }
-    return state === 2 ? Math.hypot(tx + xstep - sx, ty - sy) : NaN
+    return state === 2 ? length(tx + xstep - sx, ty - sy) : NaN
   }
   const sx = Math.floor(from.x)
   const sy = Math.floor(from.y)

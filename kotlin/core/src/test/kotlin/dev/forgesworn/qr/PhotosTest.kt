@@ -50,7 +50,11 @@ class PhotosTest {
         val cache = File(vectorsDir(), "photos-cache")
         val grey = File(cache, "grey")
         val raw = File(cache, "raw")
-        assumeTrue("photograph cache absent: run npm run fetch-photos", all.isNotEmpty() && all.all { File(grey, "${it.id}.png").exists() && File(raw, "${it.id}.txt").exists() })
+        val cached = all.isNotEmpty() && all.all { File(grey, "${it.id}.png").exists() && File(raw, "${it.id}.txt").exists() }
+        if (System.getenv("QR_REQUIRE_PHOTOS") == "1") {
+            assertTrue("photograph cache required: run npm run fetch-photos", cached)
+        }
+        assumeTrue("photograph cache absent: run npm run fetch-photos", cached)
         var kotlin = 0
         var reference = 0
         var tsKnown = 0

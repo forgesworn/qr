@@ -48,6 +48,9 @@ const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8')) as Manifest
 const greyUrl = (p: Photo) => new URL(`grey/${p.id}.png`, CACHE)
 const textUrl = (p: Photo) => new URL(`raw/${p.id}.txt`, CACHE)
 const cached = manifest.photos.every((p) => existsSync(greyUrl(p)) && existsSync(textUrl(p)))
+if (process.env.QR_REQUIRE_PHOTOS === '1' && !cached) {
+  throw new Error('photograph cache required: run npm run fetch-photos')
+}
 function expected(p: Photo): string {
   const bytes = readFileSync(textUrl(p))
   if (createHash('sha256').update(bytes).digest('hex') !== p.textSha256) throw new Error(`expected-text file for ${p.id} does not match its hash; run npm run fetch-photos`)

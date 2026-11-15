@@ -122,5 +122,5 @@ describe('wrong sizes and heavy damage never give wrong text', () => {
     // The undamaged-size cases at low damage are fixable, the wrong sizes are not: both outcomes occur.
     expect(refused).toBeGreaterThan(1000)
     expect(read).toBeGreaterThan(0)
-  }, 30_000)
+  })
 })

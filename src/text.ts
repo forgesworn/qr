@@ -91,10 +91,26 @@ function decoderFor(label: string): Decoder | undefined {
   return found
 }
 
+/** The single-byte sets among the ECIs: ISO 8859 and the Windows code pages, all of them ASCII below 0x80. */
+const SINGLE_BYTE: ReadonlySet<number> = new Set([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 21, 22, 24])
+
+/**
+ * Text for bytes under an ECI this platform cannot read, or one that names
+ * no set this decoder knows: never a guess at another character set. Under
+ * a single-byte set the ASCII bytes are certain and are kept; every other
+ * byte, and every byte under any other ECI, is U+FFFD.
+ */
+export function unread(eci: number, bytes: Uint8Array): string {
+  const ascii = SINGLE_BYTE.has(eci)
+  let s = ''
+  for (const b of bytes) s += ascii && b < 0x80 ? String.fromCharCode(b) : '\ufffd'
+  return s
+}
+
 /**
  * Text for `bytes` under an ECI assignment other than 1, 3 and 26, or
- * undefined when the platform lacks the character set (the caller then falls
- * back). Malformed input becomes U+FFFD.
+ * undefined when the platform lacks the character set (the caller then uses
+ * unread()). Malformed input becomes U+FFFD.
  */
 export function fromEci(eci: number, bytes: Uint8Array): string | undefined {
   if (eci === 27 || eci === 170) {

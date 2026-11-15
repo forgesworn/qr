@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+- CI downloads and verifies the real-photograph set for both TypeScript
+  and Kotlin, and runs the WebAssembly result, option, encoder, module-grid
+  and memory checks, plus native renderer comparisons. Local tests use at
+  most two workers, and the damage suites inherit the shared timeout.
 
 - Text without a `mode` is split into the numeric, alphanumeric and byte
   segments with the fewest bits, so payment URIs with an uppercase body fit
@@ -47,6 +52,27 @@
   copies agree with its level and mask. The caps are unchanged, but a frame
   with no code in it now costs more on average. Two more photographs of the
   test set read, so the floor is 179.
+- A conformance pack for ports in other languages, `vectors/conformance.json`
+  with `vectors/README.md`: greyscale conversion, module grids, and for 58
+  pictures the binarised image, the reduced sizes, the finder candidates,
+  the triples, sizes and sampling maps, the result and the work counted.
+  Both ports are held to it.
+- A Rust port in `rust/`, with no dependencies: the encoder, SVG and
+  terminal renderers and the whole decoder, held to the same vectors and
+  giving the same reads, locations and counted work as the TypeScript on
+  603 pictures at four turns each, from sets kept outside the repository.
+  It builds to WebAssembly and decodes in about half the TypeScript's time
+  there. It bundles no character tables, so its text can differ from the
+  other ports', and it refuses hanzi symbols. Not published as a package
+  yet.
+- SPEC.md states every stage of the decoder exactly, and the details of
+  the encoder that were left to the code; lengths are a square root of
+  squares so that ports agree to the last place.
+- Text under an ECI the platform cannot read, or one that names no set the
+  decoder knows, is no longer guessed as UTF-8 or Latin-1: what cannot be
+  read is U+FFFD, with ASCII kept under the single-byte sets. `bytes` and
+  `eci` are unchanged. Greek under ECI 9, read where there is no decoder
+  for it, used to come back as accented Latin letters.
 - The decoder reads hanzi segments (GB2312).
 - Decoding is faster with no change to what is read or to the work counted.
   The row scans for finder and alignment patterns walk each row's changes
