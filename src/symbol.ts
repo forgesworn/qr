@@ -85,7 +85,11 @@ function nearest<T extends { bits: number }>(table: readonly T[], reads: readonl
   return best
 }
 
-/** The version a symbol of `size` modules declares, when its version blocks can be read. */
+/**
+ * The version a symbol of `size` modules declares: from the size below
+ * version 7, else from its version blocks, or undefined when neither copy
+ * decodes.
+ */
 export function readVersion(read: ModuleReader, size: number): number | undefined {
   if (size < 45) return (size - 17) / 4
   let bottomLeft = 0
@@ -100,14 +104,16 @@ export function readVersion(read: ModuleReader, size: number): number | undefine
 }
 
 /**
- * Decodes a symbol from its modules. `size` must be 17 + 4v; for version 7
- * and up the version blocks decide, and a size that disagrees fails.
- * Returns undefined when the symbol cannot be read.
+ * Decodes a symbol from its modules. `size` must be 17 + 4v. From version 7
+ * a version block that decodes decides, and a size that disagrees fails;
+ * if neither decodes, the size decides. Returns undefined when the symbol
+ * cannot be read.
  */
 export function readSymbol(read: ModuleReader, size: number): Payload | undefined {
   if (size < 21 || size > 177 || (size - 17) % 4 !== 0) return undefined
-  const version = readVersion(read, size)
-  if (version === undefined || 17 + 4 * version !== size) return undefined
+  // When neither version copy decodes, the size says which version it is.
+  const version = readVersion(read, size) ?? (size - 17) / 4
+  if (17 + 4 * version !== size) return undefined
 
   let first = 0
   let second = 0

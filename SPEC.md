@@ -207,6 +207,18 @@ read. The TypeScript pipeline, for reference:
    that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
    test under "Shift_JIS without an ECI" below.
 
+### Version information
+
+Below version 7 the size alone gives the version. From version 7 the two
+18-bit version blocks are read and decoded to the nearest version code
+within three bit errors, trying both copies and taking the closer (on a
+tie the bottom-left copy, tried first, wins). When a
+copy decodes, its version is the symbol's, and it must agree with the size
+(`17 + 4 * version`); a disagreement makes the symbol unreadable, never a
+resize. When neither copy decodes, the version is the one the size implies.
+Reed-Solomon, format information and the data's own structure still have to
+pass, so a grid of the wrong size does not yield text this way.
+
 ### Structured append and FNC1
 
 A structured-append header (mode 0011: a 4-bit index counting from 0, a
