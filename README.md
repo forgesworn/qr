@@ -652,10 +652,12 @@ same payload, the same location to the last bit and the same counted work
 on all 2,412. It is not published as a crate or a package yet.
 
 It builds for `wasm32-unknown-unknown` without a binding generator, to a
-module of about 200 kB, or about 60 kB compressed for transfer, and on the
+module of about 200 kB, or about 70 kB compressed for transfer, and on the
 machine the project is measured on that build decodes in roughly half the
-time the TypeScript takes. The module is a work in progress: its encoder
-is usable from JavaScript, and its decoder is so far wired for timing only.
+time the TypeScript takes. The module returns the whole result of a read
+and was compared with the TypeScript in the same way, with the same
+outcome. It is not packaged: `rust/bench/loader.js` is the small loader
+the comparisons use.
 
 The Rust port carries no character tables. `bytes` is always exact, but
 `text` differs from the other ports: a kanji character is U+FFFD, a byte
@@ -669,8 +671,8 @@ cargo test                                               # the conformance pack 
 cargo build --release --target wasm32-unknown-unknown    # the WebAssembly module
 ```
 
-`rust/bench/loader.js` is a small loader for the module, and
-`rust/bench/` holds the scripts that time it against the TypeScript.
+`rust/bench/` also holds the scripts that compare the module with the
+TypeScript and time it.
 
 ## Development
 
