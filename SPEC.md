@@ -240,12 +240,60 @@ read. The TypeScript pipeline, for reference:
    mirrored codes, and the whole search is repeated on the inverted
    picture.
 7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
-   ECI, structured append and FNC1 (both reported; see below).
+   hanzi (kept as GB2312 bytes), ECI, structured append and FNC1 (both
+   reported; see below).
    Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
    otherwise or under ECI 1 or 3. Kanji and the other ECIs follow
    "Text for kanji and other ECIs" below. A byte run with no ECI in force
    that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
    test under "Shift_JIS without an ECI" below.
+8. Second look: only when steps 3 to 7 have found nothing in either
+   polarity. See below.
+
+### Second look
+
+While the search runs, each map whose straight and transposed reads both
+fail is a candidate if its two format copies, as sampled in step 6, lie
+within 2 bits of the same format word, in the same orientation (straight
+before transposed, and within each the first word in level and mask
+order). The 4 candidates with the smallest such distance are kept,
+earliest first on a tie. A random grid passes this test with a chance of
+about 32 x (121 / 32768)^2 x 2, under 1 in 1000.
+
+Once both polarities have found nothing, each kept candidate is read once
+more, in order:
+
+1. A probe gives a point's darkness: the binariser's threshold for the
+   pixel the point falls in, less the grey there, interpolated bilinearly
+   between pixel centres (at `i + 0.5`); negated on the inverted picture.
+   Positive is dark. A point outside the picture is light.
+2. Timing: along row 6, from column 8 to `size - 9`, each module's run of
+   the colour it should have is found near where the last module's centre
+   was (starting at 0): the nearest point of that colour within 12/16 of a
+   module either side, in sixteenths, then extended a sixteenth at a time,
+   at most 1.6 modules either way. A run under 0.4 or over 1.6 modules
+   measures nothing; otherwise its midpoint is the module's offset, and the
+   next module starts from it. Each offset becomes the median of itself and
+   its two neighbours' (those measured), gaps are filled linearly between
+   their neighbours (from 0 at the finders), and the same is done down
+   column 6. Module `(x, y)` then sits at map point `(x + column offset of
+   x, y + row offset of y)`.
+3. Edges: at those points every module is sampled with the probe. For each
+   pair of neighbouring modules, across or down, that differ, the edge is
+   looked for from the first centre towards the second in sixteenths: the
+   first sample of the other colour, interpolated linearly with the one
+   before it, less a half, is that edge's offset in modules (none if the
+   first centre is not its own colour). The offsets along each boundary
+   between two columns (or rows) are fitted by least squares to a line in
+   the row (or column) index, zero with fewer than three. Each module moves
+   by the mean of the lines on its two sides (one at the symbol's edge).
+4. The moved centres are sampled with the probe and read as in step 6, in
+   the orientation the candidate's format copies agreed in only. The result
+   counts only if its level and mask are the ones they agreed on.
+
+The first such read that passes is the result, with the candidate's
+location, polarity and orientation. Nothing else is relaxed: format,
+version, Reed-Solomon and segment checks are those of step 6.
 
 ### Bounded work
 
@@ -270,13 +318,16 @@ among them.
 - Each size searches for the alignment pattern in square windows reaching
   4, 8 and then 16 modules around at most two estimates, clipped to the
   picture, stopping after the first reach that finds a near-perfect match.
+- The second look reads at most 4 maps again, each sampled three times
+  (timing, edges, final) plus one sixteenth-step search per timing module
+  and per boundary between unlike modules.
 
 Both ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,
-maps sampled) without exposing the counter: a picture of finder patterns
-on a 10-pixel pitch, or of 1:1:3:1:1 stripes, costs under 1.5 counted
-steps a pixel at 800x800 and at 1600x1600, and noise stays within the map
-cap.
+maps sampled, maps read again by the second look) without exposing the
+counter: a picture of finder patterns on a 10-pixel pitch, or of 1:1:3:1:1
+stripes, costs under 1.5 counted steps a pixel at 800x800 and at
+1600x1600, and noise stays within the map cap and the second look's.
 
 ### Version information
 
@@ -321,7 +372,7 @@ Both fields are absent, not null, for an ordinary symbol.
 ### Text for kanji and other ECIs
 
 `bytes` never depends on a character set: it holds the symbol's data bytes
-(kanji as Shift_JIS pairs, see step 7). Only `text` does, and `text` is
+(kanji as Shift_JIS pairs, hanzi as GB2312 pairs, see step 7). Only `text` does, and `text` is
 produced with the platform's own decoders (`TextDecoder` in JavaScript,
 `java.nio.charset.Charset` on the JVM). No port bundles tables.
 
@@ -334,6 +385,21 @@ Every port must agree on these:
 - A kanji-mode character is its Shift_JIS pair decoded alone; if the platform
   returns U+FFFD for the pair, or has no Shift_JIS, the character is a single
   U+FFFD. The ECI in force before a kanji character stays in force after it.
+- Hanzi mode (1101, GB/T 18284) must carry subset indicator 0001, GB2312;
+  any other subset makes the symbol unreadable. The character count has the
+  kanji count's length, and each 13-bit value `v` is the pair: lead byte
+  `v / 0x60` plus 0xA1 below 0x0A, else plus 0xA6, and low byte `v % 0x60`
+  plus 0xA1. A lead byte outside A1-A9 and B0-F7, or a low byte above FE,
+  makes the symbol unreadable. The pair is decoded alone as GB 18030; a
+  pair that decodes to U+FFFD or to a private-use character makes the
+  symbol unreadable too, and so do the twelve cells A6D9-A6DF, A6EC, A6ED,
+  A6F3, A8BC and A8BF, which tables of different editions read
+  differently. The other empty GB2312 cells that GBK fills (small Roman
+  numerals, the euro sign, vertical forms, some pinyin) read as GB 18030
+  gives them; 7479 of the 8192 values read. The JVM falls back to GBK,
+  which agrees on every value read; a platform with neither gives U+FFFD
+  for each character, as for kanji. The ECI in force
+  stays in force after a hanzi character.
 - ECI 4 to 18 except 14 (ISO 8859-2 to -16 less -12, which does not exist;
   so ECI 13 is ISO 8859-11, 15 is -13, 16 is -14, 17 is -15, 18 is -16),
   with bytes 0x80 to 0x9F always the C1 control of the same value. ECI 21, 22
@@ -350,7 +416,8 @@ Every port must agree on these:
   standard JDK, for instance, and so falls back for those two).
 
 `test/charsets.json` records the JavaScript platform's text for every
-13-bit kanji value, every byte of each single-byte set and a few multi-byte
+13-bit kanji value and every 13-bit hanzi value (U+0000 where it makes the
+symbol unreadable), every byte of each single-byte set and a few multi-byte
 and UTF-16 samples. The Kotlin tests read the same file; with
 `windows-31j` for Shift_JIS, `x-windows-950`, `GB18030`, `x-windows-949` and
 `x-iso-8859-11` they agree on all of it, apart from the two sets the JDK lacks.
@@ -409,3 +476,14 @@ test; the number of photographs read may not fall below the recorded floor
 (`ratchet.typescript`). Other decoders are tuned on these collections, so the
 set supports no comparative claim. It is a regression bar and a first check
 against real optics, nothing more.
+
+No false reads: `test/false-reads.test.ts` and `FalseReadsTest.kt` build
+the same 240 damaged symbols from one seeded generator: 160 with one block
+damaged a few codewords past its parity (finders, timing and format left
+whole, so the second look runs on them), 40 with a rectangle of the data
+region turned over, and 40 with modules flipped anywhere. They span
+versions 1 to 12 and all four levels, a third of them version 1. Each is drawn
+straight with noise, some mirrored or inverted. Every one must read as
+nothing or as its own text, and every one damaged past its parity as
+nothing. Frames with no symbol (noise, flat, stripes, a checkerboard and a
+lattice of finder patterns) must read as nothing.

@@ -136,6 +136,33 @@ internal fun kanjiText(sjis: Int): String {
 }
 
 /**
+ * Twelve cells GB2312 leaves empty that GBK and older GB 18030 tables make
+ * private-use and newer GB 18030 tables make characters; platforms disagree,
+ * so they reject a hanzi symbol like any other empty cell.
+ */
+private fun editionDependent(lead: Int, low: Int): Boolean {
+    if (lead == 0xa6) return low in 0xd9..0xdf || low == 0xec || low == 0xed || low == 0xf3
+    return lead == 0xa8 && (low == 0xbc || low == 0xbf)
+}
+
+/**
+ * One hanzi-mode character from its GB2312 lead and low bytes: the runtime's
+ * GB 18030 reading (GBK where it lacks GB 18030), or U+FFFD alone when it has neither. Null, rejecting the
+ * symbol, when the pair is outside the GB2312 rows (A1-A9 and B0-F7, cells
+ * A1-FE) or names no character (U+FFFD or a private-use character).
+ */
+internal fun hanziText(lead: Int, low: Int): String? {
+    if (low < 0xa1 || low > 0xfe || lead < 0xa1 || lead > 0xf7 || (lead > 0xa9 && lead < 0xb0)) return null
+    if (editionDependent(lead, low)) return null
+    val charset = charsetFor(29) ?: return "\ufffd"
+    val text = decodeWith(charset, intArrayOf(lead, low))
+    if (text.isEmpty()) return null
+    val cp = text.codePointAt(0)
+    if (text.length != Character.charCount(cp) || cp == 0xfffd || cp in 0xe000..0xf8ff) return null
+    return text
+}
+
+/**
  * Whether bytes that are not valid UTF-8 and carry no ECI look like Shift_JIS
  * rather than Latin-1. Scanning left to right, a byte below 0x80 is skipped;
  * 0xA1 to 0xDF is a half-width katakana; 0x81 to 0x9F or 0xE0 to 0xEF followed

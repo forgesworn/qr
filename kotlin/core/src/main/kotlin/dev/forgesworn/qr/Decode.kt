@@ -105,15 +105,29 @@ internal fun decodeCounted(luminance: ByteArray, width: Int, height: Int, work: 
 
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
     val bits = binarise(luminance)
+    val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
     if (inversion != Inversion.INVERTED) {
-        val found = search(bits, false, work)
+        val found = search(bits, false, candidates, work)
         if (found != null) return found
     }
-    if (inversion != Inversion.NORMAL) return search(invert(bits), true, work)
+    if (inversion != Inversion.NORMAL) {
+        val found = search(invert(bits), true, candidates, work)
+        if (found != null) return found
+    }
+    // Nothing read: look again at the few maps whose format copies agreed.
+    if (candidates.isEmpty()) return null
+    val levels = thresholds(luminance)
+    for (candidate in candidates) {
+        if (work != null) work.second++
+        val p = secondLook(luminance, levels, candidate) ?: continue
+        return result(p, mirrored = candidate.agreed.mirrored, inverted = candidate.inverted, location = where(candidate.location))
+    }
     return null
 }
 
-private fun search(image: BitImage, inverted: Boolean, work: Work?): DecodeResult? {
+private fun where(location: Placement): QrLocation = QrLocation(location.topLeft, location.topRight, location.bottomLeft, location.alignment)
+
+private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<Retry>, work: Work?): DecodeResult? {
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
         val triples = finderTriples(image, findFinders(image, tolerance, work)).take(MAX_TRIPLES)
@@ -124,7 +138,7 @@ private fun search(image: BitImage, inverted: Boolean, work: Work?): DecodeResul
             for (delta in intArrayOf(0, -4, 4, -8, 8)) {
                 for (location in if (delta == 0) first else locate(image, triple, first[0].size + delta, work)) {
                     if (work != null) work.maps++
-                    val result = read(image, location, inverted)
+                    val result = read(image, location, inverted, candidates)
                     if (result != null) return result
                 }
             }
@@ -133,7 +147,7 @@ private fun search(image: BitImage, inverted: Boolean, work: Work?): DecodeResul
     return null
 }
 
-private fun read(image: BitImage, location: Placement, inverted: Boolean): DecodeResult? {
+private fun read(image: BitImage, location: Placement, inverted: Boolean, candidates: MutableList<Retry>): DecodeResult? {
     val size = location.size
     val modules = ByteArray(size * size)
     for (y in 0 until size) {
@@ -146,11 +160,12 @@ private fun read(image: BitImage, location: Placement, inverted: Boolean): Decod
             }
         }
     }
-    val where = QrLocation(location.topLeft, location.topRight, location.bottomLeft, location.alignment)
     val straight = readSymbol({ x, y -> modules[y * size + x].toInt() == 1 }, size)
-    if (straight != null) return result(straight, mirrored = false, inverted = inverted, location = where)
+    if (straight != null) return result(straight, mirrored = false, inverted = inverted, location = where(location))
     val mirrored = readSymbol({ x, y -> modules[x * size + y].toInt() == 1 }, size)
-    if (mirrored != null) return result(mirrored, mirrored = true, inverted = inverted, location = where)
+    if (mirrored != null) return result(mirrored, mirrored = true, inverted = inverted, location = where(location))
+    val agreed = agreement(modules, size)
+    if (agreed != null) keep(candidates, Retry(location, inverted, agreed))
     return null
 }
 

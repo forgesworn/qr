@@ -44,26 +44,31 @@ const BLOCK = 8
 const MIN_DYNAMIC_RANGE = 24
 
 /**
- * Local-threshold binarisation: each 8x8 block's threshold is the mean of the
- * block averages in the 5x5 blocks around it, and a flat block borrows its
- * neighbours' threshold, so shadows and gradients across the frame do not
- * swallow the code. Pictures under 40 pixels a side use one global threshold.
+ * The binariser's thresholds: one an 8x8 block, `across` by `down`, or a
+ * single one for the whole picture when it is under 40 pixels a side.
  */
-export function binarise(image: Luminance): BitImage {
+export interface Thresholds {
+  readonly across: number
+  readonly down: number
+  readonly values: Float64Array
+}
+
+/**
+ * Local thresholds: each 8x8 block's threshold is the mean of the block
+ * averages in the 5x5 blocks around it, and a flat block borrows its
+ * neighbours' level, so shadows and gradients across the frame do not
+ * swallow the code. Pictures under 40 pixels a side get one global threshold.
+ */
+export function thresholds(image: Luminance): Thresholds {
   const { data, width, height } = image
-  const out = new Uint8Array(width * height)
   if (width < 40 || height < 40) {
-    let sum = 0
     let min = 255
     let max = 0
     for (const v of data) {
-      sum += v
       if (v < min) min = v
       if (v > max) max = v
     }
-    const threshold = max - min < MIN_DYNAMIC_RANGE ? -1 : (min + max) / 2
-    for (let i = 0; i < data.length; i++) out[i] = data[i]! <= threshold ? 1 : 0
-    return { data: out, width, height }
+    return { across: 1, down: 1, values: Float64Array.of(max - min < MIN_DYNAMIC_RANGE ? -1 : (min + max) / 2) }
   }
   const across = Math.ceil(width / BLOCK)
   const down = Math.ceil(height / BLOCK)
@@ -96,11 +101,10 @@ export function binarise(image: Luminance): BitImage {
       levels[by * across + bx] = level
     }
   }
+  const values = new Float64Array(across * down)
   for (let by = 0; by < down; by++) {
-    const top = Math.min(by * BLOCK, height - BLOCK)
     const cy = Math.min(Math.max(by, 2), down - 3)
     for (let bx = 0; bx < across; bx++) {
-      const left = Math.min(bx * BLOCK, width - BLOCK)
       const cx = Math.min(Math.max(bx, 2), across - 3)
       let sum = 0
       let n = 0
@@ -113,7 +117,39 @@ export function binarise(image: Luminance): BitImage {
           n++
         }
       }
-      const threshold = sum / n
+      values[by * across + bx] = sum / n
+    }
+  }
+  return { across, down, values }
+}
+
+/**
+ * The threshold binarise() applied at pixel (px, py), which must be in the
+ * picture. The last block in a row or column covers the last 8 pixels, so it
+ * overlaps the one before it and wins where they overlap.
+ */
+export function thresholdAt(t: Thresholds, width: number, height: number, px: number, py: number): number {
+  if (t.across === 1 && t.down === 1) return t.values[0]!
+  const bx = px >= width - BLOCK ? t.across - 1 : Math.floor(px / BLOCK)
+  const by = py >= height - BLOCK ? t.down - 1 : Math.floor(py / BLOCK)
+  return t.values[by * t.across + bx]!
+}
+
+/** Local-threshold binarisation (thresholds()): 1 where a pixel is at or below its threshold. */
+export function binarise(image: Luminance): BitImage {
+  const { data, width, height } = image
+  const out = new Uint8Array(width * height)
+  const t = thresholds(image)
+  if (width < 40 || height < 40) {
+    const threshold = t.values[0]!
+    for (let i = 0; i < data.length; i++) out[i] = data[i]! <= threshold ? 1 : 0
+    return { data: out, width, height }
+  }
+  for (let by = 0; by < t.down; by++) {
+    const top = Math.min(by * BLOCK, height - BLOCK)
+    for (let bx = 0; bx < t.across; bx++) {
+      const left = Math.min(bx * BLOCK, width - BLOCK)
+      const threshold = t.values[by * t.across + bx]!
       for (let y = top; y < top + BLOCK; y++) {
         for (let x = left; x < left + BLOCK; x++) out[y * width + x] = data[y * width + x]! <= threshold ? 1 : 0
       }

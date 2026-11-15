@@ -3,6 +3,7 @@ package dev.forgesworn.qr
 import java.io.File
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class CharsetsTest {
@@ -27,6 +28,37 @@ class CharsetsTest {
         val got = StringBuilder()
         for (v in 0 until 8192) got.append(kanjiText(sjisOf(v)))
         assertEquals(expected, got.toString())
+    }
+
+    private fun gbOf(v: Int): IntArray {
+        val row = v / 0x60
+        return intArrayOf(row + if (row < 0x0a) 0xa1 else 0xa6, v % 0x60 + 0xa1)
+    }
+
+    @Test
+    fun everyHanziValueAgreesWithTheFixture() {
+        val expected = fixture()["hanzi"] as String
+        val got = StringBuilder()
+        for (v in 0 until 8192) {
+            val (lead, low) = gbOf(v)
+            got.append(hanziText(lead, low) ?: "\u0000")
+        }
+        assertEquals(expected, got.toString())
+    }
+
+    @Test
+    fun decodesHanziAsGb2312AndKeepsBytesAsGb2312() {
+        val got = read(Seg.hanzi(listOf(0x122f, 0x0f23), 8))!!
+        assertEquals("中文", got.text)
+        assertArrayEquals(byteArrayOf(0xd6.toByte(), 0xd0.toByte(), 0xce.toByte(), 0xc4.toByte()), got.bytes)
+        assertEquals("A中B", read(Seg.bytes(b(0x41), 8) + Seg.hanzi(listOf(0x122f), 8) + Seg.bytes(b(0x42), 8))!!.text)
+    }
+
+    @Test
+    fun rejectsAnotherSubsetAValueOutsideGb2312OrAnEmptyCell() {
+        assertNull(read(Seg.hanzi(listOf(0x122f), 8, 2)))
+        // Low byte past FE, a lead byte in AA-AF, a lead past F7, and D7FA, which GB2312 leaves empty; A6D9 and A8BC, which table editions read differently.
+        for (v in listOf(0x30 * 0x60 + 0x5e, 9 * 0x60, 0x52 * 0x60, 0x31 * 0x60 + 0x59, 5 * 0x60 + 0x38, 7 * 0x60 + 0x1b)) assertNull(read(Seg.hanzi(listOf(0x122f, v), 8)))
     }
 
     // ISO 8859-10 and -14 are absent from the JDK; those ECIs fall back.

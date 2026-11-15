@@ -1,5 +1,5 @@
 // Builds symbols from raw segments, so tests can reach headers and modes the
-// encoder never writes (structured append, FNC1, kanji, ECI). It has its own
+// encoder never writes (structured append, FNC1, kanji, hanzi, ECI). It has its own
 // Reed-Solomon and interleave, apart from src/encode.ts.
 import { ALPHANUMERIC, blocksFor, EXP, gfMul, Grid, type ErrorCorrection } from '../src/encode.js'
 
@@ -83,6 +83,10 @@ export const seg = {
   /** Kanji mode from 13-bit values. */
   kanji(values: number[], countBits: number): number[] {
     return [...bitsOf(8, 4), ...bitsOf(values.length, countBits), ...values.flatMap((v) => bitsOf(v, 13))]
+  },
+  /** Hanzi mode (GB/T 18284) from 13-bit values, with a subset indicator (1 is GB2312). */
+  hanzi(values: number[], countBits: number, subset = 1): number[] {
+    return [...bitsOf(13, 4), ...bitsOf(subset, 4), ...bitsOf(values.length, countBits), ...values.flatMap((v) => bitsOf(v, 13))]
   },
   eci(value: number): number[] {
     return [...bitsOf(7, 4), ...(value < 128 ? bitsOf(value, 8) : bitsOf(0x8000 | value, 16))]

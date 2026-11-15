@@ -22,20 +22,25 @@ internal class Placement(
     val bottomLeft: Point,
     val alignment: Point?,
     val size: Int,
+    /** Picture coordinates of module point (x, y), which may fall between centres: (0, 0) is module (0, 0)'s centre. */
+    val at: (Double, Double) -> Point,
+) {
     /** Picture coordinates of the centre of module (x, y). */
-    val project: (Int, Int) -> Point,
-)
+    fun project(x: Int, y: Int): Point = at(x.toDouble(), y.toDouble())
+}
 
 /**
  * Work the search does, counted for tests that bound it: pixels stepped in
  * cross-checks, stored candidates compared while merging, pixels in the
- * windows searched for alignment patterns, and maps sampled.
+ * windows searched for alignment patterns, maps sampled, and maps read again
+ * by the second look.
  */
 internal class Work {
     var steps = 0L
     var compared = 0L
     var scanned = 0L
     var maps = 0L
+    var second = 0L
 }
 
 /** Mirrors the sign of a JavaScript comparator result: NaN and zero both mean "equal". */

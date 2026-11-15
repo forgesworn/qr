@@ -8,7 +8,7 @@ import { prng } from './photo.js'
 interface Frame { data: Uint8Array; width: number; height: number }
 
 function counted(image: Frame): { found: boolean; work: Work } {
-  const work: Work = { steps: 0, compared: 0, scanned: 0, maps: 0 }
+  const work: Work = { steps: 0, compared: 0, scanned: 0, maps: 0, second: 0 }
   const found = decodeCounted(image, {}, work) !== undefined
   return { found, work }
 }
@@ -48,6 +48,7 @@ describe('bounded work', () => {
       expect(perPixel(b, large)).toBeLessThan(1.5)
       // Four times the pixels, not much more than four times the work.
       expect(perPixel(b, large)).toBeLessThan(perPixel(a, small) * 1.1)
+      expect(a.work.second + b.work.second).toBeLessThanOrEqual(2 * 4)
     }
   })
 
@@ -58,6 +59,8 @@ describe('bounded work', () => {
     expect(result.found).toBe(false)
     // Four passes, six triples, five sizes, at most six maps a size.
     expect(result.work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+    // The second look reads at most four of them again.
+    expect(result.work.second).toBeLessThanOrEqual(4)
     // Each of the 120 locates scans at most six windows, each no bigger than
     // the picture; in practice the windows cover it about five times over.
     expect(perPixel(result, image)).toBeLessThan(8)

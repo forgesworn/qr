@@ -123,6 +123,34 @@ export function kanjiText(sjis: number): string {
 }
 
 /**
+ * Twelve cells GB2312 leaves empty that GBK and older GB 18030 tables make
+ * private-use and newer GB 18030 tables make characters; platforms disagree,
+ * so they reject a hanzi symbol like any other empty cell.
+ */
+function editionDependent(lead: number, low: number): boolean {
+  if (lead === 0xa6) return (low >= 0xd9 && low <= 0xdf) || low === 0xec || low === 0xed || low === 0xf3
+  return lead === 0xa8 && (low === 0xbc || low === 0xbf)
+}
+
+/**
+ * The text of one hanzi-mode character, given its GB2312 lead and low bytes: what the
+ * platform's GB 18030 makes of them, or U+FFFD alone if the platform has none.
+ * Undefined, rejecting the symbol, when the pair is outside the GB2312 rows
+ * (A1-A9 and B0-F7, cells A1-FE) or names no character: the platform answers
+ * with U+FFFD or a private-use character for an empty cell.
+ */
+export function hanziText(lead: number, low: number): string | undefined {
+  if (low < 0xa1 || low > 0xfe || lead < 0xa1 || lead > 0xf7 || (lead > 0xa9 && lead < 0xb0)) return undefined
+  if (editionDependent(lead, low)) return undefined
+  const decoder = decoderFor('gb18030')
+  if (decoder === undefined) return '�'
+  const text = decoder.decode(Uint8Array.of(lead, low))
+  const cp = text.codePointAt(0)
+  if (cp === undefined || text.length !== (cp > 0xffff ? 2 : 1) || cp === 0xfffd || (cp >= 0xe000 && cp <= 0xf8ff)) return undefined
+  return text
+}
+
+/**
  * Whether bytes that are not valid UTF-8 and carry no ECI look like Shift_JIS
  * rather than Latin-1. Scanning left to right, a byte below 0x80 is skipped;
  * 0xA1 to 0xDF is a half-width katakana; 0x81 to 0x9F or 0xE0 to 0xEF followed
