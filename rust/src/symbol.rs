@@ -111,10 +111,10 @@ const fn log_table() -> [u8; 256] {
     log
 }
 
-const EXP: [u8; 512] = exp_table();
+pub(crate) const EXP: [u8; 512] = exp_table();
 const LOG: [u8; 256] = log_table();
 
-fn gf_mul(a: u8, b: u8) -> u8 {
+pub(crate) fn gf_mul(a: u8, b: u8) -> u8 {
     if a == 0 || b == 0 {
         0
     } else {
@@ -260,7 +260,7 @@ pub(crate) const FORMAT_COORDS: [(usize, usize); 15] = [
     (0, 8),
 ];
 
-const fn format_bits_of(ecc_bits: u32, mask: u32) -> u32 {
+pub(crate) const fn format_bits_of(ecc_bits: u32, mask: u32) -> u32 {
     let data = (ecc_bits << 3) | mask;
     let mut rem = data;
     let mut i = 0;
@@ -271,7 +271,7 @@ const fn format_bits_of(ecc_bits: u32, mask: u32) -> u32 {
     ((data << 10) | rem) ^ 0x5412
 }
 
-const fn version_bits_of(version: u32) -> u32 {
+pub(crate) const fn version_bits_of(version: u32) -> u32 {
     let mut rem = version;
     let mut i = 0;
     while i < 12 {
@@ -335,7 +335,7 @@ fn nearest(table: &[u32], reads: &[u32]) -> Option<usize> {
 
 /// The reserved (function pattern) modules of a version: finders and
 /// separators, timing, alignment, format and version information, and the dark module.
-fn reserved(version: usize) -> Vec<bool> {
+pub(crate) fn reserved(version: usize) -> Vec<bool> {
     let s = 17 + 4 * version;
     let mut reserved = vec![false; s * s];
     for (left, top) in [(0i32, 0i32), (s as i32 - 7, 0), (0, s as i32 - 7)] {
@@ -394,7 +394,7 @@ static PLACEMENTS: [OnceLock<Vec<u16>>; 41] = [const { OnceLock::new() }; 41];
 /// standard places it: two columns at a time from the right, snaking up and
 /// down, skipping the function patterns. Each is `y * 256 + x`. Worked out
 /// once a version and kept.
-fn placement(version: usize) -> &'static [u16] {
+pub(crate) fn placement(version: usize) -> &'static [u16] {
     PLACEMENTS[version].get_or_init(|| {
         let size = 17 + 4 * version;
         let reserved = reserved(version);
@@ -421,7 +421,7 @@ fn placement(version: usize) -> &'static [u16] {
     })
 }
 
-fn mask_bit(mask: u8, x: usize, y: usize) -> bool {
+pub(crate) fn mask_bit(mask: u8, x: usize, y: usize) -> bool {
     match mask {
         0 => (x + y) % 2 == 0,
         1 => y % 2 == 0,
@@ -589,7 +589,7 @@ struct Run {
     fixed: Option<String>,
 }
 
-const ALPHANUMERIC: &[u8; 45] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+pub(crate) const ALPHANUMERIC: &[u8; 45] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
 const KANJI_COUNT_BITS: [usize; 3] = [8, 10, 12];
 
 struct Parsed {
