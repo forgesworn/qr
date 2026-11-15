@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest'
 import { binarise, shrink, toLuminance } from '../src/binarise.js'
 import { decodeCounted, decodeModules } from '../src/decode.js'
 import { blocksFor, encode, FORMAT_COORDS, Grid, type ErrorCorrection } from '../src/encode.js'
-import { findFinders, type Work } from '../src/locate.js'
+import { estimateSize, findFinders, finderTriples, locate, type Work } from '../src/locate.js'
 import { seg, symbol } from './builder.js'
 import { bent, prng } from './photo.js'
 import { readPng, writePng } from './png.js'
@@ -46,6 +46,8 @@ interface Pack {
     bits: string
     reduced: Record<'2' | '4' | '8', string | null>
     finders: Record<'0.5' | '0.8', [number, number, number, number][]>
+    triples: Record<'0.5' | '0.8', { finders: [number, number, number]; size: number | null }[]>
+    placements: { size: number; alignment: XY | null; matrix: (number | null)[] }[]
     result: (Reading & { inverted: boolean; location: { topLeft: XY; topRight: XY; bottomLeft: XY; alignment: XY | null } }) | null
     work: Required<Work>
   }[]
@@ -97,7 +99,25 @@ function frameEntry(file: string, image: Grey): Pack['frames'][number] {
     reduced[`${f}`] = Math.floor(image.width / f) >= 1 && Math.floor(image.height / f) >= 1 ? sha(shrink(luminance, f).data) : null
   }
   const finders = {} as Pack['frames'][number]['finders']
-  for (const t of [0.5, 0.8] as const) finders[`${t}`] = findFinders(bits, t).map((f) => [f.x, f.y, f.moduleSize, f.count])
+  const triples = {} as Pack['frames'][number]['triples']
+  let placements: Pack['frames'][number]['placements'] = []
+  for (const t of [0.5, 0.8] as const) {
+    const found = findFinders(bits, t)
+    finders[`${t}`] = found.map((f) => [f.x, f.y, f.moduleSize, f.count])
+    const three = finderTriples(bits, found)
+    triples[`${t}`] = three.map((triple) => ({
+      finders: triple.map((f) => found.indexOf(f)) as [number, number, number],
+      size: estimateSize(bits, triple) ?? null,
+    }))
+    // The sampling maps of the first triple of the strict scan, at its own size.
+    if (t === 0.5 && three.length > 0) {
+      placements = locate(bits, three[0]!).map((l) => ({
+        size: l.size,
+        alignment: l.alignment ? [l.alignment.x, l.alignment.y] : null,
+        matrix: l.matrix!.map((v) => (Number.isFinite(v) ? v : null)),
+      }))
+    }
+  }
   const work = counter()
   const got = decodeCounted(image, {}, work)
   const at = (p: { x: number; y: number }): XY => [p.x, p.y]
@@ -109,6 +129,8 @@ function frameEntry(file: string, image: Grey): Pack['frames'][number] {
     bits: sha(bits.data),
     reduced,
     finders,
+    triples,
+    placements,
     result: got
       ? {
           ...reading({ ...got, mirrored: got.mirrored }),
@@ -242,6 +264,8 @@ function build(write: boolean): Pack {
   own('close-up-format-damaged', straight(gated, plain.size, 24, true))
   const lens = encode('https://example.com/m/' + 'conformance0123456789abcdefghijklmnopqrs', { ecc: 'M', version: 12 })
   own('bent-version-12', bent(lens.modules, lens.size, 4, 0.04))
+  const curved = encode('https://example.com/s4', { ecc: 'M', version: 4 })
+  own('bent-version-4', bent(curved.modules, curved.size, 4, 0.09))
   const nothing = new Grid(2)
   nothing.placeData(new Uint8Array(44))
   own('zero-codewords', straight(nothing.render('M', 0), nothing.size, 6))
@@ -262,7 +286,10 @@ describe('conformance pack', () => {
     // The ordinary read, the second look, the mesh, the reduced sizes (a read and a refusal), and no read at all.
     expect(f.filter((x) => x.result && x.work.second === 0 && x.work.reduced === 0).length).toBeGreaterThan(30)
     expect(f.some((x) => x.result && x.work.second > 0)).toBe(true)
+    expect(f.some((x) => x.result && x.work.second > 0 && x.work.meshes === 0)).toBe(true)
     expect(f.some((x) => x.result && x.work.meshes > 0)).toBe(true)
+    expect(f.filter((x) => x.triples['0.5'].length > 0 && x.placements.length > 1).length).toBeGreaterThan(30)
+    expect(f.some((x) => x.placements.some((p) => p.alignment))).toBe(true)
     expect(f.some((x) => x.result && x.work.reduced > 0)).toBe(true)
     expect(f.some((x) => !x.result && x.work.reduced > 0)).toBe(true)
     expect(f.some((x) => x.result?.inverted)).toBe(true)

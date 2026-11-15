@@ -95,7 +95,7 @@ fn count_work(grey: &Image) -> Work {
 fn frames() {
     let pack = pack();
     let frames = pack["frames"].as_array().unwrap();
-    assert_eq!(frames.len(), 57);
+    assert!(frames.len() >= 58, "the pack lists {} pictures", frames.len());
     let mut passed = 0;
     let mut finder_lists = 0;
     let mut reduced_checked = 0;

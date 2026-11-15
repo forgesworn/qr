@@ -93,7 +93,7 @@ class ConformanceTest {
     @Test
     fun givesEveryRecordedStageResultAndWorkCountForEachPicture() {
         val frames = pack["frames"] as List<Map<String, Any?>>
-        assertTrue(frames.size >= 57)
+        assertTrue(frames.size >= 58)
         for (v in frames) {
             val file = v["file"] as String
             val g = load(file)
@@ -110,11 +110,31 @@ class ConformanceTest {
                 assertEquals("$file shrunk by $f", want, got)
             }
             val finders = v["finders"] as Map<String, Any?>
+            val triples = v["triples"] as Map<String, Any?>
             for ((key, tolerance) in listOf("0.5" to 0.5, "0.8" to 0.8)) {
                 val want = (finders[key] as List<List<Any?>>).map { row -> row.map { number(it) } }
-                val got = findFinders(bits, tolerance).map { listOf(it.x, it.y, it.moduleSize, it.count.toDouble()) }
-                assertEquals("$file finders at $key", want, got)
+                val found = findFinders(bits, tolerance)
+                assertEquals("$file finders at $key", want, found.map { listOf(it.x, it.y, it.moduleSize, it.count.toDouble()) })
+                val three = finderTriples(bits, found)
+                val wantTriples = (triples[key] as List<Map<String, Any?>>).map {
+                    (it["finders"] as List<Number>).map { n -> n.toInt() } to (it["size"] as Number?)?.toInt()
+                }
+                assertEquals("$file triples at $key", wantTriples, three.map { t -> t.map { f -> found.indexOf(f) } to estimateSize(bits, t) })
+                if (key == "0.5" && three.isNotEmpty()) {
+                    val wantPlacements = (v["placements"] as List<Map<String, Any?>>).map {
+                        Triple(
+                            (it["size"] as Number).toInt(),
+                            (it["alignment"] as List<Any?>?)?.let { p -> Point(number(p[0]), number(p[1])) },
+                            (it["matrix"] as List<Any?>).map { m -> (m as Number?)?.toDouble() },
+                        )
+                    }
+                    val gotPlacements = locate(bits, three[0]).map { l ->
+                        Triple(l.size, l.alignment, l.matrix!!.map { m -> if (m.isFinite()) m else null })
+                    }
+                    assertEquals("$file placements", wantPlacements, gotPlacements)
+                }
             }
+            if ((triples["0.5"] as List<Any?>).isEmpty()) assertTrue("$file placements", (v["placements"] as List<Any?>).isEmpty())
             val work = Work()
             val got = decodeCounted(g.data, g.width, g.height, work)
             val want = v["result"] as Map<String, Any?>?

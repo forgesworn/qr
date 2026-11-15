@@ -56,11 +56,12 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then nine in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then ten in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
-only at reduced size, the same refused there by the format gate, a symbol
-bent by a lens and read through the mesh, and a symbol of zero codewords).
+only at reduced size, the same refused there by the format gate, a bent
+symbol read by the second look, a larger one read through the mesh, and a
+symbol of zero codewords).
 
 For each, in the order a port can build the decoder:
 
@@ -73,6 +74,15 @@ For each, in the order a port can build the decoder:
 - `finders`: the finder candidates in the binarised picture at tolerance 0.5
   and at 0.8, in the order the scan returns them, each as `[x, y,
   moduleSize, count]` (step 3).
+- `triples`: for each tolerance, the finder triples in the order the search
+  takes them (step 4), each as the three finders' places in the `finders`
+  list above, top-left, top-right, bottom-left, with the `size` estimated
+  for it in modules, or `null` when it has none (step 5).
+- `placements`: the sampling maps of the first triple at tolerance 0.5, at
+  its own size, in the order they are tried (step 5): the `size`, the
+  `alignment` pattern's centre or `null`, and the nine numbers of the
+  projective `matrix`, row by row, that takes module (x + 0.5, y + 0.5) to
+  the picture. Empty when the scan gives no triple.
 - `result`: `null`, or the fields of `symbols` with `inverted` and
   `location`: `topLeft`, `topRight`, `bottomLeft` and `alignment` (or
   `null`) as `[x, y]` in picture coordinates.

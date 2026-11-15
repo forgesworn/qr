@@ -48,9 +48,10 @@
   with no code in it now costs more on average. Two more photographs of the
   test set read, so the floor is 179.
 - A conformance pack for ports in other languages, `vectors/conformance.json`
-  with `vectors/README.md`: greyscale conversion, module grids, and for 57
+  with `vectors/README.md`: greyscale conversion, module grids, and for 58
   pictures the binarised image, the reduced sizes, the finder candidates,
-  the result and the work counted. Both ports are held to it.
+  the triples, sizes and sampling maps, the result and the work counted.
+  Both ports are held to it.
 - The decoder reads hanzi segments (GB2312).
 - Decoding is faster with no change to what is read or to the work counted.
   The row scans for finder and alignment patterns walk each row's changes
