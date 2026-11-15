@@ -64,15 +64,15 @@ bent by a lens and read through the mesh, and a symbol of zero codewords).
 
 For each, in the order a port can build the decoder:
 
-- `luminance`: SHA-256 of the greyscale bytes, row by row. If this differs
-  the picture was not loaded as 8-bit grey.
+- `luminance`: SHA-256 of the greyscale bytes, row by row (step 1). If this
+  differs the picture was not loaded as 8-bit grey.
 - `bits`: SHA-256 of the binarised picture, one byte a pixel, 1 for dark
-  (SPEC.md, decoder step 1).
+  (SPEC.md, decoder step 2).
 - `reduced`: SHA-256 of the greyscale picture shrunk by 2, 4 and 8 (step 9),
-  or `null` where the picture is too small to shrink.
+  or `null` where a side would shrink to nothing.
 - `finders`: the finder candidates in the binarised picture at tolerance 0.5
   and at 0.8, in the order the scan returns them, each as `[x, y,
-  moduleSize, count]` (step 2).
+  moduleSize, count]` (step 3).
 - `result`: `null`, or the fields of `symbols` with `inverted` and
   `location`: `topLeft`, `topRight`, `bottomLeft` and `alignment` (or
   `null`) as `[x, y]` in picture coordinates.
