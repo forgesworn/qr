@@ -8,3 +8,5 @@ kotlin/**/build
 kotlin/.kotlin
 vectors/photos-cache/
 rust/target/
+vectors/own-photos-sheet.html
+vectors/own-photos/

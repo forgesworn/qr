@@ -124,6 +124,35 @@ expected texts, into `photos-cache/`, which is not committed. A port must
 never read one as the wrong text, and should read the ones marked as read.
 The sources and their licences are named in the manifest.
 
+## `own-photos.json`: the project's own photographs (being gathered)
+
+The photograph set above is other projects' work, used under their licence.
+This is the start of one that is wholly ours. `npm run photo-sheet` writes
+`own-photos.json`, 24 codes from version 1 to the mid twenties with
+made-up payloads, and a printable `own-photos-sheet.html` (not committed)
+with each code at 55 mm and its id beneath it.
+
+To add pictures: print the sheet at full size, or show it on a screen, and
+photograph one code at a time. Name each file `<id>__<what>.jpg`, for
+example `own-07__tilted.jpg`, and put it in `vectors/own-photos/`, which is
+not committed until the set's size and format are settled. Worth a picture
+each, with any phone:
+
+- straight on, filling about half the frame; then small, a tenth of it;
+- tilted about 30 and about 60 degrees, from the side and from below;
+- turned a quarter and a half turn, and upside down;
+- wrapped round a bottle or a mug; on a crumpled and a folded sheet;
+- in shade with a hard edge across it; under a lamp's glare; in dim light;
+- out of focus; with the phone moving;
+- with a finger over one corner; with a tear or a stain across it;
+- on a phone screen and on a monitor, close enough to show the pixels;
+- through a window or a plastic sleeve;
+- two codes in one frame.
+
+A picture's file name gives its code, the manifest gives the text, and a
+test will then hold the decoder to a floor on how many read and to the
+rule that none reads as anything else.
+
 ## Tests that are not files
 
 The suites that draw damaged, bent, close-up and empty frames from a seeded
