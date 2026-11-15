@@ -166,6 +166,10 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
     offset += length
   }
 
+  // Zero in every data codeword is what a texture matching the mask pattern
+  // corrects to, and it parses as a terminator: no symbol holds it.
+  if (data.every((word) => word === 0)) return undefined
+
   const parsed = parse(data, version)
   if (parsed === undefined) return undefined
   return { ...parsed, version, ecc: format.ecc, mask: format.mask, corrected }

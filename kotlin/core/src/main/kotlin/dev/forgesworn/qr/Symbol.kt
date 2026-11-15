@@ -176,6 +176,10 @@ internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
         offset += length
     }
 
+    // Zero in every data codeword is what a texture matching the mask pattern
+    // corrects to, and it parses as a terminator: no symbol holds it.
+    if (data.all { it == 0 }) return null
+
     val parsed = parse(data, version) ?: return null
     return Payload(parsed.text, parsed.bytes, version, format.ecc, format.mask, parsed.eci, corrected, parsed.structuredAppend, parsed.fnc1)
 }

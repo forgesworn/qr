@@ -28,6 +28,10 @@
   longer takes one of the four places.
 - Fixed: a version 40 symbol whose size estimate came out just past 177
   modules was given up on without trying 177.
+- Fixed: a texture matching a mask pattern beside finder patterns (a
+  checkerboard, stripes, a screen's moire) could be returned as a read with
+  empty text. A symbol whose data codewords are all zero now reads as
+  nothing; an empty payload as `encode('')` writes it still reads.
 - The decoder reads hanzi segments (GB2312).
 - The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given

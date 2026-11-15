@@ -238,7 +238,14 @@ read. The TypeScript pipeline, for reference:
    format and version information, unmasking and Reed-Solomon correction
    (section 7.5 and annex B). A failed read is retried transposed, for
    mirrored codes, and the whole search is repeated on the inverted
-   picture.
+   picture. A symbol whose data codewords are all zero after correction
+   reads as nothing, here, in the second look and in `decodeModules`: all
+   zeros pass Reed-Solomon, so that is what a texture matching the mask
+   pattern (a checkerboard for pattern 0, stripes for 1 and 2, a screen's
+   moire) corrects to, and its first four bits would parse as a terminator
+   with no text. No encoder following section 7.4 writes it: a mode
+   indicator or a pad codeword always follows. An empty payload written as
+   a segment of no characters, as `encode('')` writes it, still reads.
 7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
    hanzi (kept as GB2312 bytes), ECI, structured append and FNC1 (both
    reported; see below).
@@ -527,4 +534,9 @@ as nothing, and the second look must have read nearly all of them through a
 mesh. Another 10, also from a seed of their own, are of version 40, damaged
 the same way and drawn bent so that nearly every one's size estimate runs
 past 177; each must read as nothing, and most must reach the mesh through
-the retries below the estimate.
+the retries below the estimate. `test/zero.test.ts` and `ZeroTest.kt` build
+symbols of nothing but zero codewords, under all eight masks, at versions
+1, 2, 5 and 7, undamaged and with every block damaged up to what it can
+correct; each must read as nothing as modules and in a picture, straight
+and mirrored, dark on light and light on dark, while an empty payload and
+payloads of zero bytes that leave whole blocks zero must read back.
