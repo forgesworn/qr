@@ -4,7 +4,7 @@ use crate::binarise::BitImage;
 
 /// A finder candidate: where it is, the module size it showed, and how many
 /// sightings were merged into it.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Finder {
     pub x: f64,
     pub y: f64,
@@ -12,13 +12,30 @@ pub struct Finder {
     pub count: u32,
 }
 
-/// The work the finder scan does, counted for tests that bound it.
+/// The work the search does, counted for tests that bound it (SPEC.md, Bounded
+/// work): pixels stepped in cross-checks, stored candidates compared while
+/// merging, pixels in the windows searched for alignment patterns, maps
+/// sampled, maps read again by the second look, those of them read through a
+/// mesh, points the mesh probed, and maps sampled at reduced size. This port
+/// has no second look, mesh or reduced pass, so those four stay zero.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Work {
     /// Pixels stepped in cross-checks.
     pub steps: u64,
     /// Stored candidates compared while merging.
     pub compared: u64,
+    /// Pixels in the windows searched for alignment patterns.
+    pub scanned: u64,
+    /// Sampling maps read.
+    pub maps: u64,
+    /// Maps read again by the second look (not ported: always 0).
+    pub second: u64,
+    /// Of those, the maps read through a mesh (not ported: always 0).
+    pub meshes: u64,
+    /// Points the mesh probed (not ported: always 0).
+    pub probed: u64,
+    /// Maps sampled at reduced size (not ported: always 0).
+    pub reduced: u64,
 }
 
 const NOT_YET: u32 = u32::MAX;

@@ -4,6 +4,7 @@
 
 pub mod binarise;
 pub mod locate;
+pub mod place;
 
 use binarise::{binarise, invert, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use locate::{find_finders, Edges};

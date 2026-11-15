@@ -3,7 +3,8 @@
 //! reduced pictures by SHA-256 and the finder candidates exactly.
 
 use forgesworn_qr::binarise::{binarise, invert, shrink, thresholds, to_luminance, Image, Reductions};
-use forgesworn_qr::locate::{find_finders, Edges, Work};
+use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
+use forgesworn_qr::place::{estimate_size, finder_triples, locate};
 use forgesworn_qr::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
@@ -186,4 +187,65 @@ fn invert_handles_lengths_not_divisible_by_four() {
         }
         assert_eq!(invert(&flipped), image);
     }
+}
+
+/// Triples, sizes and sampling maps, against every frame of the pack.
+#[test]
+fn triples_and_placements() {
+    let pack = pack();
+    let frames = pack["frames"].as_array().unwrap();
+    let (mut lists, mut triples_matched, mut sizes_matched, mut placed, mut maps_matched) = (0, 0, 0, 0, 0);
+    for entry in frames {
+        let file = entry["file"].as_str().unwrap();
+        let grey = load_grey(file);
+        let bits = binarise(&grey, &thresholds(&grey));
+        let mut edges = Edges::new(&bits);
+        for tolerance in TOLERANCES {
+            let key = format!("{tolerance}");
+            let found = find_finders(&bits, tolerance, None, &mut edges);
+            let triples = finder_triples(&bits, &found);
+            let want = entry["triples"][&key].as_array().unwrap();
+            assert_eq!(triples.len(), want.len(), "{file}: triple count at {key}");
+            for (n, (got, want)) in triples.iter().zip(want).enumerate() {
+                let ids: Vec<usize> = want["finders"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap() as usize).collect();
+                assert_eq!(got.to_vec(), ids, "{file}: triple {n} at {key}");
+                triples_matched += 1;
+                let three: [Finder; 3] = got.map(|i| found[i]);
+                let size = estimate_size(&bits, &three);
+                assert_eq!(size, want["size"].as_i64(), "{file}: size of triple {n} at {key}");
+                sizes_matched += 1;
+            }
+            lists += 1;
+            // The sampling maps of the first triple of the strict scan, at its own size.
+            if tolerance == 0.5 && !triples.is_empty() {
+                let three: [Finder; 3] = triples[0].map(|i| found[i]);
+                let maps = locate(&bits, &three, None, None, &mut edges);
+                let want = entry["placements"].as_array().unwrap();
+                assert_eq!(maps.len(), want.len(), "{file}: placement count");
+                for (n, (got, want)) in maps.iter().zip(want).enumerate() {
+                    assert_eq!(got.size as u64, want["size"].as_u64().unwrap(), "{file}: placement {n} size");
+                    match (&got.alignment, want["alignment"].as_array()) {
+                        (None, None) => {}
+                        (Some(p), Some(a)) => assert_eq!([p.x, p.y], [a[0].as_f64().unwrap(), a[1].as_f64().unwrap()], "{file}: placement {n} alignment"),
+                        (g, w) => panic!("{file}: placement {n} alignment {g:?} against {w:?}"),
+                    }
+                    let nine = want["matrix"].as_array().unwrap();
+                    assert_eq!(nine.len(), 9);
+                    for (i, w) in nine.iter().enumerate() {
+                        match w.as_f64() {
+                            Some(v) => assert_eq!(got.matrix[i], v, "{file}: placement {n} matrix[{i}]"),
+                            None => assert!(!got.matrix[i].is_finite(), "{file}: placement {n} matrix[{i}] should be non-finite, got {}", got.matrix[i]),
+                        }
+                    }
+                    maps_matched += 1;
+                }
+                placed += 1;
+            } else if tolerance == 0.5 {
+                assert!(entry["placements"].as_array().unwrap().is_empty(), "{file}: placements without a triple");
+            }
+        }
+    }
+    eprintln!("triples: {triples_matched} triples in {lists} lists matched in order");
+    eprintln!("sizes: {sizes_matched} estimates matched");
+    eprintln!("placements: {maps_matched} maps for {placed} frames matched (count, order, size, alignment, nine numbers exactly)");
 }
