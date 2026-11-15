@@ -1,28 +1,33 @@
-//! The ordinary search: the finder scan, triples, sampling maps and module
-//! reading of SPEC.md's decoder, at full size, in both polarities.
-//!
-//! Left out, so that this is a part of the TypeScript `decode` and not all of
-//! it: the second look (the refinement of a map whose format copies agreed but
-//! whose symbol did not read), the reduced-size pass, the `inversion` and
-//! `rowStride` options and the checks that make the TypeScript throw. A
-//! picture that reads only through one of those gives `None` here. Where the
-//! TypeScript would have taken a second look or a reduced pass the counters
-//! `Work::second` and `Work::reduced` stay 0 here, so a frame can be compared
-//! counter for counter only where the TypeScript's own were 0.
+//! The whole decoder: the ordinary search in each polarity (SPEC.md steps 3 to
+//! 7), the second look (step 8) and the reduced-size pass (step 9).
 
-use crate::binarise::{binarise, invert, thresholds, to_luminance, BitImage};
+use crate::binarise::{binarise, invert, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, Location, Point};
-use crate::symbol::{decode_modules, Payload};
-use crate::TOLERANCES;
+use crate::refine::{agreement, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
+use crate::symbol::{read_symbol, Payload};
+use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 
 /// Triples tried at each tolerance.
 const MAX_TRIPLES: usize = 6;
 /// Maps sampled a frame at most, at every size together: four passes, six
 /// triples, five sizes, six maps a size.
 const MAX_MAPS: u32 = 4 * MAX_TRIPLES as u32 * 5 * 6;
+/// Maps each reduced size may take, out of what the frame has left.
+const REDUCED_MAPS: u32 = 30;
 /// The size retries, in the order they are tried.
 const DELTAS: [i64; 5] = [0, -4, 4, -8, 8];
+
+/// Which way round to look for dark modules.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Inversion {
+    /// Dark on light first, then light on dark.
+    Both,
+    /// Dark on light only.
+    Normal,
+    /// Light on dark only.
+    Inverted,
+}
 
 /// Picture coordinates of the finder pattern centres, and of the alignment
 /// pattern if one was used.
@@ -45,32 +50,103 @@ pub struct Reading {
     pub location: Place,
 }
 
-/// What is left of a frame's maps, and of the maps this size may take.
+/// What is left of a frame's maps and second looks, shared by every size, and
+/// of the maps this size may take.
 struct Budget {
     maps: u32,
+    second: u32,
     here: u32,
 }
 
-/// Finds and reads one QR code by the ordinary search alone. `channels` is 4
-/// (RGBA) or 1 (grey), rows are `width` pixels apart. `None` when nothing
-/// reads, and also when `channels` is neither 1 nor 4, `width` or `height` is
-/// 0 or `data` is too short (the TypeScript throws there). `work` is added to,
-/// as the TypeScript's `decodeCounted` does.
-pub fn decode_ordinary(data: &[u8], width: usize, height: usize, channels: usize, mut work: Option<&mut Work>) -> Option<Reading> {
-    if (channels != 1 && channels != 4) || width == 0 || height == 0 || data.len() < width * height * channels {
+/// Finds and reads one QR code. `channels` is 4 (RGBA) or 1 (grey); rows are
+/// `row_stride` pixels apart. `None` when nothing reads, and also where the
+/// TypeScript `decode` throws: `channels` neither 1 nor 4, `width` or `height`
+/// 0, `row_stride` under `width`, or `data` too short. `work` is added to, as
+/// the TypeScript's `decodeCounted` does.
+pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_stride: usize, inversion: Inversion, mut work: Option<&mut Work>) -> Option<Reading> {
+    if (channels != 1 && channels != 4) || width == 0 || height == 0 || row_stride < width {
         return None;
     }
-    let luminance = to_luminance(data, width, height, channels, width);
-    let mut budget = Budget { maps: MAX_MAPS, here: MAX_MAPS };
-    let bits = binarise(&luminance, &thresholds(&luminance));
+    let last = row_stride.checked_mul(height - 1)?.checked_add(width)?;
+    if data.len() < last.checked_mul(channels)? {
+        return None;
+    }
+    let luminance = to_luminance(data, width, height, channels, row_stride);
+    let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS };
+    if let Some(found) = look(&luminance, inversion, 1, &mut budget, work.as_deref_mut()) {
+        return Some(found);
+    }
+    // Nothing read at full size: the picture shrunk, coarse to fine, for codes
+    // whose modules are large or carry texture or scan lines (decoder step 9).
+    let mut shrunk = Reductions::new(&luminance);
+    for f in REDUCTIONS {
+        if width / f < MIN_REDUCED || height / f < MIN_REDUCED {
+            continue;
+        }
+        // With no maps left no size can read, nor keep a candidate for a second look.
+        if budget.maps == 0 {
+            break;
+        }
+        budget.here = REDUCED_MAPS;
+        let reduced = shrunk.get(f);
+        if let Some(found) = look(&reduced, inversion, f, &mut budget, work.as_deref_mut()) {
+            return Some(found);
+        }
+    }
+    None
+}
+
+/// The ordinary search in each polarity, then the second look, on a picture
+/// shrunk by `f` (1 for the picture itself). At reduced size a read counts
+/// only if its format copies agree on its level and mask, and locations are
+/// given in full-picture coordinates.
+fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    let levels = thresholds(luminance);
+    let bits = binarise(luminance, &levels);
+    let strict = f > 1;
+    let mut candidates: Vec<Candidate> = Vec::new();
     // The inverse changes colour where the picture does, so one set of edges serves both.
     let mut edges = Edges::new(&bits);
     let mut modules: Vec<u8> = Vec::new();
-    if let Some(found) = search(&bits, &mut edges, false, &mut budget, &mut modules, work.as_deref_mut()) {
-        return Some(found);
+    if inversion != Inversion::Inverted {
+        if let Some(found) = search(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut()) {
+            return Some(found);
+        }
     }
-    let inverse = invert(&bits);
-    search(&inverse, &mut edges, true, &mut budget, &mut modules, work)
+    if inversion != Inversion::Normal {
+        let inverse = invert(&bits);
+        if let Some(found) = search(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut()) {
+            return Some(found);
+        }
+    }
+    // Nothing read: look again at the few maps whose format copies agreed.
+    if candidates.is_empty() || budget.second == 0 {
+        return None;
+    }
+    for candidate in &candidates {
+        if budget.second == 0 {
+            break;
+        }
+        budget.second -= 1;
+        if let Some(w) = work.as_deref_mut() {
+            w.second += 1;
+        }
+        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), strict) {
+            return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, f) });
+        }
+    }
+    None
+}
+
+/// A location in full-picture coordinates. Picture coordinates are continuous,
+/// pixel i covering [i, i + 1), so a point x in a picture shrunk by f lies at x * f.
+fn place(location: &Location, f: usize) -> Place {
+    if f == 1 {
+        return Place { top_left: location.top_left, top_right: location.top_right, bottom_left: location.bottom_left, alignment: location.alignment };
+    }
+    let f = f as f64;
+    let up = |p: Point| Point { x: p.x * f, y: p.y * f };
+    Place { top_left: up(location.top_left), top_right: up(location.top_right), bottom_left: up(location.bottom_left), alignment: location.alignment.map(up) }
 }
 
 /// The size estimate when it is past 177 by at most the retries' 8; otherwise `None`.
@@ -78,7 +154,18 @@ fn over(image: &BitImage, triple: &[Finder; 3]) -> Option<i64> {
     estimate_size(image, triple).filter(|&size| size > 177 && size <= 177 + 8)
 }
 
-fn search(image: &BitImage, edges: &mut Edges, inverted: bool, budget: &mut Budget, modules: &mut Vec<u8>, mut work: Option<&mut Work>) -> Option<Reading> {
+#[allow(clippy::too_many_arguments)]
+fn search(
+    image: &BitImage,
+    edges: &mut Edges,
+    inverted: bool,
+    candidates: &mut Vec<Candidate>,
+    budget: &mut Budget,
+    strict: bool,
+    f: usize,
+    modules: &mut Vec<u8>,
+    mut work: Option<&mut Work>,
+) -> Option<Reading> {
     // A strict pass first; a looser one for blurred or small codes.
     for tolerance in TOLERANCES {
         let found = find_finders(image, tolerance, work.as_deref_mut(), edges);
@@ -112,8 +199,11 @@ fn search(image: &BitImage, edges: &mut Edges, inverted: bool, budget: &mut Budg
                     budget.here -= 1;
                     if let Some(w) = work.as_deref_mut() {
                         w.maps += 1;
+                        if f > 1 {
+                            w.reduced += 1;
+                        }
                     }
-                    if let Some(result) = read(image, location, inverted, modules) {
+                    if let Some(result) = read(image, location, inverted, candidates, strict, f, modules) {
                         return Some(result);
                     }
                 }
@@ -123,8 +213,10 @@ fn search(image: &BitImage, edges: &mut Edges, inverted: bool, budget: &mut Budg
     None
 }
 
-/// Samples the module grid through the map and reads it, straight then mirrored.
-fn read(image: &BitImage, location: &Location, inverted: bool, modules: &mut Vec<u8>) -> Option<Reading> {
+/// Samples the module grid through the map and reads it, straight then
+/// mirrored. A map that reads neither way, whose format copies agree, is kept
+/// as a candidate for the second look.
+fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>) -> Option<Reading> {
     let size = location.size;
     modules.clear();
     modules.resize(size * size, 0);
@@ -143,11 +235,26 @@ fn read(image: &BitImage, location: &Location, inverted: bool, modules: &mut Vec
             }
         }
     }
-    let decoded = decode_modules(modules, size)?;
-    Some(Reading {
-        payload: decoded.payload,
-        mirrored: decoded.mirrored,
-        inverted,
-        location: Place { top_left: location.top_left, top_right: location.top_right, bottom_left: location.bottom_left, alignment: location.alignment },
-    })
+    let modules: &[u8] = modules;
+    let straight_read = |x: usize, y: usize| modules[y * size + x] == 1;
+    if let Some(payload) = read_symbol(straight_read, size) {
+        // At reduced size, a read whose format copies do not agree on its level and mask is no read.
+        if strict && !format_agrees(&straight_read, size, payload.ecc, payload.mask) {
+            return None;
+        }
+        return Some(Reading { payload, mirrored: false, inverted, location: place(location, f) });
+    }
+    let mirrored_read = |x: usize, y: usize| modules[x * size + y] == 1;
+    if let Some(payload) = read_symbol(mirrored_read, size) {
+        if strict && !format_agrees(&mirrored_read, size, payload.ecc, payload.mask) {
+            return None;
+        }
+        return Some(Reading { payload, mirrored: true, inverted, location: place(location, f) });
+    }
+    if let Some(agreed) = agreement(modules, size) {
+        if sized(modules, size, agreed.mirrored) {
+            keep(candidates, Candidate { location: location.clone(), inverted, mirrored: agreed.mirrored, ecc: agreed.ecc, mask: agreed.mask, distance: agreed.distance });
+        }
+    }
+    None
 }

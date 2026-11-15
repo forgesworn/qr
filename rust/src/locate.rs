@@ -16,8 +16,7 @@ pub struct Finder {
 /// work): pixels stepped in cross-checks, stored candidates compared while
 /// merging, pixels in the windows searched for alignment patterns, maps
 /// sampled, maps read again by the second look, those of them read through a
-/// mesh, points the mesh probed, and maps sampled at reduced size. This port
-/// has no second look, mesh or reduced pass, so those four stay zero.
+/// mesh, points the mesh probed, and maps sampled at reduced size.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Work {
     /// Pixels stepped in cross-checks.
@@ -28,13 +27,13 @@ pub struct Work {
     pub scanned: u64,
     /// Sampling maps read.
     pub maps: u64,
-    /// Maps read again by the second look (not ported: always 0).
+    /// Maps read again by the second look.
     pub second: u64,
-    /// Of those, the maps read through a mesh (not ported: always 0).
+    /// Of those, the maps read through a mesh.
     pub meshes: u64,
-    /// Points the mesh probed (not ported: always 0).
+    /// Points the mesh probed.
     pub probed: u64,
-    /// Maps sampled at reduced size (not ported: always 0).
+    /// Maps sampled at reduced size.
     pub reduced: u64,
 }
 

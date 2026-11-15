@@ -32,7 +32,7 @@ impl Ecc {
         }
     }
 
-    fn index(self) -> usize {
+    pub(crate) fn index(self) -> usize {
         self as usize
     }
 }
@@ -242,7 +242,7 @@ pub fn correct(block: &mut [u8], ec_count: usize) -> Option<usize> {
 
 // Format and version information.
 
-const FORMAT_COORDS: [(usize, usize); 15] = [
+pub(crate) const FORMAT_COORDS: [(usize, usize); 15] = [
     (8, 0),
     (8, 1),
     (8, 2),
@@ -302,7 +302,7 @@ const fn formats() -> [(u32, Ecc, u8); 32] {
     out
 }
 
-const FORMATS: [(u32, Ecc, u8); 32] = formats();
+pub(crate) const FORMATS: [(u32, Ecc, u8); 32] = formats();
 
 const fn versions() -> [u32; 34] {
     let mut out = [0u32; 34];
