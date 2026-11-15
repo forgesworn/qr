@@ -105,6 +105,13 @@ parity }`) is present when the code is one part of a split message, and
 `fnc1` when it carries an FNC1 indicator (GS1 and industry formats);
 [SPEC.md](SPEC.md) has the detail.
 
+The decoder is built to return nothing rather than a wrong text: a block
+that needed more corrections than the standard allows is refused, and the
+tests require damaged symbols to read as nothing or as exactly what was
+written. When the first search of a frame reads nothing, the decoder looks
+again at the likeliest placements and then at the picture shrunk by 8, 4
+and 2, and holds a read there to a stricter format check.
+
 A frame with no code in it costs more than one with a code; on a 1280x720
 frame of pure noise, expect a few hundred milliseconds on a laptop, so
 throttle camera loops.

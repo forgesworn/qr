@@ -20,7 +20,7 @@ function fromRows(rows: string[], size: number): Uint8Array {
 const reader = (m: Uint8Array, size: number) => (x: number, y: number) => m[y * size + x] === 1
 
 describe('readSymbol', () => {
-  it('reads every ZXing vector', () => {
+  it('reads every reference vector', () => {
     for (const v of vectors) {
       const m = fromRows(v.rows, v.size)
       const got = readSymbol(reader(m, v.size), v.size)

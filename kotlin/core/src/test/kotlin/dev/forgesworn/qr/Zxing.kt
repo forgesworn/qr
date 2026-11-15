@@ -9,7 +9,7 @@ import com.google.zxing.qrcode.QRCodeReader
 import com.google.zxing.qrcode.decoder.Decoder
 
 /**
- * ZXing as a test oracle only: reads a greyscale picture with TRY_HARDER, dark on
+ * The reference library, a test oracle only: reads a greyscale picture with TRY_HARDER, dark on
  * light first and then light on dark. Returns the text, or null if it reads nothing.
  */
 internal fun zxingRead(grey: Grey): String? {

@@ -13,7 +13,7 @@ class DecodeTest {
     private val payload = "https://example.com/r/7f3a9c2e41b8?k=Z2l2ZSBtZSBhIHJvb20"
 
     @Test
-    fun readsEveryZxingVectorFromACleanStraightPicture() {
+    fun readsEveryReferenceVectorFromACleanStraightPicture() {
         for (v in encodeVectors()) {
             val g = picture(fromRows(v.rows, v.size), v.size, if (v.size > 100) 2 else 3)
             val got = decode(g.data, g.width, g.height, inversion = Inversion.NORMAL)

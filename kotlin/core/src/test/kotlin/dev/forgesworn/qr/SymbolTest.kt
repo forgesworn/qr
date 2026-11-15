@@ -10,7 +10,7 @@ class SymbolTest {
     private fun reader(m: ByteArray, size: Int) = ModuleReader { x, y -> m[y * size + x].toInt() == 1 }
 
     @Test
-    fun readsEveryZxingVector() {
+    fun readsEveryReferenceVector() {
         for (v in encodeVectors()) {
             val m = fromRows(v.rows, v.size)
             val got = readSymbol(reader(m, v.size), v.size)

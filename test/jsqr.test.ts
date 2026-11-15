@@ -1,5 +1,5 @@
-// jsQR is a development-only oracle: an independent reader must decode what
-// we encode. It is never a dependency of the package.
+// An independent reader, a development-only oracle, must decode what we
+// encode. It is never a dependency of the package.
 import jsQRModule from 'jsqr'
 import { describe, expect, it } from 'vitest'
 import { encode, type ErrorCorrection, type QrCode } from '../src/index.js'
@@ -40,7 +40,7 @@ function prng(seed: number): () => number {
   }
 }
 
-describe('jsQR reads what we encode', () => {
+describe('an independent reader reads what we encode', () => {
   const rand = prng(20261114)
   const alphabets = ['0123456789', '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:', 'abcdefghijklmnopqrstuvwxyz:/?#=&-_.~0123456789']
   for (let i = 0; i < 120; i++) {
