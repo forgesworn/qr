@@ -1,8 +1,7 @@
 import { binarise, invert, thresholds, toLuminance, type BitImage } from './binarise.js'
-import { finderTriples, findFinders, locate, type Location, type Point, type Work } from './locate.js'
+import { estimateSize, finderTriples, findFinders, locate, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, keep, secondLook, sized, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
-import { estimateSize, type Finder } from './locate.js'
 
 /** Pixels to read: RGBA (4 bytes a pixel, as ImageData gives) or greyscale (1 byte a pixel). */
 export interface ImageLike {
