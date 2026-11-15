@@ -34,6 +34,8 @@ class QrLocation(
  * @property mirrored The symbol was mirrored (read transposed).
  * @property inverted The symbol was light on dark.
  * @property location Where the code sits in the picture; null when read from a module grid.
+ * @property structuredAppend Set when the symbol is one of a structured-append set; [text] and [bytes] then hold this symbol's part only.
+ * @property fnc1 Set when the symbol carries an FNC1 indicator; see [Fnc1].
  */
 class DecodeResult internal constructor(
     val text: String,
@@ -46,6 +48,8 @@ class DecodeResult internal constructor(
     val mirrored: Boolean,
     val inverted: Boolean,
     val location: QrLocation?,
+    val structuredAppend: StructuredAppend? = null,
+    val fnc1: Fnc1? = null,
 ) {
     override fun toString(): String =
         "DecodeResult(text=$text, version=$version, ecc=$ecc, mask=$mask, eci=$eci, corrected=$corrected, " +
@@ -145,7 +149,10 @@ private fun read(image: BitImage, location: Placement, inverted: Boolean): Decod
 }
 
 private fun result(p: Payload, mirrored: Boolean, inverted: Boolean, location: QrLocation?): DecodeResult =
-    DecodeResult(p.text, p.bytes, p.version, p.ecc, p.mask, p.eci, p.corrected, mirrored, inverted, location)
+    DecodeResult(
+        p.text, p.bytes, p.version, p.ecc, p.mask, p.eci, p.corrected, mirrored, inverted, location,
+        p.structuredAppend, p.fnc1,
+    )
 
 /**
  * Reads a symbol from its module grid, [size] by [size], row by row, non-zero

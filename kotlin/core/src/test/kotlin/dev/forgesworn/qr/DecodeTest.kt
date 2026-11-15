@@ -97,6 +97,10 @@ class DecodeTest {
             { decode(ByteArray(100), 0, 100) },
             { decode(ByteArray(100), 10, 10, rowStride = 5) },
             { decode(IntArray(10), 100, 100) },
+            // Every entry point checks the length: one byte short, and short once the stride is counted.
+            { decode(ByteArray(100 * 100 - 1), 100, 100) },
+            { decode(ByteArray(100 * 100), 100, 100, rowStride = 101) },
+            { decode(IntArray(100 * 100 - 1), 100, 100) },
         )) {
             try {
                 bad()

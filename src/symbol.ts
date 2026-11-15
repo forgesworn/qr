@@ -11,7 +11,7 @@ import {
   type ErrorCorrection,
 } from './encode.js'
 import { correct } from './rs.js'
-import { fromUtf8, isUtf8 } from './text.js'
+import { fromEci, fromUtf8, isUtf8, kanjiText, looksShiftJis } from './text.js'
 
 /** What a symbol says, once read. */
 export interface Payload {
@@ -26,6 +26,31 @@ export interface Payload {
   readonly eci: readonly number[]
   /** Codewords Reed-Solomon had to correct. */
   readonly corrected: number
+  /** Present when the symbol is one of a structured-append set; `text` and `bytes` then hold this symbol's part only. */
+  readonly structuredAppend?: StructuredAppend
+  /** Present when the symbol carries an FNC1 indicator (GS1 or an industry application). */
+  readonly fnc1?: Fnc1
+}
+
+/** The header of a structured-append symbol. */
+export interface StructuredAppend {
+  /** This symbol's place in the set, counting from 0. */
+  readonly index: number
+  /** How many symbols the set has, 1 to 16. */
+  readonly total: number
+  /** The parity byte: the XOR of every byte of the whole message, the same in each symbol of the set. */
+  readonly parity: number
+}
+
+/**
+ * An FNC1 indicator. In alphanumeric segments `%` then reads as the group
+ * separator U+001D and `%%` as `%`, in `text` and `bytes` alike.
+ */
+export interface Fnc1 {
+  /** 'first' is the GS1 format; 'second' is an industry application. */
+  readonly position: 'first' | 'second'
+  /** Second position only: one letter or two digits, as a string. */
+  readonly applicationIndicator?: string
 }
 
 /** Reads modules through a callback: true for dark, x across, y down. */
@@ -161,16 +186,36 @@ class Bits {
 interface Run {
   eci: number | undefined
   bytes: number[]
+  /** Text already decided, for a kanji character. */
+  fixed?: string
 }
 
 const KANJI_COUNT_BITS = [8, 10, 12] as const
 
-function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8Array; eci: number[] } | undefined {
+interface Parsed {
+  text: string
+  bytes: Uint8Array
+  eci: number[]
+  structuredAppend?: StructuredAppend
+  fnc1?: Fnc1
+}
+
+/** ISO 18004 7.4.8.3: 0-99 are two digits, ASCII + 100 gives a letter. */
+function applicationIndicator(value: number): string | undefined {
+  if (value <= 99) return String(value).padStart(2, '0')
+  if (value >= 165 && value <= 190) return String.fromCharCode(value - 100)
+  if (value >= 197 && value <= 222) return String.fromCharCode(value - 100)
+  return undefined
+}
+
+function parse(data: Uint8Array, version: number): Parsed | undefined {
   const bits = new Bits(data)
   const band = countBand(version)
   const runs: Run[] = [{ eci: undefined, bytes: [] }]
   const eci: number[] = []
   const out: number[] = []
+  let structuredAppend: StructuredAppend | undefined
+  let fnc1: Fnc1 | undefined
   const emit = (byte: number) => {
     runs[runs.length - 1]!.bytes.push(byte)
     out.push(byte)
@@ -193,29 +238,41 @@ function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8A
         }
       } else if (mode === 2) {
         let count = bits.read([9, 11, 13][band]!)
+        const segment: number[] = []
         for (; count >= 2; count -= 2) {
           const v = bits.read(11)
           if (v >= 45 * 45) return undefined
-          emit(ALPHANUMERIC.charCodeAt(Math.floor(v / 45)))
-          emit(ALPHANUMERIC.charCodeAt(v % 45))
+          segment.push(ALPHANUMERIC.charCodeAt(Math.floor(v / 45)), ALPHANUMERIC.charCodeAt(v % 45))
         }
         if (count === 1) {
           const v = bits.read(6)
           if (v >= 45) return undefined
-          emit(ALPHANUMERIC.charCodeAt(v))
+          segment.push(ALPHANUMERIC.charCodeAt(v))
+        }
+        // Under FNC1, within one segment: %% is %, and a lone % is the group separator.
+        for (let i = 0; i < segment.length; i++) {
+          if (fnc1 !== undefined && segment[i] === 0x25) {
+            if (segment[i + 1] === 0x25) i++
+            else {
+              emit(0x1d)
+              continue
+            }
+          }
+          emit(segment[i]!)
         }
       } else if (mode === 4) {
         const count = bits.read([8, 16, 16][band]!)
         for (let i = 0; i < count; i++) emit(bits.read(8))
       } else if (mode === 8) {
-        // Kanji: kept as its Shift_JIS bytes; the text shows U+FFFD for each.
+        // Kanji: kept as its Shift_JIS bytes; each character's text is the platform's Shift_JIS.
         const count = bits.read(KANJI_COUNT_BITS[band])
         for (let i = 0; i < count; i++) {
           const v = bits.read(13)
           let sjis = (Math.floor(v / 0xc0) << 8) | v % 0xc0
           sjis += sjis < 0x1f00 ? 0x8140 : 0xc140
           out.push(sjis >>> 8, sjis & 0xff)
-          runs.push({ eci: -1, bytes: [] }, { eci: runs[runs.length - 1]!.eci, bytes: [] })
+          const current = runs[runs.length - 1]!.eci
+          runs.push({ eci: current, bytes: [], fixed: kanjiText(sjis) }, { eci: current, bytes: [] })
         }
       } else if (mode === 7) {
         const first = bits.read(8)
@@ -231,11 +288,15 @@ function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8A
         eci.push(value)
         runs.push({ eci: value, bytes: [] })
       } else if (mode === 3) {
-        bits.read(16) // structured append: position, total and parity; one symbol is read alone
+        const sequence = bits.read(8)
+        const parity = bits.read(8)
+        structuredAppend ??= { index: sequence >>> 4, total: (sequence & 15) + 1, parity }
       } else if (mode === 5) {
-        // FNC1 in first position: GS1 data follows in ordinary segments
+        fnc1 ??= { position: 'first' }
       } else if (mode === 9) {
-        bits.read(8) // FNC1 in second position: application indicator
+        const indicator = applicationIndicator(bits.read(8))
+        if (indicator === undefined) return undefined
+        fnc1 ??= { position: 'second', applicationIndicator: indicator }
       } else {
         return undefined
       }
@@ -244,15 +305,36 @@ function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8A
     return undefined
   }
   let text = ''
-  for (const run of runs) text += run.eci === -1 ? '�' : decodeRun(run)
-  return { text, bytes: Uint8Array.from(out), eci }
+  for (const run of runs) text += decodeRun(run)
+  return {
+    text,
+    bytes: Uint8Array.from(out),
+    eci,
+    ...(structuredAppend && { structuredAppend }),
+    ...(fnc1 && { fnc1 }),
+  }
 }
 
-/** ECI 26 is UTF-8; 3 and 1 are Latin-1. Without ECI, valid UTF-8 is taken as UTF-8, else Latin-1. */
+/**
+ * ECI 26 is UTF-8; 3 and 1 are Latin-1; the other assignments the platform
+ * knows (text.ts) are read as that set. Without an ECI, or where the platform
+ * lacks the set, valid UTF-8 is taken as UTF-8, else Latin-1; with no ECI at
+ * all, bytes that look like Shift_JIS (looksShiftJis) are read as that.
+ */
 function decodeRun(run: Run): string {
+  if (run.fixed !== undefined) return run.fixed
   const bytes = Uint8Array.from(run.bytes)
   if (run.eci === 3 || run.eci === 1) return latin1(bytes)
-  if (run.eci === 26 || isUtf8(bytes)) return fromUtf8(bytes)
+  if (run.eci === 26) return fromUtf8(bytes)
+  if (run.eci !== undefined && bytes.length > 0) {
+    const text = fromEci(run.eci, bytes)
+    if (text !== undefined) return text
+  }
+  if (isUtf8(bytes)) return fromUtf8(bytes)
+  if (run.eci === undefined && looksShiftJis(bytes)) {
+    const text = fromEci(20, bytes)
+    if (text !== undefined && !text.includes('\ufffd')) return text
+  }
   return latin1(bytes)
 }
 
