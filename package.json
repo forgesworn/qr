@@ -35,6 +35,9 @@
     "qrcode",
     "qr-code",
     "encoder",
+    "decoder",
+    "reader",
+    "scanner",
     "svg",
     "zero-dependency"
   ],
