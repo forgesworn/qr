@@ -38,13 +38,59 @@ jobs:
           java-version: 17
       - run: ./gradlew test --console=plain
 
+  photographs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      QR_REQUIRE_PHOTOS: '1'
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - run: npm run fetch-photos
+      - run: npx vitest run test/photos.test.ts --maxWorkers=1
+      - run: ./gradlew test --console=plain --no-daemon --max-workers=2 --tests dev.forgesworn.qr.PhotosTest
+        working-directory: kotlin
+
   rust:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: rust
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        working-directory: .
+      - run: npm run build
+        working-directory: .
       # The runner's own stable toolchain; the crate has no dependencies, and the tests' three are locked.
       - run: cargo test --locked
       - run: rustup target add wasm32-unknown-unknown && cargo build --locked --release --target wasm32-unknown-unknown
+      - name: Compare WebAssembly results, options and encoding
+        run: |
+          node bench/wasm-pack.mjs
+          node bench/wasm-options.mjs
+          node bench/wasm-encode.mjs
+      - name: Compare native and WebAssembly module-grid results and renderings
+        run: |
+          mkdir -p target/ci-conformance
+          node bench/wasm-symbols.mjs grids target/ci-conformance/grids.json
+          cargo run --locked --example symbols_dump -- target/ci-conformance/grids.json > target/ci-conformance/native-symbols.txt
+          node bench/wasm-symbols.mjs check target/ci-conformance/native-symbols.txt target/ci-conformance/grids.json
+          node bench/render-dump.mjs > target/ci-conformance/typescript-renderings.txt
+          cargo run --locked --example render_dump > target/ci-conformance/native-renderings.txt
+          cmp target/ci-conformance/typescript-renderings.txt target/ci-conformance/native-renderings.txt
+      - name: Check WebAssembly memory is released after repeated reads
+        run: node bench/wasm-leak.mjs

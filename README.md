@@ -612,12 +612,17 @@ no thresholds or effort levels to tune: the frame size, the scan rate and
   an independent decoder does.
 - **Real photographs:** a set of 184 from open-source test collections,
   fetched by hash and not committed, has a floor on how many are read (179
-  at present) and a rule that none may decode to the wrong text.
+  at present) and a rule that none may decode to the wrong text. A dedicated
+  CI job downloads the set and requires the TypeScript and Kotlin tests to
+  run; local runs skip it unless the photographs have been fetched.
 - **Damage:** several hundred damaged, bent, close-up and empty frames,
   generated from seeds, must read as nothing or as exactly what was
   written.
 - **Ports:** [vectors/](vectors/README.md) holds what a port checks itself
   against, a stage at a time; the Kotlin port passes it unchanged.
+  CI also compares the WebAssembly decoder's results and options, its
+  encoder and the native renderings, and checks that repeated reads release
+  their memory.
 
 ## Kotlin
 

@@ -1,6 +1,6 @@
 {
   "name": "@forgesworn/qr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "QR code encoder and decoder with no dependencies: versions 1-40, all error correction levels, SVG output, camera-frame reading, checked against independent test vectors.",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+- CI downloads and verifies the real-photograph set for both TypeScript
+  and Kotlin, and runs the WebAssembly result, option, encoder, module-grid
+  and memory checks, plus native renderer comparisons. Local tests use at
+  most two workers, and the damage suites inherit the shared timeout.
 
 - Text without a `mode` is split into the numeric, alphanumeric and byte
   segments with the fewest bits, so payment URIs with an uppercase body fit

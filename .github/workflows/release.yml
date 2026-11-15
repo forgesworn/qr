@@ -19,3 +19,4 @@ jobs:
     uses: forgesworn/anvil/.github/workflows/release.yml@v0
     with:
       tag: ${{ inputs.tag || '' }}
+      test-command: npm run check
