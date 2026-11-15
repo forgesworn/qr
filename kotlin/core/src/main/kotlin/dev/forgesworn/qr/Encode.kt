@@ -113,6 +113,18 @@ private fun encodeData(text: String?, bytes: ByteArray?, options: EncodeOptions)
     if (!validVersion(minVersion)) throw IllegalArgumentException("minVersion must be an integer from 1 to 40")
     if (fixedVersion != null && fixedVersion < minVersion) throw IllegalArgumentException("Version is below minVersion")
 
+    if (text == null && options.mode != null && options.mode != Mode.BYTE) {
+        throw IllegalArgumentException("Bytes can only be encoded in byte mode")
+    }
+    // Input no version can hold is refused before anything is built from it.
+    val length = text?.length ?: bytes!!.size
+    if (length > maxInput(text == null, options.mode, ecc, fixedVersion ?: 40)) {
+        throw QrCapacityError(
+            if (fixedVersion == null) "Data does not fit any version at level $ecc"
+            else "Data does not fit version $fixedVersion at level $ecc",
+        )
+    }
+
     // One segment for bytes or a named mode; otherwise the cheapest mix, which
     // depends on the count field band, so it is worked out per band as needed.
     val single = singlePart(text, bytes, options.mode)
@@ -208,12 +220,38 @@ private fun validVersion(v: Int): Boolean = v in 1..40
 
 internal fun countBand(version: Int): Int = if (version <= 9) 0 else if (version <= 26) 1 else 2
 
+/**
+ * The most bytes (for bytes) or UTF-16 code units (for text) that any version
+ * up to [highest] can hold at level [ecc]; longer input cannot fit, whatever
+ * its characters. Only a lower bound on the bits is used, so nothing that
+ * fits is refused (SPEC.md, Version and level):
+ *
+ * - After the 4-bit mode indicator and a count field, a byte costs 8 bits, a
+ *   digit at least 10/3, an alphanumeric character 5.5. A text character that
+ *   needs more than one UTF-16 code unit or UTF-8 byte costs more than that
+ *   per unit, so units and bytes bound the characters from above.
+ * - The count field is taken at the highest version's band, and the capacity
+ *   at the highest version. Capacity grows by at least 6 codewords (48 bits)
+ *   a version and the count field by at most 8 bits across the bands (byte
+ *   mode, 8 to 16), so what fits at a lower version fits within the bound
+ *   for the highest.
+ * - Text with no named mode is bounded at the cheapest mode and the
+ *   narrowest count field, 10/3 bits a unit.
+ */
+private fun maxInput(isBytes: Boolean, requested: Mode?, ecc: ErrorCorrection, highest: Int): Int {
+    val available = dataCodewords(highest, ecc) * 8 - 4
+    val band = countBand(highest)
+    return when (if (isBytes) Mode.BYTE else requested) {
+        Mode.BYTE -> (available - countBitsFor(Mode.BYTE, band)) / 8
+        Mode.NUMERIC -> (available - countBitsFor(Mode.NUMERIC, band)) * 3 / 10
+        Mode.ALPHANUMERIC -> (available - countBitsFor(Mode.ALPHANUMERIC, band)) * 2 / 11
+        null -> (available - MODES.minOf { countBitsFor(it, band) }) * 3 / 10
+    }
+}
+
 /** The one segment for bytes, a named mode or empty text; null when the encoder chooses a mix. */
 private fun singlePart(text: String?, bytes: ByteArray?, requested: Mode?): Part? {
-    if (text == null) {
-        if (requested != null && requested != Mode.BYTE) throw IllegalArgumentException("Bytes can only be encoded in byte mode")
-        return Part(Mode.BYTE, null, bytes!!)
-    }
+    if (text == null) return Part(Mode.BYTE, null, bytes!!)
     if (requested == Mode.NUMERIC) {
         for (c in text) if (c < '0' || c > '9') throw IllegalArgumentException("Numeric mode takes digits only")
         return Part(Mode.NUMERIC, text, null)

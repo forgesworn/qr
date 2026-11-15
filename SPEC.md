@@ -72,6 +72,25 @@ error, never a silent upgrade. A requested version below `minVersion` is
 an argument error (`RangeError`, `IllegalArgumentException` in Kotlin),
 not a capacity error.
 
+Input that no version can hold is a capacity error before any segmentation
+or bit stream is built, so its cost does not grow with the input. With
+`highest` the requested version, else 40, and `available` the data bits of
+`highest` at the level less the 4-bit mode indicator, the longest input
+that can fit is, rounded down, in bytes for bytes and for byte mode (text
+counted in UTF-16 code units, which are never more than its UTF-8 bytes)
+`(available - count field) / 8`; in numeric mode `(available - count
+field) * 3 / 10`; in alphanumeric mode `(available - count field) * 2 /
+11`; and for text with no named mode `(available - narrowest count field)
+* 3 / 10`, each count field at the band of `highest`. At version 40 and
+level L that is 2,953 bytes, 7,089 digits and 4,296 alphanumeric characters,
+and 7,089 code units for unrestricted text. These are upper bounds, never
+cut-offs for what fits: every length they allow still goes through the
+exact check above. The error is the same as for any other data that does
+not fit. Argument errors (an unknown mode, a mode other than byte for
+bytes) are raised first. For a named mode the length check comes before the
+content check, so text too long for the mode that also holds characters
+outside it is a capacity error, not a `RangeError`.
+
 ## Bit stream and error correction
 
 The segments in order, each its 4-bit mode indicator (numeric `0001`,

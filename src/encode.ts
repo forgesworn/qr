@@ -99,6 +99,16 @@ export function encode(data: string | Uint8Array, options: EncodeOptions = {}): 
   if (!validVersion(minVersion)) throw new RangeError('minVersion must be an integer from 1 to 40')
   if (fixedVersion !== undefined && fixedVersion < minVersion) throw new RangeError('Version is below minVersion')
 
+  checkMode(data, options.mode)
+  // Input no version can hold is refused before anything is built from it.
+  if (data.length > maxInput(data, options.mode, ecc, fixedVersion ?? 40)) {
+    throw new QrCapacityError(
+      fixedVersion === undefined
+        ? `Data does not fit any version at level ${ecc}`
+        : `Data does not fit version ${fixedVersion} at level ${ecc}`,
+    )
+  }
+
   // One segment for bytes or a named mode; otherwise the cheapest mix, which
   // can differ by count field band, so it is worked out per band as needed.
   const single = singlePart(data, options.mode)
@@ -181,12 +191,45 @@ export function countBand(version: number): 0 | 1 | 2 {
   return version <= 9 ? 0 : version <= 26 ? 1 : 2
 }
 
+/** Rejects a mode name that is not one, and a mode other than byte for bytes. */
+function checkMode(data: string | Uint8Array, requested: Mode | undefined): void {
+  if (requested !== undefined && !MODES.includes(requested)) throw new RangeError(`Unknown mode: ${String(requested)}`)
+  if (typeof data !== 'string' && requested !== undefined && requested !== 'byte') {
+    throw new RangeError('Bytes can only be encoded in byte mode')
+  }
+}
+
+/**
+ * The most bytes (for bytes) or UTF-16 code units (for text) that any version
+ * up to `highest` can hold at level `ecc`; longer input cannot fit, whatever
+ * its characters. Only a lower bound on the bits is used, so nothing that
+ * fits is refused:
+ *
+ * - After the 4-bit mode indicator and a count field, a byte costs 8 bits, a
+ *   digit at least 10/3, an alphanumeric character 5.5. A text character that
+ *   needs more than one UTF-16 code unit or UTF-8 byte costs more than that
+ *   per unit, so units and bytes bound the characters from above.
+ * - The count field is taken at the highest version's band, and the capacity
+ *   at the highest version. Capacity grows by at least 6 codewords (48 bits)
+ *   a version and the count field by at most 8 bits across the bands (byte
+ *   mode, 8 to 16), so what fits at a lower version fits within the bound
+ *   for the highest.
+ * - Text with no named mode is bounded at the cheapest mode and the
+ *   narrowest count field, 10/3 bits a unit.
+ */
+function maxInput(data: string | Uint8Array, requested: Mode | undefined, ecc: ErrorCorrection, highest: number): number {
+  const available = dataCodewords(highest, ecc) * 8 - 4
+  const band = countBand(highest)
+  const mode = typeof data === 'string' ? requested : 'byte'
+  if (mode === 'byte') return Math.floor((available - COUNT_BITS.byte[band]) / 8)
+  if (mode === 'numeric') return Math.floor(((available - COUNT_BITS.numeric[band]) * 3) / 10)
+  if (mode === 'alphanumeric') return Math.floor(((available - COUNT_BITS.alphanumeric[band]) * 2) / 11)
+  return Math.floor(((available - Math.min(...MODES.map((m) => COUNT_BITS[m][band]))) * 3) / 10)
+}
+
 /** The one segment for bytes or a requested mode, or undefined when the encoder should choose. */
 function singlePart(data: string | Uint8Array, requested: Mode | undefined): Part | undefined {
-  if (typeof data !== 'string') {
-    if (requested !== undefined && requested !== 'byte') throw new RangeError('Bytes can only be encoded in byte mode')
-    return { mode: 'byte', data }
-  }
+  if (typeof data !== 'string') return { mode: 'byte', data }
   if (requested === 'numeric') {
     if (!/^[0-9]*$/.test(data)) throw new RangeError('Numeric mode takes digits only')
     return { mode: requested, data }
@@ -196,7 +239,6 @@ function singlePart(data: string | Uint8Array, requested: Mode | undefined): Par
     return { mode: requested, data }
   }
   if (requested === 'byte') return { mode: requested, data: utf8(data) }
-  if (requested !== undefined) throw new RangeError(`Unknown mode: ${String(requested)}`)
   return data === '' ? { mode: 'byte', data: new Uint8Array(0) } : undefined
 }
 
