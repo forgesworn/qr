@@ -28,11 +28,11 @@ class FixturesTest {
     }
 
     @Test
-    fun readsEveryFrameTheTypeScriptDecoderReads_andAtLeastAsManyAsZxing() {
+    fun readsEveryFrameTheTypeScriptDecoderReads_andAtLeastAsManyAsTheReference() {
         val all = frames()
-        assertEquals(36, all.size)
+        assertEquals(48, all.size)
         var kotlin = 0
-        var zxing = 0
+        var reference = 0
         var tsKnown = 0
         val misses = ArrayList<String>()
         val wrong = ArrayList<String>()
@@ -41,19 +41,19 @@ class FixturesTest {
             val ours = decode(g.data, g.width, g.height)?.text == f.text
             val theirs = zxingRead(g) == f.text
             if (ours) kotlin++
-            if (theirs) zxing++
+            if (theirs) reference++
             if (f.typescript) {
                 tsKnown++
                 if (!ours) wrong.add(f.file)
             }
-            if (!ours) misses.add("${f.file}${if (theirs) " (ZXing read it)" else ""}${if (f.typescript) " (TypeScript read it)" else ""}")
+            if (!ours) misses.add("${f.file}${if (theirs) " (the reference read it)" else ""}${if (f.typescript) " (TypeScript read it)" else ""}")
         }
-        val report = "fixtures: Kotlin $kotlin/${all.size}, ZXing $zxing/${all.size}, TypeScript marked $tsKnown\n" +
+        val report = "fixtures: Kotlin $kotlin/${all.size}, reference $reference/${all.size}, TypeScript marked $tsKnown\n" +
             misses.joinToString("\n") + "\n"
         println(report)
         File("build").mkdirs()
         File("build/fixture-score.txt").writeText(report)
         assertTrue("Frames the TypeScript decoder reads but Kotlin does not: $wrong", wrong.isEmpty())
-        assertTrue("Kotlin read $kotlin, ZXing $zxing", kotlin >= zxing)
+        assertTrue("Kotlin read $kotlin, the reference $reference", kotlin >= reference)
     }
 }

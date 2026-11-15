@@ -13,7 +13,7 @@ class DecodeTest {
     private val payload = "https://example.com/r/7f3a9c2e41b8?k=Z2l2ZSBtZSBhIHJvb20"
 
     @Test
-    fun readsEveryZxingVectorFromACleanStraightPicture() {
+    fun readsEveryReferenceVectorFromACleanStraightPicture() {
         for (v in encodeVectors()) {
             val g = picture(fromRows(v.rows, v.size), v.size, if (v.size > 100) 2 else 3)
             val got = decode(g.data, g.width, g.height, inversion = Inversion.NORMAL)
@@ -97,6 +97,10 @@ class DecodeTest {
             { decode(ByteArray(100), 0, 100) },
             { decode(ByteArray(100), 10, 10, rowStride = 5) },
             { decode(IntArray(10), 100, 100) },
+            // Every entry point checks the length: one byte short, and short once the stride is counted.
+            { decode(ByteArray(100 * 100 - 1), 100, 100) },
+            { decode(ByteArray(100 * 100), 100, 100, rowStride = 101) },
+            { decode(IntArray(100 * 100 - 1), 100, 100) },
         )) {
             try {
                 bad()

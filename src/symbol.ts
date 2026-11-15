@@ -11,7 +11,7 @@ import {
   type ErrorCorrection,
 } from './encode.js'
 import { correct } from './rs.js'
-import { fromUtf8, isUtf8 } from './text.js'
+import { fromEci, fromUtf8, hanziText, isUtf8, kanjiText, looksShiftJis } from './text.js'
 
 /** What a symbol says, once read. */
 export interface Payload {
@@ -26,6 +26,31 @@ export interface Payload {
   readonly eci: readonly number[]
   /** Codewords Reed-Solomon had to correct. */
   readonly corrected: number
+  /** Present when the symbol is one of a structured-append set; `text` and `bytes` then hold this symbol's part only. */
+  readonly structuredAppend?: StructuredAppend
+  /** Present when the symbol carries an FNC1 indicator (GS1 or an industry application). */
+  readonly fnc1?: Fnc1
+}
+
+/** The header of a structured-append symbol. */
+export interface StructuredAppend {
+  /** This symbol's place in the set, counting from 0. */
+  readonly index: number
+  /** How many symbols the set has, 1 to 16. */
+  readonly total: number
+  /** The parity byte: the XOR of every byte of the whole message, the same in each symbol of the set. */
+  readonly parity: number
+}
+
+/**
+ * An FNC1 indicator. In alphanumeric segments `%` then reads as the group
+ * separator U+001D and `%%` as `%`, in `text` and `bytes` alike.
+ */
+export interface Fnc1 {
+  /** 'first' is the GS1 format; 'second' is an industry application. */
+  readonly position: 'first' | 'second'
+  /** Second position only: one letter or two digits, as a string. */
+  readonly applicationIndicator?: string
 }
 
 /** Reads modules through a callback: true for dark, x across, y down. */
@@ -60,7 +85,43 @@ function nearest<T extends { bits: number }>(table: readonly T[], reads: readonl
   return best
 }
 
-/** The version a symbol of `size` modules declares, when its version blocks can be read. */
+const PLACEMENTS: (Uint16Array | undefined)[] = []
+
+/**
+ * The modules of a version that carry the bit stream, in the order the
+ * standard places it: two columns at a time from the right, snaking up and
+ * down, skipping the function patterns. Each is y * 256 + x. Worked out once
+ * a version and kept.
+ */
+function placement(version: number): Uint16Array {
+  let places = PLACEMENTS[version]
+  if (places === undefined) {
+    const grid = new Grid(version)
+    const size = grid.size
+    const found: number[] = []
+    let upward = true
+    for (let right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5
+      for (let step = 0; step < size; step++) {
+        const y = upward ? size - 1 - step : step
+        for (let i = 0; i < 2; i++) {
+          const x = right - i
+          if (!grid.isReserved(x, y)) found.push((y << 8) | x)
+        }
+      }
+      upward = !upward
+    }
+    places = Uint16Array.from(found)
+    PLACEMENTS[version] = places
+  }
+  return places
+}
+
+/**
+ * The version a symbol of `size` modules declares: from the size below
+ * version 7, else from its version blocks, or undefined when neither copy
+ * decodes.
+ */
 export function readVersion(read: ModuleReader, size: number): number | undefined {
   if (size < 45) return (size - 17) / 4
   let bottomLeft = 0
@@ -75,14 +136,27 @@ export function readVersion(read: ModuleReader, size: number): number | undefine
 }
 
 /**
- * Decodes a symbol from its modules. `size` must be 17 + 4v; for version 7
- * and up the version blocks decide, and a size that disagrees fails.
- * Returns undefined when the symbol cannot be read.
+ * The errors a block of this symbol may have had corrected: half of its check
+ * codewords once the p of Table 9 is withheld to catch a misdecode. Only
+ * versions 1 to 3 withhold any; Reed-Solomon alone would correct one more at
+ * 1-L, 1-M and 2-L.
+ */
+export function correctable(version: number, ecc: ErrorCorrection): number {
+  const p = version === 1 ? (ecc === 'L' ? 3 : ecc === 'M' ? 2 : 1) : version === 2 && ecc === 'L' ? 2 : version === 3 && ecc === 'L' ? 1 : 0
+  return (blocksFor(version, ecc)[0] - p) >> 1
+}
+
+/**
+ * Decodes a symbol from its modules. `size` must be 17 + 4v. From version 7
+ * a version block that decodes decides, and a size that disagrees fails;
+ * if neither decodes, the size decides. Returns undefined when the symbol
+ * cannot be read.
  */
 export function readSymbol(read: ModuleReader, size: number): Payload | undefined {
   if (size < 21 || size > 177 || (size - 17) % 4 !== 0) return undefined
-  const version = readVersion(read, size)
-  if (version === undefined || 17 + 4 * version !== size) return undefined
+  // When neither version copy decodes, the size says which version it is.
+  const version = readVersion(read, size) ?? (size - 17) / 4
+  if (17 + 4 * version !== size) return undefined
 
   let first = 0
   let second = 0
@@ -94,25 +168,16 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
   const format = nearest(FORMATS, [first, second])
   if (format === undefined) return undefined
 
-  const grid = new Grid(version)
   const [ecPerBlock, g1, d1, g2] = blocksFor(version, format.ecc)
   const blockCount = g1 + g2
   const total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
   const stream = new Uint8Array(total)
-  let bit = 0
-  let upward = true
-  for (let right = size - 1; right >= 1 && bit < total * 8; right -= 2) {
-    if (right === 6) right = 5
-    for (let step = 0; step < size; step++) {
-      const y = upward ? size - 1 - step : step
-      for (let i = 0; i < 2; i++) {
-        const x = right - i
-        if (grid.isReserved(x, y) || bit >= total * 8) continue
-        if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
-        bit++
-      }
-    }
-    upward = !upward
+  const places = placement(version)
+  const bits = Math.min(places.length, total * 8)
+  for (let bit = 0; bit < bits; bit++) {
+    const x = places[bit]! & 255
+    const y = places[bit]! >> 8
+    if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
   }
 
   const blocks: Uint8Array[] = []
@@ -126,14 +191,19 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
   }
   const data = new Uint8Array(g1 * d1 + g2 * (d1 + 1))
   let corrected = 0
+  const limit = correctable(version, format.ecc)
   for (let b = 0, offset = 0; b < blockCount; b++) {
     const fixed = correct(blocks[b]!, ecPerBlock)
-    if (fixed < 0) return undefined
+    if (fixed < 0 || fixed > limit) return undefined
     corrected += fixed
     const length = b < g1 ? d1 : d1 + 1
     data.set(blocks[b]!.subarray(0, length), offset)
     offset += length
   }
+
+  // Zero in every data codeword is what a texture matching the mask pattern
+  // corrects to, and it parses as a terminator: no symbol holds it.
+  if (data.every((word) => word === 0)) return undefined
 
   const parsed = parse(data, version)
   if (parsed === undefined) return undefined
@@ -161,16 +231,36 @@ class Bits {
 interface Run {
   eci: number | undefined
   bytes: number[]
+  /** Text already decided, for a kanji or hanzi character. */
+  fixed?: string
 }
 
 const KANJI_COUNT_BITS = [8, 10, 12] as const
 
-function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8Array; eci: number[] } | undefined {
+interface Parsed {
+  text: string
+  bytes: Uint8Array
+  eci: number[]
+  structuredAppend?: StructuredAppend
+  fnc1?: Fnc1
+}
+
+/** ISO 18004 7.4.8.3: 0-99 are two digits, ASCII + 100 gives a letter. */
+function applicationIndicator(value: number): string | undefined {
+  if (value <= 99) return String(value).padStart(2, '0')
+  if (value >= 165 && value <= 190) return String.fromCharCode(value - 100)
+  if (value >= 197 && value <= 222) return String.fromCharCode(value - 100)
+  return undefined
+}
+
+function parse(data: Uint8Array, version: number): Parsed | undefined {
   const bits = new Bits(data)
   const band = countBand(version)
   const runs: Run[] = [{ eci: undefined, bytes: [] }]
   const eci: number[] = []
   const out: number[] = []
+  let structuredAppend: StructuredAppend | undefined
+  let fnc1: Fnc1 | undefined
   const emit = (byte: number) => {
     runs[runs.length - 1]!.bytes.push(byte)
     out.push(byte)
@@ -193,29 +283,57 @@ function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8A
         }
       } else if (mode === 2) {
         let count = bits.read([9, 11, 13][band]!)
+        const segment: number[] = []
         for (; count >= 2; count -= 2) {
           const v = bits.read(11)
           if (v >= 45 * 45) return undefined
-          emit(ALPHANUMERIC.charCodeAt(Math.floor(v / 45)))
-          emit(ALPHANUMERIC.charCodeAt(v % 45))
+          segment.push(ALPHANUMERIC.charCodeAt(Math.floor(v / 45)), ALPHANUMERIC.charCodeAt(v % 45))
         }
         if (count === 1) {
           const v = bits.read(6)
           if (v >= 45) return undefined
-          emit(ALPHANUMERIC.charCodeAt(v))
+          segment.push(ALPHANUMERIC.charCodeAt(v))
+        }
+        // Under FNC1, within one segment: %% is %, and a lone % is the group separator.
+        for (let i = 0; i < segment.length; i++) {
+          if (fnc1 !== undefined && segment[i] === 0x25) {
+            if (segment[i + 1] === 0x25) i++
+            else {
+              emit(0x1d)
+              continue
+            }
+          }
+          emit(segment[i]!)
         }
       } else if (mode === 4) {
         const count = bits.read([8, 16, 16][band]!)
         for (let i = 0; i < count; i++) emit(bits.read(8))
       } else if (mode === 8) {
-        // Kanji: kept as its Shift_JIS bytes; the text shows U+FFFD for each.
+        // Kanji: kept as its Shift_JIS bytes; each character's text is the platform's Shift_JIS.
         const count = bits.read(KANJI_COUNT_BITS[band])
         for (let i = 0; i < count; i++) {
           const v = bits.read(13)
           let sjis = (Math.floor(v / 0xc0) << 8) | v % 0xc0
           sjis += sjis < 0x1f00 ? 0x8140 : 0xc140
           out.push(sjis >>> 8, sjis & 0xff)
-          runs.push({ eci: -1, bytes: [] }, { eci: runs[runs.length - 1]!.eci, bytes: [] })
+          const current = runs[runs.length - 1]!.eci
+          runs.push({ eci: current, bytes: [], fixed: kanjiText(sjis) }, { eci: current, bytes: [] })
+        }
+      } else if (mode === 13) {
+        // Hanzi (GB/T 18284): subset 1 is GB2312, kept as its bytes; any other subset, or a
+        // value outside the GB2312 rows or on an empty cell, rejects the symbol.
+        if (bits.read(4) !== 1) return undefined
+        const count = bits.read(KANJI_COUNT_BITS[band])
+        for (let i = 0; i < count; i++) {
+          const v = bits.read(13)
+          const row = Math.floor(v / 0x60)
+          const lead = row + (row < 0x0a ? 0xa1 : 0xa6)
+          const low = (v % 0x60) + 0xa1
+          const text = hanziText(lead, low)
+          if (text === undefined) return undefined
+          out.push(lead, low)
+          const current = runs[runs.length - 1]!.eci
+          runs.push({ eci: current, bytes: [], fixed: text }, { eci: current, bytes: [] })
         }
       } else if (mode === 7) {
         const first = bits.read(8)
@@ -231,11 +349,15 @@ function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8A
         eci.push(value)
         runs.push({ eci: value, bytes: [] })
       } else if (mode === 3) {
-        bits.read(16) // structured append: position, total and parity; one symbol is read alone
+        const sequence = bits.read(8)
+        const parity = bits.read(8)
+        structuredAppend ??= { index: sequence >>> 4, total: (sequence & 15) + 1, parity }
       } else if (mode === 5) {
-        // FNC1 in first position: GS1 data follows in ordinary segments
+        fnc1 ??= { position: 'first' }
       } else if (mode === 9) {
-        bits.read(8) // FNC1 in second position: application indicator
+        const indicator = applicationIndicator(bits.read(8))
+        if (indicator === undefined) return undefined
+        fnc1 ??= { position: 'second', applicationIndicator: indicator }
       } else {
         return undefined
       }
@@ -244,15 +366,36 @@ function parse(data: Uint8Array, version: number): { text: string; bytes: Uint8A
     return undefined
   }
   let text = ''
-  for (const run of runs) text += run.eci === -1 ? '�' : decodeRun(run)
-  return { text, bytes: Uint8Array.from(out), eci }
+  for (const run of runs) text += decodeRun(run)
+  return {
+    text,
+    bytes: Uint8Array.from(out),
+    eci,
+    ...(structuredAppend && { structuredAppend }),
+    ...(fnc1 && { fnc1 }),
+  }
 }
 
-/** ECI 26 is UTF-8; 3 and 1 are Latin-1. Without ECI, valid UTF-8 is taken as UTF-8, else Latin-1. */
+/**
+ * ECI 26 is UTF-8; 3 and 1 are Latin-1; the other assignments the platform
+ * knows (text.ts) are read as that set. Without an ECI, or where the platform
+ * lacks the set, valid UTF-8 is taken as UTF-8, else Latin-1; with no ECI at
+ * all, bytes that look like Shift_JIS (looksShiftJis) are read as that.
+ */
 function decodeRun(run: Run): string {
+  if (run.fixed !== undefined) return run.fixed
   const bytes = Uint8Array.from(run.bytes)
   if (run.eci === 3 || run.eci === 1) return latin1(bytes)
-  if (run.eci === 26 || isUtf8(bytes)) return fromUtf8(bytes)
+  if (run.eci === 26) return fromUtf8(bytes)
+  if (run.eci !== undefined && bytes.length > 0) {
+    const text = fromEci(run.eci, bytes)
+    if (text !== undefined) return text
+  }
+  if (isUtf8(bytes)) return fromUtf8(bytes)
+  if (run.eci === undefined && looksShiftJis(bytes)) {
+    const text = fromEci(20, bytes)
+    if (text !== undefined && !text.includes('\ufffd')) return text
+  }
   return latin1(bytes)
 }
 

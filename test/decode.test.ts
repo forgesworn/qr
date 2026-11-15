@@ -1,7 +1,7 @@
 // Decoder tests on synthetic photographs: codes drawn through a perspective
 // map with rotation, small modules, blur, noise, uneven light, inversion and
-// mirroring. jsQR reads the same frames, and is the bar: we must read at
-// least as many as it does. jsQR is a development-only oracle.
+// mirroring. An independent reader, a development-only oracle, reads the
+// same frames and is the bar: we must read at least as many as it does.
 import { readFileSync, writeFileSync } from 'node:fs'
 import jsQRModule from 'jsqr'
 import { describe, expect, it } from 'vitest'
@@ -34,7 +34,7 @@ function theirs(image: Grey): string | undefined {
 const PAYLOAD = 'https://example.com/r/7f3a9c2e41b8?k=Z2l2ZSBtZSBhIHJvb20'
 
 describe('decode', () => {
-  it('reads every ZXing vector from a clean straight picture', () => {
+  it('reads every reference vector from a clean straight picture', () => {
     for (const v of vectors) {
       const image = photograph(fromRows(v.rows, v.size), v.size, { scale: v.size > 100 ? 2 : 3 })
       expect(decode(image, { inversion: 'normal' }), v.id).toMatchObject({
@@ -88,9 +88,29 @@ describe('decode', () => {
     expect(decode({ data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 })).toBeUndefined()
     expect(() => decode({ data: new Uint8Array(10), width: 100, height: 100 })).toThrow(RangeError)
     expect(() => decode({ data: new Uint8Array(100), width: 0, height: 100 })).toThrow(RangeError)
+    // Short data is an error whether or not channels is named.
+    for (const channels of [1, 4] as const) {
+      expect(() => decode({ data: new Uint8Array(10), width: 100, height: 100 }, { channels })).toThrow(RangeError)
+    }
+    // Enough for grey but not RGBA when RGBA is claimed.
+    expect(() => decode({ data: new Uint8Array(100 * 100), width: 100, height: 100 }, { channels: 4 })).toThrow(RangeError)
+    expect(decode({ data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 }, { channels: 1 })).toBeUndefined()
+    expect(() => decode({ data: new Uint8Array(100 * 100), width: 100, height: 100 }, { channels: 3 as 4 })).toThrow(RangeError)
+    // Three bytes a pixel is refused unless the caller says the data is greyscale.
+    expect(() => decode({ data: new Uint8Array(100 * 100 * 3), width: 100, height: 100 })).toThrow(RangeError)
+    expect(decode({ data: new Uint8Array(100 * 100 * 3).fill(255), width: 100, height: 100 }, { channels: 1 })).toBeUndefined()
+    // A camera buffer with chroma after the luminance plane is still greyscale.
+    expect(decode({ data: new Uint8Array(100 * 150).fill(255), width: 100, height: 100 })).toBeUndefined()
+    expect(decode({ data: new Uint8ClampedArray(100 * 100 * 4).fill(255), width: 100, height: 100 })).toBeUndefined()
+    expect(() => decode(null as never)).toThrow(TypeError)
+    expect(() => decode({ data: new Uint16Array(100 * 100) as never, width: 100, height: 100 })).toThrow(TypeError)
+    expect(() => decode({ data: Array(100 * 100).fill(255) as never, width: 100, height: 100 })).toThrow(TypeError)
+    const blank = { data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 }
+    expect(() => decode(blank, { inversion: 'neither' as never })).toThrow(RangeError)
+    expect(decode(blank, null as never)).toBeUndefined()
   })
 
-  it('reads at least as many distorted pictures as jsQR', () => {
+  it('reads at least as many distorted pictures as the independent reader', () => {
     // QR_SEED and QR_SHOTS draw a different set, to check the tuning generalises.
     const random = prng(Number(process.env.QR_SEED ?? 42))
     const shots: Shot[] = []
@@ -121,11 +141,11 @@ describe('decode', () => {
       if (a) mine++
       if (b) jsqr++
       if (b && !a) theirsOnly++
-      if (!a) missed.push(`${i} v${qr.version} ${JSON.stringify(shot)}${b ? ' (jsQR read it)' : ''}`)
+      if (!a) missed.push(`${i} v${qr.version} ${JSON.stringify(shot)}${b ? ' (the independent reader read it)' : ''}`)
     })
     // QR_REPORT=<file> writes the score and the misses, for tuning.
     const report = process.env.QR_REPORT
-    if (report) writeFileSync(report, `distorted: ours ${mine}/${shots.length}, jsQR ${jsqr}/${shots.length}, jsQR only ${theirsOnly}\n${missed.join('\n')}\n`)
+    if (report) writeFileSync(report, `distorted: ours ${mine}/${shots.length}, independent reader ${jsqr}/${shots.length}, independent reader only ${theirsOnly}\n${missed.join('\n')}\n`)
     expect(mine).toBeGreaterThanOrEqual(jsqr)
     expect(mine).toBeGreaterThanOrEqual(Math.ceil(shots.length * 0.9))
   }, 60_000)

@@ -26,6 +26,8 @@ export interface Shot {
   invert?: boolean
   /** Draw the grid transposed. */
   mirror?: boolean
+  /** Quarter turns of the grid, clockwise, so the narrowed edge is another side of the symbol. */
+  turn?: number
   seed?: number
 }
 
@@ -89,7 +91,14 @@ export function photograph(modules: Uint8Array, size: number, shot: Shot): Grey 
     const mx = Math.floor(u * side) - margin
     const my = Math.floor(v * side) - margin
     if (mx < 0 || my < 0 || mx >= size || my >= size) return false
-    return modules[shot.mirror ? mx * size + my : my * size + mx] === 1
+    let x = shot.mirror ? my : mx
+    let y = shot.mirror ? mx : my
+    for (let t = 0; t < (shot.turn ?? 0) % 4; t++) {
+      const was = x
+      x = y
+      y = size - 1 - was
+    }
+    return modules[y * size + x] === 1
   }
   const light = shot.invert ? 30 : 225
   const ink = shot.invert ? 225 : 30
@@ -150,3 +159,35 @@ export function toRgba(image: Grey): Uint8ClampedArray {
   return out
 }
 
+
+/**
+ * A symbol seen through a lens that bends it: each picture point samples
+ * the straight drawing (`scale` pixels a module, four modules of quiet zone)
+ * at its offset from the centre times 1 + k r^2, r in half-sides. Positive k
+ * shrinks the symbol towards its edges, so the sides bow; one projective map
+ * cannot follow it. Four samples a pixel; the Kotlin tests draw the same.
+ */
+export function bent(modules: Uint8Array, size: number, scale: number, k: number, invert = false): Grey {
+  const quiet = 4
+  const side = (size + 2 * quiet) * scale
+  const c = side / 2
+  const data = new Uint8Array(side * side)
+  for (let py = 0; py < side; py++) {
+    for (let px = 0; px < side; px++) {
+      let sum = 0
+      for (let sy = 0; sy < 2; sy++) {
+        for (let sx = 0; sx < 2; sx++) {
+          const x = px + (sx + 0.5) / 2 - c
+          const y = py + (sy + 0.5) / 2 - c
+          const f = 1 + (k * (x * x + y * y)) / (c * c)
+          const mx = Math.floor((c + x * f) / scale) - quiet
+          const my = Math.floor((c + y * f) / scale) - quiet
+          const dark = mx >= 0 && my >= 0 && mx < size && my < size && modules[my * size + mx] === 1
+          sum += dark !== invert ? 30 : 225
+        }
+      }
+      data[py * side + px] = Math.floor(sum / 4)
+    }
+  }
+  return { data, width: side, height: side }
+}

@@ -20,7 +20,7 @@ kotlin {
 dependencies {
     // The library itself depends on the Kotlin standard library only.
     testImplementation(libs.junit)
-    // ZXing is a test-time oracle, as in the TypeScript tests.
+    // The reference library is a test-time oracle, as in the TypeScript tests.
     testImplementation(libs.zxing.core)
 }
 

@@ -5,7 +5,7 @@ export interface Point {
   readonly y: number
 }
 
-interface Finder extends Point {
+export interface Finder extends Point {
   readonly moduleSize: number
   readonly count: number
 }
@@ -19,6 +19,68 @@ export interface Location {
   readonly size: number
   /** Picture coordinates of the centre of module (x, y). */
   readonly project: (x: number, y: number) => Point
+  /**
+   * The nine numbers of the projective map `project` applies to
+   * (x + 0.5, y + 0.5), row by row, when it is that map and nothing more.
+   */
+  readonly matrix?: readonly number[] | undefined
+}
+
+/**
+ * Work the search does, counted for tests that bound it: pixels stepped in
+ * cross-checks, stored candidates compared while merging, pixels in the
+ * windows searched for alignment patterns, maps sampled, maps read again
+ * by the second look, those of them read through a mesh, and the points the
+ * mesh probed looking for alignment patterns; and, when counted, the maps
+ * sampled at reduced size.
+ */
+export interface Work {
+  steps: number
+  compared: number
+  scanned: number
+  maps: number
+  second: number
+  meshes: number
+  probed: number
+  reduced?: number
+}
+
+const NONE: readonly number[] = []
+
+/**
+ * Where each row of a black-and-white picture changes colour: for row y,
+ * every x from 1 up at which the pixel differs from the one before it, in
+ * order. Each row is worked out when first asked for and kept. A picture and
+ * its inverse change colour at the same places, so they share one of these.
+ */
+export interface Edges {
+  readonly row: (y: number) => Int32Array
+}
+
+export function edgesOf(image: BitImage): Edges {
+  const { data, width, height } = image
+  const rows: (Int32Array | undefined)[] = new Array<Int32Array | undefined>(height)
+  const scratch = new Int32Array(width)
+  return {
+    row: (y) => {
+      let edges = rows[y]
+      if (edges === undefined) {
+        const start = y * width
+        let n = 0
+        let ink = data[start]!
+        for (let x = 1; x < width; x++) {
+          const v = data[start + x]!
+          if (v !== ink) {
+            scratch[n++] = x
+            ink = v
+          }
+        }
+        edges = scratch.slice(0, n)
+        rows[y] = edges
+      }
+      return edges
+    },
+  }
 }
 
 const dark = (image: BitImage, x: number, y: number): boolean => image.data[y * image.width + x] === 1
@@ -29,20 +91,22 @@ function distance(a: Point, b: Point): number {
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
 function finderRatio(counts: readonly number[], tolerance = 0.5): boolean {
-  let total = 0
-  for (const c of counts) {
-    if (c === 0) return false
-    total += c
-  }
+  const c0 = counts[0]!
+  const c1 = counts[1]!
+  const c2 = counts[2]!
+  const c3 = counts[3]!
+  const c4 = counts[4]!
+  if (c0 === 0 || c1 === 0 || c2 === 0 || c3 === 0 || c4 === 0) return false
+  const total = c0 + c1 + c2 + c3 + c4
   if (total < 7) return false
   const module = total / 7
   const slack = module * tolerance
   return (
-    Math.abs(module - counts[0]!) < slack &&
-    Math.abs(module - counts[1]!) < slack &&
-    Math.abs(3 * module - counts[2]!) < 3 * slack &&
-    Math.abs(module - counts[3]!) < slack &&
-    Math.abs(module - counts[4]!) < slack
+    Math.abs(module - c0) < slack &&
+    Math.abs(module - c1) < slack &&
+    Math.abs(3 * module - c2) < 3 * slack &&
+    Math.abs(module - c3) < slack &&
+    Math.abs(module - c4) < slack
   )
 }
 
@@ -62,14 +126,40 @@ function crossCheck(
   maxCount: number,
   originalTotal: number,
   tolerance = 0.5,
+  work?: Work,
+): number {
+  const counts = [0, 0, 0, 0, 0]
+  try {
+    return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+  } finally {
+    if (work) work.steps += counts[0]! + counts[1]! + counts[2]! + counts[3]! + counts[4]!
+  }
+}
+
+function runs(
+  image: BitImage,
+  x: number,
+  y: number,
+  dx: number,
+  dy: number,
+  maxCount: number,
+  originalTotal: number,
+  tolerance: number,
+  counts: number[],
 ): number {
   const { width, height } = image
   const inside = (px: number, py: number) => px >= 0 && py >= 0 && px < width && py < height
-  const counts = [0, 0, 0, 0, 0]
+  // A centre run past these lengths could not pass the checks below, so
+  // stopping there loses nothing and keeps a long dark stripe from costing its
+  // length. Back along the row or down the column, the total would be more
+  // than twice the row's. On the diagonal, whose four outer runs stop at
+  // maxCount, a centre in proportion is under 29 times maxCount (at the
+  // loosest tolerance, 1.05).
+  const longest = dx && dy ? 32 * (maxCount + 1) : 2 * originalTotal
   let px = x
   let py = y
   while (inside(px, py) && dark(image, px, py)) {
-    counts[2]!++
+    if (++counts[2]! > longest) return NaN
     px -= dx
     py -= dy
   }
@@ -88,7 +178,7 @@ function crossCheck(
   px = x + dx
   py = y + dy
   while (inside(px, py) && dark(image, px, py)) {
-    counts[2]!++
+    if (++counts[2]! > longest) return NaN
     px += dx
     py += dy
   }
@@ -105,8 +195,11 @@ function crossCheck(
   }
   if (counts[4]! >= maxCount) return NaN
   const total = counts.reduce((a, b) => a + b, 0)
-  // A diagonal crosses the pattern at a longer stretch, so only straight lines compare totals.
-  if (!(dx && dy) && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
+  // A diagonal crosses the pattern at a longer stretch, so only straight lines
+  // compare totals. Back along the row the stretch must match; down the column,
+  // perspective can make the pattern up to twice as tall as wide, or half.
+  if (dx && !dy && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
+  if (dy && !dx && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return NaN
   if (!finderRatio(counts, tolerance)) return NaN
   // Position along the line, measured in steps from the start point.
   const end = dx !== 0 ? px - x : py - y
@@ -118,65 +211,110 @@ function crossCheck(
  * is how far a run may stray from its share, in modules; a blurred light
  * ring needs more than the default half module.
  */
-export function findFinders(image: BitImage, tolerance = 0.5): Finder[] {
+export function findFinders(image: BitImage, tolerance = 0.5, work?: Work, edges: Edges = edgesOf(image)): Finder[] {
   const { width, height } = image
   const found: { x: number; y: number; moduleSize: number; count: number }[] = []
-  const consider = (counts: readonly number[], row: number, end: number) => {
+  // Candidates filed by 16-pixel cell, so merging compares only nearby ones
+  // and a picture full of finder-like patterns costs in proportion to its size.
+  const CELL = 16
+  const columns = Math.floor(width / CELL) + 1
+  const across = (x: number) => Math.min(columns - 1, Math.floor(Math.max(0, x) / CELL))
+  const down = (y: number) => Math.floor(Math.max(0, y) / CELL)
+  const cells = new Map<number, number[]>()
+  const file = (i: number) => {
+    const key = down(found[i]!.y) * columns + across(found[i]!.x)
+    const cell = cells.get(key)
+    if (cell) cell.push(i)
+    else cells.set(key, [i])
+    return key
+  }
+  const consider = (counts: readonly number[], y: number, end: number) => {
     const total = counts.reduce((a, b) => a + b, 0)
     let cx = centreFromEnd(counts, end)
     const maxCount = counts[2]!
-    const dy = crossCheck(image, Math.floor(cx), row, 0, 1, maxCount, total, tolerance)
+    const dy = crossCheck(image, Math.floor(cx), y, 0, 1, maxCount, total, tolerance, work)
     if (Number.isNaN(dy)) return false
-    const cy = row + dy
-    const dx = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 0, maxCount, total, tolerance)
+    const cy = y + dy
+    const dx = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 0, maxCount, total, tolerance, work)
     if (Number.isNaN(dx)) return false
     cx = Math.floor(cx) + dx
-    const diagonal = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 1, maxCount * 2, total, tolerance + 0.25)
+    const diagonal = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 1, maxCount * 2, total, tolerance + 0.25, work)
     if (Number.isNaN(diagonal)) return false
     const moduleSize = total / 7
-    for (const f of found) {
-      if (
-        Math.abs(cy - f.y) <= moduleSize &&
-        Math.abs(cx - f.x) <= moduleSize &&
-        (Math.abs(moduleSize - f.moduleSize) <= 1 || Math.abs(moduleSize - f.moduleSize) <= f.moduleSize * 0.25)
-      ) {
-        const n = f.count + 1
-        f.x = (f.x * f.count + cx) / n
-        f.y = (f.y * f.count + cy) / n
-        f.moduleSize = (f.moduleSize * f.count + moduleSize) / n
-        f.count = n
-        return true
+    // The earliest stored candidate within a module, of a like module size, takes this sighting.
+    let match = -1
+    for (let r = down(cy - moduleSize); r <= down(cy + moduleSize); r++) {
+      for (let c = across(cx - moduleSize); c <= across(cx + moduleSize); c++) {
+        for (const i of cells.get(r * columns + c) ?? NONE) {
+          if (work) work.compared++
+          const f = found[i]!
+          if (
+            (match < 0 || i < match) &&
+            Math.abs(cy - f.y) <= moduleSize &&
+            Math.abs(cx - f.x) <= moduleSize &&
+            (Math.abs(moduleSize - f.moduleSize) <= 1 || Math.abs(moduleSize - f.moduleSize) <= f.moduleSize * 0.25)
+          ) match = i
+        }
       }
     }
+    if (match >= 0) {
+      const f = found[match]!
+      const before = down(f.y) * columns + across(f.x)
+      const n = f.count + 1
+      f.x = (f.x * f.count + cx) / n
+      f.y = (f.y * f.count + cy) / n
+      f.moduleSize = (f.moduleSize * f.count + moduleSize) / n
+      f.count = n
+      if (down(f.y) * columns + across(f.x) !== before) {
+        const cell = cells.get(before)!
+        cell.splice(cell.indexOf(match), 1)
+        file(match)
+      }
+      return true
+    }
     found.push({ x: cx, y: cy, moduleSize, count: 1 })
+    file(found.length - 1)
     return true
   }
 
+  const data = image.data
   const skip = Math.max(1, Math.min(3, Math.floor(height / 200)))
+  const counts = [0, 0, 0, 0, 0]
   for (let y = skip - 1; y < height; y += skip) {
-    const counts = [0, 0, 0, 0, 0]
+    // Run by run, as a walk along the row pixel by pixel would count them:
+    // dark runs into the even places, light runs into the odd ones.
+    counts.fill(0)
     let state = 0
-    const row = y * width
-    for (let x = 0; x < width; x++) {
-      if (image.data[row + x] === 1) {
+    const changes = edges.row(y)
+    let ink = data[y * width] === 1
+    let x = 0
+    for (let k = 0; k <= changes.length; k++) {
+      const end = k < changes.length ? changes[k]! : width
+      const length = end - x
+      if (ink) {
         if (state & 1) state++
-        counts[state]!++
-      } else if (state & 1) {
-        counts[state]!++
-      } else if (state === 4) {
-        if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-          counts.fill(0)
-          state = 0
-        } else {
-          counts.copyWithin(0, 2)
-          counts[3] = 1
-          counts[4] = 0
-          state = 3
+        counts[state]! += length
+      } else if (state !== 4) {
+        state++
+        counts[state]! += length
+      } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
+        // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
+        counts.fill(0)
+        state = 0
+        if (length > 1) {
+          state = 1
+          counts[1] = length - 1
         }
       } else {
-        state++
-        counts[state]!++
+        counts[0] = counts[2]!
+        counts[1] = counts[3]!
+        counts[2] = counts[4]!
+        counts[3] = length
+        counts[4] = 0
+        state = 3
       }
+      x = end
+      ink = !ink
     }
     if (state === 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
   }
@@ -184,11 +322,24 @@ export function findFinders(image: BitImage, tolerance = 0.5): Finder[] {
 }
 
 /**
- * Every plausible top-left, top-right, bottom-left triple, best first: the
- * three should form a right-angled isosceles triangle of like-sized finders.
+ * Every plausible top-left, top-right, bottom-left triple, best first. The
+ * two sides meeting at the top-left should be the same number of modules
+ * long, counted along each side, and meet near a right angle. Perspective
+ * shrinks modules towards the far edge, so lengths in pixels can differ
+ * widely; lengths in modules do not.
  */
-export function finderTriples(finders: readonly Finder[]): [Finder, Finder, Finder][] {
+export function finderTriples(image: BitImage, finders: readonly Finder[]): [Finder, Finder, Finder][] {
   const pool = finders.slice(0, 12)
+  const legs = new Map<number, number>()
+  const modulesBetween = (i: number, j: number): number => {
+    const key = Math.min(i, j) * 12 + Math.max(i, j)
+    let n = legs.get(key)
+    if (n === undefined) {
+      n = distance(pool[i]!, pool[j]!) / runModuleSize(image, pool[i]!, pool[j]!)
+      legs.set(key, n)
+    }
+    return n
+  }
   const triples: { score: number; triple: [Finder, Finder, Finder] }[] = []
   for (let i = 0; i < pool.length; i++) {
     for (let j = i + 1; j < pool.length; j++) {
@@ -197,27 +348,31 @@ export function finderTriples(finders: readonly Finder[]): [Finder, Finder, Find
         const b = pool[j]!
         const c = pool[k]!
         const sizes = [a.moduleSize, b.moduleSize, c.moduleSize]
-        if (Math.max(...sizes) > 2 * Math.min(...sizes)) continue
-        const ab = distance(a, b) ** 2
-        const bc = distance(b, c) ** 2
-        const ca = distance(c, a) ** 2
+        if (Math.max(...sizes) > 3 * Math.min(...sizes)) continue
+        const ab = distance(a, b)
+        const bc = distance(b, c)
+        const ca = distance(c, a)
         // The corner opposite the longest side is the top-left.
-        let topLeft = c
-        let p = a
-        let q = b
-        let hyp = ab
-        let s1 = bc
-        let s2 = ca
-        if (bc >= ab && bc >= ca) [topLeft, p, q, hyp, s1, s2] = [a, b, c, bc, ab, ca]
-        else if (ca >= ab) [topLeft, p, q, hyp, s1, s2] = [b, c, a, ca, ab, bc]
-        const side = Math.sqrt((s1 + s2) / 2)
-        if (side < 10 * Math.min(...sizes)) continue
-        const score = (Math.abs(hyp - s1 - s2) + Math.abs(s1 - s2)) / hyp
-        if (score > 0.5) continue
+        let [t, m, n] = [k, i, j]
+        if (bc >= ab && bc >= ca) [t, m, n] = [i, j, k]
+        else if (ca >= ab) [t, m, n] = [j, k, i]
+        const one = modulesBetween(t, m)
+        const other = modulesBetween(t, n)
+        // The nearest finders in any symbol are 14 modules apart.
+        if (!(Math.min(one, other) >= 10)) continue
+        const topLeft = pool[t]!
+        let p = pool[m]!
+        let q = pool[n]!
+        const ux = p.x - topLeft.x
+        const uy = p.y - topLeft.y
+        const vx = q.x - topLeft.x
+        const vy = q.y - topLeft.y
+        const cos = Math.abs(ux * vx + uy * vy) / Math.hypot(ux, uy) / Math.hypot(vx, vy)
+        const mismatch = Math.abs(one - other) / Math.max(one, other)
+        if (cos > 0.5 || mismatch > 0.25) continue
         // In picture coordinates (y down) top-right x bottom-left is positive.
-        const cross = (p.x - topLeft.x) * (q.y - topLeft.y) - (p.y - topLeft.y) * (q.x - topLeft.x)
-        if (cross < 0) [p, q] = [q, p]
-        triples.push({ score: score - 0.01 * Math.min(a.count + b.count + c.count, 15), triple: [topLeft, p, q] })
+        if (ux * vy - uy * vx < 0) [p, q] = [q, p]
+        triples.push({ score: cos + mismatch - 0.01 * Math.min(a.count + b.count + c.count, 15), triple: [topLeft, p, q] })
       }
     }
   }
@@ -281,63 +436,79 @@ function blackWhiteBlack(image: BitImage, from: Point, to: Point): number {
 }
 
 /**
- * Searches near `estimate` for alignment pattern centres. Candidates seen on
- * two or more rows come first, then nearest the estimate.
+ * Searches near `estimate` for alignment pattern centres, whose modules span
+ * `wide` pixels along a row and `tall` down a column. Candidates seen on two
+ * or more rows come first, then nearest the estimate.
  */
-function findAlignments(image: BitImage, estimate: Point, moduleSize: number, reach: number): Point[] {
+function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: number, tall: number, reach: number, work?: Work): Point[] {
+  const moduleSize = Math.max(wide, tall)
   const radius = Math.ceil(reach * moduleSize)
   const left = Math.max(0, Math.floor(estimate.x - radius))
   const right = Math.min(image.width - 1, Math.ceil(estimate.x + radius))
   const top = Math.max(0, Math.floor(estimate.y - radius))
   const bottom = Math.min(image.height - 1, Math.ceil(estimate.y + radius))
   if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return []
-  const fits = (n: number) => Math.abs(n - moduleSize) < moduleSize * 0.6
+  if (work) work.scanned += (right - left + 1) * (bottom - top + 1)
+  const data = image.data
+  const width = image.width
+  const slack = wide * 0.6
+  const slackDown = tall * 0.6
   const vertical = (x: number, y: number): number => {
     // Light, dark, light runs through (x, y) going up and down from the dark centre.
     let up = y
-    while (up >= top && dark(image, x, up)) up--
+    while (up >= top && data[up * width + x] === 1) up--
     let down = y
-    while (down <= bottom && dark(image, x, down)) down++
+    while (down <= bottom && data[down * width + x] === 1) down++
     const middle = down - up - 1
-    if (!fits(middle)) return NaN
+    if (!(Math.abs(middle - tall) < slackDown)) return NaN
     let above = 0
-    for (let yy = up; yy >= top && !dark(image, x, yy); yy--) above++
+    for (let yy = up; yy >= top && data[yy * width + x] !== 1; yy--) above++
     let below = 0
-    for (let yy = down; yy <= bottom && !dark(image, x, yy); yy++) below++
-    if (!fits(above) || !fits(below)) return NaN
+    for (let yy = down; yy <= bottom && data[yy * width + x] !== 1; yy++) below++
+    if (!(Math.abs(above - tall) < slackDown) || !(Math.abs(below - tall) < slackDown)) return NaN
     return (up + 1 + down) / 2
   }
   const found: { x: number; y: number; count: number }[] = []
   for (let y = top; y <= bottom; y++) {
-    const runs: number[] = []
+    const changes = edges.row(y)
+    const n = changes.length
+    // The first change of colour past the window's left edge.
+    let k = 0
+    for (let high = n; k < high; ) {
+      const middle = (k + high) >> 1
+      if (changes[middle]! <= left) k = middle + 1
+      else high = middle
+    }
     let x = left
-    while (x <= right && dark(image, x, y)) x++ // skip a dark run cut by the window
+    if (data[y * width + left] === 1) x = k < n && changes[k]! <= right ? changes[k++]! : right + 1 // skip a dark run cut by the window
+    // Runs alternate light, dark, light ...: the last two are kept, and the
+    // run that ends a light, dark, light three is checked with them.
     let start = x
-    let current = false
-    for (; x <= right + 1; x++) {
-      const d = x <= right && dark(image, x, y)
-      if (x <= right && d === current) continue
-      runs.push(x - start)
+    let count = 0
+    let before = 0
+    let last = 0
+    for (;;) {
+      x = k < n && changes[k]! <= right ? changes[k++]! : right + 1
+      const run = x - start
       start = x
-      current = d
-      // runs alternate light, dark, light ... ; check the last three when they end in light
-      if (runs.length >= 3 && runs.length % 2 === 1) {
-        const [l1, d1, l2] = runs.slice(-3) as [number, number, number]
-        if (fits(l1) && fits(d1) && fits(l2)) {
-          const cx = x - l2 - d1 / 2
-          const cy = vertical(Math.floor(cx), y)
-          if (!Number.isNaN(cy)) {
-            const same = found.find((f) => Math.abs(f.x - cx) <= moduleSize && Math.abs(f.y - cy) <= moduleSize)
-            if (same) {
-              same.x = (same.x * same.count + cx) / (same.count + 1)
-              same.y = (same.y * same.count + cy) / (same.count + 1)
-              same.count++
-            } else {
-              found.push({ x: cx, y: cy, count: 1 })
-            }
+      count++
+      if (count >= 3 && (count & 1) === 1 && Math.abs(before - wide) < slack && Math.abs(last - wide) < slack && Math.abs(run - wide) < slack) {
+        const cx = x - run - last / 2
+        const cy = vertical(Math.floor(cx), y)
+        if (!Number.isNaN(cy)) {
+          const same = found.find((f) => Math.abs(f.x - cx) <= moduleSize && Math.abs(f.y - cy) <= moduleSize)
+          if (same) {
+            same.x = (same.x * same.count + cx) / (same.count + 1)
+            same.y = (same.y * same.count + cy) / (same.count + 1)
+            same.count++
+          } else {
+            found.push({ x: cx, y: cy, count: 1 })
           }
         }
       }
+      if (x > right) break
+      before = last
+      last = run
     }
   }
   // A candidate seen on one row only counts as three modules further away.
@@ -379,12 +550,16 @@ function multiply(m: readonly number[], n: readonly number[]): number[] {
   return out
 }
 
-/** The map taking four module-space points to four picture points. */
-function quadToQuad(from: readonly Point[], to: readonly Point[]): (x: number, y: number) => Point {
+/** The matrix of the map taking four module-space points to four picture points. */
+function quadMatrix(from: readonly Point[], to: readonly Point[]): number[] {
   const toPicture = squareToQuad(to[0]!, to[1]!, to[2]!, to[3]!)
   const fromModules = adjoint(squareToQuad(from[0]!, from[1]!, from[2]!, from[3]!))
   // Column-vector convention: picture = toPicture · fromModules⁻¹ · module.
-  const m = multiply(toPicture, fromModules)
+  return multiply(toPicture, fromModules)
+}
+
+/** The map of a matrix quadMatrix() gives. */
+function projective(m: readonly number[]): (x: number, y: number) => Point {
   return (x, y) => {
     const w = m[6]! * x + m[7]! * y + m[8]!
     return { x: (m[0]! * x + m[1]! * y + m[2]!) / w, y: (m[3]! * x + m[4]! * y + m[5]!) / w }
@@ -414,59 +589,94 @@ function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): num
   return best
 }
 
+/** The symbol's size in modules from its finders' spacing, rounded to 1 (mod 4); undefined when the modules are under a pixel. */
+export function estimateSize(image: BitImage, triple: readonly [Finder, Finder, Finder]): number | undefined {
+  const [topLeft, topRight, bottomLeft] = triple
+  const acrossSize = runModuleSize(image, topLeft, topRight)
+  const downSize = runModuleSize(image, topLeft, bottomLeft)
+  if (!((acrossSize + downSize) / 2 >= 1)) return undefined
+  return sizeFrom(topLeft, topRight, bottomLeft, acrossSize, downSize)
+}
+
+function sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossSize: number, downSize: number): number {
+  // Each side counted in its own modules, which perspective can make differ.
+  const size = Math.round((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2) + 7
+  switch (size & 3) {
+    case 0: return size + 1
+    case 2: return size - 1
+    case 3: return size - 2
+    default: return size
+  }
+}
+
 /**
  * Turns three finders into sampling maps: one through each likely alignment
- * pattern (when the version has one), then one through the parallelogram's
- * fourth corner. `sizeHint` overrides the estimated module count.
+ * pattern (when the version has one), then one through the fourth corner.
+ * `sizeHint` overrides the estimated module count.
  */
-export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number): Location[] {
+export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, work?: Work, edges: Edges = edgesOf(image)): Location[] {
   const [topLeft, topRight, bottomLeft] = triple
-  const moduleSize = (runModuleSize(image, topLeft, topRight) + runModuleSize(image, topLeft, bottomLeft)) / 2
+  const acrossSize = runModuleSize(image, topLeft, topRight)
+  const downSize = runModuleSize(image, topLeft, bottomLeft)
+  const moduleSize = (acrossSize + downSize) / 2
   if (!(moduleSize >= 1)) return []
-  let size = sizeHint
-  if (size === undefined) {
-    size = Math.round((distance(topLeft, topRight) + distance(topLeft, bottomLeft)) / 2 / moduleSize) + 7
-    switch (size & 3) {
-      case 0: size++; break
-      case 2: size--; break
-      case 3: size -= 2; break
+  const size = sizeHint ?? sizeFrom(topLeft, topRight, bottomLeft, acrossSize, downSize)
+  if (size < 21 || size > 177) return []
+  // A plane seen in perspective: along a side whose far end is w times as far
+  // from the camera, modules shrink by w squared. The finders' module sizes so
+  // give the weights of a projective map through the three centres, which
+  // places the rest of the symbol. Equal sizes give the parallelogram.
+  const weight = (from: Point, to: Point): number => {
+    const w = Math.sqrt(blackWhiteBlack(image, from, to) / blackWhiteBlack(image, to, from))
+    return w >= 0.5 && w <= 2 ? w : 1
+  }
+  const wr = weight(topLeft, topRight)
+  const wd = weight(topLeft, bottomLeft)
+  const steps = size - 7
+  /** Picture point of module-space point (x, y), measured from the top-left finder centre. */
+  const perspective = (x: number, y: number): Point => {
+    const a = x / steps
+    const b = y / steps
+    const w = 1 + a * (wr - 1) + b * (wd - 1)
+    return {
+      x: (topLeft.x + a * (wr * topRight.x - topLeft.x) + b * (wd * bottomLeft.x - topLeft.x)) / w,
+      y: (topLeft.y + a * (wr * topRight.y - topLeft.y) + b * (wd * bottomLeft.y - topLeft.y)) / w,
     }
   }
-  if (size < 21 || size > 177) return []
-  const corner = { x: topRight.x - topLeft.x + bottomLeft.x, y: topRight.y - topLeft.y + bottomLeft.y }
+  const parallelogram = { x: topRight.x - topLeft.x + bottomLeft.x, y: topRight.y - topLeft.y + bottomLeft.y }
+  const corner = perspective(steps, steps)
+  // Without an alignment pattern, the parallelogram's corner goes first, as for
+  // a code seen head-on; the map's corner is a later try. A corner moved by
+  // less than a pixel samples the same pixels, so it is not tried twice.
+  const corners = distance(corner, parallelogram) >= 1 ? [parallelogram, corner] : [parallelogram]
   let alignments: Point[] = []
   if (size > 21) {
-    // Two guesses at the fourth corner: the parallelogram's, and one that
-    // follows perspective, where modules grow towards the nearer edge.
-    const tl = topLeft.moduleSize
-    const down = bottomLeft.moduleSize / tl
-    const right = topRight.moduleSize / tl
-    const scaled = {
-      x: (bottomLeft.x + (topRight.x - topLeft.x) * down + topRight.x + (bottomLeft.x - topLeft.x) * right) / 2,
-      y: (bottomLeft.y + (topRight.y - topLeft.y) * down + topRight.y + (bottomLeft.y - topLeft.y) * right) / 2,
-    }
-    const correction = 1 - 3 / (size - 7)
-    const estimates = [corner, scaled].map((c) => ({
-      x: topLeft.x + correction * (c.x - topLeft.x),
-      y: topLeft.y + correction * (c.y - topLeft.y),
-    }))
+    // Guesses at the alignment centre, three modules in from the fourth
+    // corner: through the projective map, and on the parallelogram.
+    const guess = perspective(steps - 3, steps - 3)
+    const k = 1 - 3 / steps
+    const flat = { x: topLeft.x + k * (parallelogram.x - topLeft.x), y: topLeft.y + k * (parallelogram.y - topLeft.y) }
+    const estimates = distance(guess, flat) > moduleSize ? [guess, flat] : [guess]
+    // One module's steps across and down there, by the map and on the parallelogram.
+    const u = { x: perspective(steps - 2, steps - 3).x - guess.x, y: perspective(steps - 2, steps - 3).y - guess.y }
+    const v = { x: perspective(steps - 3, steps - 2).x - guess.x, y: perspective(steps - 3, steps - 2).y - guess.y }
+    const u0 = { x: (topRight.x - topLeft.x) / steps, y: (topRight.y - topLeft.y) / steps }
+    const v0 = { x: (bottomLeft.x - topLeft.x) / steps, y: (bottomLeft.y - topLeft.y) / steps }
     // A row or column crosses a turned module on the slant: at 45 degrees a
     // module's run is the diagonal, root 2 times its side.
-    const across = distance(topLeft, topRight)
-    const slant = Math.max(Math.abs(topRight.x - topLeft.x), Math.abs(topRight.y - topLeft.y)) / across
-    const runSize = moduleSize / slant
+    const det = Math.abs(u.x * v.y - u.y * v.x)
+    const wide = det / Math.max(Math.abs(u.y), Math.abs(v.y))
+    const tall = det / Math.max(Math.abs(u.x), Math.abs(v.x))
     // Rank candidates by how well the 5x5 pattern around them matches, read
     // along the code's own axes, then by nearness to a guess.
-    const steps = size - 7
-    const u = { x: (topRight.x - topLeft.x) / steps, y: (topRight.y - topLeft.y) / steps }
-    const v = { x: (bottomLeft.x - topLeft.x) / steps, y: (bottomLeft.y - topLeft.y) / steps }
     const near = (p: Point) => Math.min(...estimates.map((e) => distance(p, e)))
     const scored: { p: Point; score: number; away: number }[] = []
     for (const reach of [4, 8, 16]) {
       for (const estimate of estimates) {
-        for (const p of findAlignments(image, estimate, runSize, reach)) {
+        for (const p of findAlignments(image, edges, estimate, wide, tall, reach, work)) {
           if (scored.some((a) => distance(a.p, p) <= moduleSize / 2)) continue
-          scored.push({ p, score: alignmentScore(image, p, u, v), away: near(p) })
+          const score = Math.max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
+          scored.push({ p, score, away: near(p) })
         }
       }
       if (scored.some((c) => c.score >= 23)) break
@@ -478,12 +688,13 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
       .map((c) => c.p)
   }
   const far = size - 3.5
-  const map = (alignment: Point | undefined): Location => {
-    const project = quadToQuad(
+  const map = (alignment: Point | undefined, corner: Point): Location => {
+    const matrix = quadMatrix(
       [{ x: 3.5, y: 3.5 }, { x: far, y: 3.5 }, alignment ? { x: size - 6.5, y: size - 6.5 } : { x: far, y: far }, { x: 3.5, y: far }],
       [topLeft, topRight, alignment ?? corner, bottomLeft],
     )
-    return { topLeft, topRight, bottomLeft, alignment, size, project: (x, y) => project(x + 0.5, y + 0.5) }
+    const project = projective(matrix)
+    return { topLeft, topRight, bottomLeft, alignment, size, project: (x, y) => project(x + 0.5, y + 0.5), matrix }
   }
-  return [...alignments.map(map), map(undefined)]
+  return [...alignments.map((a) => map(a, corner)), ...corners.map((c) => map(undefined, c))]
 }

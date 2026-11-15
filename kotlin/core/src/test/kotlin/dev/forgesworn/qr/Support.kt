@@ -204,3 +204,34 @@ internal fun picture(modules: ByteArray, size: Int, scale: Int, quiet: Int = 4, 
     }
     return Grey(data, side, side)
 }
+
+/**
+ * A symbol seen through a lens that bends it, drawn as test/photo.ts bent()
+ * draws it: each picture point samples the straight drawing ([scale] pixels a
+ * module, four modules of quiet zone) at its offset from the centre times
+ * 1 + k r^2, r in half-sides. Four samples a pixel.
+ */
+internal fun bent(modules: ByteArray, size: Int, scale: Int, k: Double, invert: Boolean = false): Grey {
+    val quiet = 4
+    val side = (size + 2 * quiet) * scale
+    val c = side / 2.0
+    val data = ByteArray(side * side)
+    for (py in 0 until side) {
+        for (px in 0 until side) {
+            var sum = 0
+            for (sy in 0 until 2) {
+                for (sx in 0 until 2) {
+                    val x = px + (sx + 0.5) / 2 - c
+                    val y = py + (sy + 0.5) / 2 - c
+                    val f = 1 + (k * (x * x + y * y)) / (c * c)
+                    val mx = kotlin.math.floor((c + x * f) / scale).toInt() - quiet
+                    val my = kotlin.math.floor((c + y * f) / scale).toInt() - quiet
+                    val dark = mx >= 0 && my >= 0 && mx < size && my < size && modules[my * size + mx].toInt() == 1
+                    sum += if (dark != invert) 30 else 225
+                }
+            }
+            data[py * side + px] = (sum / 4).toByte()
+        }
+    }
+    return Grey(data, side, side)
+}

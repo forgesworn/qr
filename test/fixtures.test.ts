@@ -9,7 +9,7 @@ import { decode, encode, type ErrorCorrection } from '../src/index.js'
 import { photograph, prng, type Shot, toRgba } from './photo.js'
 import { readPng, writePng } from './png.js'
 
-const jsQR = jsQRModule as unknown as typeof jsQRModule.default
+const independent = jsQRModule as unknown as typeof jsQRModule.default
 
 const DIR = new URL('../vectors/decode-frames/', import.meta.url)
 const MANIFEST = new URL('../vectors/decode-frames.json', import.meta.url)
@@ -22,7 +22,7 @@ interface Frame {
   shot: Shot
   /** This decoder read it when the fixtures were made. */
   typescript: boolean
-  /** jsQR read it when the fixtures were made. */
+  /** An independent decoder read it when the fixtures were made. */
   jsqr: boolean
 }
 
@@ -46,6 +46,21 @@ function generate(): Frame[] {
   const frames: Frame[] = []
   rmSync(DIR, { recursive: true, force: true })
   mkdirSync(DIR, { recursive: true })
+  const add = (shot: Shot, text: string, ecc: ErrorCorrection) => {
+    const qr = encode(text, { ecc })
+    const image = photograph(qr.modules, qr.size, shot)
+    const file = `frame-${String(frames.length + 1).padStart(2, '0')}.png`
+    writeFileSync(new URL(file, DIR), writePng(image))
+    frames.push({
+      file,
+      text,
+      ecc,
+      version: qr.version,
+      shot,
+      typescript: decode(image)?.text === text,
+      jsqr: independent(toRgba(image), image.width, image.height, { inversionAttempts: 'attemptBoth' })?.data === text,
+    })
+  }
   for (let i = 0; i < 36; i++) {
     const clean = i < 6
     const shot: Shot = clean
@@ -62,25 +77,30 @@ function generate(): Frame[] {
           seed: i + 1,
         }
     const all = payloads(random)
-    const text = all[i % all.length]!
-    const ecc = levels[Math.floor(random() * 4)]!
-    const qr = encode(text, { ecc })
-    const image = photograph(qr.modules, qr.size, shot)
-    const file = `frame-${String(i + 1).padStart(2, '0')}.png`
-    writeFileSync(new URL(file, DIR), writePng(image))
-    frames.push({
-      file,
-      text,
-      ecc,
-      version: qr.version,
-      shot,
-      typescript: decode(image)?.text === text,
-      jsqr: jsQR(toRgba(image), image.width, image.height, { inversionAttempts: 'attemptBoth' })?.data === text,
-    })
+    add(shot, all[i % all.length]!, levels[Math.floor(random() * 4)]!)
+  }
+  // Steep perspective, the far edge 50 to 70 per cent of the near one, on
+  // each side of the symbol in turn. A separate sequence keeps the frames above.
+  const steep = prng(4051)
+  for (let i = 0; i < 12; i++) {
+    const shot: Shot = {
+      scale: Math.round((3 + steep() * 3) * 100) / 100,
+      angle: Math.round(steep() * 3600) / 10,
+      perspective: Math.round((0.3 + steep() * 0.2) * 100) / 100,
+      noise: steep() < 0.5 ? Math.round(steep() * 30) : 0,
+      blur: steep() < 0.3 ? 1 : 0,
+      invert: steep() < 0.15,
+      mirror: steep() < 0.1,
+      turn: i % 4,
+      seed: 37 + i,
+    }
+    const all = payloads(steep)
+    add(shot, all[i % all.length]!, levels[Math.floor(steep() * 4)]!)
   }
   const note =
     'Synthetic frames for decoder ports. Each PNG is 8-bit greyscale; text is the exact payload. ' +
-    '"typescript" and "jsqr" record which decoders read it when the frames were made. All payloads are made up.'
+    '"typescript" records whether this decoder read it when the frames were made, and "jsqr" whether ' +
+    'an independent decoder did. All payloads are made up.'
   writeFileSync(MANIFEST, `${JSON.stringify({ note, frames }, null, 1)}\n`)
   return frames
 }
