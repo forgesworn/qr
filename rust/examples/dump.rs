@@ -1,7 +1,7 @@
 //! Reads every `.grey` file of a directory, in name order, at each quarter
 //! turn, and prints one line a reading for comparison with `bench/dump.mjs`:
-//! `dump <directory>`. A `.grey` file is the width and height as big-endian
-//! 32-bit integers, then one grey byte a pixel.
+//! `dump <directory> [both|normal|inverted]`. A `.grey` file is the width and
+//! height as big-endian 32-bit integers, then one grey byte a pixel.
 //!
 //! Line: `<file> q<turn> <payload hex or -> v<version> <level> m<mask>
 //! c<corrected> <mirrored> <inverted> <tl> <tr> <bl> <alignment> w <steps>
@@ -51,6 +51,12 @@ fn point(p: Option<Point>) -> String {
 
 fn main() {
     let dir = std::env::args().nth(1).expect("a directory of .grey files");
+    let inversion = match std::env::args().nth(2).as_deref() {
+        None | Some("both") => Inversion::Both,
+        Some("normal") => Inversion::Normal,
+        Some("inverted") => Inversion::Inverted,
+        Some(other) => panic!("inversion must be both, normal or inverted, not {other}"),
+    };
     let mut names: Vec<String> = std::fs::read_dir(&dir).expect("directory").map(|e| e.unwrap().file_name().into_string().unwrap()).filter(|n| n.ends_with(".grey")).collect();
     names.sort();
     let mut out = String::new();
@@ -62,7 +68,7 @@ fn main() {
         for turn in 0..4u8 {
             let (data, w, h) = rotate(&bytes[8..], width, height, turn);
             let mut work = Work::default();
-            let found = decode(&data, w, h, 1, w, Inversion::Both, Some(&mut work));
+            let found = decode(&data, w, h, 1, w, inversion, Some(&mut work));
             write!(out, "{name} q{turn} ").unwrap();
             match &found {
                 Some(r) => {

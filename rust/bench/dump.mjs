@@ -1,7 +1,7 @@
 // The TypeScript side of the dump comparison: the same lines as
 // `examples/dump.rs`, from `decodeCounted`.
 //
-//   node rust/bench/dump.mjs <dir of .grey files> > dump-ts.txt
+//   node rust/bench/dump.mjs <dir of .grey files> [both|normal|inverted] > dump-ts.txt
 //
 // Needs `npm ci && npm run build` (dist/). Each file is read, never copied:
 // int32 big-endian width, int32 big-endian height, then one grey byte a pixel.
@@ -11,6 +11,7 @@ import { join } from 'node:path'
 import { decodeCounted } from '../../dist/decode.js'
 
 const dir = process.argv[2]
+const inversion = process.argv[3] ?? 'both'
 if (!dir) throw new TypeError('a directory of .grey files')
 
 const floats = new Float64Array(1)
@@ -50,7 +51,7 @@ for (const name of readdirSync(dir).filter((n) => n.endsWith('.grey')).sort()) {
   for (let turn = 0; turn < 4; turn++) {
     const image = rotate(grey, width, height, turn)
     const work = { steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0, reduced: 0 }
-    const r = decodeCounted(image, { channels: 1 }, work)
+    const r = decodeCounted(image, { channels: 1, inversion }, work)
     const head = `${name} q${turn}`
     const tail = `w ${work.steps} ${work.compared} ${work.scanned} ${work.maps} ${work.second} ${work.meshes} ${work.probed} ${work.reduced ?? 0}`
     if (r === undefined) {
