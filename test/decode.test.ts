@@ -88,6 +88,14 @@ describe('decode', () => {
     expect(decode({ data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 })).toBeUndefined()
     expect(() => decode({ data: new Uint8Array(10), width: 100, height: 100 })).toThrow(RangeError)
     expect(() => decode({ data: new Uint8Array(100), width: 0, height: 100 })).toThrow(RangeError)
+    // Short data is an error whether or not channels is named.
+    for (const channels of [1, 4] as const) {
+      expect(() => decode({ data: new Uint8Array(10), width: 100, height: 100 }, { channels })).toThrow(RangeError)
+    }
+    // Enough for grey but not RGBA when RGBA is claimed.
+    expect(() => decode({ data: new Uint8Array(100 * 100), width: 100, height: 100 }, { channels: 4 })).toThrow(RangeError)
+    expect(decode({ data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 }, { channels: 1 })).toBeUndefined()
+    expect(() => decode({ data: new Uint8Array(100 * 100), width: 100, height: 100 }, { channels: 3 as 4 })).toThrow(RangeError)
   })
 
   it('reads at least as many distorted pictures as jsQR', () => {

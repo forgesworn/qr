@@ -35,12 +35,13 @@ export interface DecodeResult extends Payload {
 
 const MAX_TRIPLES = 6
 
-function channelsFor(image: ImageLike, stride: number): 1 | 4 {
+function channelsFor(image: ImageLike, stride: number, given: 1 | 4 | undefined): 1 | 4 {
   const { data, width, height } = image
   const last = stride * (height - 1) + width
-  if (data.length >= last * 4) return 4
-  if (data.length >= last) return 1
-  throw new RangeError(`The data is too short for a ${width}x${height} picture`)
+  if (given !== undefined && given !== 1 && given !== 4) throw new RangeError('channels must be 1 or 4')
+  const channels = given ?? (data.length >= last * 4 ? 4 : 1)
+  if (data.length < last * channels) throw new RangeError(`The data is too short for a ${width}x${height} picture`)
+  return channels
 }
 
 /**
@@ -54,7 +55,7 @@ export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeRes
   }
   const stride = options.rowStride ?? width
   if (!Number.isInteger(stride) || stride < width) throw new RangeError('rowStride must be an integer of at least width')
-  const channels = options.channels ?? channelsFor(image, stride)
+  const channels = channelsFor(image, stride, options.channels)
   const bits = binarise(toLuminance(image.data, width, height, channels, stride))
   const inversion = options.inversion ?? 'both'
   if (inversion !== 'inverted') {
