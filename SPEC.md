@@ -134,3 +134,17 @@ made. A port must read every frame marked `"typescript": true`. The frames
 are drawn by `test/fixtures.test.ts` (`QR_WRITE_FIXTURES=1` regenerates
 them); every payload in them is made up. Real photographs will join them as
 a separate set.
+
+A second, separate set holds real photographs of QR codes with known contents,
+taken from open-source test collections that were assembled for other
+decoders; `vectors/photos.json` lists the sources, pinned commits and licences.
+The images are not committed. `npm run fetch-photos` downloads them into
+`vectors/photos-cache/`, checks each against its SHA-256, and converts them to
+8-bit greyscale PNG so every port reads the same pixels; the tests skip when
+that cache is absent. Expected text is compared exactly as stored, with no
+trimming and no newline normalisation, and a photograph counts as read only
+when the text is identical. Reading a photograph as the wrong text fails the
+test; the number of photographs read may not fall below the recorded floor
+(`ratchet.typescript`). Other decoders are tuned on these collections, so the
+set supports no comparative claim. It is a regression bar and a first check
+against real optics, nothing more.

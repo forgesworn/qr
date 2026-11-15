@@ -6,3 +6,4 @@ vectors/generator/.cache/
 kotlin/.gradle
 kotlin/**/build
 kotlin/.kotlin
+vectors/photos-cache/
