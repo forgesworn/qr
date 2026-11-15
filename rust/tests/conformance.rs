@@ -5,6 +5,7 @@
 use forgesworn_qr::binarise::{binarise, invert, shrink, thresholds, to_luminance, Image, Reductions};
 use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
 use forgesworn_qr::place::{estimate_size, finder_triples, locate};
+use forgesworn_qr::symbol::decode_modules;
 use forgesworn_qr::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
@@ -248,4 +249,65 @@ fn triples_and_placements() {
     eprintln!("triples: {triples_matched} triples in {lists} lists matched in order");
     eprintln!("sizes: {sizes_matched} estimates matched");
     eprintln!("placements: {maps_matched} maps for {placed} frames matched (count, order, size, alignment, nine numbers exactly)");
+}
+
+/// The entries whose text needs a platform character-set decoder, which this port
+/// has none of. SPEC.md ("Text for kanji and other ECIs") says what a platform
+/// lacking the set gives: a kanji character is a single U+FFFD, and so is a hanzi
+/// character that reads at all. For these three the test asserts `bytes` as
+/// recorded and the SPEC-prescribed text in place of the recorded one.
+const NEEDS_A_CHARSET: [(&str, &str); 3] = [
+    ("ECI 26, UTF-8, around a kanji segment", "\u{e9}\u{fffd}\u{e9}"),
+    ("kanji mode", "\u{fffd}\u{fffd}"),
+    ("hanzi mode, GB2312", "\u{fffd}\u{fffd}"),
+];
+
+/// Reading module grids: every entry of the pack's `symbols`.
+#[test]
+fn symbols() {
+    let pack = pack();
+    let entries = pack["symbols"].as_array().unwrap();
+    let (mut read, mut refused, mut by_spec) = (0, 0, 0);
+    for entry in entries {
+        let name = entry["name"].as_str().unwrap();
+        let size = entry["size"].as_u64().unwrap() as usize;
+        let mut modules = vec![0u8; size * size];
+        for (y, row) in entry["rows"].as_array().unwrap().iter().enumerate() {
+            let bytes = unhex(row.as_str().unwrap());
+            assert_eq!(bytes.len(), (size + 7) / 8, "{name}: row {y} length");
+            for x in 0..size {
+                modules[y * size + x] = (bytes[x / 8] >> (7 - x % 8)) & 1;
+            }
+        }
+        let got = decode_modules(&modules, size);
+        let want = &entry["result"];
+        if want.is_null() {
+            assert!(got.is_none(), "{name}: should not read, read {:?}", got.map(|g| g.payload.text));
+            refused += 1;
+            continue;
+        }
+        let got = got.unwrap_or_else(|| panic!("{name}: should read"));
+        let p = &got.payload;
+        assert_eq!(hex(&p.bytes), want["bytes"].as_str().unwrap(), "{name}: bytes");
+        assert_eq!(p.version as u64, want["version"].as_u64().unwrap(), "{name}: version");
+        assert_eq!(p.ecc.letter().to_string(), want["ecc"].as_str().unwrap(), "{name}: ecc");
+        assert_eq!(p.mask as u64, want["mask"].as_u64().unwrap(), "{name}: mask");
+        let eci: Vec<u64> = want["eci"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap()).collect();
+        assert_eq!(p.eci.iter().map(|&v| v as u64).collect::<Vec<_>>(), eci, "{name}: eci");
+        assert_eq!(p.corrected as u64, want["corrected"].as_u64().unwrap(), "{name}: corrected");
+        assert_eq!(got.mirrored, want["mirrored"].as_bool().unwrap(), "{name}: mirrored");
+        if let Some((_, text)) = NEEDS_A_CHARSET.iter().find(|(n, _)| *n == name) {
+            assert_eq!(&p.text, text, "{name}: text for a platform without the character set");
+            by_spec += 1;
+        } else {
+            assert_eq!(&p.text, want["text"].as_str().unwrap(), "{name}: text");
+        }
+        read += 1;
+    }
+    assert_eq!(by_spec, NEEDS_A_CHARSET.len(), "every named entry must be in the pack");
+    eprintln!(
+        "symbols: {} of {} entries matched ({read} read, {refused} refused; {by_spec} of the read ones checked for text against SPEC.md, not the recording)",
+        read + refused,
+        entries.len()
+    );
 }

@@ -5,6 +5,8 @@
 pub mod binarise;
 pub mod locate;
 pub mod place;
+pub mod symbol;
+pub mod tables;
 
 use binarise::{binarise, invert, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use locate::{find_finders, Edges};
