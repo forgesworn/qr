@@ -9,13 +9,20 @@
 - The decoder reports `structuredAppend` and `fnc1`, reads kanji segments
   and the other ECI character sets as text, and reads Shift_JIS byte data
   that carries no ECI.
-- A test set of 185 real photographs, fetched by hash at test time and not
+- A test set of 184 real photographs, fetched by hash at test time and not
   committed, with a floor on how many are read and a rule that none may
   decode to the wrong text.
 - The decoder reads steeply tilted codes: finders stretched by perspective,
   triples whose far side is much narrower, and an alignment search placed
   by a projective map. A symbol of version 7 or above whose two version
   blocks are both unreadable is read from its size.
+- When the ordinary search reads nothing, the decoder looks once more at
+  up to four placements whose two format copies agree, moving module
+  centres onto the timing patterns and edges the picture shows and sampling
+  grey. It reads codes on curved or warped surfaces that were missed
+  before; tests of damaged symbols require nothing or the original text.
+- The decoder reads hanzi segments (GB2312).
+- The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given
   otherwise; input no version can hold is refused before anything is built
   from it, so a named mode with over-long text now throws `QrCapacityError`

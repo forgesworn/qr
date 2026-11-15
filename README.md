@@ -16,9 +16,9 @@ languages can produce identical output.
 The decoder tests draw codes through synthetic camera effects (rotation,
 perspective, small modules, blur, noise, uneven light, inversion and
 mirroring) and require it to read at least as many of those frames as an
-independent decoder does. A second set of 185 real photographs, drawn from
+independent decoder does. A second set of 184 real photographs, drawn from
 open-source test collections and fetched by hash rather than committed, has
-a floor on how many are read (164 at present) and a rule that none may
+a floor on how many are read (178 at present) and a rule that none may
 decode to the wrong text.
 
 ## Install

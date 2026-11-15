@@ -1,5 +1,5 @@
 {
- "note": "Photographs of QR codes from open-source test collections assembled for other decoders. Only paths and SHA-256 hashes are committed, no third-party content: npm run fetch-photos downloads each image and its expected-text .txt file into vectors/photos-cache/ and checks both hashes, and the tests read the expected text from those files at run time. The text is UTF-8, compared exactly with no trimming and no newline normalisation. typescript and jsqr record which decoder read each photo when the baseline was taken (QR_WRITE_PHOTOS=1 regenerates them); ratchet.typescript is the floor the test enforces. Photographs whose greyscale pixels equal an earlier entry (re-encoded copies across sources) are left out.",
+ "note": "Photographs of QR codes from open-source test collections assembled for other decoders. Only paths and SHA-256 hashes are committed, no third-party content: npm run fetch-photos downloads each image and its expected-text .txt file into vectors/photos-cache/ and checks both hashes, and the tests read the expected text from those files at run time. The text is UTF-8, compared exactly with no trimming and no newline normalisation. typescript and jsqr record which decoder read each photo when the baseline was taken (QR_WRITE_PHOTOS=1 regenerates them); ratchet.typescript is the floor the test enforces. Photographs whose greyscale pixels equal an earlier entry (re-encoded copies across sources) are left out. One photograph whose expected-text file differs from what its symbol says is left out too.",
  "sources": [
   {
    "id": "s1",
@@ -23,7 +23,7 @@
   }
  ],
  "ratchet": {
-  "typescript": 164
+  "typescript": 178
  },
  "photos": [
   {
@@ -335,7 +335,7 @@
    "textFile": "qrcode-2/5.txt",
    "textSha256": "bafb41cb8e71d958dbbc380debc5d527105ec9b679bb503b19813efcd9748827",
    "pixelsSha256": "fe411f14df44784506b22d89df649fca56022c830ac6d71a64cf06c9667a8d42",
-   "typescript": false,
+   "typescript": true,
    "jsqr": true
   },
   {
@@ -426,19 +426,6 @@
    "textFile": "qrcode-2/12.txt",
    "textSha256": "30a2a450189a5b357a360265102c4c99baa4c84a2559b6a9b16d9a0d5bf80a07",
    "pixelsSha256": "0fa75e0a8583a1165fedfae114ff9fd3fceeff10b40293e4be00b06f738027fd",
-   "typescript": false,
-   "jsqr": false
-  },
-  {
-   "id": "s1-qrcode-2-13",
-   "source": "s1",
-   "set": "qrcode-2",
-   "file": "13.png",
-   "ext": "png",
-   "sha256": "a8d498d6d2d6a3e27e24fd75ed023cd5b8b6b42cb4996674e88e555d68855ec1",
-   "textFile": "qrcode-2/13.txt",
-   "textSha256": "c19d2dcb13469aae263a41cd73add68c45e086223a04c41368128c47143c0e5a",
-   "pixelsSha256": "a885e95a097ecf84f4fd85ea7345635a463d5d8b2f4b294734a87cf194030314",
    "typescript": false,
    "jsqr": false
   },
@@ -699,7 +686,7 @@
    "textFile": "qrcode-2/33.txt",
    "textSha256": "ee48d8389e4409866035005cb0d69bb54a95635879120bff3861d78eaadf2b3d",
    "pixelsSha256": "a0e996529bdbbe7996f6186742dbf0358808dddce4292444a21bb67828a7b7b9",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1011,7 +998,7 @@
    "textFile": "qrcode-3/21.txt",
    "textSha256": "65a30ce871d352e67ff0383416d4d2c262d26db5be3595915b6ad7cc870f56c9",
    "pixelsSha256": "f82601c66ca169082217d3d5710624189eb7a9cf60912cbc9b13da3d127f1540",
-   "typescript": false,
+   "typescript": true,
    "jsqr": true
   },
   {
@@ -1024,7 +1011,7 @@
    "textFile": "qrcode-3/22.txt",
    "textSha256": "65a30ce871d352e67ff0383416d4d2c262d26db5be3595915b6ad7cc870f56c9",
    "pixelsSha256": "fd618b9283c1b0517b817435b7c701178bb43339f957dc881fa903d22674f9cf",
-   "typescript": false,
+   "typescript": true,
    "jsqr": true
   },
   {
@@ -1037,7 +1024,7 @@
    "textFile": "qrcode-3/23.txt",
    "textSha256": "65a30ce871d352e67ff0383416d4d2c262d26db5be3595915b6ad7cc870f56c9",
    "pixelsSha256": "dd32dd4657ee46d587da57f2dfdd28b30091582e290f843f02be5f1180746bb3",
-   "typescript": false,
+   "typescript": true,
    "jsqr": true
   },
   {
@@ -1349,7 +1336,7 @@
    "textFile": "qrcode-4/05.txt",
    "textSha256": "43e228656bd818b3b849e14e885e4c98f3c510171039359c04d3fc58e44fdc96",
    "pixelsSha256": "2537fbb30efe7f76f1b0b22d4a0da876c0b42dc1b429c2fd0d05be823e264ced",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1362,7 +1349,7 @@
    "textFile": "qrcode-4/06.txt",
    "textSha256": "43e228656bd818b3b849e14e885e4c98f3c510171039359c04d3fc58e44fdc96",
    "pixelsSha256": "b20141d75323bce8419cc82515539944ca5126dc626c9bb78fffdc59f9cde1ac",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1388,7 +1375,7 @@
    "textFile": "qrcode-4/08.txt",
    "textSha256": "43e228656bd818b3b849e14e885e4c98f3c510171039359c04d3fc58e44fdc96",
    "pixelsSha256": "b9dd17db4500b14cbe536a4c99830250a16bd4e3db25d4ab8fdee4d64d89666f",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1466,7 +1453,7 @@
    "textFile": "qrcode-4/14.txt",
    "textSha256": "43e228656bd818b3b849e14e885e4c98f3c510171039359c04d3fc58e44fdc96",
    "pixelsSha256": "56fa460792d1ccfa49f0555e3b63c16681388ce92eca57dcaa1d777449c7e825",
-   "typescript": false,
+   "typescript": true,
    "jsqr": true
   },
   {
@@ -1687,7 +1674,7 @@
    "textFile": "qrcode-4/31.txt",
    "textSha256": "9c9045ef7a5a585c82680cdd86b67069a56e1f3c7adb9ec8fcc026f2ab90a2ec",
    "pixelsSha256": "4085dada35b0e24246ab20d620f2f221673166e0c02dee00993bc073e4126675",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1700,7 +1687,7 @@
    "textFile": "qrcode-4/32.txt",
    "textSha256": "9c9045ef7a5a585c82680cdd86b67069a56e1f3c7adb9ec8fcc026f2ab90a2ec",
    "pixelsSha256": "34041116c090be90d36fa410d19345a5a3cb4a299adfcc078293556da6a676ee",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1726,7 +1713,7 @@
    "textFile": "qrcode-4/34.txt",
    "textSha256": "9c9045ef7a5a585c82680cdd86b67069a56e1f3c7adb9ec8fcc026f2ab90a2ec",
    "pixelsSha256": "aab832fa0ee0498e4b09ca7227a742052c0e9d9e60344a47bbc5599238a8026a",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -1817,7 +1804,7 @@
    "textFile": "qrcode-4/41.txt",
    "textSha256": "1bf6bb10f79757d560dc7fd663d6c03ea56a2bc5a238f0ea7af01b77dc867be6",
    "pixelsSha256": "c53aecc2bf8839e21889dd983848b2a27e81992c501368fe3cd7200b03fb806e",
-   "typescript": false,
+   "typescript": true,
    "jsqr": true
   },
   {
@@ -2415,7 +2402,7 @@
    "textFile": "qrcode-2/estimate-tilt.txt",
    "textSha256": "194fb8a85abe8eeca3792eda9f6552353127206cc136519989bd5dddb72b88a9",
    "pixelsSha256": "d0663579da34da6cc81fc9e638ebbea3e70f85d310de4782ac02fa4226397ee8",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
