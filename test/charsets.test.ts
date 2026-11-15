@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { fromEci, kanjiText } from '../src/text.js'
+import { fromEci, hanziText, kanjiText } from '../src/text.js'
 import { readSymbol } from '../src/symbol.js'
 import { bitsOf, seg, symbol } from './builder.js'
 
@@ -27,14 +27,23 @@ function sjisOf(v: number): number {
   return s + (s < 0x1f00 ? 0x8140 : 0xc140)
 }
 
+/** The GB2312 pair a 13-bit hanzi-mode value stands for (GB/T 18284), as lead and low bytes. */
+function gbOf(v: number): [number, number] {
+  const row = Math.floor(v / 0x60)
+  return [row + (row < 0x0a ? 0xa1 : 0xa6), (v % 0x60) + 0xa1]
+}
+
 interface Fixture {
   kanji: string
+  /** One character a 13-bit value; U+0000 where the value rejects the symbol. */
+  hanzi: string
   single: Record<string, string>
   samples: Record<string, [string, string][]>
 }
 
 function build(): Fixture {
   const kanji = kanjiValues().map((v) => kanjiText(sjisOf(v))).join('')
+  const hanzi = kanjiValues().map((v) => hanziText(...gbOf(v)) ?? '\u0000').join('')
   const single: Record<string, string> = {}
   const bytes = Uint8Array.from({ length: 256 }, (_, i) => i)
   for (const eci of SINGLE) {
@@ -50,7 +59,7 @@ function build(): Fixture {
     }
     if (rows.length > 0) samples[eci] = rows
   }
-  return { kanji, single, samples }
+  return { kanji, hanzi, single, samples }
 }
 
 if (process.env.QR_WRITE_CHARSETS === '1') {
@@ -71,6 +80,11 @@ describe('character sets', () => {
     expect([...fixture.kanji].length).toBe(kanjiValues().length)
   })
 
+  it('reads every hanzi-mode value the way the fixture records', () => {
+    expect(build().hanzi).toBe(fixture.hanzi)
+    expect([...fixture.hanzi].length).toBe(kanjiValues().length)
+  })
+
   it('reads single-byte and multi-byte ECIs the way the fixture records', () => {
     const got = build()
     expect(got.single).toEqual(fixture.single)
@@ -81,6 +95,19 @@ describe('character sets', () => {
     const got = read(seg.kanji([0x0d9f, 0x1aaa], 8))!
     expect(got.text).toBe('点茗')
     expect(Array.from(got.bytes)).toEqual([0x93, 0x5f, 0xe4, 0xaa])
+  })
+
+  it('decodes hanzi as GB2312 and keeps bytes as GB2312', () => {
+    const got = read(seg.hanzi([0x122f, 0x0f23], 8))!
+    expect(got.text).toBe('中文')
+    expect(Array.from(got.bytes)).toEqual([0xd6, 0xd0, 0xce, 0xc4])
+    expect(read([...seg.bytes(Uint8Array.of(0x41), 8), ...seg.hanzi([0x122f], 8), ...seg.bytes(Uint8Array.of(0x42), 8)])!.text).toBe('A中B')
+  })
+
+  it('rejects a hanzi symbol with another subset, a value outside GB2312 or an empty cell', () => {
+    expect(read(seg.hanzi([0x122f], 8, 2))).toBeUndefined()
+    // Low byte past FE, a lead byte in AA-AF, a lead past F7, and D7FA, which GB2312 leaves empty.
+    for (const v of [0x30 * 0x60 + 0x5e, 9 * 0x60, 0x52 * 0x60, 0x31 * 0x60 + 0x59]) expect(read(seg.hanzi([0x122f, v], 8))).toBeUndefined()
   })
 
   it('keeps the ECI in force after a kanji character', () => {
@@ -136,6 +163,8 @@ describe('a platform without the labels', () => {
     const m = await fresh()
     expect(m.fromEci(9, Uint8Array.of(0xc1))).toBeUndefined()
     expect(m.kanjiText(0x935f)).toBe('�')
+    expect(m.hanziText(0xd6, 0xd0)).toBe('�')
+    expect(m.hanziText(0xaa, 0xa1)).toBeUndefined()
     const { modules, size } = symbol([...seg.eci(9), ...seg.bytes(Uint8Array.of(0xc1, 0x41), 8)], 2, 'L', 1)
     const got = m.readSymbol((x, y) => modules[y * size + x] === 1, size)!
     expect(got.text).toBe('ÁA')

@@ -98,6 +98,10 @@ internal object Seg {
     fun kanji(values: List<Int>, countBits: Int): List<Int> =
         bitsOf(8, 4) + bitsOf(values.size, countBits) + values.flatMap { bitsOf(it, 13) }
 
+    /** Hanzi mode (GB/T 18284) from 13-bit values, with a subset indicator (1 is GB2312). */
+    fun hanzi(values: List<Int>, countBits: Int, subset: Int = 1): List<Int> =
+        bitsOf(13, 4) + bitsOf(subset, 4) + bitsOf(values.size, countBits) + values.flatMap { bitsOf(it, 13) }
+
     fun eci(value: Int): List<Int> = bitsOf(7, 4) + (if (value < 128) bitsOf(value, 8) else bitsOf(0x8000 or value, 16))
 
     fun structuredAppend(index: Int, total: Int, parity: Int): List<Int> =

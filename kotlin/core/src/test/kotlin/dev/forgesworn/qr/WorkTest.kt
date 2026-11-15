@@ -45,6 +45,7 @@ class WorkTest {
             assertTrue(perPixel(b, large) < 1.5)
             // Four times the pixels, not much more than four times the work.
             assertTrue(perPixel(b, large) < perPixel(a, small) * 1.1)
+            assertTrue(a.second + b.second <= 2 * 4)
         }
     }
 
@@ -56,6 +57,8 @@ class WorkTest {
         assertNull(decodeCounted(frame.data, frame.width, frame.height, work))
         // Four passes, six triples, five sizes, at most six maps a size.
         assertTrue(work.maps <= 4 * 6 * 5 * 6)
+        // The second look reads at most four of them again.
+        assertTrue(work.second <= 4)
         // Each of the 120 locates scans at most six windows, each no bigger than
         // the picture; in practice the windows cover it a few times over.
         assertTrue(perPixel(work, frame) < 8)

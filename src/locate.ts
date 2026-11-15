@@ -24,13 +24,15 @@ export interface Location {
 /**
  * Work the search does, counted for tests that bound it: pixels stepped in
  * cross-checks, stored candidates compared while merging, pixels in the
- * windows searched for alignment patterns, and maps sampled.
+ * windows searched for alignment patterns, maps sampled, and maps read again
+ * by the second look.
  */
 export interface Work {
   steps: number
   compared: number
   scanned: number
   maps: number
+  second: number
 }
 
 const NONE: readonly number[] = []

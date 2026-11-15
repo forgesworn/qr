@@ -46,16 +46,21 @@ private const val BLOCK = 8
 private const val MIN_DYNAMIC_RANGE = 24
 
 /**
- * Local-threshold binarisation: each 8x8 block's threshold is the mean of the
- * block averages in the 5x5 blocks around it, and a flat block borrows its
- * neighbours' threshold, so shadows and gradients across the frame do not
- * swallow the code. Pictures under 40 pixels a side use one global threshold.
+ * The binariser's thresholds: one an 8x8 block, [across] by [down], or a
+ * single one for the whole picture when it is under 40 pixels a side.
  */
-internal fun binarise(image: Luminance): BitImage {
+internal class Thresholds(val across: Int, val down: Int, val values: DoubleArray)
+
+/**
+ * Local thresholds: each 8x8 block's threshold is the mean of the block
+ * averages in the 5x5 blocks around it, and a flat block borrows its
+ * neighbours' level, so shadows and gradients across the frame do not
+ * swallow the code. Pictures under 40 pixels a side get one global threshold.
+ */
+internal fun thresholds(image: Luminance): Thresholds {
     val data = image.data
     val width = image.width
     val height = image.height
-    val out = ByteArray(width * height)
     if (width < 40 || height < 40) {
         var min = 255
         var max = 0
@@ -63,9 +68,7 @@ internal fun binarise(image: Luminance): BitImage {
             if (v < min) min = v
             if (v > max) max = v
         }
-        val threshold: Double = if (max - min < MIN_DYNAMIC_RANGE) -1.0 else (min + max) / 2.0
-        for (i in data.indices) out[i] = if (data[i] <= threshold) 1 else 0
-        return BitImage(out, width, height)
+        return Thresholds(1, 1, doubleArrayOf(if (max - min < MIN_DYNAMIC_RANGE) -1.0 else (min + max) / 2.0))
     }
     val across = (width + BLOCK - 1) / BLOCK
     val down = (height + BLOCK - 1) / BLOCK
@@ -98,11 +101,10 @@ internal fun binarise(image: Luminance): BitImage {
             levels[by * across + bx] = level
         }
     }
+    val values = DoubleArray(across * down)
     for (by in 0 until down) {
-        val top = minOf(by * BLOCK, height - BLOCK)
         val cy = minOf(maxOf(by, 2), down - 3)
         for (bx in 0 until across) {
-            val left = minOf(bx * BLOCK, width - BLOCK)
             val cx = minOf(maxOf(bx, 2), across - 3)
             var sum = 0.0
             var n = 0
@@ -115,7 +117,41 @@ internal fun binarise(image: Luminance): BitImage {
                     n++
                 }
             }
-            val threshold = sum / n
+            values[by * across + bx] = sum / n
+        }
+    }
+    return Thresholds(across, down, values)
+}
+
+/**
+ * The threshold [binarise] applied at pixel ([px], [py]), which must be in the
+ * picture. The last block in a row or column covers the last 8 pixels, so it
+ * overlaps the one before it and wins where they overlap.
+ */
+internal fun thresholdAt(t: Thresholds, width: Int, height: Int, px: Int, py: Int): Double {
+    if (t.across == 1 && t.down == 1) return t.values[0]
+    val bx = if (px >= width - BLOCK) t.across - 1 else px / BLOCK
+    val by = if (py >= height - BLOCK) t.down - 1 else py / BLOCK
+    return t.values[by * t.across + bx]
+}
+
+/** Local-threshold binarisation ([thresholds]): 1 where a pixel is at or below its threshold. */
+internal fun binarise(image: Luminance): BitImage {
+    val data = image.data
+    val width = image.width
+    val height = image.height
+    val out = ByteArray(width * height)
+    val t = thresholds(image)
+    if (width < 40 || height < 40) {
+        val threshold = t.values[0]
+        for (i in data.indices) out[i] = if (data[i] <= threshold) 1 else 0
+        return BitImage(out, width, height)
+    }
+    for (by in 0 until t.down) {
+        val top = minOf(by * BLOCK, height - BLOCK)
+        for (bx in 0 until t.across) {
+            val left = minOf(bx * BLOCK, width - BLOCK)
+            val threshold = t.values[by * t.across + bx]
             for (y in top until top + BLOCK) {
                 for (x in left until left + BLOCK) out[y * width + x] = if (data[y * width + x] <= threshold) 1 else 0
             }

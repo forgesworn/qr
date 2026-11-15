@@ -1,5 +1,6 @@
-import { binarise, invert, toLuminance, type BitImage } from './binarise.js'
+import { binarise, invert, thresholds, toLuminance, type BitImage } from './binarise.js'
 import { finderTriples, findFinders, locate, type Location, type Point, type Work } from './locate.js'
+import { agreement, keep, secondLook, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
 
 /** Pixels to read: RGBA (4 bytes a pixel, as ImageData gives) or greyscale (1 byte a pixel). */
@@ -75,16 +76,38 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   const stride = options.rowStride ?? width
   if (!Number.isInteger(stride) || stride < width) throw new RangeError('rowStride must be an integer of at least width')
   const channels = channelsFor(image, stride, options.channels)
-  const bits = binarise(toLuminance(image.data, width, height, channels, stride))
+  const luminance = toLuminance(image.data, width, height, channels, stride)
+  const bits = binarise(luminance)
+  const candidates: Candidate[] = []
   if (inversion !== 'inverted') {
-    const found = search(bits, false, work)
+    const found = search(bits, false, candidates, work)
     if (found) return found
   }
-  if (inversion !== 'normal') return search(invert(bits), true, work)
+  if (inversion !== 'normal') {
+    const found = search(invert(bits), true, candidates, work)
+    if (found) return found
+  }
+  // Nothing read: look again at the few maps whose format copies agreed.
+  if (candidates.length === 0) return undefined
+  const levels = thresholds(luminance)
+  for (const candidate of candidates) {
+    if (work) work.second++
+    const result = secondLook(luminance, levels, candidate)
+    if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location) }
+  }
   return undefined
 }
 
-function search(image: BitImage, inverted: boolean, work?: Work): DecodeResult | undefined {
+function where(location: Location): DecodeResult['location'] {
+  return {
+    topLeft: location.topLeft,
+    topRight: location.topRight,
+    bottomLeft: location.bottomLeft,
+    alignment: location.alignment,
+  }
+}
+
+function search(image: BitImage, inverted: boolean, candidates: Candidate[], work?: Work): DecodeResult | undefined {
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
     const triples = finderTriples(image, findFinders(image, tolerance, work)).slice(0, MAX_TRIPLES)
@@ -95,7 +118,7 @@ function search(image: BitImage, inverted: boolean, work?: Work): DecodeResult |
       for (const delta of [0, -4, 4, -8, 8]) {
         for (const location of delta === 0 ? first : locate(image, triple, first[0]!.size + delta, work)) {
           if (work) work.maps++
-          const result = read(image, location, inverted)
+          const result = read(image, location, inverted, candidates)
           if (result) return result
         }
       }
@@ -104,7 +127,7 @@ function search(image: BitImage, inverted: boolean, work?: Work): DecodeResult |
   return undefined
 }
 
-function read(image: BitImage, location: Location, inverted: boolean): DecodeResult | undefined {
+function read(image: BitImage, location: Location, inverted: boolean, candidates: Candidate[]): DecodeResult | undefined {
   const { size, project } = location
   const modules = new Uint8Array(size * size)
   for (let y = 0; y < size; y++) {
@@ -115,16 +138,12 @@ function read(image: BitImage, location: Location, inverted: boolean): DecodeRes
       if (px >= 0 && py >= 0 && px < image.width && py < image.height) modules[y * size + x] = image.data[py * image.width + px]!
     }
   }
-  const where = {
-    topLeft: location.topLeft,
-    topRight: location.topRight,
-    bottomLeft: location.bottomLeft,
-    alignment: location.alignment,
-  }
   const straight = readSymbol((x, y) => modules[y * size + x] === 1, size)
-  if (straight) return { ...straight, mirrored: false, inverted, location: where }
+  if (straight) return { ...straight, mirrored: false, inverted, location: where(location) }
   const mirrored = readSymbol((x, y) => modules[x * size + y] === 1, size)
-  if (mirrored) return { ...mirrored, mirrored: true, inverted, location: where }
+  if (mirrored) return { ...mirrored, mirrored: true, inverted, location: where(location) }
+  const agreed = agreement(modules, size)
+  if (agreed) keep(candidates, { location, inverted, ...agreed })
   return undefined
 }
 

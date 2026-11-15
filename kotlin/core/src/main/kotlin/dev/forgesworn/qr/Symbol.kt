@@ -298,6 +298,23 @@ private fun parse(data: IntArray, version: Int): Parsed? {
                     runs.add(Run(before, kanjiText(sjis)))
                     runs.add(Run(before))
                 }
+            } else if (mode == 13) {
+                // Hanzi (GB/T 18284): subset 1 is GB2312, kept as its bytes; any other subset, or a
+                // value outside the GB2312 rows or on an empty cell, rejects the symbol.
+                if (bits.read(4) != 1) return null
+                val count = bits.read(KANJI_COUNT_BITS[band])
+                for (i in 0 until count) {
+                    val v = bits.read(13)
+                    val row = v / 0x60
+                    val lead = row + (if (row < 0x0a) 0xa1 else 0xa6)
+                    val low = v % 0x60 + 0xa1
+                    val text = hanziText(lead, low) ?: return null
+                    out.add(lead)
+                    out.add(low)
+                    val before = runs[runs.size - 1].eci
+                    runs.add(Run(before, text))
+                    runs.add(Run(before))
+                }
             } else if (mode == 7) {
                 val first = bits.read(8)
                 val value =

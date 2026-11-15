@@ -11,7 +11,7 @@ import {
   type ErrorCorrection,
 } from './encode.js'
 import { correct } from './rs.js'
-import { fromEci, fromUtf8, isUtf8, kanjiText, looksShiftJis } from './text.js'
+import { fromEci, fromUtf8, hanziText, isUtf8, kanjiText, looksShiftJis } from './text.js'
 
 /** What a symbol says, once read. */
 export interface Payload {
@@ -192,7 +192,7 @@ class Bits {
 interface Run {
   eci: number | undefined
   bytes: number[]
-  /** Text already decided, for a kanji character. */
+  /** Text already decided, for a kanji or hanzi character. */
   fixed?: string
 }
 
@@ -279,6 +279,22 @@ function parse(data: Uint8Array, version: number): Parsed | undefined {
           out.push(sjis >>> 8, sjis & 0xff)
           const current = runs[runs.length - 1]!.eci
           runs.push({ eci: current, bytes: [], fixed: kanjiText(sjis) }, { eci: current, bytes: [] })
+        }
+      } else if (mode === 13) {
+        // Hanzi (GB/T 18284): subset 1 is GB2312, kept as its bytes; any other subset, or a
+        // value outside the GB2312 rows or on an empty cell, rejects the symbol.
+        if (bits.read(4) !== 1) return undefined
+        const count = bits.read(KANJI_COUNT_BITS[band])
+        for (let i = 0; i < count; i++) {
+          const v = bits.read(13)
+          const row = Math.floor(v / 0x60)
+          const lead = row + (row < 0x0a ? 0xa1 : 0xa6)
+          const low = (v % 0x60) + 0xa1
+          const text = hanziText(lead, low)
+          if (text === undefined) return undefined
+          out.push(lead, low)
+          const current = runs[runs.length - 1]!.eci
+          runs.push({ eci: current, bytes: [], fixed: text }, { eci: current, bytes: [] })
         }
       } else if (mode === 7) {
         const first = bits.read(8)
