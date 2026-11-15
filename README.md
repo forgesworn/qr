@@ -646,17 +646,22 @@ found?.text
 
 A Rust port lives in `rust/`: the encoder, the SVG and terminal renderers
 and the whole decoder, with no dependencies. It is held to the same
-vectors, and on 2,412 test photographs its decoder gives the same payload,
-the same location to the last bit and the same counted work as the
-TypeScript. It is not published as a crate or a package yet.
+vectors. Beyond them, its decoder was compared with the TypeScript on 603
+pictures kept outside this repository, each at four quarter turns: the
+same payload, the same location to the last bit and the same counted work
+on all 2,412. It is not published as a crate or a package yet.
 
 It builds for `wasm32-unknown-unknown` without a binding generator, to a
-module of about 200 kB, or about 60 kB compressed for transfer. On the machine the
-project is measured on that build decodes in roughly half the time the
-TypeScript takes. Two differences from the other ports, both on the safe
-side: it carries no character tables, so text in kanji mode or under most
-ECIs comes back as the specification gives for a platform without them
-(`bytes` is always exact), and it refuses hanzi-mode symbols.
+module of about 200 kB, or about 60 kB compressed for transfer, and on the
+machine the project is measured on that build decodes in roughly half the
+time the TypeScript takes. The module is a work in progress: its encoder
+is usable from JavaScript, and its decoder is so far wired for timing only.
+
+The Rust port carries no character tables. `bytes` is always exact, but
+`text` differs from the other ports: a kanji character is U+FFFD, a byte
+segment under an ECI it has no decoder for is read as UTF-8 or Latin-1 as
+if the ECI were absent, and hanzi-mode symbols are refused. Read `bytes`
+and the ECI yourself where the character set matters.
 
 ```bash
 cd rust

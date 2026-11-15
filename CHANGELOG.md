@@ -55,9 +55,11 @@
 - A Rust port in `rust/`, with no dependencies: the encoder, SVG and
   terminal renderers and the whole decoder, held to the same vectors and
   giving the same reads, locations and counted work as the TypeScript on
-  2,412 photographs. It builds to WebAssembly and decodes in about half the
-  TypeScript's time there. It bundles no character tables and refuses
-  hanzi symbols. Not published as a package yet.
+  603 pictures at four turns each, from sets kept outside the repository.
+  It builds to WebAssembly and decodes in about half the TypeScript's time
+  there. It bundles no character tables, so its text can differ from the
+  other ports', and it refuses hanzi symbols. Not published as a package
+  yet.
 - SPEC.md states every stage of the decoder exactly, and the details of
   the encoder that were left to the code; lengths are a square root of
   squares so that ports agree to the last place.
