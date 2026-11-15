@@ -238,7 +238,15 @@ read. The TypeScript pipeline, for reference:
    format and version information, unmasking and Reed-Solomon correction
    (section 7.5 and annex B). A failed read is retried transposed, for
    mirrored codes, and the whole search is repeated on the inverted
-   picture. A symbol whose data codewords are all zero after correction
+   picture. A block that needed more corrections than Table 9 gives as its
+   capacity fails the read: the table withholds p of a block's check
+   codewords to catch a misdecode, so a block corrects half of the rest,
+   which is 2 errors of 7 check codewords at version 1 level L and 4 of 10
+   at 1-M and 2-L. Reed-Solomon alone would correct 3, 5 and 5 there, and
+   a patch of noise is about a thousand times likelier to pass that way.
+   The one codeword withheld at 1-Q, 1-H and 3-L leaves their capacity as
+   it would be, and no other symbol withholds any. A symbol whose data
+   codewords are all zero after correction
    reads as nothing, here, in the second look and in `decodeModules`: all
    zeros pass Reed-Solomon, so that is what a texture matching the mask
    pattern (a checkerboard for pattern 0, stripes for 1 and 2, a screen's
@@ -577,7 +585,10 @@ as nothing, and the second look must have read nearly all of them through a
 mesh. Another 10, also from a seed of their own, are of version 40, damaged
 the same way and drawn bent so that nearly every one's size estimate runs
 past 177; each must read as nothing, and most must reach the mesh through
-the retries below the estimate. `test/zero.test.ts` and `ZeroTest.kt` build
+the retries below the estimate. `test/symbol.test.ts` and `SymbolTest.kt`
+hold a block to the capacity Table 9 gives it: at versions 1 to 3 and three
+larger symbols, that many errors in every block read and one more reads as
+nothing. `test/zero.test.ts` and `ZeroTest.kt` build
 symbols of nothing but zero codewords, under all eight masks, at versions
 1, 2, 5 and 7, undamaged and with every block damaged up to what it can
 correct; each must read as nothing as modules and in a picture, straight

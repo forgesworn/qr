@@ -18,7 +18,7 @@ perspective, small modules, blur, noise, uneven light, inversion and
 mirroring) and require it to read at least as many of those frames as an
 independent decoder does. A second set of 184 real photographs, drawn from
 open-source test collections and fetched by hash rather than committed, has
-a floor on how many are read (179 at present) and a rule that none may
+a floor on how many are read (177 at present) and a rule that none may
 decode to the wrong text.
 
 ## Install
