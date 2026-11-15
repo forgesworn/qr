@@ -257,11 +257,15 @@ fn triples_and_placements() {
 /// lacking the set gives: a kanji character is a single U+FFFD, and so is a hanzi
 /// character that reads at all. For these three the test asserts `bytes` as
 /// recorded and the SPEC-prescribed text in place of the recorded one.
-const NEEDS_A_CHARSET: [(&str, &str); 3] = [
+const NEEDS_A_CHARSET: [(&str, &str); 2] = [
     ("ECI 26, UTF-8, around a kanji segment", "\u{e9}\u{fffd}\u{e9}"),
     ("kanji mode", "\u{fffd}\u{fffd}"),
-    ("hanzi mode, GB2312", "\u{fffd}\u{fffd}"),
 ];
+
+/// Entries the reference ports read and this one refuses: a hanzi symbol,
+/// since without a GB 18030 decoder it cannot make the check they make on
+/// each pair, and refusing is the safe side of that.
+const REFUSED_HERE: [&str; 1] = ["hanzi mode, GB2312"];
 
 /// Reading module grids: every entry of the pack's `symbols`.
 #[test]
@@ -282,6 +286,12 @@ fn symbols() {
         }
         let got = decode_modules(&modules, size);
         let want = &entry["result"];
+        if REFUSED_HERE.contains(&name) {
+            assert!(!want.is_null(), "{name}: the reference reads this one");
+            assert!(got.is_none(), "{name}: this port refuses hanzi symbols");
+            refused += 1;
+            continue;
+        }
         if want.is_null() {
             assert!(got.is_none(), "{name}: should not read, read {:?}", got.map(|g| g.payload.text));
             refused += 1;

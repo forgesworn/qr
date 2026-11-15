@@ -722,6 +722,13 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
             13 => {
                 // Hanzi (GB/T 18284): subset 1 is GB2312, kept as its bytes; any other subset, or a
                 // value outside the GB2312 rows or on a cell the editions disagree on, rejects the symbol.
+                //
+                // The reference ports also refuse a pair their GB 18030 decoder makes nothing of (an
+                // empty GB2312 cell). This port has no such decoder and cannot tell, so with
+                // `HANZI` false it refuses every hanzi symbol sooner than read one they would not.
+                if !HANZI {
+                    return None;
+                }
                 if bits.read(4)? != 1 {
                     return None;
                 }
@@ -782,6 +789,12 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
 }
 
 // Text, by hand. No character-set tables are bundled but the 32 bytes of Windows 1252.
+
+/// Whether hanzi-mode symbols are read at all. Off: without a GB 18030 decoder
+/// an empty GB2312 cell cannot be told from a character, and the reference
+/// ports refuse a symbol that holds one. A host that can check the pairs may
+/// turn this on once the port gives it the means.
+const HANZI: bool = false;
 
 /// A kanji-mode character on a platform with no Shift_JIS: a single U+FFFD.
 fn kanji_text() -> String {
