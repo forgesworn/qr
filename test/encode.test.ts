@@ -142,6 +142,26 @@ describe('toSvg', () => {
     expect(() => toSvg(encode('a'), { margin: -1 })).toThrow(RangeError)
     expect(() => toSvg(encode('a'), { margin: 1.5 })).toThrow(RangeError)
   })
+
+  it('replaces characters XML does not allow, and keeps astral characters', () => {
+    const svg = toSvg(encode('a'), { title: 'a\u0001b\u000bc\ud800d\uffffe \u{1f600}\tf', dark: '#000\u0000' })
+    expect(svg).toContain('<title>a\ufffdb\ufffdc\ufffdd\ufffde \u{1f600}\tf</title>')
+    expect(svg).toContain('fill="#000\ufffd"')
+    expect(/[\0-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]/.test(svg)).toBe(false)
+  })
+
+  it('adds no title or image role for an empty title', () => {
+    const svg = toSvg(encode('a'), { title: '' })
+    expect(svg).not.toContain('<title>')
+    expect(svg).not.toContain('role=')
+  })
+
+  it('rejects colours and titles that are not strings', () => {
+    const qr = encode('a')
+    expect(() => toSvg(qr, { dark: 5 as unknown as string })).toThrow(TypeError)
+    expect(() => toSvg(qr, { light: 5 as unknown as string })).toThrow(TypeError)
+    expect(() => toSvg(qr, { title: 5 as unknown as string })).toThrow(TypeError)
+  })
 })
 
 // The segmentation rule of SPEC.md (Mode), checked against two separate
