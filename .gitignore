@@ -7,3 +7,4 @@ kotlin/.gradle
 kotlin/**/build
 kotlin/.kotlin
 vectors/photos-cache/
+rust/target/

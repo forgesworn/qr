@@ -1,0 +1,23 @@
+[package]
+name = "forgesworn-qr"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "MIT"
+description = "The front end of the QR decoder: greyscale, binarisation, reduction and the finder scan."
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+
+[dev-dependencies]
+png = "0.17"
+sha2 = "0.10"
+serde_json = { version = "1", features = ["float_roundtrip"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
