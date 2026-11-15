@@ -167,3 +167,5 @@ If you find this library useful, consider sending a tip:
 ## Licence
 
 MIT
+
+QR Code is a registered trademark of DENSO WAVE INCORPORATED.
