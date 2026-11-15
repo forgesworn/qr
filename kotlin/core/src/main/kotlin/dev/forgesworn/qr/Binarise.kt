@@ -165,3 +165,31 @@ internal fun invert(image: BitImage): BitImage {
     for (i in out.indices) out[i] = (image.data[i].toInt() xor 1).toByte()
     return BitImage(out, image.width, image.height)
 }
+
+/**
+ * The picture shrunk by [f] (decoder step 9): floor(width / f) by
+ * floor(height / f) pixels, each the mean of an f x f square, rounded as
+ * (sum + floor(f * f / 2)) div (f * f). Columns and rows past the last whole
+ * square are dropped.
+ */
+internal fun shrink(image: Luminance, f: Int): Luminance {
+    val width = image.width / f
+    val height = image.height / f
+    val out = IntArray(width * height)
+    val sums = IntArray(width)
+    val area = f * f
+    val half = area / 2
+    for (y in 0 until height) {
+        sums.fill(0)
+        for (j in 0 until f) {
+            val row = (y * f + j) * image.width
+            for (x in 0 until width) {
+                var s = 0
+                for (i in 0 until f) s += image.data[row + x * f + i]
+                sums[x] += s
+            }
+        }
+        for (x in 0 until width) out[y * width + x] = (sums[x] + half) / area
+    }
+    return Luminance(out, width, height)
+}

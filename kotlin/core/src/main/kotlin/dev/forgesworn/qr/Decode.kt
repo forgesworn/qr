@@ -103,31 +103,88 @@ internal fun decodeCounted(luminance: ByteArray, width: Int, height: Int, work: 
     return decodeLuminance(toLuminance(luminance, width, height, width), Inversion.BOTH, work)
 }
 
+/** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
+private const val MAX_MAPS = 4 * MAX_TRIPLES * 5 * 6
+
+/** The reduced-size pass's factors, coarse to fine. */
+private val REDUCTIONS = intArrayOf(8, 4, 2)
+
+/** A reduced picture narrower or shorter than this cannot hold a version 1 symbol at a pixel a module. */
+private const val MIN_REDUCED = 21
+
+/** Maps each reduced size may take, out of what the frame has left. */
+private const val REDUCED_MAPS = 30
+
+/** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
+private class Budget(var maps: Int, var second: Int, var here: Int)
+
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
-    val bits = binarise(luminance)
-    val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
-    if (inversion != Inversion.INVERTED) {
-        val found = search(bits, false, candidates, work)
-        if (found != null) return found
-    }
-    if (inversion != Inversion.NORMAL) {
-        val found = search(invert(bits), true, candidates, work)
-        if (found != null) return found
-    }
-    // Nothing read: look again at the few maps whose format copies agreed.
-    if (candidates.isEmpty()) return null
-    val levels = thresholds(luminance)
-    for (candidate in candidates) {
-        if (work != null) work.second++
-        val p = secondLook(luminance, levels, candidate, work) ?: continue
-        return result(p, mirrored = candidate.agreed.mirrored, inverted = candidate.inverted, location = where(candidate.location))
+    val budget = Budget(MAX_MAPS, SECOND_LOOKS, MAX_MAPS)
+    val found = look(luminance, inversion, 1, budget, work)
+    if (found != null) return found
+    // Nothing read at full size: the picture shrunk, coarse to fine, for codes
+    // whose modules are large or carry texture or scan lines (decoder step 9).
+    for (f in REDUCTIONS) {
+        if (luminance.width / f < MIN_REDUCED || luminance.height / f < MIN_REDUCED) continue
+        // With no maps left no size can read, nor keep a candidate for a second look.
+        if (budget.maps == 0) break
+        budget.here = REDUCED_MAPS
+        val reduced = look(shrink(luminance, f), inversion, f, budget, work)
+        if (reduced != null) return reduced
     }
     return null
 }
 
-private fun where(location: Placement): QrLocation = QrLocation(location.topLeft, location.topRight, location.bottomLeft, location.alignment)
+/**
+ * The ordinary search in each polarity, then the second look, on a picture
+ * shrunk by [f] (1 for the picture itself). At reduced size a read counts
+ * only if its format copies agree on its level and mask, and locations are
+ * given in full-picture coordinates.
+ */
+private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?): DecodeResult? {
+    val bits = binarise(luminance)
+    val strict = f > 1
+    val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
+    if (inversion != Inversion.INVERTED) {
+        val found = search(bits, false, candidates, budget, strict, f, work)
+        if (found != null) return found
+    }
+    if (inversion != Inversion.NORMAL) {
+        val found = search(invert(bits), true, candidates, budget, strict, f, work)
+        if (found != null) return found
+    }
+    // Nothing read: look again at the few maps whose format copies agreed.
+    if (candidates.isEmpty() || budget.second == 0) return null
+    val levels = thresholds(luminance)
+    for (candidate in candidates) {
+        if (budget.second == 0) break
+        budget.second--
+        if (work != null) work.second++
+        val p = secondLook(luminance, levels, candidate, work, strict) ?: continue
+        return result(p, mirrored = candidate.agreed.mirrored, inverted = candidate.inverted, location = where(candidate.location, f))
+    }
+    return null
+}
 
-private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<Retry>, work: Work?): DecodeResult? {
+/**
+ * A location in full-picture coordinates. Picture coordinates are continuous,
+ * pixel i covering [i, i + 1), so a point x in a picture shrunk by f lies at x * f.
+ */
+private fun where(location: Placement, f: Int): QrLocation {
+    if (f == 1) return QrLocation(location.topLeft, location.topRight, location.bottomLeft, location.alignment)
+    fun up(p: Point): Point = Point(p.x * f, p.y * f)
+    return QrLocation(up(location.topLeft), up(location.topRight), up(location.bottomLeft), location.alignment?.let { up(it) })
+}
+
+private fun search(
+    image: BitImage,
+    inverted: Boolean,
+    candidates: MutableList<Retry>,
+    budget: Budget,
+    strict: Boolean,
+    f: Int,
+    work: Work?,
+): DecodeResult? {
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
         val triples = finderTriples(image, findFinders(image, tolerance, work)).take(MAX_TRIPLES)
@@ -139,8 +196,14 @@ private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<R
             // The size estimate can be a version out; try the neighbours too.
             for (delta in intArrayOf(0, -4, 4, -8, 8)) {
                 for (location in if (delta == 0) first else locate(image, triple, size + delta, work)) {
-                    if (work != null) work.maps++
-                    val result = read(image, location, inverted, candidates)
+                    if (budget.maps == 0 || budget.here == 0) return null
+                    budget.maps--
+                    budget.here--
+                    if (work != null) {
+                        work.maps++
+                        if (f > 1) work.reduced++
+                    }
+                    val result = read(image, location, inverted, candidates, strict, f)
                     if (result != null) return result
                 }
             }
@@ -155,7 +218,14 @@ private fun over(image: BitImage, triple: Array<Finder>): Int? {
     return if (size > 177 && size <= 177 + 8) size else null
 }
 
-private fun read(image: BitImage, location: Placement, inverted: Boolean, candidates: MutableList<Retry>): DecodeResult? {
+private fun read(
+    image: BitImage,
+    location: Placement,
+    inverted: Boolean,
+    candidates: MutableList<Retry>,
+    strict: Boolean,
+    f: Int,
+): DecodeResult? {
     val size = location.size
     val modules = ByteArray(size * size)
     for (y in 0 until size) {
@@ -168,10 +238,19 @@ private fun read(image: BitImage, location: Placement, inverted: Boolean, candid
             }
         }
     }
-    val straight = readSymbol({ x, y -> modules[y * size + x].toInt() == 1 }, size)
-    if (straight != null) return result(straight, mirrored = false, inverted = inverted, location = where(location))
-    val mirrored = readSymbol({ x, y -> modules[x * size + y].toInt() == 1 }, size)
-    if (mirrored != null) return result(mirrored, mirrored = true, inverted = inverted, location = where(location))
+    val straightRead = ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
+    val straight = readSymbol(straightRead, size)
+    if (straight != null) {
+        // At reduced size, a read whose format copies do not agree on its level and mask is no read.
+        if (strict && !formatAgrees(straightRead, size, straight.ecc, straight.mask)) return null
+        return result(straight, mirrored = false, inverted = inverted, location = where(location, f))
+    }
+    val mirroredRead = ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
+    val mirrored = readSymbol(mirroredRead, size)
+    if (mirrored != null) {
+        if (strict && !formatAgrees(mirroredRead, size, mirrored.ecc, mirrored.mask)) return null
+        return result(mirrored, mirrored = true, inverted = inverted, location = where(location, f))
+    }
     val agreed = agreement(modules, size)
     if (agreed != null && sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
     return null

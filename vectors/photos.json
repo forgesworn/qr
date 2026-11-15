@@ -23,7 +23,7 @@
   }
  ],
  "ratchet": {
-  "typescript": 178
+  "typescript": 179
  },
  "photos": [
   {
@@ -426,7 +426,7 @@
    "textFile": "qrcode-2/12.txt",
    "textSha256": "30a2a450189a5b357a360265102c4c99baa4c84a2559b6a9b16d9a0d5bf80a07",
    "pixelsSha256": "0fa75e0a8583a1165fedfae114ff9fd3fceeff10b40293e4be00b06f738027fd",
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {

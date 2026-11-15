@@ -32,6 +32,12 @@
   checkerboard, stripes, a screen's moire) could be returned as a read with
   empty text. A symbol whose data codewords are all zero now reads as
   nothing; an empty payload as `encode('')` writes it still reads.
+- When nothing reads at full size, the decoder searches the picture again
+  shrunk by 8, 4 and 2, so close-ups whose large modules carry scan lines,
+  a screen's moire or grain read. The reduced sizes share the frame's caps
+  on maps and second looks, and a read there counts only if both format
+  copies agree with its level and mask. The caps are unchanged, but a frame
+  with no code in it now costs more on average.
 - The decoder reads hanzi segments (GB2312).
 - The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given

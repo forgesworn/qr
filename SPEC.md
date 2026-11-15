@@ -256,6 +256,8 @@ read. The TypeScript pipeline, for reference:
    test under "Shift_JIS without an ECI" below.
 8. Second look: only when steps 3 to 7 have found nothing in either
    polarity. See below.
+9. Reduced size: only when the second look has found nothing too, the
+   picture shrunk and searched again. See below.
 
 ### Second look
 
@@ -327,6 +329,40 @@ The first such read that passes is the result, with the candidate's
 location, polarity and orientation. Nothing else is relaxed: format,
 version, Reed-Solomon and segment checks are those of step 6.
 
+### Reduced size
+
+A code whose modules are many pixels wide can carry texture inside them
+(scan lines, a screen's moire, print grain) that the binariser of step 2
+breaks into shapes of its own, so steps 3 to 8 find nothing. Once they
+have, in every polarity asked for, the picture is shrunk by a factor f of
+8, then 4, then 2, and steps 2 to 8 run on the reduced picture as on the
+full one; the first read ends the search.
+
+1. Shrink: applied to the luminance plane of step 1. The reduced picture is
+   `floor(w / f)` by `floor(h / f)` pixels; the columns and rows left over
+   at the right and bottom are dropped. Each reduced pixel is
+   `(sum + floor(f * f / 2)) div (f * f)` of the f x f pixels it covers,
+   in integers.
+2. A factor is skipped when either reduced side is under 21 pixels: a
+   version 1 symbol is 21 modules a side, and the search needs at least a
+   pixel a module, so nothing smaller can hold one.
+3. Work: maps come out of the frame's one cap of 720 (see Bounded work),
+   what the full size and the factors before have left of it, and each
+   factor takes at most 30 of them; once none are left the pass stops.
+   Second looks come out of the frame's 4, shared by every size. The 30
+   keeps noise within the work bound below; the codes this pass is for read
+   on one of their first few maps.
+4. Gate: at reduced size a read, in step 6 or in the second look, counts
+   only if both of its format copies, sampled in the orientation it was
+   read in, lie within 2 bits of the format word of its decoded level and
+   mask. Format words are at least 7 bits apart, so no other word is as
+   near. A read that fails the gate is no read, and no transposed read and
+   no candidate follow from that map.
+5. The `inversion` option holds as at full size. The location returned is
+   in full-picture coordinates: coordinates are continuous, pixel i covering
+   `[i, i + 1)`, so a point `(x, y)` in the reduced picture is `(x f, y f)`
+   in the full one.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -346,14 +382,16 @@ among them.
   picture and on its inverse).
 - Each triple is tried at 5 sizes, each giving at most 4 alignment maps and
   2 corner maps: at most 720 maps for the whole search, each sampling at
-  most size x size modules, straight and transposed. Only sizes from 21 to
+  most size x size modules, straight and transposed. The reduced sizes of
+  step 9 take theirs from the same 720, at most 30 each. Only sizes from 21 to
   177 give maps. An estimate of 181 or 185, past 177 by no more than the
   retries reach, still has its retries tried, and those of 177 or less
   give maps; any other estimate outside 21 to 177 gives none.
 - Each size searches for the alignment pattern in square windows reaching
   4, 8 and then 16 modules around at most two estimates, clipped to the
   picture, stopping after the first reach that finds a near-perfect match.
-- The second look reads at most 4 maps again, each sampled three times
+- The second look reads at most 4 maps again, at every size together,
+  each sampled three times
   (timing, edges, final) plus one sixteenth-step search per timing module
   and per boundary between unlike modules.
 - The mesh probes at most 46 lattice points a second look (version 40 has
@@ -361,10 +399,15 @@ among them.
   at most 2,875,000 points a frame, each interpolating four pixels, whatever
   the picture's size.
 
+The caps on maps and second looks are the same with step 9 as without it,
+but a frame where nothing reads at full size goes on to be shrunk,
+binarised and searched at up to three reduced sizes (at most a third more
+pixels in all), so such a frame costs more than it did.
+
 Both ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,
 maps sampled, maps read again by the second look, those read through a
-mesh, points the mesh probed) without exposing the
+mesh, points the mesh probed, maps sampled at reduced size) without exposing the
 counter: a picture of finder patterns on a 10-pixel pitch, or of 1:1:3:1:1
 stripes, costs under 1.5 counted steps a pixel at 800x800 and at
 1600x1600, and noise stays within the map cap, the second look's and the
@@ -540,3 +583,20 @@ symbols of nothing but zero codewords, under all eight masks, at versions
 correct; each must read as nothing as modules and in a picture, straight
 and mirrored, dark on light and light on dark, while an empty payload and
 payloads of zero bytes that leave whole blocks zero must read back.
+
+The reduced-size pass has tests of its own in both ports, from seeds of
+their own. 200 symbols of versions 1 to 4, one block a few codewords past
+its parity, and 100 with 4 to 16% of modules flipped anywhere, drawn at
+16, 24 or 32 pixels a module with noise, some mirrored or inverted: each
+must read as nothing or its own text, every one damaged past its parity
+as nothing, and on every one of those the counter must show maps sampled
+at reduced size; on nearly all, maps were left and every factor's picture
+held a finder triple, so each factor was searched. Symbols of nothing but
+zero codewords, at versions 1, 2 and 5, all eight masks, 16 and 24 pixels
+a module, must read as nothing with the pass reached. Larger frames with
+no symbol (noise, coarse noise, finder patterns at 8 and 16 pixels a
+module, text-like glyphs, a checkerboard) must read as nothing. A close-up
+with a dark scan line every third row across 24-pixel modules reads only
+through the pass, at the finder centres in full-picture coordinates, and
+in the polarity the `inversion` option allows; the shrink's rounding and
+dropped remainder are checked on small pictures.

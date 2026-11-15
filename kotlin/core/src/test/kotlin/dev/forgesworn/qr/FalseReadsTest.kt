@@ -172,6 +172,70 @@ class FalseReadsTest {
         return text.toString() to Frame(picture.data, picture.width, picture.height)
     }
 
+    /**
+     * A symbol of version 1 to 4 drawn with large modules, 16, 24 or 32 pixels,
+     * so the reduced-size pass finds it at every factor. CODEWORDS damages one
+     * block a few codewords past its parity, finders, timing and format whole;
+     * FLIPS turns over modules anywhere.
+     */
+    private fun damagedClose(kind: Kind, random: Random): Pair<String, Frame> {
+        val version = 1 + fl(random.next() * 4)
+        val ecc = levels[fl(random.next() * 4)]
+        val mask = fl(random.next() * 8)
+        // Up to the bytes the version holds at level H, so the text fits at any level.
+        val length = 1 + fl(random.next() * intArrayOf(7, 14, 24, 34)[version - 1])
+        val text = StringBuilder()
+        for (i in 0 until length) text.append(chars[fl(random.next() * chars.length)])
+        val qr = encode(text.toString(), EncodeOptions(ecc = ecc, mask = mask, version = version))
+        val size = qr.size
+        val modules = qr.modules.copyOf()
+        if (kind == Kind.CODEWORDS) {
+            val blocks = codewordModules(qr.version, ecc)
+            val block = blocks[fl(random.next() * blocks.size)]
+            val ec = blocksFor(qr.version, ecc)[0]
+            val errors = minOf(block.size, ec / 2 + 1 + fl(random.next() * 3))
+            val order = IntArray(block.size) { it }
+            for (i in 0 until errors) {
+                val j = i + fl(random.next() * (order.size - i))
+                val t = order[i]
+                order[i] = order[j]
+                order[j] = t
+                val bitsToFlip = 1 + fl(random.next() * 255)
+                block[order[i]].forEachIndexed { bit, p ->
+                    if (((bitsToFlip ushr (7 - bit)) and 1) == 1) modules[p[1] * size + p[0]] = (modules[p[1] * size + p[0]].toInt() xor 1).toByte()
+                }
+            }
+        } else {
+            val rate = 0.04 + random.next() * 0.12
+            for (i in modules.indices) if (random.next() < rate) modules[i] = (modules[i].toInt() xor 1).toByte()
+        }
+        val mirror = random.next() < 0.2
+        val drawn = if (mirror) ByteArray(size * size) { modules[(it % size) * size + it / size] } else modules
+        val scale = intArrayOf(16, 24, 32)[fl(random.next() * 3)]
+        val invert = random.next() < 0.2
+        val noise = fl(random.next() * 40)
+        return text.toString() to draw(drawn, size, scale, invert, noise, random)
+    }
+
+    /** A symbol of nothing but zero codewords, as ZeroTest builds it: the mask pattern alone in the data region. */
+    private fun zeroSymbol(version: Int, ecc: ErrorCorrection, mask: Int): Pair<ByteArray, Int> {
+        val b = blocksFor(version, ecc)
+        val grid = Grid(version)
+        grid.placeData(IntArray(b[1] * b[2] + b[3] * (b[2] + 1) + b[0] * (b[1] + b[3])))
+        return grid.render(ecc, mask) to grid.size
+    }
+
+    /** Of the reduced sizes 8, 4 and 2, how many hold a finder triple in either polarity. */
+    private fun factorsWithTriples(frame: Frame): Int {
+        val luminance = toLuminance(frame.data, frame.width, frame.height, frame.width)
+        var count = 0
+        for (f in intArrayOf(8, 4, 2)) {
+            val bits = binarise(shrink(luminance, f))
+            if (listOf(bits, invert(bits)).any { finderTriples(it, findFinders(it, 0.8)).isNotEmpty() }) count++
+        }
+        return count
+    }
+
     /** Whether a triple the search locates estimates the size past 177, by no more than 8. */
     private fun over(frame: Frame): Boolean {
         val bits = binarise(toLuminance(frame.data, frame.width, frame.height, frame.width))
@@ -208,6 +272,47 @@ class FalseReadsTest {
                 if (i < 7 && j < 7 && maxOf(abs(i - 3), abs(j - 3)) != 2) 20 else 230
             },
         )
+        return frames
+    }
+
+    /** Larger frames with no symbol in them, whose shapes survive shrinking. */
+    private fun emptyLarge(random: Random): List<Frame> {
+        val frames = ArrayList<Frame>()
+        frames.add(fill(640, 480) { _, _ -> fl(random.next() * 256) })
+        // Noise in 8 px squares, and in 16 px squares of black and white.
+        val coarse = IntArray(80 * 60) { fl(random.next() * 256) }
+        frames.add(fill(640, 480) { x, y -> coarse[(y / 8) * 80 + x / 8] })
+        val blocks = IntArray(40 * 30) { if (random.next() < 0.5) 20 else 230 }
+        frames.add(fill(640, 480) { x, y -> blocks[(y / 16) * 40 + x / 16] })
+        // Finder patterns at 8 and at 16 px a module, nothing between.
+        for ((m, pitch, width, height) in listOf(intArrayOf(8, 80, 640, 480), intArrayOf(16, 160, 960, 640))) {
+            frames.add(
+                fill(width, height) { x, y ->
+                    val i = (x % pitch) / m
+                    val j = (y % pitch) / m
+                    if (i < 7 && j < 7 && maxOf(abs(i - 3), abs(j - 3)) != 2) 20 else 230
+                },
+            )
+        }
+        // Lines of text-like glyphs: 4 x 6 cells of 3 px, each dark at random.
+        val glyphs = BooleanArray(50 * 16 * 24) { random.next() < 0.4 }
+        frames.add(
+            fill(800, 600) { x, y ->
+                val line = y / 36
+                val row = y % 36
+                val letter = x / 16
+                val col = x % 16
+                if (line >= 16 || row >= 18 || col >= 12) {
+                    235
+                } else if (glyphs[(line * 50 + letter) * 24 + (row / 3) * 4 + col / 3]) {
+                    25
+                } else {
+                    235
+                }
+            },
+        )
+        // A 24 px checkerboard.
+        frames.add(fill(640, 480) { x, y -> if ((x / 24 + y / 24) % 2 != 0) 20 else 230 })
         return frames
     }
 
@@ -280,6 +385,78 @@ class FalseReadsTest {
         // retries below it took most of them to the second look's mesh.
         assertTrue(past >= 0.9 * trials)
         assertTrue(meshed >= 0.7 * trials)
+    }
+
+    @Test
+    fun readsDamagedCloseUpSymbolsAtReducedSizeAsNothingOrTheirOwnText() {
+        // A seed of its own. Nothing reads these at full size, so the reduced-size
+        // pass runs; with maps to spare and a triple at every factor, it maps at each.
+        val random = Random(6131)
+        var trials = 0
+        var reached = 0
+        var everyFactor = 0
+        for ((kind, n) in listOf(Kind.CODEWORDS to 200, Kind.FLIPS to 100)) {
+            for (i in 0 until n) {
+                val (text, frame) = damagedClose(kind, random)
+                val work = Work()
+                val got = decodeCounted(frame.data, frame.width, frame.height, work)
+                if (got != null) assertEquals(text, got.text)
+                assertTrue(work.maps <= 4 * 6 * 5 * 6)
+                assertTrue(work.second <= 4)
+                assertTrue(work.probed <= MESH_PROBES)
+                if (kind == Kind.CODEWORDS) {
+                    assertNull(got)
+                    trials++
+                    if (work.reduced > 0) reached++
+                    if (work.maps < 4 * 6 * 5 * 6 && factorsWithTriples(frame) == 3) everyFactor++
+                }
+            }
+        }
+        assertEquals(trials, reached)
+        assertTrue(everyFactor >= 0.9 * trials)
+    }
+
+    @Test
+    fun readsCloseUpSymbolsOfNothingButZeroCodewordsAsNothingAtEverySize() {
+        // Nothing reads them at full size, so the reduced-size pass runs on each.
+        val random = Random(6133)
+        var trials = 0
+        var everyFactor = 0
+        val cases = listOf(1 to ErrorCorrection.H, 1 to ErrorCorrection.L, 2 to ErrorCorrection.L, 5 to ErrorCorrection.Q)
+        for ((version, ecc) in cases) {
+            for (mask in 0 until 8) {
+                val (modules, size) = zeroSymbol(version, ecc, mask)
+                for (scale in intArrayOf(16, 24)) {
+                    val mirror = random.next() < 0.5
+                    val drawn = if (mirror) ByteArray(size * size) { modules[(it % size) * size + it / size] } else modules
+                    val invert = random.next() < 0.5
+                    val noise = fl(random.next() * 40)
+                    val frame = draw(drawn, size, scale, invert, noise, random)
+                    val work = Work()
+                    assertNull("$version$ecc mask $mask at $scale", decodeCounted(frame.data, frame.width, frame.height, work))
+                    assertTrue(work.reduced > 0)
+                    assertTrue(work.maps <= 4 * 6 * 5 * 6)
+                    assertTrue(work.second <= 4)
+                    trials++
+                    if (work.maps < 4 * 6 * 5 * 6 && factorsWithTriples(frame) == 3) everyFactor++
+                }
+            }
+        }
+        assertTrue(everyFactor >= 0.9 * trials)
+    }
+
+    @Test
+    fun readsLargerFramesWithNoSymbolAsNothingAtEverySize() {
+        var reached = 0
+        for (frame in emptyLarge(Random(37))) {
+            val work = Work()
+            assertNull(decodeCounted(frame.data, frame.width, frame.height, work))
+            assertTrue(work.maps <= 4 * 6 * 5 * 6)
+            assertTrue(work.second <= 4)
+            if (work.reduced > 0) reached++
+        }
+        // The finder tiles at least are mapped at reduced size.
+        assertTrue(reached >= 2)
     }
 
     @Test

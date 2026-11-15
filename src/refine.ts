@@ -5,7 +5,7 @@
 import { thresholdAt, type Luminance, type Thresholds } from './binarise.js'
 import { EC_ORDER, FORMAT_COORDS, formatBits, type ErrorCorrection } from './encode.js'
 import type { Location, Point, Work } from './locate.js'
-import { readSymbol, readVersion, type Payload } from './symbol.js'
+import { readSymbol, readVersion, type ModuleReader, type Payload } from './symbol.js'
 import { ALIGNMENT_CENTRES } from './tables.js'
 
 /** Both format copies within this many bits of the same format word. */
@@ -61,6 +61,23 @@ export function agreement(
     }
   }
   return best
+}
+
+/**
+ * True when both format copies, read through `read`, lie within AGREEMENT
+ * bits of the format word for this level and mask. A read at reduced size
+ * counts only then (SPEC.md, decoder step 9).
+ */
+export function formatAgrees(read: ModuleReader, size: number, ecc: ErrorCorrection, mask: number): boolean {
+  const bits = formatBits(ecc, mask)
+  let first = 0
+  let second = 0
+  for (let i = 14; i >= 0; i--) {
+    const [x, y] = FORMAT_COORDS[i]!
+    first = (first << 1) | (read(x, y) ? 1 : 0)
+    second = (second << 1) | (read(i < 8 ? size - 1 - i : 8, i < 8 ? 8 : size - 7 + (i - 8)) ? 1 : 0)
+  }
+  return popcount(bits ^ first) <= AGREEMENT && popcount(bits ^ second) <= AGREEMENT
 }
 
 /**
@@ -346,8 +363,12 @@ function mesh(location: Location, probe: Probe, work?: Work): Location | undefin
   return { ...location, project: bent }
 }
 
-/** Reads one candidate again; the result must keep the level and mask its format copies agreed on. */
-export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work): Payload | undefined {
+/**
+ * Reads one candidate again; the result must keep the level and mask its
+ * format copies agreed on. With `strict`, the format copies of the modules
+ * read again must also agree on them, as every read at reduced size must.
+ */
+export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false): Payload | undefined {
   const { inverted, mirrored } = candidate
   const probe = probeFor(image, t, inverted)
   // 0. From version 7, the map bent onto the alignment patterns it can find.
@@ -392,7 +413,9 @@ export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate
       modules[y * size + x] = probe(p.x, p.y) > 0 ? 1 : 0
     }
   }
-  const result = readSymbol(mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1, size)
+  const read: ModuleReader = mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1
+  const result = readSymbol(read, size)
   if (result === undefined || result.ecc !== candidate.ecc || result.mask !== candidate.mask) return undefined
+  if (strict && !formatAgrees(read, size, result.ecc, result.mask)) return undefined
   return result
 }

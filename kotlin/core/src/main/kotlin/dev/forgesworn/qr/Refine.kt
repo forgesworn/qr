@@ -50,6 +50,24 @@ internal fun agreement(modules: ByteArray, size: Int): Agreement? {
 }
 
 /**
+ * True when both format copies, read through [read], lie within AGREEMENT
+ * bits of the format word for this level and mask. A read at reduced size
+ * counts only then (SPEC.md, decoder step 9).
+ */
+internal fun formatAgrees(read: ModuleReader, size: Int, ecc: ErrorCorrection, mask: Int): Boolean {
+    val bits = formatBits(ecc, mask)
+    var first = 0
+    var second = 0
+    for (i in 14 downTo 0) {
+        first = (first shl 1) or (if (read.read(FORMAT_COORDS[i][0], FORMAT_COORDS[i][1])) 1 else 0)
+        val x = if (i < 8) size - 1 - i else 8
+        val y = if (i < 8) 8 else size - 7 + (i - 8)
+        second = (second shl 1) or (if (read.read(x, y)) 1 else 0)
+    }
+    return Integer.bitCount(bits xor first) <= AGREEMENT && Integer.bitCount(bits xor second) <= AGREEMENT
+}
+
+/**
  * False when a version block, read in the orientation the format copies
  * agreed in, decodes to a version whose size is not the map's: readSymbol
  * rejects such a map, so it is no candidate. A block that does not decode
@@ -356,8 +374,12 @@ private fun mesh(location: Placement, probe: Probe, work: Work?): Placement? {
     return Placement(location.topLeft, location.topRight, location.bottomLeft, location.alignment, size, bent)
 }
 
-/** Reads one candidate again; the result must keep the level and mask its format copies agreed on. */
-internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null): Payload? {
+/**
+ * Reads one candidate again; the result must keep the level and mask its
+ * format copies agreed on. With [strict], the format copies of the modules
+ * read again must also agree on them, as every read at reduced size must.
+ */
+internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false): Payload? {
     val mirrored = candidate.agreed.mirrored
     val probe = Probe(image, t, candidate.inverted)
     // 0. From version 7, the map bent onto the alignment patterns it can find.
@@ -408,9 +430,11 @@ internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work:
             modules[y * size + x] = if (probe.at(p.x, p.y) > 0) 1 else 0
         }
     }
-    val result =
-        if (mirrored) readSymbol({ x, y -> modules[x * size + y].toInt() == 1 }, size)
-        else readSymbol({ x, y -> modules[y * size + x].toInt() == 1 }, size)
+    val read =
+        if (mirrored) ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
+        else ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
+    val result = readSymbol(read, size)
     if (result == null || result.ecc != candidate.agreed.ecc || result.mask != candidate.agreed.mask) return null
+    if (strict && !formatAgrees(read, size, result.ecc, result.mask)) return null
     return result
 }

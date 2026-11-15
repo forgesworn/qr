@@ -26,7 +26,8 @@ export interface Location {
  * cross-checks, stored candidates compared while merging, pixels in the
  * windows searched for alignment patterns, maps sampled, maps read again
  * by the second look, those of them read through a mesh, and the points the
- * mesh probed looking for alignment patterns.
+ * mesh probed looking for alignment patterns; and, when counted, the maps
+ * sampled at reduced size.
  */
 export interface Work {
   steps: number
@@ -36,6 +37,7 @@ export interface Work {
   second: number
   meshes: number
   probed: number
+  reduced?: number
 }
 
 const NONE: readonly number[] = []

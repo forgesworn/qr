@@ -163,3 +163,31 @@ export function invert(image: BitImage): BitImage {
   for (let i = 0; i < out.length; i++) out[i] = image.data[i]! ^ 1
   return { data: out, width: image.width, height: image.height }
 }
+
+/**
+ * The picture shrunk by `f` (decoder step 9): floor(width / f) by
+ * floor(height / f) pixels, each the mean of an f x f square, rounded as
+ * (sum + floor(f * f / 2)) div (f * f). Columns and rows past the last whole
+ * square are dropped.
+ */
+export function shrink(image: Luminance, f: number): Luminance {
+  const width = Math.floor(image.width / f)
+  const height = Math.floor(image.height / f)
+  const out = new Uint8Array(width * height)
+  const sums = new Uint32Array(width)
+  const area = f * f
+  const half = Math.floor(area / 2)
+  for (let y = 0; y < height; y++) {
+    sums.fill(0)
+    for (let j = 0; j < f; j++) {
+      const row = (y * f + j) * image.width
+      for (let x = 0; x < width; x++) {
+        let s = 0
+        for (let i = 0; i < f; i++) s += image.data[row + x * f + i]!
+        sums[x]! += s
+      }
+    }
+    for (let x = 0; x < width; x++) out[y * width + x] = Math.floor((sums[x]! + half) / area)
+  }
+  return { data: out, width, height }
+}

@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest'
 import { decodeCounted } from '../src/decode.js'
 import { blocksFor, encode, Grid, type ErrorCorrection } from '../src/encode.js'
-import { binarise, invert, toLuminance } from '../src/binarise.js'
+import { binarise, invert, shrink, toLuminance } from '../src/binarise.js'
 import { estimateSize, finderTriples, findFinders, type Work } from '../src/locate.js'
 import { bent, prng } from './photo.js'
 
@@ -168,6 +168,90 @@ function damagedLarge(random: () => number, only?: number, lens: readonly number
   return { text, frame: bent(drawn, size, 3, k, invert) }
 }
 
+/**
+ * A symbol of version 1 to 4 drawn with large modules, 16, 24 or 32 pixels,
+ * so the reduced-size pass finds it at every factor. `codewords` damages one
+ * block a few codewords past its parity, finders, timing and format whole;
+ * `flips` turns over modules anywhere.
+ */
+function damagedClose(kind: 'codewords' | 'flips', random: () => number): { text: string; frame: Frame } {
+  const version = 1 + Math.floor(random() * 4)
+  const ecc = LEVELS[Math.floor(random() * 4)]!
+  const mask = Math.floor(random() * 8)
+  // Up to the bytes the version holds at level H, so the text fits at any level.
+  const length = 1 + Math.floor(random() * [7, 14, 24, 34][version - 1]!)
+  let text = ''
+  for (let i = 0; i < length; i++) text += CHARS[Math.floor(random() * CHARS.length)]
+  const qr = encode(text, { ecc, mask, version })
+  const { size } = qr
+  const modules = Uint8Array.from(qr.modules)
+  if (kind === 'codewords') {
+    const blocks = codewordModules(qr.version, ecc)
+    const block = blocks[Math.floor(random() * blocks.length)]!
+    const ec = blocksFor(qr.version, ecc)[0]
+    const errors = Math.min(block.length, Math.floor(ec / 2) + 1 + Math.floor(random() * 3))
+    const order = block.map((_, i) => i)
+    for (let i = 0; i < errors; i++) {
+      const j = i + Math.floor(random() * (order.length - i))
+      ;[order[i], order[j]] = [order[j]!, order[i]!]
+      const flip = 1 + Math.floor(random() * 255)
+      block[order[i]!]!.forEach(([x, y], bit) => {
+        if ((flip >>> (7 - bit)) & 1) modules[y * size + x]! ^= 1
+      })
+    }
+  } else {
+    const rate = 0.04 + random() * 0.12
+    for (let i = 0; i < modules.length; i++) if (random() < rate) modules[i]! ^= 1
+  }
+  const mirror = random() < 0.2
+  const drawn = mirror ? Uint8Array.from({ length: size * size }, (_, i) => modules[(i % size) * size + Math.floor(i / size)]!) : modules
+  const scale = [16, 24, 32][Math.floor(random() * 3)]!
+  const invert = random() < 0.2
+  const noise = Math.floor(random() * 40)
+  return { text, frame: draw(drawn, size, scale, invert, noise, random) }
+}
+
+/** Larger frames with no symbol in them, whose shapes survive shrinking. */
+function emptyLarge(random: () => number): Frame[] {
+  const fill = (width: number, height: number, f: (x: number, y: number) => number): Frame => {
+    const data = new Uint8Array(width * height)
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) data[y * width + x] = f(x, y)
+    return { data, width, height }
+  }
+  const frames: Frame[] = []
+  frames.push(fill(640, 480, () => Math.floor(random() * 256)))
+  // Noise in 8 px squares, and in 16 px squares of black and white.
+  const coarse = Array.from({ length: 80 * 60 }, () => Math.floor(random() * 256))
+  frames.push(fill(640, 480, (x, y) => coarse[Math.floor(y / 8) * 80 + Math.floor(x / 8)]!))
+  const blocks = Array.from({ length: 40 * 30 }, () => (random() < 0.5 ? 20 : 230))
+  frames.push(fill(640, 480, (x, y) => blocks[Math.floor(y / 16) * 40 + Math.floor(x / 16)]!))
+  // Finder patterns at 8 and at 16 px a module, nothing between.
+  for (const [m, pitch, width, height] of [[8, 80, 640, 480], [16, 160, 960, 640]] as const) {
+    frames.push(
+      fill(width, height, (x, y) => {
+        const i = Math.floor((x % pitch) / m)
+        const j = Math.floor((y % pitch) / m)
+        return i < 7 && j < 7 && Math.max(Math.abs(i - 3), Math.abs(j - 3)) !== 2 ? 20 : 230
+      }),
+    )
+  }
+  // Lines of text-like glyphs: 4 x 6 cells of 3 px, each dark at random.
+  const glyphs = Array.from({ length: 50 * 16 * 24 }, () => random() < 0.4)
+  frames.push(
+    fill(800, 600, (x, y) => {
+      const line = Math.floor(y / 36)
+      const row = y % 36
+      const letter = Math.floor(x / 16)
+      const col = x % 16
+      if (line >= 16 || row >= 18 || col >= 12) return 235
+      return glyphs[(line * 50 + letter) * 24 + Math.floor(row / 3) * 4 + Math.floor(col / 3)] ? 25 : 235
+    }),
+  )
+  // A 24 px checkerboard.
+  frames.push(fill(640, 480, (x, y) => ((Math.floor(x / 24) + Math.floor(y / 24)) % 2 ? 20 : 230)))
+  return frames
+}
+
 /** The mesh's points probed a frame, at most, as in test/work.test.ts. */
 const MESH_PROBES = 4 * 46 * 25 * 25 * 25
 
@@ -185,7 +269,29 @@ function over(frame: Frame): boolean {
   return false
 }
 
-const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0 })
+/**
+ * A symbol of nothing but zero codewords, as test/zero.test.ts builds it: the
+ * mask pattern alone in the data region, finders, timing and format whole.
+ */
+function zeroSymbol(version: number, ecc: ErrorCorrection, mask: number): { modules: Uint8Array; size: number } {
+  const [ec, g1, d1, g2] = blocksFor(version, ecc)
+  const grid = new Grid(version)
+  grid.placeData(new Uint8Array(g1 * d1 + g2 * (d1 + 1) + ec * (g1 + g2)))
+  return { modules: grid.render(ecc, mask), size: grid.size }
+}
+
+/** Of the reduced sizes 8, 4 and 2, how many hold a finder triple in either polarity. */
+function factorsWithTriples(frame: Frame): number {
+  const luminance = toLuminance(frame.data, frame.width, frame.height, 1, frame.width)
+  let count = 0
+  for (const f of [8, 4, 2]) {
+    const bits = binarise(shrink(luminance, f))
+    if ([bits, invert(bits)].some((image) => finderTriples(image, findFinders(image, 0.8)).length > 0)) count++
+  }
+  return count
+}
+
+const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0, reduced: 0 })
 
 describe('no false reads', () => {
   it('reads damaged symbols as nothing or their own text', () => {
@@ -257,6 +363,72 @@ describe('no false reads', () => {
     // retries below it took most of them to the second look's mesh.
     expect(past).toBeGreaterThanOrEqual(0.9 * trials)
     expect(meshed).toBeGreaterThanOrEqual(0.7 * trials)
+  })
+
+  it('reads damaged close-up symbols at reduced size as nothing or their own text', () => {
+    // A seed of its own. Nothing reads these at full size, so the reduced-size
+    // pass runs; with maps to spare and a triple at every factor, it maps at each.
+    const random = prng(6131)
+    let trials = 0
+    let reached = 0
+    let everyFactor = 0
+    for (const [kind, n] of [['codewords', 200], ['flips', 100]] as const) {
+      for (let i = 0; i < n; i++) {
+        const { text, frame } = damagedClose(kind, random)
+        const work = counter()
+        const got = decodeCounted(frame, {}, work)
+        if (got !== undefined) expect(got.text).toBe(text)
+        expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+        expect(work.second).toBeLessThanOrEqual(4)
+        expect(work.probed).toBeLessThanOrEqual(MESH_PROBES)
+        if (kind === 'codewords') {
+          expect(got).toBeUndefined()
+          trials++
+          if (work.reduced! > 0) reached++
+          if (work.maps < 4 * 6 * 5 * 6 && factorsWithTriples(frame) === 3) everyFactor++
+        }
+      }
+    }
+    expect(reached).toBe(trials)
+    expect(everyFactor).toBeGreaterThanOrEqual(0.9 * trials)
+  }, 120_000)
+
+  it('reads close-up symbols of nothing but zero codewords as nothing at every size', () => {
+    // Nothing reads them at full size, so the reduced-size pass runs on each.
+    const random = prng(6133)
+    let trials = 0
+    let everyFactor = 0
+    for (const [version, ecc] of [[1, 'H'], [1, 'L'], [2, 'L'], [5, 'Q']] as const) {
+      for (let mask = 0; mask < 8; mask++) {
+        const { modules, size } = zeroSymbol(version, ecc, mask)
+        for (const scale of [16, 24]) {
+          const mirror = random() < 0.5
+          const drawn = mirror ? Uint8Array.from({ length: size * size }, (_, i) => modules[(i % size) * size + Math.floor(i / size)]!) : modules
+          const frame = draw(drawn, size, scale, random() < 0.5, Math.floor(random() * 40), random)
+          const work = counter()
+          expect(decodeCounted(frame, {}, work), `${version}${ecc} mask ${mask} at ${scale}`).toBeUndefined()
+          expect(work.reduced).toBeGreaterThan(0)
+          expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+          expect(work.second).toBeLessThanOrEqual(4)
+          trials++
+          if (work.maps < 4 * 6 * 5 * 6 && factorsWithTriples(frame) === 3) everyFactor++
+        }
+      }
+    }
+    expect(everyFactor).toBeGreaterThanOrEqual(0.9 * trials)
+  }, 60_000)
+
+  it('reads larger frames with no symbol as nothing at every size', () => {
+    let reached = 0
+    for (const frame of emptyLarge(prng(37))) {
+      const work = counter()
+      expect(decodeCounted(frame, {}, work)).toBeUndefined()
+      expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+      expect(work.second).toBeLessThanOrEqual(4)
+      if (work.reduced! > 0) reached++
+    }
+    // The finder tiles at least are mapped at reduced size.
+    expect(reached).toBeGreaterThanOrEqual(2)
   })
 
   it('reads frames with no symbol as nothing', () => {
