@@ -165,7 +165,7 @@ private fun read(image: BitImage, location: Placement, inverted: Boolean, candid
     val mirrored = readSymbol({ x, y -> modules[x * size + y].toInt() == 1 }, size)
     if (mirrored != null) return result(mirrored, mirrored = true, inverted = inverted, location = where(location))
     val agreed = agreement(modules, size)
-    if (agreed != null) keep(candidates, Retry(location, inverted, agreed))
+    if (agreed != null && sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
     return null
 }
 

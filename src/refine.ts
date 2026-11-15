@@ -5,7 +5,7 @@
 import { thresholdAt, type Luminance, type Thresholds } from './binarise.js'
 import { EC_ORDER, FORMAT_COORDS, formatBits, type ErrorCorrection } from './encode.js'
 import type { Location, Point, Work } from './locate.js'
-import { readSymbol, type Payload } from './symbol.js'
+import { readSymbol, readVersion, type Payload } from './symbol.js'
 import { ALIGNMENT_CENTRES } from './tables.js'
 
 /** Both format copies within this many bits of the same format word. */
@@ -61,6 +61,17 @@ export function agreement(
     }
   }
   return best
+}
+
+/**
+ * False when a version block, read in the orientation the format copies
+ * agreed in, decodes to a version whose size is not the map's: readSymbol
+ * rejects such a map, so it is no candidate. A block that does not decode
+ * leaves the size to decide, as in readSymbol.
+ */
+export function sized(modules: Uint8Array, size: number, mirrored: boolean): boolean {
+  const version = readVersion(mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1, size)
+  return version === undefined || 17 + 4 * version === size
 }
 
 /** Keeps the best SECOND_LOOKS candidates: least distance first, then the order found. */

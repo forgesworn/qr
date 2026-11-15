@@ -2,6 +2,7 @@ package dev.forgesworn.qr
 
 import kotlin.math.floor
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -42,5 +43,33 @@ class MeshTest {
                 assertTrue(work.second <= 4)
             }
         }
+    }
+
+    @Test
+    fun keepsNoCandidateWhoseVersionInformationNamesAnotherSize() {
+        val large = encode("https://example.com/v/large", EncodeOptions(ecc = ErrorCorrection.M, version = 40))
+        val small = encode("https://example.com/v/small", EncodeOptions(ecc = ErrorCorrection.M, version = 25))
+        val n = large.size
+        val m = small.size
+        assertTrue(sized(large.modules, n, false))
+        // Both copies of version 25's block on a version 40 grid: another size, dropped.
+        val named = large.modules.copyOf()
+        // Both copies cleared: neither decodes, so the size stands and the map is kept.
+        val blank = large.modules.copyOf()
+        for (i in 0 until 6) {
+            for (j in 0 until 3) {
+                named[(n - 11 + j) * n + i] = small.modules[(m - 11 + j) * m + i]
+                named[i * n + n - 11 + j] = small.modules[i * m + m - 11 + j]
+                blank[(n - 11 + j) * n + i] = 0
+                blank[i * n + n - 11 + j] = 0
+            }
+        }
+        assertFalse(sized(named, n, false))
+        assertTrue(sized(blank, n, false))
+        // Read in the other orientation, the transposed grid gives the same answers.
+        val transpose = { g: ByteArray -> ByteArray(n * n) { k -> g[(k % n) * n + k / n] } }
+        assertFalse(sized(transpose(named), n, true))
+        assertTrue(sized(transpose(blank), n, true))
+        assertTrue(sized(transpose(large.modules), n, true))
     }
 }

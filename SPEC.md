@@ -256,9 +256,13 @@ While the search runs, each map whose straight and transposed reads both
 fail is a candidate if its two format copies, as sampled in step 6, lie
 within 2 bits of the same format word, in the same orientation (straight
 before transposed, and within each the first word in level and mask
-order). The 4 candidates with the smallest such distance are kept,
-earliest first on a tie. A random grid passes this test with a chance of
-about 32 x (121 / 32768)^2 x 2, under 1 in 1000.
+order). A map is no candidate when its version information, read in that
+orientation as in Version information, decodes to a version of another
+size; when neither copy decodes the map stays a candidate, and the
+version never chooses a size or adds a read. The 4 candidates with the
+smallest such distance are kept, earliest first on a tie. A random grid
+passes this test with a chance of about 32 x (121 / 32768)^2 x 2, under
+1 in 1000.
 
 Once both polarities have found nothing, each kept candidate is read once
 more, in order:

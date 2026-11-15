@@ -1,6 +1,6 @@
 import { binarise, invert, thresholds, toLuminance, type BitImage } from './binarise.js'
 import { finderTriples, findFinders, locate, type Location, type Point, type Work } from './locate.js'
-import { agreement, keep, secondLook, type Candidate } from './refine.js'
+import { agreement, keep, secondLook, sized, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
 
 /** Pixels to read: RGBA (4 bytes a pixel, as ImageData gives) or greyscale (1 byte a pixel). */
@@ -143,7 +143,7 @@ function read(image: BitImage, location: Location, inverted: boolean, candidates
   const mirrored = readSymbol((x, y) => modules[x * size + y] === 1, size)
   if (mirrored) return { ...mirrored, mirrored: true, inverted, location: where(location) }
   const agreed = agreement(modules, size)
-  if (agreed) keep(candidates, { location, inverted, ...agreed })
+  if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
   return undefined
 }
 

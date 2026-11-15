@@ -49,6 +49,19 @@ internal fun agreement(modules: ByteArray, size: Int): Agreement? {
     return best
 }
 
+/**
+ * False when a version block, read in the orientation the format copies
+ * agreed in, decodes to a version whose size is not the map's: readSymbol
+ * rejects such a map, so it is no candidate. A block that does not decode
+ * leaves the size to decide, as in readSymbol.
+ */
+internal fun sized(modules: ByteArray, size: Int, mirrored: Boolean): Boolean {
+    val version =
+        if (mirrored) readVersion({ x, y -> modules[x * size + y].toInt() == 1 }, size)
+        else readVersion({ x, y -> modules[y * size + x].toInt() == 1 }, size)
+    return version == null || 17 + 4 * version == size
+}
+
 /** Keeps the best SECOND_LOOKS candidates: least distance first, then the order found. */
 internal fun keep(list: MutableList<Retry>, candidate: Retry) {
     var i = list.size
