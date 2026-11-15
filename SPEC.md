@@ -591,9 +591,11 @@ What `decodeModules` does to a grid, and step 6 to each sampled one;
 
 While the search runs, each map whose straight and transposed reads both
 fail is a candidate if its two format copies, as sampled in step 6, lie
-within 2 bits of the same format word, in the same orientation (straight
-before transposed, and within each the first word in level and mask
-order). A map is no candidate when its version information, read in that
+within 2 bits of the same format word, in the same orientation. The
+distance of a word is the larger of its distances from the two copies, and
+the word and orientation taken are those of least distance: on a tie the
+straight orientation before the transposed, and within one the first word
+in level and mask order. A map is no candidate when its version information, read in that
 orientation as in Version information, decodes to a version of another
 size; when neither copy decodes the map stays a candidate, and the
 version never chooses a size or adds a read. The 4 candidates with the
@@ -656,6 +658,80 @@ more, in order:
 The first such read that passes is the result, with the candidate's
 location, polarity and orientation. Nothing else is relaxed: format,
 version, Reed-Solomon and segment checks are those of step 6.
+
+### Second look, exactly
+
+What the section above leaves open; `vectors/conformance.json` checks it
+through the `result` and `work` of the pictures that need a second look.
+
+1. Candidates are kept for one size at a time: the picture, and each
+   reduced size, starts with none, and looks again only at its own. The 4
+   second looks are for the frame, shared by every size. A candidate goes
+   into the list after the last one whose distance is no greater, and the
+   list is cut to 4. Both polarities of a size are searched before any
+   second look, and their candidates share the one list.
+2. The probe at (x, y): outside the picture, or with a coordinate that is
+   not a number, it is -1 in either polarity. Otherwise, with
+   `fx = x - 0.5` and `fy = y - 0.5`: `x0 = floor(fx)` held to
+   0 .. width - 1, `x1 = min(width - 1, x0 + 1)`, `ax = fx - x0` held to
+   0 .. 1, and the same down; the grey is
+   `(g(x0, y0) (1 - ax) + g(x1, y0) ax) (1 - ay) +
+   (g(x0, y1) (1 - ax) + g(x1, y1) ax) ay`, and the probe is the
+   threshold of the pixel (`floor(x)`, `floor(y)`) less that grey, negated
+   on the inverted picture. A pixel in the last 8 columns takes the last
+   block of its row of blocks, and one in the last 8 rows the last row of
+   blocks. Dark is above zero.
+3. The mesh takes the lattice points in order of their steps to the
+   nearest finder and then of `row * n + column`. A point's prediction is
+   the mean offset of those of its left, right, upper and lower
+   neighbours that have been placed, at a finder, found or doubtful
+   alike, and zero with none. Offsets are tried row by row, from -12 to 12
+   quarter modules down and within each across. A higher score than any
+   before starts the kept set afresh; an equal one joins it. With `mx` and
+   `my` the kept offsets' means in quarter modules, the pattern is found
+   when the score is 24 or 25, no kept offset is more than 3 quarters from
+   the mean along either axis, and `|mx|` and `|my|` are 11 or less. For
+   every lattice point but the three at the finders `probed` grows by
+   25 x 25 x 25, found or not, and `meshes` grows by one when any is
+   found.
+4. A point (x, y) of the bent map lies in the lattice cell found for each
+   coordinate apart: the coordinate is held to the first and last centres,
+   and the cell is the first whose upper centre is not below it, so a
+   point on a centre belongs to the cell below it; `s` and `t` are its
+   fractions across and down that cell. Its offset is
+   `(1 - t) ((1 - s) o00 + s o10) + t ((1 - s) o01 + s o11)` in each of x
+   and y, o being the cell's four corner offsets, and it is mapped as
+   (x, y) itself plus that offset, not the held coordinates.
+5. The timing walk measures along the line from one module's centre to
+   the next one's, in units of that step. For module k from 8 to
+   `size - 9`, dark when k is even: the seed is the last measured offset
+   (0 at first) if the probe there has the module's colour; if not, for
+   1 to 12 sixteenths in turn, that far below it and then that far above.
+   With no seed the module is not measured. The run is extended a
+   sixteenth at a time, downwards while it is less than 1.6 below the seed
+   and upwards while less than 1.6 above; its width is its two ends'
+   difference plus a sixteenth, and it measures nothing under 0.4 or over
+   1.6. Light is a probe of zero or less.
+6. The median of a module and its two neighbours, of those measured, is
+   the larger when there are two. An unmeasured module between the nearest
+   values l to its left and r to its right, modules 0 to 7 and the last 8
+   counting as 0, is `lv + ((rv - lv) * (k - l)) / (r - l)`.
+7. An edge is looked for at 0 to 16 sixteenths of the way from the first
+   centre to the second. With `previous` the last probe of the first
+   module's colour and `d` the first of the other, the fraction is
+   `previous / (previous - d)`, held to 0 .. 1, or a half when they are
+   equal, and the offset is the sixteenths before it plus that fraction of
+   one, less a half. All 17 of the first colour is no edge.
+8. The line through a boundary's points (index, offset), taken in order of
+   index: with n points and sums `sx`, `sy`, `sxx`, `sxy`, the slope is
+   `(n sxy - sx sy) / (n sxx - sx sx)`, zero when that divisor is zero,
+   and the value at t is `(sy - slope sx) / n + slope t`.
+9. Module (x, y) moves across by the mean of the lines of the boundaries
+   on its left and right, evaluated at y, or by the one line it has at the
+   symbol's edge; down likewise, evaluated at x. It is read at the map
+   point `(x + column offset + that, y + row offset + that)`.
+
+### Reduced size
 
 ### Reduced size
 
