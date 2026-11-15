@@ -32,8 +32,9 @@ internal class Placement(
 /**
  * Work the search does, counted for tests that bound it: pixels stepped in
  * cross-checks, stored candidates compared while merging, pixels in the
- * windows searched for alignment patterns, maps sampled, and maps read again
- * by the second look.
+ * windows searched for alignment patterns, maps sampled, maps read again
+ * by the second look, those of them read through a mesh, and the points the
+ * mesh probed looking for alignment patterns.
  */
 internal class Work {
     var steps = 0L
@@ -41,6 +42,8 @@ internal class Work {
     var scanned = 0L
     var maps = 0L
     var second = 0L
+    var meshes = 0L
+    var probed = 0L
 }
 
 /** Mirrors the sign of a JavaScript comparator result: NaN and zero both mean "equal". */

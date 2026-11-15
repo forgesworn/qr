@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest'
 import { decodeCounted } from '../src/decode.js'
 import { blocksFor, encode, Grid, type ErrorCorrection } from '../src/encode.js'
 import { type Work } from '../src/locate.js'
-import { prng } from './photo.js'
+import { bent, prng } from './photo.js'
 
 interface Frame { data: Uint8Array; width: number; height: number }
 
@@ -132,7 +132,45 @@ function empty(random: () => number): Frame[] {
   return frames
 }
 
-const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0 })
+/**
+ * A symbol of a version with an alignment lattice (7 to 40), one block a few
+ * codewords past its parity, finders, timing and format whole, drawn through
+ * a lens bent by 0, 0.01 or 0.02, so the second look reads it through a mesh.
+ */
+function damagedLarge(random: () => number): { text: string; frame: Frame } {
+  const version = 7 + Math.floor(random() * 34)
+  const ecc = LEVELS[Math.floor(random() * 4)]!
+  const mask = Math.floor(random() * 8)
+  const length = 1 + Math.floor(random() * 60)
+  let text = 'https://example.com/t/'
+  for (let i = 0; i < length; i++) text += CHARS[Math.floor(random() * CHARS.length)]
+  const qr = encode(text, { ecc, mask, version })
+  const { size } = qr
+  const modules = Uint8Array.from(qr.modules)
+  const blocks = codewordModules(version, ecc)
+  const block = blocks[Math.floor(random() * blocks.length)]!
+  const ec = blocksFor(version, ecc)[0]
+  const errors = Math.min(block.length, Math.floor(ec / 2) + 1 + Math.floor(random() * 3))
+  const order = block.map((_, i) => i)
+  for (let i = 0; i < errors; i++) {
+    const j = i + Math.floor(random() * (order.length - i))
+    ;[order[i], order[j]] = [order[j]!, order[i]!]
+    const flip = 1 + Math.floor(random() * 255)
+    block[order[i]!]!.forEach(([x, y], bit) => {
+      if ((flip >>> (7 - bit)) & 1) modules[y * size + x]! ^= 1
+    })
+  }
+  const mirror = random() < 0.2
+  const drawn = mirror ? Uint8Array.from({ length: size * size }, (_, i) => modules[(i % size) * size + Math.floor(i / size)]!) : modules
+  const k = [0, 0.01, 0.02][Math.floor(random() * 3)]!
+  const invert = random() < 0.2
+  return { text, frame: bent(drawn, size, 3, k, invert) }
+}
+
+/** The mesh's points probed a frame, at most, as in test/work.test.ts. */
+const MESH_PROBES = 4 * 46 * 25 * 25 * 25
+
+const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0 })
 
 describe('no false reads', () => {
   it('reads damaged symbols as nothing or their own text', () => {
@@ -160,6 +198,25 @@ describe('no false reads', () => {
     // Damage past the parity reads as nothing, and the second look ran on nearly every one.
     expect(tally.codewords.nothing).toBe(tally.codewords.trials)
     expect(tally.codewords.secondLook).toBeGreaterThanOrEqual(0.9 * tally.codewords.trials)
+  })
+
+  it('reads damaged large symbols through the mesh as nothing', () => {
+    // A seed of its own, so the frames above stay as they were.
+    const random = prng(4049)
+    const trials = 30
+    let meshed = 0
+    for (let i = 0; i < trials; i++) {
+      const { text, frame } = damagedLarge(random)
+      const work = counter()
+      const got = decodeCounted(frame, {}, work)
+      if (got !== undefined) expect(got.text).toBe(text)
+      expect(got).toBeUndefined()
+      expect(work.second).toBeLessThanOrEqual(4)
+      expect(work.probed).toBeLessThanOrEqual(MESH_PROBES)
+      if (work.meshes > 0) meshed++
+    }
+    // The mesh was reached on nearly every one.
+    expect(meshed).toBeGreaterThanOrEqual(0.9 * trials)
   })
 
   it('reads frames with no symbol as nothing', () => {

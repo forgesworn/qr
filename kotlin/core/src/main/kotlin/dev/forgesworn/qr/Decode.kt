@@ -119,7 +119,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     val levels = thresholds(luminance)
     for (candidate in candidates) {
         if (work != null) work.second++
-        val p = secondLook(luminance, levels, candidate) ?: continue
+        val p = secondLook(luminance, levels, candidate, work) ?: continue
         return result(p, mirrored = candidate.agreed.mirrored, inverted = candidate.inverted, location = where(candidate.location))
     }
     return null

@@ -8,10 +8,13 @@ import { prng } from './photo.js'
 interface Frame { data: Uint8Array; width: number; height: number }
 
 function counted(image: Frame): { found: boolean; work: Work } {
-  const work: Work = { steps: 0, compared: 0, scanned: 0, maps: 0, second: 0 }
+  const work: Work = { steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0 }
   const found = decodeCounted(image, {}, work) !== undefined
   return { found, work }
 }
+
+/** The mesh's points probed a frame, at most: 4 second looks, 46 lattice points, 25 x 25 offsets, 25 modules. */
+const MESH_PROBES = 4 * 46 * 25 * 25 * 25
 
 const perPixel = ({ work }: { work: Work }, image: Frame) => (work.steps + work.compared + work.scanned) / (image.width * image.height)
 
@@ -49,6 +52,7 @@ describe('bounded work', () => {
       // Four times the pixels, not much more than four times the work.
       expect(perPixel(b, large)).toBeLessThan(perPixel(a, small) * 1.1)
       expect(a.work.second + b.work.second).toBeLessThanOrEqual(2 * 4)
+      expect(a.work.probed + b.work.probed).toBeLessThanOrEqual(2 * MESH_PROBES)
     }
   })
 
@@ -61,6 +65,9 @@ describe('bounded work', () => {
     expect(result.work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
     // The second look reads at most four of them again.
     expect(result.work.second).toBeLessThanOrEqual(4)
+    // Each of them bends at most 46 lattice points, each looked for at 25 x 25
+    // quarter-module offsets of 25 modules.
+    expect(result.work.probed).toBeLessThanOrEqual(MESH_PROBES)
     // Each of the 120 locates scans at most six windows, each no bigger than
     // the picture; in practice the windows cover it about five times over.
     expect(perPixel(result, image)).toBeLessThan(8)

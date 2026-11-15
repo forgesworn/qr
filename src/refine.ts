@@ -4,8 +4,9 @@
 // grey rather than black and white.
 import { thresholdAt, type Luminance, type Thresholds } from './binarise.js'
 import { EC_ORDER, FORMAT_COORDS, formatBits, type ErrorCorrection } from './encode.js'
-import type { Location, Point } from './locate.js'
+import type { Location, Point, Work } from './locate.js'
 import { readSymbol, type Payload } from './symbol.js'
+import { ALIGNMENT_CENTRES } from './tables.js'
 
 /** Both format copies within this many bits of the same format word. */
 const AGREEMENT = 2
@@ -204,11 +205,143 @@ function line(points: number[]): (t: number) => number {
   return (t) => a + b * t
 }
 
-/** Reads one candidate again; the result must keep the level and mask its format copies agreed on. */
-export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate): Payload | undefined {
-  const { location, inverted, mirrored } = candidate
+/** Furthest an alignment pattern is looked for from its prediction, in modules either way. */
+const REACH = 3
+/** Steps of the search, a quarter module. */
+const QUARTER = 4
+/** Of the 25 modules of an alignment pattern, how many must match for it to count as found. */
+const FOUND = 24
+
+/**
+ * The map bent onto the alignment patterns the picture shows (decoder step 8,
+ * the mesh). Each pattern of the version's lattice is looked for near where
+ * its neighbours, already placed, say it is, working outward from the
+ * finders; its offset from the map, in modules, is the centre of the offsets
+ * where the most of its 25 modules match. A pattern matched by fewer than
+ * FOUND modules, or whose best offsets spread or reach the window's edge, is
+ * doubtful and takes its neighbours' prediction. Offsets between lattice
+ * points are interpolated bilinearly, and held at the outermost row and
+ * column beyond them. Undefined below version 7, or when no pattern is found.
+ */
+function mesh(location: Location, probe: Probe, work?: Work): Location | undefined {
   const { size, project } = location
+  const version = (size - 17) / 4
+  const c = ALIGNMENT_CENTRES[version - 1]
+  if (c === undefined || c.length < 3) return undefined
+  const n = c.length
+  const ox = new Float64Array(n * n)
+  const oy = new Float64Array(n * n)
+  // 0 not yet placed; 1 a finder's corner, placed by the map; 2 found; 3 predicted.
+  const state = new Uint8Array(n * n)
+  state[0] = state[n - 1] = state[(n - 1) * n] = 1
+  const order: number[] = []
+  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) if (state[r * n + q] === 0) order.push(r * n + q)
+  // Lattice steps to the nearest finder; row, then column, on a tie.
+  const away = (i: number) => {
+    const q = i % n
+    const r = (i - q) / n
+    return Math.min(q + r, n - 1 - q + r, q + n - 1 - r)
+  }
+  order.sort((a, b) => away(a) - away(b) || a - b)
+  const steps = REACH * QUARTER
+  let found = 0
+  for (const i of order) {
+    const q = i % n
+    const r = (i - q) / n
+    // The prediction: the mean offset of the neighbours already placed.
+    let px = 0
+    let py = 0
+    let k = 0
+    for (const [a, b] of [[q - 1, r], [q + 1, r], [q, r - 1], [q, r + 1]] as const) {
+      if (a < 0 || b < 0 || a >= n || b >= n || state[b * n + a] === 0) continue
+      px += ox[b * n + a]!
+      py += oy[b * n + a]!
+      k++
+    }
+    if (k > 0) {
+      px /= k
+      py /= k
+    }
+    const cx = c[q]! + px
+    const cy = c[r]! + py
+    let best = -1
+    let sx = 0
+    let sy = 0
+    let count = 0
+    let low = 0
+    let high = 0
+    let lowY = 0
+    let highY = 0
+    for (let j = -steps; j <= steps; j++) {
+      for (let s = -steps; s <= steps; s++) {
+        const u = s / QUARTER
+        const v = j / QUARTER
+        let score = 0
+        for (let b = -2; b <= 2; b++) {
+          for (let a = -2; a <= 2; a++) {
+            const p = project(cx + u + a, cy + v + b)
+            if (probe(p.x, p.y) > 0 === (Math.max(Math.abs(a), Math.abs(b)) !== 1)) score++
+          }
+        }
+        if (score > best) {
+          best = score
+          sx = sy = count = 0
+          low = high = s
+          lowY = highY = j
+        }
+        if (score === best) {
+          sx += s
+          sy += j
+          count++
+          low = Math.min(low, s)
+          high = Math.max(high, s)
+          lowY = Math.min(lowY, j)
+          highY = Math.max(highY, j)
+        }
+      }
+    }
+    if (work) work.probed += (2 * steps + 1) * (2 * steps + 1) * 25
+    // In quarter modules: the best offsets' centre, and how far they spread from it.
+    const mx = sx / count
+    const my = sy / count
+    const spread = Math.max(mx - low, high - mx, my - lowY, highY - my)
+    if (best >= FOUND && spread <= 3 && Math.abs(mx) <= steps - 1 && Math.abs(my) <= steps - 1) {
+      ox[i] = px + mx / QUARTER
+      oy[i] = py + my / QUARTER
+      state[i] = 2
+      found++
+    } else {
+      ox[i] = px
+      oy[i] = py
+      state[i] = 3
+    }
+  }
+  if (found === 0) return undefined
+  if (work) work.meshes++
+  const cell = (z: number): [number, number] => {
+    const t = Math.max(c[0]!, Math.min(c[n - 1]!, z))
+    let i = 0
+    while (i < n - 2 && t > c[i + 1]!) i++
+    return [i, (t - c[i]!) / (c[i + 1]! - c[i]!)]
+  }
+  const bent = (x: number, y: number): Point => {
+    const [i, s] = cell(x)
+    const [j, t] = cell(y)
+    const o = j * n + i
+    const dx = (1 - t) * ((1 - s) * ox[o]! + s * ox[o + 1]!) + t * ((1 - s) * ox[o + n]! + s * ox[o + n + 1]!)
+    const dy = (1 - t) * ((1 - s) * oy[o]! + s * oy[o + 1]!) + t * ((1 - s) * oy[o + n]! + s * oy[o + n + 1]!)
+    return project(x + dx, y + dy)
+  }
+  return { ...location, project: bent }
+}
+
+/** Reads one candidate again; the result must keep the level and mask its format copies agreed on. */
+export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work): Payload | undefined {
+  const { inverted, mirrored } = candidate
   const probe = probeFor(image, t, inverted)
+  // 0. From version 7, the map bent onto the alignment patterns it can find.
+  const location = mesh(candidate.location, probe, work) ?? candidate.location
+  const { size, project } = location
   // 1. The timing patterns: shift whole columns and rows by what they show.
   const cols = walk(size, (k) => project(k, 6), (k) => project(k + 1, 6), probe)
   const rows = walk(size, (k) => project(6, k), (k) => project(6, k + 1), probe)

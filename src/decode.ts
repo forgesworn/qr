@@ -92,7 +92,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   const levels = thresholds(luminance)
   for (const candidate of candidates) {
     if (work) work.second++
-    const result = secondLook(luminance, levels, candidate)
+    const result = secondLook(luminance, levels, candidate, work)
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location) }
   }
   return undefined
