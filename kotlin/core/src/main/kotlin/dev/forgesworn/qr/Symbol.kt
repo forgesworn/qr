@@ -194,7 +194,7 @@ private class Bits(private val data: IntArray) {
     }
 }
 
-private class Run(val eci: Int?) {
+private class Run(val eci: Int?, val fixed: String? = null) {
     val bytes = ArrayList<Int>()
 }
 
@@ -290,7 +290,7 @@ private fun parse(data: IntArray, version: Int): Parsed? {
                     out.add(sjis ushr 8)
                     out.add(sjis and 0xff)
                     val before = runs[runs.size - 1].eci
-                    runs.add(Run(-1))
+                    runs.add(Run(before, kanjiText(sjis)))
                     runs.add(Run(before))
                 }
             } else if (mode == 7) {
@@ -320,16 +320,25 @@ private fun parse(data: IntArray, version: Int): Parsed? {
         return null
     }
     val text = StringBuilder()
-    for (run in runs) text.append(if (run.eci == -1) "�" else decodeRun(run))
+    for (run in runs) text.append(decodeRun(run))
     return Parsed(text.toString(), ByteArray(out.size) { out[it].toByte() }, eci, structuredAppend, fnc1)
 }
 
-/** ECI 26 is UTF-8; 3 and 1 are Latin-1. Without ECI, valid UTF-8 is taken as UTF-8, else Latin-1. */
+/**
+ * ECI 26 is UTF-8; 3 and 1 are Latin-1; other assignments the runtime knows
+ * (Text.kt) are read as that set. Without an ECI, or where the runtime lacks
+ * the set, valid UTF-8 is taken as UTF-8, else Latin-1.
+ */
 private fun decodeRun(run: Run): String {
+    if (run.fixed != null) return run.fixed
     val bytes = run.bytes.toIntArray()
     if (run.eci == 3 || run.eci == 1) return latin1(bytes)
-    if (run.eci == 26 || isUtf8(bytes)) return fromUtf8(bytes)
-    return latin1(bytes)
+    if (run.eci == 26) return fromUtf8(bytes)
+    if (run.eci != null && bytes.isNotEmpty()) {
+        val text = fromEci(run.eci, bytes)
+        if (text != null) return text
+    }
+    return if (isUtf8(bytes)) fromUtf8(bytes) else latin1(bytes)
 }
 
 private fun latin1(bytes: IntArray): String {

@@ -11,7 +11,7 @@ import {
   type ErrorCorrection,
 } from './encode.js'
 import { correct } from './rs.js'
-import { fromUtf8, isUtf8 } from './text.js'
+import { fromEci, fromUtf8, isUtf8, kanjiText } from './text.js'
 
 /** What a symbol says, once read. */
 export interface Payload {
@@ -186,6 +186,8 @@ class Bits {
 interface Run {
   eci: number | undefined
   bytes: number[]
+  /** Text already decided, for a kanji character. */
+  fixed?: string
 }
 
 const KANJI_COUNT_BITS = [8, 10, 12] as const
@@ -262,14 +264,15 @@ function parse(data: Uint8Array, version: number): Parsed | undefined {
         const count = bits.read([8, 16, 16][band]!)
         for (let i = 0; i < count; i++) emit(bits.read(8))
       } else if (mode === 8) {
-        // Kanji: kept as its Shift_JIS bytes; the text shows U+FFFD for each.
+        // Kanji: kept as its Shift_JIS bytes; each character's text is the platform's Shift_JIS.
         const count = bits.read(KANJI_COUNT_BITS[band])
         for (let i = 0; i < count; i++) {
           const v = bits.read(13)
           let sjis = (Math.floor(v / 0xc0) << 8) | v % 0xc0
           sjis += sjis < 0x1f00 ? 0x8140 : 0xc140
           out.push(sjis >>> 8, sjis & 0xff)
-          runs.push({ eci: -1, bytes: [] }, { eci: runs[runs.length - 1]!.eci, bytes: [] })
+          const current = runs[runs.length - 1]!.eci
+          runs.push({ eci: current, bytes: [], fixed: kanjiText(sjis) }, { eci: current, bytes: [] })
         }
       } else if (mode === 7) {
         const first = bits.read(8)
@@ -302,7 +305,7 @@ function parse(data: Uint8Array, version: number): Parsed | undefined {
     return undefined
   }
   let text = ''
-  for (const run of runs) text += run.eci === -1 ? '�' : decodeRun(run)
+  for (const run of runs) text += decodeRun(run)
   return {
     text,
     bytes: Uint8Array.from(out),
@@ -312,12 +315,21 @@ function parse(data: Uint8Array, version: number): Parsed | undefined {
   }
 }
 
-/** ECI 26 is UTF-8; 3 and 1 are Latin-1. Without ECI, valid UTF-8 is taken as UTF-8, else Latin-1. */
+/**
+ * ECI 26 is UTF-8; 3 and 1 are Latin-1; the other assignments the platform
+ * knows (text.ts) are read as that set. Without an ECI, or where the platform
+ * lacks the set, valid UTF-8 is taken as UTF-8, else Latin-1.
+ */
 function decodeRun(run: Run): string {
+  if (run.fixed !== undefined) return run.fixed
   const bytes = Uint8Array.from(run.bytes)
   if (run.eci === 3 || run.eci === 1) return latin1(bytes)
-  if (run.eci === 26 || isUtf8(bytes)) return fromUtf8(bytes)
-  return latin1(bytes)
+  if (run.eci === 26) return fromUtf8(bytes)
+  if (run.eci !== undefined && bytes.length > 0) {
+    const text = fromEci(run.eci, bytes)
+    if (text !== undefined) return text
+  }
+  return isUtf8(bytes) ? fromUtf8(bytes) : latin1(bytes)
 }
 
 function latin1(bytes: Uint8Array): string {

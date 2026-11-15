@@ -123,7 +123,8 @@ read. The TypeScript pipeline, for reference:
 7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
    ECI, structured append and FNC1 (both reported; see below).
    Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
-   otherwise or under ECI 1 or 3.
+   otherwise or under ECI 1 or 3. Kanji and the other ECIs follow
+   "Text for kanji and other ECIs" below.
 
 ### Structured append and FNC1
 
@@ -152,6 +153,43 @@ does the same for first position; it does not read the second-position
 application indicator at all, so there is none to compare against.
 
 Both fields are absent, not null, for an ordinary symbol.
+
+### Text for kanji and other ECIs
+
+`bytes` never depends on a character set: it holds the symbol's data bytes
+(kanji as Shift_JIS pairs, see step 7). Only `text` does, and `text` is
+produced with the platform's own decoders (`TextDecoder` in JavaScript,
+`java.nio.charset.Charset` on the JVM). No port bundles tables.
+
+Every port must agree on these:
+
+- ECI 26 is UTF-8, decoded by hand with each ill-formed byte as U+FFFD. ECI 1
+  and 3 are Latin-1, byte for byte.
+- ECI 27 and 170 are ASCII: a byte below 0x80 is that character, any other
+  byte is U+FFFD.
+- A kanji-mode character is its Shift_JIS pair decoded alone; if the platform
+  returns U+FFFD for the pair, or has no Shift_JIS, the character is a single
+  U+FFFD. The ECI in force before a kanji character stays in force after it.
+- ECI 4 to 18 except 14 (ISO 8859-2 to -16 less -12, which does not exist;
+  so ECI 13 is ISO 8859-11, 15 is -13, 16 is -14, 17 is -15, 18 is -16),
+  with bytes 0x80 to 0x9F always the C1 control of the same value. ECI 21, 22
+  and 23 (Windows 1250, 1251, 1252) with the bytes the code page leaves
+  undefined (1250: 81 83 88 90 98; 1251: 98; 1252: 81 8D 8F 90 9D) as U+FFFD.
+  ECI 20 is Shift_JIS, 24 Windows 1256, 25 UTF-16BE, 28 Big5, 29, 31 and 32
+  GB 18030 (a superset of GB 2312 and GBK), 30 EUC-KR, 33 UTF-16LE. Ill-formed
+  input becomes U+FFFD, and a leading byte order mark is kept.
+- An ECI with no entry above, and any ECI whose character set the platform
+  lacks, is read as if no ECI were present: valid UTF-8 is UTF-8, else
+  Latin-1. This is the one thing left to the platform, with the exact
+  mapping tables of the sets above; a platform's tables may differ from
+  another's for rare code points (the JVM lacks ISO 8859-10 and -14 on a
+  standard JDK, for instance, and so falls back for those two).
+
+`test/charsets.json` records the JavaScript platform's text for every
+13-bit kanji value, every byte of each single-byte set and a few multi-byte
+and UTF-16 samples. The Kotlin tests read the same file; with
+`windows-31j` for Shift_JIS, `x-windows-950`, `GB18030`, `x-windows-949` and
+`x-iso-8859-11` they agree on all of it, apart from the two sets the JDK lacks.
 
 ## Decode fixtures
 
