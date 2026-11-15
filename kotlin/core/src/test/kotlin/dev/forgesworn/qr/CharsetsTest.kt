@@ -57,8 +57,8 @@ class CharsetsTest {
     @Test
     fun rejectsAnotherSubsetAValueOutsideGb2312OrAnEmptyCell() {
         assertNull(read(Seg.hanzi(listOf(0x122f), 8, 2)))
-        // Low byte past FE, a lead byte in AA-AF, a lead past F7, and D7FA, which GB2312 leaves empty.
-        for (v in listOf(0x30 * 0x60 + 0x5e, 9 * 0x60, 0x52 * 0x60, 0x31 * 0x60 + 0x59)) assertNull(read(Seg.hanzi(listOf(0x122f, v), 8)))
+        // Low byte past FE, a lead byte in AA-AF, a lead past F7, and D7FA, which GB2312 leaves empty; A6D9 and A8BC, which table editions read differently.
+        for (v in listOf(0x30 * 0x60 + 0x5e, 9 * 0x60, 0x52 * 0x60, 0x31 * 0x60 + 0x59, 5 * 0x60 + 0x38, 7 * 0x60 + 0x1b)) assertNull(read(Seg.hanzi(listOf(0x122f, v), 8)))
     }
 
     // ISO 8859-10 and -14 are absent from the JDK; those ECIs fall back.

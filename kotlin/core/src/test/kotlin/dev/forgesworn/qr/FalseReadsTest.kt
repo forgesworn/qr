@@ -80,8 +80,10 @@ class FalseReadsTest {
     private enum class Kind { CODEWORDS, BURST, FLIPS }
 
     private fun damaged(kind: Kind, random: Random): Pair<String, Frame> {
-        val length = 1 + fl(random.next() * 120)
-        val text = StringBuilder("https://example.com/t/")
+        // A third are short and have no prefix, so version 1 symbols are drawn too.
+        val short = random.next() < 1.0 / 3
+        val length = 1 + fl(random.next() * (if (short) 12 else 120))
+        val text = StringBuilder(if (short) "" else "https://example.com/t/")
         for (i in 0 until length) text.append(chars[fl(random.next() * chars.length)])
         val ecc = levels[fl(random.next() * 4)]
         val mask = fl(random.next() * 8)

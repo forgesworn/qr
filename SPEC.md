@@ -392,10 +392,13 @@ Every port must agree on these:
   plus 0xA1. A lead byte outside A1-A9 and B0-F7, or a low byte above FE,
   makes the symbol unreadable. The pair is decoded alone as GB 18030; a
   pair that decodes to U+FFFD or to a private-use character makes the
-  symbol unreadable too. The few empty GB2312 cells that GBK fills (small
-  Roman numerals, the euro sign, vertical forms, some pinyin) read as GB
-  18030 gives them; 7491 of the 8192 values read, the rest are rejected. A platform without GB
-  18030 gives U+FFFD for each character, as for kanji. The ECI in force
+  symbol unreadable too, and so do the twelve cells A6D9-A6DF, A6EC, A6ED,
+  A6F3, A8BC and A8BF, which tables of different editions read
+  differently. The other empty GB2312 cells that GBK fills (small Roman
+  numerals, the euro sign, vertical forms, some pinyin) read as GB 18030
+  gives them; 7479 of the 8192 values read. The JVM falls back to GBK,
+  which agrees on every value read; a platform with neither gives U+FFFD
+  for each character, as for kanji. The ECI in force
   stays in force after a hanzi character.
 - ECI 4 to 18 except 14 (ISO 8859-2 to -16 less -12, which does not exist;
   so ECI 13 is ISO 8859-11, 15 is -13, 16 is -14, 17 is -15, 18 is -16),
@@ -478,7 +481,8 @@ No false reads: `test/false-reads.test.ts` and `FalseReadsTest.kt` build
 the same 240 damaged symbols from one seeded generator: 160 with one block
 damaged a few codewords past its parity (finders, timing and format left
 whole, so the second look runs on them), 40 with a rectangle of the data
-region turned over, and 40 with modules flipped anywhere. Each is drawn
+region turned over, and 40 with modules flipped anywhere. They span
+versions 1 to 12 and all four levels, a third of them version 1. Each is drawn
 straight with noise, some mirrored or inverted. Every one must read as
 nothing or as its own text, and every one damaged past its parity as
 nothing. Frames with no symbol (noise, flat, stripes, a checkerboard and a

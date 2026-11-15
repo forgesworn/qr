@@ -62,8 +62,10 @@ type Kind = 'codewords' | 'burst' | 'flips'
 
 /** One damaged symbol: its text and the frame. */
 function damaged(kind: Kind, random: () => number): { text: string; frame: Frame } {
-  const length = 1 + Math.floor(random() * 120)
-  let text = 'https://example.com/t/'
+  // A third are short and have no prefix, so version 1 symbols are drawn too.
+  const short = random() < 1 / 3
+  const length = 1 + Math.floor(random() * (short ? 12 : 120))
+  let text = short ? '' : 'https://example.com/t/'
   for (let i = 0; i < length; i++) text += CHARS[Math.floor(random() * CHARS.length)]
   const ecc = LEVELS[Math.floor(random() * 4)]!
   const mask = Math.floor(random() * 8)
