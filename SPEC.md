@@ -35,10 +35,10 @@ the fewest bits, worked out exactly in whole bits as follows.
   for one band at a time, and a symbol uses the one for its version's
   band, a fixed version included: the same text can split differently at
   versions 9 and 10, or 26 and 27.
-- The ECI designator (below) costs 12 bits and appears only with a byte
-  segment. A byte segment is needed exactly when some character is
-  outside the alphanumeric set, so this cost is the same for every
-  segmentation of a text and does not affect the choice.
+- The ECI designator (below) is left out of the cost. It appears only
+  with a byte segment, and a fewest-bits segmentation has a byte segment
+  only when some character is outside the alphanumeric set, when every
+  segmentation has one; so it cannot change the choice.
 - Count field limits never bind: a segment whose count overflows its
   field cannot fit the capacity of any version in that band.
 
@@ -154,13 +154,14 @@ What the oracle backs, and what it does not:
   reference encoder's own routines, called from a generator compiled into
   its encoder package. The ECI designator and the loop over masks are
   written in the generator, as those routines are private. Every
-  single-segment symbol also matches the reference encoder's public
-  encode call module for module.
+  single-segment symbol (all are ASCII or use ECI) also matches the
+  reference encoder's public encode call module for module.
 - Not oracle-backed: the segment lists. The generator works them out with
   its own implementation of the rule above, written apart from either
   port. They are checked independently: against every per-character mode
   assignment for short strings in all three bands; against a search over
-  every segment boundary for every vector text and random long text;
+  every segment boundary for every vector text up to 1500 characters and
+  for random text of about 300 characters;
   against the reference encoder's own minimal-segmentation mode for ASCII
   text without ECI (never more bits nor a larger version, and fewer bits
   on one vector, `mixed-three-modes`, 254 against 256); and by an
