@@ -3,7 +3,10 @@
 //! reduced pictures by SHA-256 and the finder candidates exactly.
 
 use forgesworn_qr::binarise::{binarise, invert, shrink, thresholds, to_luminance, Image, Reductions};
-use forgesworn_qr::locate::{find_finders, Edges, Work};
+use forgesworn_qr::decode::decode_ordinary;
+use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
+use forgesworn_qr::place::{estimate_size, finder_triples, locate};
+use forgesworn_qr::symbol::decode_modules;
 use forgesworn_qr::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
@@ -186,4 +189,190 @@ fn invert_handles_lengths_not_divisible_by_four() {
         }
         assert_eq!(invert(&flipped), image);
     }
+}
+
+/// Triples, sizes and sampling maps, against every frame of the pack.
+#[test]
+fn triples_and_placements() {
+    let pack = pack();
+    let frames = pack["frames"].as_array().unwrap();
+    let (mut lists, mut triples_matched, mut sizes_matched, mut placed, mut maps_matched) = (0, 0, 0, 0, 0);
+    for entry in frames {
+        let file = entry["file"].as_str().unwrap();
+        let grey = load_grey(file);
+        let bits = binarise(&grey, &thresholds(&grey));
+        let mut edges = Edges::new(&bits);
+        for tolerance in TOLERANCES {
+            let key = format!("{tolerance}");
+            let found = find_finders(&bits, tolerance, None, &mut edges);
+            let triples = finder_triples(&bits, &found);
+            let want = entry["triples"][&key].as_array().unwrap();
+            assert_eq!(triples.len(), want.len(), "{file}: triple count at {key}");
+            for (n, (got, want)) in triples.iter().zip(want).enumerate() {
+                let ids: Vec<usize> = want["finders"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap() as usize).collect();
+                assert_eq!(got.to_vec(), ids, "{file}: triple {n} at {key}");
+                triples_matched += 1;
+                let three: [Finder; 3] = got.map(|i| found[i]);
+                let size = estimate_size(&bits, &three);
+                assert_eq!(size, want["size"].as_i64(), "{file}: size of triple {n} at {key}");
+                sizes_matched += 1;
+            }
+            lists += 1;
+            // The sampling maps of the first triple of the strict scan, at its own size.
+            if tolerance == 0.5 && !triples.is_empty() {
+                let three: [Finder; 3] = triples[0].map(|i| found[i]);
+                let maps = locate(&bits, &three, None, None, &mut edges);
+                let want = entry["placements"].as_array().unwrap();
+                assert_eq!(maps.len(), want.len(), "{file}: placement count");
+                for (n, (got, want)) in maps.iter().zip(want).enumerate() {
+                    assert_eq!(got.size as u64, want["size"].as_u64().unwrap(), "{file}: placement {n} size");
+                    match (&got.alignment, want["alignment"].as_array()) {
+                        (None, None) => {}
+                        (Some(p), Some(a)) => assert_eq!([p.x, p.y], [a[0].as_f64().unwrap(), a[1].as_f64().unwrap()], "{file}: placement {n} alignment"),
+                        (g, w) => panic!("{file}: placement {n} alignment {g:?} against {w:?}"),
+                    }
+                    let nine = want["matrix"].as_array().unwrap();
+                    assert_eq!(nine.len(), 9);
+                    for (i, w) in nine.iter().enumerate() {
+                        match w.as_f64() {
+                            Some(v) => assert_eq!(got.matrix[i], v, "{file}: placement {n} matrix[{i}]"),
+                            None => assert!(!got.matrix[i].is_finite(), "{file}: placement {n} matrix[{i}] should be non-finite, got {}", got.matrix[i]),
+                        }
+                    }
+                    maps_matched += 1;
+                }
+                placed += 1;
+            } else if tolerance == 0.5 {
+                assert!(entry["placements"].as_array().unwrap().is_empty(), "{file}: placements without a triple");
+            }
+        }
+    }
+    eprintln!("triples: {triples_matched} triples in {lists} lists matched in order");
+    eprintln!("sizes: {sizes_matched} estimates matched");
+    eprintln!("placements: {maps_matched} maps for {placed} frames matched (count, order, size, alignment, nine numbers exactly)");
+}
+
+/// The entries whose text needs a platform character-set decoder, which this port
+/// has none of. SPEC.md ("Text for kanji and other ECIs") says what a platform
+/// lacking the set gives: a kanji character is a single U+FFFD, and so is a hanzi
+/// character that reads at all. For these three the test asserts `bytes` as
+/// recorded and the SPEC-prescribed text in place of the recorded one.
+const NEEDS_A_CHARSET: [(&str, &str); 3] = [
+    ("ECI 26, UTF-8, around a kanji segment", "\u{e9}\u{fffd}\u{e9}"),
+    ("kanji mode", "\u{fffd}\u{fffd}"),
+    ("hanzi mode, GB2312", "\u{fffd}\u{fffd}"),
+];
+
+/// Reading module grids: every entry of the pack's `symbols`.
+#[test]
+fn symbols() {
+    let pack = pack();
+    let entries = pack["symbols"].as_array().unwrap();
+    let (mut read, mut refused, mut by_spec) = (0, 0, 0);
+    for entry in entries {
+        let name = entry["name"].as_str().unwrap();
+        let size = entry["size"].as_u64().unwrap() as usize;
+        let mut modules = vec![0u8; size * size];
+        for (y, row) in entry["rows"].as_array().unwrap().iter().enumerate() {
+            let bytes = unhex(row.as_str().unwrap());
+            assert_eq!(bytes.len(), (size + 7) / 8, "{name}: row {y} length");
+            for x in 0..size {
+                modules[y * size + x] = (bytes[x / 8] >> (7 - x % 8)) & 1;
+            }
+        }
+        let got = decode_modules(&modules, size);
+        let want = &entry["result"];
+        if want.is_null() {
+            assert!(got.is_none(), "{name}: should not read, read {:?}", got.map(|g| g.payload.text));
+            refused += 1;
+            continue;
+        }
+        let got = got.unwrap_or_else(|| panic!("{name}: should read"));
+        let p = &got.payload;
+        assert_eq!(hex(&p.bytes), want["bytes"].as_str().unwrap(), "{name}: bytes");
+        assert_eq!(p.version as u64, want["version"].as_u64().unwrap(), "{name}: version");
+        assert_eq!(p.ecc.letter().to_string(), want["ecc"].as_str().unwrap(), "{name}: ecc");
+        assert_eq!(p.mask as u64, want["mask"].as_u64().unwrap(), "{name}: mask");
+        let eci: Vec<u64> = want["eci"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap()).collect();
+        assert_eq!(p.eci.iter().map(|&v| v as u64).collect::<Vec<_>>(), eci, "{name}: eci");
+        assert_eq!(p.corrected as u64, want["corrected"].as_u64().unwrap(), "{name}: corrected");
+        assert_eq!(got.mirrored, want["mirrored"].as_bool().unwrap(), "{name}: mirrored");
+        if let Some((_, text)) = NEEDS_A_CHARSET.iter().find(|(n, _)| *n == name) {
+            assert_eq!(&p.text, text, "{name}: text for a platform without the character set");
+            by_spec += 1;
+        } else {
+            assert_eq!(&p.text, want["text"].as_str().unwrap(), "{name}: text");
+        }
+        read += 1;
+    }
+    assert_eq!(by_spec, NEEDS_A_CHARSET.len(), "every named entry must be in the pack");
+    eprintln!(
+        "symbols: {} of {} entries matched ({read} read, {refused} refused; {by_spec} of the read ones checked for text against SPEC.md, not the recording)",
+        read + refused,
+        entries.len()
+    );
+}
+
+fn point(v: &Value) -> [f64; 2] {
+    let a = v.as_array().unwrap();
+    [a[0].as_f64().unwrap(), a[1].as_f64().unwrap()]
+}
+
+/// The ordinary search, against every frame it can be compared on: those the
+/// TypeScript read without a second look or a reduced pass (result, exact
+/// location and all eight work counters), and those it did not read at all or
+/// read only by one of the two (which the ordinary search must not read).
+#[test]
+fn ordinary_search() {
+    let pack = pack();
+    let frames = pack["frames"].as_array().unwrap();
+    let (mut compared, mut unread, mut beyond) = (0, 0, 0);
+    for entry in frames {
+        let file = entry["file"].as_str().unwrap();
+        let grey = load_grey(file);
+        let mut work = Work::default();
+        let got = decode_ordinary(&grey.data, grey.width, grey.height, 1, Some(&mut work));
+        let w = &entry["work"];
+        let want = &entry["result"];
+        if want.is_null() {
+            assert!(got.is_none(), "{file}: the pack reads nothing here");
+            unread += 1;
+            continue;
+        }
+        if w["second"].as_u64() != Some(0) || w["reduced"].as_u64() != Some(0) {
+            assert!(got.is_none(), "{file}: the pack needed a second look or a reduced pass, so the ordinary search must read nothing");
+            beyond += 1;
+            continue;
+        }
+        let got = got.unwrap_or_else(|| panic!("{file}: should read"));
+        let p = &got.payload;
+        assert_eq!(hex(&p.bytes), want["bytes"].as_str().unwrap(), "{file}: bytes");
+        assert_eq!(p.text, want["text"].as_str().unwrap(), "{file}: text");
+        assert_eq!(p.version as u64, want["version"].as_u64().unwrap(), "{file}: version");
+        assert_eq!(p.ecc.letter().to_string(), want["ecc"].as_str().unwrap(), "{file}: ecc");
+        assert_eq!(p.mask as u64, want["mask"].as_u64().unwrap(), "{file}: mask");
+        let eci: Vec<u64> = want["eci"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap()).collect();
+        assert_eq!(p.eci.iter().map(|&v| v as u64).collect::<Vec<_>>(), eci, "{file}: eci");
+        assert_eq!(p.corrected as u64, want["corrected"].as_u64().unwrap(), "{file}: corrected");
+        assert_eq!(got.mirrored, want["mirrored"].as_bool().unwrap(), "{file}: mirrored");
+        assert_eq!(got.inverted, want["inverted"].as_bool().unwrap(), "{file}: inverted");
+        let loc = &want["location"];
+        let at = |p: &forgesworn_qr::place::Point| [p.x, p.y];
+        assert_eq!(at(&got.location.top_left), point(&loc["topLeft"]), "{file}: topLeft");
+        assert_eq!(at(&got.location.top_right), point(&loc["topRight"]), "{file}: topRight");
+        assert_eq!(at(&got.location.bottom_left), point(&loc["bottomLeft"]), "{file}: bottomLeft");
+        match (&got.location.alignment, loc["alignment"].is_null()) {
+            (None, true) => {}
+            (Some(a), false) => assert_eq!(at(a), point(&loc["alignment"]), "{file}: alignment"),
+            (g, _) => panic!("{file}: alignment {g:?} against {}", loc["alignment"]),
+        }
+        let counted = [work.steps, work.compared, work.scanned, work.maps, work.second, work.meshes, work.probed, work.reduced];
+        let recorded = ["steps", "compared", "scanned", "maps", "second", "meshes", "probed", "reduced"].map(|k| w[k].as_u64().unwrap());
+        assert_eq!(counted, recorded, "{file}: work counters (steps, compared, scanned, maps, second, meshes, probed, reduced)");
+        compared += 1;
+    }
+    eprintln!(
+        "ordinary search: {compared} frames read and matched (result, exact location, all eight work counters); {unread} unread and {beyond} needing a second look or a reduced pass correctly not read here; {} frames in all",
+        frames.len()
+    );
 }
