@@ -11,7 +11,9 @@ covering every version and mask and mixed-segment symbols, and have an
 independent decoder read back random payloads and every renderer's output.
 Both are test-time oracles; neither ships in the package.
 [SPEC.md](SPEC.md) defines the behaviour exactly, so ports in other
-languages can produce identical output.
+languages can produce identical output, and [vectors/](vectors/README.md)
+holds what a port checks itself against: the encoder's symbols, and for the
+decoder each stage, result and work count on a set of pictures.
 
 The decoder tests draw codes through synthetic camera effects (rotation,
 perspective, small modules, blur, noise, uneven light, inversion and

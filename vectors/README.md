@@ -1,0 +1,109 @@
+# Vectors
+
+Everything a port of this library in another language needs to check itself
+against, without reading the TypeScript. SPEC.md says what to build; these
+files say whether it was built right. The TypeScript library generates them
+and the Kotlin port in `kotlin/` passes them unchanged, which is the proof
+that a second implementation can.
+
+All payloads are made up. JSON numbers are the shortest decimal that reads
+back as the same IEEE 754 double, so a port compares them exactly, not
+within a tolerance.
+
+## The order to work through
+
+1. `encode-vectors.json`: the encoder.
+2. `conformance.json`, `luminance`: greyscale from RGBA.
+3. `conformance.json`, `symbols`: reading a module grid.
+4. `conformance.json`, `frames`: reading a picture, a stage at a time.
+5. `decode-frames.json` and `photos.json`: reading rates, once the rest holds.
+
+## `encode-vectors.json`
+
+148 cases. Each gives `text`, `ecc`, whether a UTF-8 ECI is asked for, and
+any fixed `requestedVersion` and `requestedMask`; then what the encoder must
+produce: `version`, `mask`, `mode`, `segments`, the bit count `bits`, and the
+symbol as `rows`. A row is the modules of one line, left to right, most
+significant bit first, padded with zeros to whole bytes, in hex. The symbols
+were built by an independent open-source encoder used as an oracle; the
+choice of segments is this library's own and SPEC.md defines it.
+
+## `conformance.json`
+
+### `luminance`
+
+`rgba` is `width` by `height` pixels, four bytes each, in hex; `grey` is the
+greyscale the decoder must make of it, one byte a pixel: `(77 R + 150 G +
+29 B) >> 8`, blended onto white by alpha and truncated.
+
+### `symbols`
+
+Module grids for `decodeModules`: `size` and `rows` as above, a `name` that
+says what the case is for, and `result`, which is `null` when the grid must
+not read. Otherwise it holds `bytes` (hex), `text`, `version`, `ecc`, `mask`,
+the `eci` assignments in the order met, `corrected` (errors put right, summed
+over the blocks) and `mirrored`. The cases cover a block corrected at and
+past its capacity, a mirrored grid, a symbol of nothing but zero codewords,
+blank version blocks, a damaged format copy, ECI 23 and 26, kanji, hanzi and
+mixed segments.
+
+`bytes` never depends on the platform. `text` does for kanji, hanzi and the
+ECIs SPEC.md leaves to the platform's character sets: a port on a platform
+without Shift_JIS or GB 18030 gives U+FFFD there, as SPEC.md says, and must
+say so in its own notes. ECI 1, 3, 23, 26, 27 and 170 are read by hand and
+must match everywhere.
+
+### `frames`
+
+Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
+the 48 synthetic photographs of `decode-frames/`, then nine in `conformance/`
+made for the paths those do not reach (blank, a gradient, noise, finder
+patterns with no code, a picture under 40 pixels a side, a close-up read
+only at reduced size, the same refused there by the format gate, a symbol
+bent by a lens and read through the mesh, and a symbol of zero codewords).
+
+For each, in the order a port can build the decoder:
+
+- `luminance`: SHA-256 of the greyscale bytes, row by row. If this differs
+  the picture was not loaded as 8-bit grey.
+- `bits`: SHA-256 of the binarised picture, one byte a pixel, 1 for dark
+  (SPEC.md, decoder step 1).
+- `reduced`: SHA-256 of the greyscale picture shrunk by 2, 4 and 8 (step 9),
+  or `null` where the picture is too small to shrink.
+- `finders`: the finder candidates in the binarised picture at tolerance 0.5
+  and at 0.8, in the order the scan returns them, each as `[x, y,
+  moduleSize, count]` (step 2).
+- `result`: `null`, or the fields of `symbols` with `inverted` and
+  `location`: `topLeft`, `topRight`, `bottomLeft` and `alignment` (or
+  `null`) as `[x, y]` in picture coordinates.
+- `work`: what the decoder counted on the way (SPEC.md, Bounded work):
+  `steps`, `compared`, `scanned`, `maps`, `second`, `meshes`, `probed` and
+  `reduced`. A port that reaches the same result by a different amount of
+  work has not implemented the same search, and its bounds are unproven.
+
+Regenerate with `QR_WRITE_CONFORMANCE=1 npx vitest run
+test/conformance.test.ts`. A change to this file is a behaviour change: it
+needs a reason, and SPEC.md in the same commit.
+
+## `decode-frames.json` and `decode-frames/`
+
+The 48 synthetic photographs and the `text` each holds, with how it was
+drawn (`shot`) and whether this decoder (`typescript`) and an independent
+one read it when the frames were made. A port must read every frame marked
+`typescript`.
+
+## `photos.json`
+
+A manifest of 184 real photographs from open-source test collections: paths
+and SHA-256 hashes only. `npm run fetch-photos` downloads them, with their
+expected texts, into `photos-cache/`, which is not committed. A port must
+never read one as the wrong text, and should read the ones marked as read.
+The sources and their licences are named in the manifest.
+
+## Tests that are not files
+
+The suites that draw damaged, bent, close-up and empty frames from a seeded
+generator are not in these files; each port writes the generator again
+(`(s * 1664525 + 1013904223) mod 2^32`, divided by 2^32). They guard
+against wrong text across hundreds of random cases. A port should have them,
+but the files above are enough to know it implements the same decoder.

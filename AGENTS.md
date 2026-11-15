@@ -40,6 +40,11 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 - `src/svg.ts`, `src/canvas.ts`, `src/terminal.ts` - renderers.
 - `src/tables.ts` - Table 9 error correction blocks and Annex E centres.
 - `vectors/encode-vectors.json` - module matrices from ZXing core 3.5.3.
+- `vectors/conformance.json`, `vectors/conformance/` - the conformance pack
+  for ports: greyscale, module grids, and each picture's stages, result and
+  work counts. `vectors/README.md` describes every vector file. Regenerate
+  with `QR_WRITE_CONFORMANCE=1 npx vitest run test/conformance.test.ts`;
+  a change to it is a behaviour change.
 - `vectors/generator/` - the Java generator; `.cache/` holds the
   hash-checked jar and is not committed.
 - `test/` - Vitest suites.
