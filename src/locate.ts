@@ -5,7 +5,7 @@ export interface Point {
   readonly y: number
 }
 
-interface Finder extends Point {
+export interface Finder extends Point {
   readonly moduleSize: number
   readonly count: number
 }
@@ -520,6 +520,26 @@ function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): num
   return best
 }
 
+/** The symbol's size in modules from its finders' spacing, rounded to 1 (mod 4); undefined when the modules are under a pixel. */
+export function estimateSize(image: BitImage, triple: readonly [Finder, Finder, Finder]): number | undefined {
+  const [topLeft, topRight, bottomLeft] = triple
+  const acrossSize = runModuleSize(image, topLeft, topRight)
+  const downSize = runModuleSize(image, topLeft, bottomLeft)
+  if (!((acrossSize + downSize) / 2 >= 1)) return undefined
+  return sizeFrom(topLeft, topRight, bottomLeft, acrossSize, downSize)
+}
+
+function sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossSize: number, downSize: number): number {
+  // Each side counted in its own modules, which perspective can make differ.
+  const size = Math.round((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2) + 7
+  switch (size & 3) {
+    case 0: return size + 1
+    case 2: return size - 1
+    case 3: return size - 2
+    default: return size
+  }
+}
+
 /**
  * Turns three finders into sampling maps: one through each likely alignment
  * pattern (when the version has one), then one through the fourth corner.
@@ -531,16 +551,7 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
   const downSize = runModuleSize(image, topLeft, bottomLeft)
   const moduleSize = (acrossSize + downSize) / 2
   if (!(moduleSize >= 1)) return []
-  let size = sizeHint
-  if (size === undefined) {
-    // Each side counted in its own modules, which perspective can make differ.
-    size = Math.round((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2) + 7
-    switch (size & 3) {
-      case 0: size++; break
-      case 2: size--; break
-      case 3: size -= 2; break
-    }
-  }
+  const size = sizeHint ?? sizeFrom(topLeft, topRight, bottomLeft, acrossSize, downSize)
   if (size < 21 || size > 177) return []
   // A plane seen in perspective: along a side whose far end is w times as far
   // from the camera, modules shrink by w squared. The finders' module sizes so

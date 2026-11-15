@@ -339,7 +339,10 @@ among them.
   picture and on its inverse).
 - Each triple is tried at 5 sizes, each giving at most 4 alignment maps and
   2 corner maps: at most 720 maps for the whole search, each sampling at
-  most size x size modules, straight and transposed.
+  most size x size modules, straight and transposed. Only sizes from 21 to
+  177 give maps. An estimate of 181 or 185, past 177 by no more than the
+  retries reach, still has its retries tried, and those of 177 or less
+  give maps; any other estimate outside 21 to 177 gives none.
 - Each size searches for the alignment pattern in square windows reaching
   4, 8 and then 16 modules around at most two estimates, clipped to the
   picture, stopping after the first reach that finds a near-perfect match.
@@ -521,4 +524,7 @@ lattice of finder patterns) must read as nothing. A further 30, from a
 seed of their own, are of versions 7 to 40, one block a few codewords past
 its parity, drawn bent by a lens (`bent` in `test/photo.ts`); each must read
 as nothing, and the second look must have read nearly all of them through a
-mesh.
+mesh. Another 10, also from a seed of their own, are of version 40, damaged
+the same way and drawn bent so that nearly every one's size estimate runs
+past 177; each must read as nothing, and most must reach the mesh through
+the retries below the estimate.

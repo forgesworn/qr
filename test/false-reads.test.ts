@@ -6,7 +6,8 @@
 import { describe, expect, it } from 'vitest'
 import { decodeCounted } from '../src/decode.js'
 import { blocksFor, encode, Grid, type ErrorCorrection } from '../src/encode.js'
-import { type Work } from '../src/locate.js'
+import { binarise, invert, toLuminance } from '../src/binarise.js'
+import { estimateSize, finderTriples, findFinders, type Work } from '../src/locate.js'
 import { bent, prng } from './photo.js'
 
 interface Frame { data: Uint8Array; width: number; height: number }
@@ -137,8 +138,8 @@ function empty(random: () => number): Frame[] {
  * codewords past its parity, finders, timing and format whole, drawn through
  * a lens bent by 0, 0.01 or 0.02, so the second look reads it through a mesh.
  */
-function damagedLarge(random: () => number): { text: string; frame: Frame } {
-  const version = 7 + Math.floor(random() * 34)
+function damagedLarge(random: () => number, only?: number, lens: readonly number[] = [0, 0.01, 0.02]): { text: string; frame: Frame } {
+  const version = only ?? 7 + Math.floor(random() * 34)
   const ecc = LEVELS[Math.floor(random() * 4)]!
   const mask = Math.floor(random() * 8)
   const length = 1 + Math.floor(random() * 60)
@@ -162,13 +163,27 @@ function damagedLarge(random: () => number): { text: string; frame: Frame } {
   }
   const mirror = random() < 0.2
   const drawn = mirror ? Uint8Array.from({ length: size * size }, (_, i) => modules[(i % size) * size + Math.floor(i / size)]!) : modules
-  const k = [0, 0.01, 0.02][Math.floor(random() * 3)]!
+  const k = lens[Math.floor(random() * lens.length)]!
   const invert = random() < 0.2
   return { text, frame: bent(drawn, size, 3, k, invert) }
 }
 
 /** The mesh's points probed a frame, at most, as in test/work.test.ts. */
 const MESH_PROBES = 4 * 46 * 25 * 25 * 25
+
+/** Whether a triple the search locates estimates the size past 177, by no more than 8. */
+function over(frame: Frame): boolean {
+  const bits = binarise(toLuminance(frame.data, frame.width, frame.height, 1, frame.width))
+  for (const image of [bits, invert(bits)]) {
+    for (const tolerance of [0.5, 0.8]) {
+      for (const triple of finderTriples(image, findFinders(image, tolerance)).slice(0, 6)) {
+        const size = estimateSize(image, triple)
+        if (size !== undefined && size > 177 && size <= 185) return true
+      }
+    }
+  }
+  return false
+}
 
 const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0 })
 
@@ -217,6 +232,31 @@ describe('no false reads', () => {
     }
     // The mesh was reached on nearly every one.
     expect(meshed).toBeGreaterThanOrEqual(0.9 * trials)
+  })
+
+  it('reads damaged version 40 symbols estimated past 177 as nothing', () => {
+    // Under the lens the finders' modules look small, so the estimate runs past
+    // 177 and only the retries below it are tried.
+    const random = prng(4051)
+    const trials = 10
+    let past = 0
+    let meshed = 0
+    for (let i = 0; i < trials; i++) {
+      const { text, frame } = damagedLarge(random, 40, [0.02])
+      const work = counter()
+      const got = decodeCounted(frame, {}, work)
+      if (got !== undefined) expect(got.text).toBe(text)
+      expect(got).toBeUndefined()
+      expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+      expect(work.second).toBeLessThanOrEqual(4)
+      expect(work.probed).toBeLessThanOrEqual(MESH_PROBES)
+      if (over(frame)) past++
+      if (work.meshes > 0) meshed++
+    }
+    // The estimate ran past 177 on nearly every one, and the maps from the
+    // retries below it took most of them to the second look's mesh.
+    expect(past).toBeGreaterThanOrEqual(0.9 * trials)
+    expect(meshed).toBeGreaterThanOrEqual(0.7 * trials)
   })
 
   it('reads frames with no symbol as nothing', () => {

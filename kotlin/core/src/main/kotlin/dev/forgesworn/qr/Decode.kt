@@ -133,10 +133,12 @@ private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<R
         val triples = finderTriples(image, findFinders(image, tolerance, work)).take(MAX_TRIPLES)
         for (triple in triples) {
             val first = locate(image, triple, null, work)
-            if (first.isEmpty()) continue
+            // An estimate past version 40 by no more than the retries reach still
+            // tries the sizes of 177 or less among them.
+            val size = if (first.isNotEmpty()) first[0].size else over(image, triple) ?: continue
             // The size estimate can be a version out; try the neighbours too.
             for (delta in intArrayOf(0, -4, 4, -8, 8)) {
-                for (location in if (delta == 0) first else locate(image, triple, first[0].size + delta, work)) {
+                for (location in if (delta == 0) first else locate(image, triple, size + delta, work)) {
                     if (work != null) work.maps++
                     val result = read(image, location, inverted, candidates)
                     if (result != null) return result
@@ -145,6 +147,12 @@ private fun search(image: BitImage, inverted: Boolean, candidates: MutableList<R
         }
     }
     return null
+}
+
+/** The size estimate when it is past 177 by at most the retries' 8; otherwise null. */
+private fun over(image: BitImage, triple: Array<Finder>): Int? {
+    val size = estimateSize(image, triple) ?: return null
+    return if (size > 177 && size <= 177 + 8) size else null
 }
 
 private fun read(image: BitImage, location: Placement, inverted: Boolean, candidates: MutableList<Retry>): DecodeResult? {

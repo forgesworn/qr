@@ -139,8 +139,8 @@ class FalseReadsTest {
      * codewords past its parity, finders, timing and format whole, drawn through
      * a lens bent by 0, 0.01 or 0.02, so the second look reads it through a mesh.
      */
-    private fun damagedLarge(random: Random): Pair<String, Frame> {
-        val version = 7 + fl(random.next() * 34)
+    private fun damagedLarge(random: Random, only: Int? = null, lens: DoubleArray = doubleArrayOf(0.0, 0.01, 0.02)): Pair<String, Frame> {
+        val version = only ?: (7 + fl(random.next() * 34))
         val ecc = levels[fl(random.next() * 4)]
         val mask = fl(random.next() * 8)
         val length = 1 + fl(random.next() * 60)
@@ -166,10 +166,24 @@ class FalseReadsTest {
         }
         val mirror = random.next() < 0.2
         val drawn = if (mirror) ByteArray(size * size) { modules[(it % size) * size + it / size] } else modules
-        val k = doubleArrayOf(0.0, 0.01, 0.02)[fl(random.next() * 3)]
+        val k = lens[fl(random.next() * lens.size)]
         val invert = random.next() < 0.2
         val picture = bent(drawn, size, 3, k, invert)
         return text.toString() to Frame(picture.data, picture.width, picture.height)
+    }
+
+    /** Whether a triple the search locates estimates the size past 177, by no more than 8. */
+    private fun over(frame: Frame): Boolean {
+        val bits = binarise(toLuminance(frame.data, frame.width, frame.height, frame.width))
+        for (image in listOf(bits, invert(bits))) {
+            for (tolerance in doubleArrayOf(0.5, 0.8)) {
+                for (triple in finderTriples(image, findFinders(image, tolerance)).take(6)) {
+                    val size = estimateSize(image, triple)
+                    if (size != null && size > 177 && size <= 185) return true
+                }
+            }
+        }
+        return false
     }
 
     private fun fill(width: Int, height: Int, f: (Int, Int) -> Int): Frame {
@@ -240,6 +254,32 @@ class FalseReadsTest {
         }
         // The mesh was reached on nearly every one.
         assertTrue(meshed >= 0.9 * trials)
+    }
+
+    @Test
+    fun readsDamagedVersion40SymbolsEstimatedPast177AsNothing() {
+        // Under the lens the finders' modules look small, so the estimate runs past
+        // 177 and only the retries below it are tried.
+        val random = Random(4051)
+        val trials = 10
+        var past = 0
+        var meshed = 0
+        for (i in 0 until trials) {
+            val (text, frame) = damagedLarge(random, 40, doubleArrayOf(0.02))
+            val work = Work()
+            val got = decodeCounted(frame.data, frame.width, frame.height, work)
+            if (got != null) assertEquals(text, got.text)
+            assertNull(got)
+            assertTrue(work.maps <= 4 * 6 * 5 * 6)
+            assertTrue(work.second <= 4)
+            assertTrue(work.probed <= MESH_PROBES)
+            if (over(frame)) past++
+            if (work.meshes > 0) meshed++
+        }
+        // The estimate ran past 177 on nearly every one, and the maps from the
+        // retries below it took most of them to the second look's mesh.
+        assertTrue(past >= 0.9 * trials)
+        assertTrue(meshed >= 0.7 * trials)
     }
 
     @Test
