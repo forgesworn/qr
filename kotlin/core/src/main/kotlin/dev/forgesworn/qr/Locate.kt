@@ -532,7 +532,10 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
     }
     val parallelogram = Point(topRight.x - topLeft.x + bottomLeft.x, topRight.y - topLeft.y + bottomLeft.y)
     val corner = perspective(steps.toDouble(), steps.toDouble())
-    val corners = if (distance(corner, parallelogram) > moduleSize) listOf(corner, parallelogram) else listOf(corner)
+    // Without an alignment pattern, the parallelogram's corner goes first, as for
+    // a code seen head-on; the map's corner is a later try. A corner moved by
+    // less than a pixel samples the same pixels, so it is not tried twice.
+    val corners = if (distance(corner, parallelogram) >= 1) listOf(parallelogram, corner) else listOf(parallelogram)
     var alignments: List<Point> = emptyList()
     if (size > 21) {
         // Guesses at the alignment centre, three modules in from the fourth

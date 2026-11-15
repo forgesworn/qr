@@ -229,9 +229,10 @@ read. The TypeScript pipeline, for reference:
    found near where that map, and the parallelogram, put the pattern, with
    runs sized from the map there; they are ranked by how well the 5x5
    pattern around each matches along the map's local axes or the
-   parallelogram's, whichever matches better. The map's fourth corner, then
-   the parallelogram's when they are more than a module apart, are the last
-   resort. Sizes four and eight modules either side are retried.
+   parallelogram's, whichever matches better. The last resort is the
+   parallelogram's fourth corner, as for a code seen head-on, then the map's
+   fourth corner when it is a pixel or more away, so following perspective
+   only adds attempts. Sizes four and eight modules either side are retried.
 6. Sampling: a perspective map from module centres to the picture, then
    format and version information, unmasking and Reed-Solomon correction
    (section 7.5 and annex B). A failed read is retried transposed, for

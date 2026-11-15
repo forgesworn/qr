@@ -482,7 +482,10 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
   }
   const parallelogram = { x: topRight.x - topLeft.x + bottomLeft.x, y: topRight.y - topLeft.y + bottomLeft.y }
   const corner = perspective(steps, steps)
-  const corners = distance(corner, parallelogram) > moduleSize ? [corner, parallelogram] : [corner]
+  // Without an alignment pattern, the parallelogram's corner goes first, as for
+  // a code seen head-on; the map's corner is a later try. A corner moved by
+  // less than a pixel samples the same pixels, so it is not tried twice.
+  const corners = distance(corner, parallelogram) >= 1 ? [parallelogram, corner] : [parallelogram]
   let alignments: Point[] = []
   if (size > 21) {
     // Guesses at the alignment centre, three modules in from the fourth
