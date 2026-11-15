@@ -90,7 +90,8 @@ found?.location  // picture coordinates of the three finders
 `decode(image, options)` takes `{ data, width, height }` with RGBA or
 greyscale bytes and returns `undefined` when it finds no readable code.
 Options: `rowStride` (pixels a row, for padded camera planes), `channels`
-(1 or 4; worked out from the data length by default) and `inversion`
+(1 or 4; worked out from the data length by default, and three bytes a
+pixel is refused) and `inversion`
 (`'both'` by default, or `'normal'` or `'inverted'`). The result also says
 whether the code was `mirrored` or `inverted`, and its `version`, `ecc` and
 `mask`.

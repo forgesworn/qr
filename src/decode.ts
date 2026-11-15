@@ -39,6 +39,10 @@ function channelsFor(image: ImageLike, stride: number, given: 1 | 4 | undefined)
   const { data, width, height } = image
   const last = stride * (height - 1) + width
   if (given !== undefined && given !== 1 && given !== 4) throw new RangeError('channels must be 1 or 4')
+  // Three bytes a pixel would otherwise be read as greyscale and find nothing.
+  if (given === undefined && data.length >= last * 3 && data.length < last * 4) {
+    throw new RangeError('The data looks like three bytes a pixel: pass RGBA or greyscale, or name channels')
+  }
   const channels = given ?? (data.length >= last * 4 ? 4 : 1)
   if (data.length < last * channels) throw new RangeError(`The data is too short for a ${width}x${height} picture`)
   return channels
@@ -49,6 +53,16 @@ function channelsFor(image: ImageLike, stride: number, given: 1 | 4 | undefined)
  * readable code is found.
  */
 export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeResult | undefined {
+  if (image === null || typeof image !== 'object') throw new TypeError('decode needs { data, width, height }')
+  const kind = Object.prototype.toString.call(image.data).slice(8, -1)
+  if (kind !== 'Uint8Array' && kind !== 'Uint8ClampedArray') {
+    throw new TypeError(`data must be a Uint8Array or Uint8ClampedArray, not ${kind}`)
+  }
+  options ??= {}
+  const inversion = options.inversion ?? 'both'
+  if (inversion !== 'both' && inversion !== 'normal' && inversion !== 'inverted') {
+    throw new RangeError("inversion must be 'normal', 'inverted' or 'both'")
+  }
   const { width, height } = image
   if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1) {
     throw new RangeError('Width and height must be positive integers')
@@ -57,7 +71,6 @@ export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeRes
   if (!Number.isInteger(stride) || stride < width) throw new RangeError('rowStride must be an integer of at least width')
   const channels = channelsFor(image, stride, options.channels)
   const bits = binarise(toLuminance(image.data, width, height, channels, stride))
-  const inversion = options.inversion ?? 'both'
   if (inversion !== 'inverted') {
     const found = search(bits, false)
     if (found) return found

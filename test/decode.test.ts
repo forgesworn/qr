@@ -96,6 +96,18 @@ describe('decode', () => {
     expect(() => decode({ data: new Uint8Array(100 * 100), width: 100, height: 100 }, { channels: 4 })).toThrow(RangeError)
     expect(decode({ data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 }, { channels: 1 })).toBeUndefined()
     expect(() => decode({ data: new Uint8Array(100 * 100), width: 100, height: 100 }, { channels: 3 as 4 })).toThrow(RangeError)
+    // Three bytes a pixel is refused unless the caller says the data is greyscale.
+    expect(() => decode({ data: new Uint8Array(100 * 100 * 3), width: 100, height: 100 })).toThrow(RangeError)
+    expect(decode({ data: new Uint8Array(100 * 100 * 3).fill(255), width: 100, height: 100 }, { channels: 1 })).toBeUndefined()
+    // A camera buffer with chroma after the luminance plane is still greyscale.
+    expect(decode({ data: new Uint8Array(100 * 150).fill(255), width: 100, height: 100 })).toBeUndefined()
+    expect(decode({ data: new Uint8ClampedArray(100 * 100 * 4).fill(255), width: 100, height: 100 })).toBeUndefined()
+    expect(() => decode(null as never)).toThrow(TypeError)
+    expect(() => decode({ data: new Uint16Array(100 * 100) as never, width: 100, height: 100 })).toThrow(TypeError)
+    expect(() => decode({ data: Array(100 * 100).fill(255) as never, width: 100, height: 100 })).toThrow(TypeError)
+    const blank = { data: new Uint8Array(100 * 100).fill(255), width: 100, height: 100 }
+    expect(() => decode(blank, { inversion: 'neither' as never })).toThrow(RangeError)
+    expect(decode(blank, null as never)).toBeUndefined()
   })
 
   it('reads at least as many distorted pictures as jsQR', () => {
