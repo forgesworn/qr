@@ -20,7 +20,7 @@ npm run typecheck         # src and test, no emit
 npm run check             # typecheck + test
 npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK needed)
 (cd kotlin && ./gradlew test)   # the Kotlin port against the same vectors and frames
-(cd rust && cargo test)         # the Rust front end against the conformance pack
+(cd rust && cargo test)         # the Rust port, as far as it goes, against the conformance pack
 ```
 
 ## Rules
@@ -49,10 +49,12 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 - `vectors/generator/` - the Java generator; `.cache/` holds the
   hash-checked jar and is not committed.
 - `test/` - Vitest suites.
-- `rust/` - a Rust port in progress: the decoder's front end so far
-  (greyscale, binarise, shrink, finder scan), with no dependencies; its
-  tests read `vectors/conformance.json`. `rust/bench/` times its
-  WebAssembly build against the TypeScript.
+- `rust/` - a Rust port in progress, with no dependencies: the decoder up
+  to an ordinary read (no second look, no reduced sizes yet) and no encoder.
+  It bundles no character tables, so kanji, hanzi and most ECI text is as
+  SPEC.md gives for a platform without them. Its tests read
+  `vectors/conformance.json`; `rust/bench/` times its WebAssembly build
+  against the TypeScript.
 - `kotlin/core/src/main/kotlin/dev/forgesworn/qr/` - the Kotlin port; it is
   vendored as a unit, so keep it self-contained (no Android or third-party
   imports). `kotlin/core/src/test/` reads `vectors/` and uses ZXing as a
