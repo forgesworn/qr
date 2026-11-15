@@ -218,6 +218,9 @@ fn bytes_are_one_byte_segment_and_empty_text_is_too() {
     let qr = encode("", &Options::default()).unwrap();
     assert_eq!(qr.segments, vec![Segment { mode: Mode::Byte, count: 0 }]);
     assert_eq!(qr.version, 1);
+    // A named mode wins over the empty string's byte segment, as in the TypeScript.
+    let named = Options { mode: Some(Mode::Numeric), ..Options::default() };
+    assert_eq!(encode("", &named).unwrap().segments, vec![Segment { mode: Mode::Numeric, count: 0 }]);
     let qr = encode(&Vec::<u8>::new(), &Options { eci: true, ..Options::default() }).unwrap();
     assert_eq!(qr.bits, 12 + 4 + 8);
 }
