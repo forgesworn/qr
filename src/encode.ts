@@ -683,8 +683,8 @@ function finderLike(m: Uint8Array, size: number, x: number, y: number, dx: numbe
 
 /**
  * Four modules from offset `from` along the line are light. A run that would
- * leave the symbol does not count: the quiet zone is not scored. ZXing scores
- * it the same way, which keeps mask choice identical to that oracle.
+ * leave the symbol does not count: the quiet zone is not scored. The reference
+ * encoder scores it the same way, which keeps mask choice identical to it.
  */
 function lightRun(m: Uint8Array, size: number, x: number, y: number, dx: number, dy: number, from: number): boolean {
   for (let i = from; i < from + 4; i++) {

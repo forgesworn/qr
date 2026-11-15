@@ -138,8 +138,8 @@ that dark modules deviate from half, rounded down. The lowest score wins;
 ties go to the lower mask.
 
 One choice the standard leaves open: for N3, four light modules that would
-lie outside the symbol do not count (the quiet zone is not scored). ZXing
-makes the same choice, so masks chosen here match it.
+lie outside the symbol do not count (the quiet zone is not scored). The
+reference encoder makes the same choice, so masks chosen here match it.
 
 ## Output
 

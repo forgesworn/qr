@@ -715,8 +715,8 @@ private fun finderLike(m: ByteArray, size: Int, x: Int, y: Int, dx: Int, dy: Int
 
 /**
  * Four modules from offset [from] along the line are light. A run that would
- * leave the symbol does not count: the quiet zone is not scored. ZXing scores
- * it the same way, which keeps mask choice identical to that oracle.
+ * leave the symbol does not count: the quiet zone is not scored. The reference
+ * encoder scores it the same way, which keeps mask choice identical to it.
  */
 private fun lightRun(m: ByteArray, size: Int, x: Int, y: Int, dx: Int, dy: Int, from: Int): Boolean {
     for (i in from until from + 4) {
