@@ -88,7 +88,10 @@ private fun <T> nearest(table: List<T>, bitsOf: (T) -> Int, reads: IntArray): T?
     return best
 }
 
-/** The version a symbol of [size] modules declares, when its version blocks can be read. */
+/**
+ * The version a symbol of [size] modules declares: from the size below
+ * version 7, else from its version blocks, or null when neither copy decodes.
+ */
 internal fun readVersion(read: ModuleReader, size: Int): Int? {
     if (size < 45) return (size - 17) / 4
     var bottomLeft = 0
@@ -103,14 +106,16 @@ internal fun readVersion(read: ModuleReader, size: Int): Int? {
 }
 
 /**
- * Decodes a symbol from its modules. [size] must be 17 + 4v; for version 7
- * and up the version blocks decide, and a size that disagrees fails.
- * Returns null when the symbol cannot be read.
+ * Decodes a symbol from its modules. [size] must be 17 + 4v. From version 7
+ * a version block that decodes decides, and a size that disagrees fails;
+ * if neither decodes, the size decides. Returns null when the symbol
+ * cannot be read.
  */
 internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
     if (size < 21 || size > 177 || (size - 17) % 4 != 0) return null
-    val version = readVersion(read, size)
-    if (version == null || 17 + 4 * version != size) return null
+    // When neither version copy decodes, the size says which version it is.
+    val version = readVersion(read, size) ?: ((size - 17) / 4)
+    if (17 + 4 * version != size) return null
 
     var first = 0
     var second = 0

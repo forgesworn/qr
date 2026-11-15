@@ -11,6 +11,11 @@ Section numbers refer to ISO/IEC 18004:2015.
   U+FFFD. Byte segments carry the UTF-8 of their code points, so no
   segment boundary falls inside a character.
 - Bytes are encoded as given, always as one byte segment.
+- The data is a string or a byte array and nothing else; anything else is
+  an argument error (`TypeError`). `null` options mean no options, as
+  omitted options do. Level, mode, version, `minVersion` and mask outside
+  their ranges are argument errors (`RangeError`). Kotlin is typed and
+  checks the ranges alone.
 
 ## Mode
 
@@ -71,6 +76,25 @@ version's band. A requested version that cannot hold the data is an
 error, never a silent upgrade. A requested version below `minVersion` is
 an argument error (`RangeError`, `IllegalArgumentException` in Kotlin),
 not a capacity error.
+
+Input that no version can hold is a capacity error before any segmentation
+or bit stream is built, so its cost does not grow with the input. With
+`highest` the requested version, else 40, and `available` the data bits of
+`highest` at the level less the 4-bit mode indicator, the longest input
+that can fit is, rounded down, in bytes for bytes and for byte mode (text
+counted in UTF-16 code units, which are never more than its UTF-8 bytes)
+`(available - count field) / 8`; in numeric mode `(available - count
+field) * 3 / 10`; in alphanumeric mode `(available - count field) * 2 /
+11`; and for text with no named mode `(available - narrowest count field)
+* 3 / 10`, each count field at the band of `highest`. At version 40 and
+level L that is 2,953 bytes, 7,089 digits and 4,296 alphanumeric characters,
+and 7,089 code units for unrestricted text. These are upper bounds, never
+cut-offs for what fits: every length they allow still goes through the
+exact check above. The error is the same as for any other data that does
+not fit. Argument errors (an unknown mode, a mode other than byte for
+bytes) are raised first. For a named mode the length check comes before the
+content check, so text too long for the mode that also holds characters
+outside it is a capacity error, not a `RangeError`.
 
 ## Bit stream and error correction
 
@@ -220,6 +244,18 @@ read. The TypeScript pipeline, for reference:
    "Text for kanji and other ECIs" below. A byte run with no ECI in force
    that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
    test under "Shift_JIS without an ECI" below.
+
+### Version information
+
+Below version 7 the size alone gives the version. From version 7 the two
+18-bit version blocks are read and decoded to the nearest version code
+within three bit errors, trying both copies and taking the closer (on a
+tie the bottom-left copy, tried first, wins). When a
+copy decodes, its version is the symbol's, and it must agree with the size
+(`17 + 4 * version`); a disagreement makes the symbol unreadable, never a
+resize. When neither copy decodes, the version is the one the size implies.
+Reed-Solomon, format information and the data's own structure still have to
+pass, so a grid of the wrong size does not yield text this way.
 
 ### Structured append and FNC1
 
