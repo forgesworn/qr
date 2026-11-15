@@ -108,6 +108,262 @@ mod exports {
         }
     }
 
+    // The whole result of a decode. `read_picture` and `read_grid` return a
+    // handle (never 0) for a symbol read, or 0; `read_error()` then says why.
+    // Give the handle back with `read_free`. Argument encoding:
+    //
+    //   read_picture(ptr, len, width, height, channels, row_stride, inversion)
+    //     ptr, len     the pixels: `len` bytes at `ptr`, which must cover the
+    //                  last row (`row_stride * (height - 1) + width` pixels of
+    //                  `channels` bytes)
+    //     channels     1 (grey) or 4 (RGBA)
+    //     row_stride   pixels from one row to the next, at least `width`
+    //     inversion    0 both (dark on light first), 1 normal, 2 inverted
+    //   read_grid(ptr, len, size)
+    //     the module grid of `size * size` bytes (nonzero for dark, row by
+    //     row, no quiet zone) as `decode_modules` reads it; mirrored grids read
+    //
+    // `read_error()` after a call: 0 a symbol was read, 1 nothing read, 2
+    // channels neither 1 nor 4, 3 width or height 0, 4 row_stride under
+    // width, 5 fewer bytes than the picture or grid needs, 6 inversion not 0,
+    // 1 or 2. Where the TypeScript `decode` throws, this is 2 to 6; where it
+    // returns undefined, this is 1.
+    //
+    // Accessors take the handle. Pointers address bytes inside the WebAssembly
+    // memory, valid until `read_free`, and are not to be read when the length
+    // is 0. Booleans are 0 or 1. Coordinates are `f64`, which the host sees as
+    // JavaScript numbers with the same bits.
+    //
+    //   read_bytes_ptr, read_bytes_len     the payload bytes
+    //   read_text_ptr, read_text_len       the text as UTF-8
+    //   read_version, read_level (0 L, 1 M, 2 Q, 3 H), read_mask, read_corrected
+    //   read_mirrored, read_inverted
+    //   read_eci_count, read_eci(h, i)     the ECI assignments, in order
+    //   read_located(h)                    1 for a picture, 0 for a grid
+    //   read_point_x(h, which), read_point_y(h, which)
+    //                                      which 0 top-left, 1 top-right,
+    //                                      2 bottom-left, 3 alignment; 0.0 for
+    //                                      a grid
+    //   read_has_alignment(h)
+    //   read_sa_present, read_sa_index, read_sa_total, read_sa_parity
+    //   read_fnc1(h)                       0 none, 1 first position, 2 second
+    //   read_fnc1_ptr, read_fnc1_len       the application indicator (second
+    //                                      position only), ASCII
+    //
+    // The eight work counters of the last `read_picture` (steps, compared,
+    // scanned, maps, second, meshes, probed, reduced; all zero after a bad
+    // argument or `read_grid`) are 64-bit, so they come as two unsigned 32-bit
+    // halves: `work_low(i)` and `work_high(i)`, for i 0 to 7. The host joins
+    // them as high * 2^32 + low. They stay readable after a call that read
+    // nothing.
+
+    use crate::decode::{decode as decode_picture, Inversion, Place};
+    use crate::locate::Work;
+    use crate::symbol::{decode_modules, Fnc1, Payload};
+
+    struct Read {
+        payload: Payload,
+        mirrored: bool,
+        inverted: bool,
+        location: Option<Place>,
+    }
+
+    thread_local! {
+        static LAST_READ_ERROR: Cell<u32> = const { Cell::new(0) };
+        static LAST_WORK: Cell<[u64; 8]> = const { Cell::new([0; 8]) };
+    }
+
+    /// Why the last `read_picture` or `read_grid` returned 0; 0 if it read a symbol.
+    #[no_mangle]
+    pub extern "C" fn read_error() -> u32 {
+        LAST_READ_ERROR.with(|e| e.get())
+    }
+
+    fn set_work(work: [u64; 8]) {
+        LAST_WORK.with(|w| w.set(work));
+    }
+
+    fn fail(code: u32) -> u32 {
+        LAST_READ_ERROR.with(|e| e.set(code));
+        0
+    }
+
+    fn handle(read: Read) -> u32 {
+        LAST_READ_ERROR.with(|e| e.set(0));
+        Box::into_raw(Box::new(read)) as usize as u32
+    }
+
+    /// Decodes the picture. See above for the arguments.
+    ///
+    /// # Safety
+    /// `ptr` must address `len` readable bytes.
+    #[no_mangle]
+    pub unsafe extern "C" fn read_picture(ptr: *const u8, len: usize, width: u32, height: u32, channels: u32, row_stride: u32, inversion: u32) -> u32 {
+        set_work([0; 8]);
+        if channels != 1 && channels != 4 {
+            return fail(2);
+        }
+        if width == 0 || height == 0 {
+            return fail(3);
+        }
+        if row_stride < width {
+            return fail(4);
+        }
+        let inversion = match inversion {
+            0 => Inversion::Both,
+            1 => Inversion::Normal,
+            2 => Inversion::Inverted,
+            _ => return fail(6),
+        };
+        let needed = (row_stride as u64 * (height as u64 - 1) + width as u64) * channels as u64;
+        if (len as u64) < needed {
+            return fail(5);
+        }
+        let pixels = std::slice::from_raw_parts(ptr, len);
+        let mut work = Work::default();
+        let found = decode_picture(pixels, width as usize, height as usize, channels as usize, row_stride as usize, inversion, Some(&mut work));
+        set_work([work.steps, work.compared, work.scanned, work.maps, work.second, work.meshes, work.probed, work.reduced]);
+        match found {
+            Some(r) => handle(Read { payload: r.payload, mirrored: r.mirrored, inverted: r.inverted, location: Some(r.location) }),
+            None => fail(1),
+        }
+    }
+
+    /// Reads the module grid. See above for the arguments.
+    ///
+    /// # Safety
+    /// `ptr` must address `len` readable bytes.
+    #[no_mangle]
+    pub unsafe extern "C" fn read_grid(ptr: *const u8, len: usize, size: u32) -> u32 {
+        set_work([0; 8]);
+        if (len as u64) < size as u64 * size as u64 {
+            return fail(5);
+        }
+        let modules = if len == 0 { &[][..] } else { std::slice::from_raw_parts(ptr, len) };
+        match decode_modules(modules, size as usize) {
+            Some(d) => handle(Read { payload: d.payload, mirrored: d.mirrored, inverted: false, location: None }),
+            None => fail(1),
+        }
+    }
+
+    unsafe fn read<'a>(h: u32) -> &'a Read {
+        &*(h as usize as *const Read)
+    }
+
+    /// Gives back a result. The handle is not valid afterwards.
+    ///
+    /// # Safety
+    /// `h` must come from `read_picture` or `read_grid` and be freed once.
+    #[no_mangle]
+    pub unsafe extern "C" fn read_free(h: u32) {
+        drop(Box::from_raw(h as usize as *mut Read));
+    }
+
+    macro_rules! accessors {
+        ($($name:ident($r:ident) -> $t:ty $body:block)*) => {
+            $(
+                /// An accessor on a result handle; see the notes above.
+                ///
+                /// # Safety
+                /// `h` must come from `read_picture` or `read_grid` and not have been freed.
+                #[no_mangle]
+                pub unsafe extern "C" fn $name(h: u32) -> $t {
+                    let $r = read(h);
+                    $body
+                }
+            )*
+        };
+    }
+
+    accessors! {
+        read_bytes_ptr(r) -> *const u8 { r.payload.bytes.as_ptr() }
+        read_bytes_len(r) -> u32 { r.payload.bytes.len() as u32 }
+        read_text_ptr(r) -> *const u8 { r.payload.text.as_ptr() }
+        read_text_len(r) -> u32 { r.payload.text.len() as u32 }
+        read_version(r) -> u32 { r.payload.version as u32 }
+        read_level(r) -> u32 { r.payload.ecc as u32 }
+        read_mask(r) -> u32 { r.payload.mask as u32 }
+        read_corrected(r) -> u32 { r.payload.corrected as u32 }
+        read_mirrored(r) -> u32 { r.mirrored as u32 }
+        read_inverted(r) -> u32 { r.inverted as u32 }
+        read_eci_count(r) -> u32 { r.payload.eci.len() as u32 }
+        read_located(r) -> u32 { r.location.is_some() as u32 }
+        read_has_alignment(r) -> u32 { r.location.is_some_and(|p| p.alignment.is_some()) as u32 }
+        read_sa_present(r) -> u32 { r.payload.structured_append.is_some() as u32 }
+        read_sa_index(r) -> u32 { r.payload.structured_append.map_or(0, |s| s.index) }
+        read_sa_total(r) -> u32 { r.payload.structured_append.map_or(0, |s| s.total) }
+        read_sa_parity(r) -> u32 { r.payload.structured_append.map_or(0, |s| s.parity) }
+        read_fnc1(r) -> u32 {
+            match r.payload.fnc1 {
+                None => 0,
+                Some(Fnc1::First) => 1,
+                Some(Fnc1::Second(_)) => 2,
+            }
+        }
+        read_fnc1_ptr(r) -> *const u8 {
+            match &r.payload.fnc1 {
+                Some(Fnc1::Second(s)) => s.as_ptr(),
+                _ => std::ptr::NonNull::dangling().as_ptr(),
+            }
+        }
+        read_fnc1_len(r) -> u32 {
+            match &r.payload.fnc1 {
+                Some(Fnc1::Second(s)) => s.len() as u32,
+                _ => 0,
+            }
+        }
+    }
+
+    /// The `i`th ECI assignment (0 when `i` is out of range).
+    ///
+    /// # Safety
+    /// As the other accessors.
+    #[no_mangle]
+    pub unsafe extern "C" fn read_eci(h: u32, i: u32) -> u32 {
+        read(h).payload.eci.get(i as usize).copied().unwrap_or(0)
+    }
+
+    fn point(r: &Read, which: u32) -> Option<crate::place::Point> {
+        let p = r.location?;
+        match which {
+            0 => Some(p.top_left),
+            1 => Some(p.top_right),
+            2 => Some(p.bottom_left),
+            3 => p.alignment,
+            _ => None,
+        }
+    }
+
+    /// The x of a location point (see above for `which`); 0.0 if there is none.
+    ///
+    /// # Safety
+    /// As the other accessors.
+    #[no_mangle]
+    pub unsafe extern "C" fn read_point_x(h: u32, which: u32) -> f64 {
+        point(read(h), which).map_or(0.0, |p| p.x)
+    }
+
+    /// The y of a location point (see above for `which`); 0.0 if there is none.
+    ///
+    /// # Safety
+    /// As the other accessors.
+    #[no_mangle]
+    pub unsafe extern "C" fn read_point_y(h: u32, which: u32) -> f64 {
+        point(read(h), which).map_or(0.0, |p| p.y)
+    }
+
+    /// The low 32 bits of work counter `i` (0 to 7) of the last `read_picture`.
+    #[no_mangle]
+    pub extern "C" fn work_low(i: u32) -> u32 {
+        LAST_WORK.with(|w| w.get().get(i as usize).map_or(0, |&v| v as u32))
+    }
+
+    /// The high 32 bits of work counter `i` (0 to 7) of the last `read_picture`.
+    #[no_mangle]
+    pub extern "C" fn work_high(i: u32) -> u32 {
+        LAST_WORK.with(|w| w.get().get(i as usize).map_or(0, |&v| (v >> 32) as u32))
+    }
+
     // The encoder. Argument encoding, shared by `encode_text` and `encode_bytes`:
     //
     //   ecc          0 L, 1 M, 2 Q, 3 H
