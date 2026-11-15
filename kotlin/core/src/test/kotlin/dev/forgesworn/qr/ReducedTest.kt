@@ -75,6 +75,25 @@ class ReducedTest {
     }
 
     @Test
+    fun shrinksBy2And4And8FromOnePassToTheSamePictures() {
+        // Sides that leave every remainder, and some too small for a square of 8.
+        val random = Random(53)
+        for ((width, height) in listOf(64 to 64, 65 to 71, 67 to 62, 103 to 9, 9 to 103, 5 to 3, 200 to 131)) {
+            val image = Luminance(IntArray(width * height) { floor(random.next() * 256).toInt() }, width, height)
+            val shrunk = Reductions(image)
+            // Asked for in the decoder's order, coarse to fine, and then again.
+            for (f in intArrayOf(8, 4, 2, 8, 2, 4)) {
+                val want = shrink(image, f)
+                val got = shrunk.by(f)
+                assertEquals("$width x $height by $f", want.width, got.width)
+                assertEquals("$width x $height by $f", want.height, got.height)
+                assertArrayEquals("$width x $height by $f", want.data, got.data)
+            }
+        }
+        assertArrayEquals(IntArray(6) { 255 }, Reductions(Luminance(IntArray(24 * 16) { 255 }, 24, 16)).by(8).data)
+    }
+
+    @Test
     fun readsACloseUpWithScanLinesOnlyAtReducedSizeLocatedInTheFullPicture() {
         val work = Work()
         val got = decodeCounted(closeUp(false), side, side, work)

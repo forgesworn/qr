@@ -34,7 +34,8 @@ export function toLuminance(
       const i = (y * rowStride + x) * 4
       const a = data[i + 3]!
       const grey = (data[i]! * 77 + data[i + 1]! * 150 + data[i + 2]! * 29) >> 8
-      out[y * width + x] = (grey * a + 255 * (255 - a)) / 255
+      // An opaque pixel is its own grey: (grey * 255 + 0) / 255.
+      out[y * width + x] = a === 255 ? grey : (grey * a + 255 * (255 - a)) / 255
     }
   }
   return { data: out, width, height }
@@ -80,12 +81,17 @@ export function thresholds(image: Luminance): Thresholds {
       let sum = 0
       let min = 255
       let max = 0
+      // In integers and without a branch a pixel: where v is under min, v - min
+      // is negative and its sign fills the mask, so min takes the difference.
       for (let y = top; y < top + BLOCK; y++) {
-        for (let x = left; x < left + BLOCK; x++) {
-          const v = data[y * width + x]!
-          sum += v
-          if (v < min) min = v
-          if (v > max) max = v
+        const row = y * width + left
+        for (let i = row; i < row + BLOCK; i++) {
+          const v = data[i]!
+          sum = (sum + v) | 0
+          const under = (v - min) | 0
+          min = (min + (under & (under >> 31))) | 0
+          const over = (max - v) | 0
+          max = (max - (over & (over >> 31))) | 0
         }
       }
       let level = sum / (BLOCK * BLOCK)
@@ -106,18 +112,13 @@ export function thresholds(image: Luminance): Thresholds {
     const cy = Math.min(Math.max(by, 2), down - 3)
     for (let bx = 0; bx < across; bx++) {
       const cx = Math.min(Math.max(bx, 2), across - 3)
+      // At 40 pixels a side or more there are five blocks each way, so all 25 lie in the picture.
       let sum = 0
-      let n = 0
       for (let dy = -2; dy <= 2; dy++) {
-        for (let dx = -2; dx <= 2; dx++) {
-          const yy = cy + dy
-          const xx = cx + dx
-          if (yy < 0 || xx < 0 || yy >= down || xx >= across) continue
-          sum += levels[yy * across + xx]!
-          n++
-        }
+        const row = (cy + dy) * across + cx
+        for (let dx = -2; dx <= 2; dx++) sum += levels[row + dx]!
       }
-      values[by * across + bx] = sum / n
+      values[by * across + bx] = sum / 25
     }
   }
   return { across, down, values }
@@ -135,23 +136,28 @@ export function thresholdAt(t: Thresholds, width: number, height: number, px: nu
   return t.values[by * t.across + bx]!
 }
 
-/** Local-threshold binarisation (thresholds()): 1 where a pixel is at or below its threshold. */
-export function binarise(image: Luminance): BitImage {
+/**
+ * Local-threshold binarisation: 1 where a pixel is at or below its threshold.
+ * `t` is the picture's thresholds(), for a caller that has them already.
+ */
+export function binarise(image: Luminance, t: Thresholds = thresholds(image)): BitImage {
   const { data, width, height } = image
   const out = new Uint8Array(width * height)
-  const t = thresholds(image)
+  // A pixel is a whole number, so it is at or below a threshold exactly when
+  // it is under the next whole number above it: the sign of the difference.
   if (width < 40 || height < 40) {
-    const threshold = t.values[0]!
-    for (let i = 0; i < data.length; i++) out[i] = data[i]! <= threshold ? 1 : 0
+    const above = Math.floor(t.values[0]!) + 1
+    for (let i = 0; i < data.length; i++) out[i] = (data[i]! - above) >>> 31
     return { data: out, width, height }
   }
   for (let by = 0; by < t.down; by++) {
     const top = Math.min(by * BLOCK, height - BLOCK)
     for (let bx = 0; bx < t.across; bx++) {
       const left = Math.min(bx * BLOCK, width - BLOCK)
-      const threshold = t.values[by * t.across + bx]!
+      const above = Math.floor(t.values[by * t.across + bx]!) + 1
       for (let y = top; y < top + BLOCK; y++) {
-        for (let x = left; x < left + BLOCK; x++) out[y * width + x] = data[y * width + x]! <= threshold ? 1 : 0
+        const row = y * width + left
+        for (let i = row; i < row + BLOCK; i++) out[i] = (data[i]! - above) >>> 31
       }
     }
   }
@@ -159,8 +165,18 @@ export function binarise(image: Luminance): BitImage {
 }
 
 export function invert(image: BitImage): BitImage {
-  const out = new Uint8Array(image.data.length)
-  for (let i = 0; i < out.length; i++) out[i] = image.data[i]! ^ 1
+  const data = image.data
+  const out = new Uint8Array(data.length)
+  // Four pixels a step where the picture's bytes start on a word; the rest one by one.
+  let i = 0
+  if (data.byteOffset % 4 === 0) {
+    const words = data.length >> 2
+    const from = new Uint32Array(data.buffer, data.byteOffset, words)
+    const to = new Uint32Array(out.buffer, 0, words)
+    for (let w = 0; w < words; w++) to[w] = from[w]! ^ 0x01010101
+    i = words << 2
+  }
+  for (; i < out.length; i++) out[i] = data[i]! ^ 1
   return { data: out, width: image.width, height: image.height }
 }
 
@@ -190,4 +206,46 @@ export function shrink(image: Luminance, f: number): Luminance {
     for (let x = 0; x < width; x++) out[y * width + x] = Math.floor((sums[x]! + half) / area)
   }
   return { data: out, width, height }
+}
+
+/** Sums of the 2 x 2 squares of a grid `width` by `height`: floor(width / 2) by floor(height / 2) of them. */
+function quads(data: Uint8Array | Uint16Array, width: number, height: number): Uint16Array {
+  const across = Math.floor(width / 2)
+  const down = Math.floor(height / 2)
+  const out = new Uint16Array(across * down)
+  for (let y = 0; y < down; y++) {
+    const upper = 2 * y * width
+    const lower = upper + width
+    const row = y * across
+    for (let x = 0; x < across; x++) out[row + x] = data[upper + 2 * x]! + data[upper + 2 * x + 1]! + data[lower + 2 * x]! + data[lower + 2 * x + 1]!
+  }
+  return out
+}
+
+/**
+ * shrink() for the factors 2, 4 and 8, from one pass over the picture: the
+ * 2 x 2 sums, then sums of those, each made when first asked for. A square
+ * of 4 is four squares of 2 and holds the same pixels, so the sums, and the
+ * pictures, are the ones shrink() gives.
+ */
+export function reductions(image: Luminance): (f: 2 | 4 | 8) => Luminance {
+  const sums: (Uint16Array | undefined)[] = []
+  const level = (n: number): Uint16Array => {
+    let s = sums[n]
+    if (s === undefined) {
+      const f = 1 << n
+      s = n === 0 ? quads(image.data, image.width, image.height) : quads(level(n - 1), Math.floor(image.width / f), Math.floor(image.height / f))
+      sums[n] = s
+    }
+    return s
+  }
+  return (f) => {
+    const n = f === 2 ? 0 : f === 4 ? 1 : 2
+    const s = level(n)
+    const shift = 2 * (n + 1)
+    const half = 1 << (shift - 1)
+    const out = new Uint8Array(s.length)
+    for (let i = 0; i < s.length; i++) out[i] = (s[i]! + half) >> shift
+    return { data: out, width: Math.floor(image.width / f), height: Math.floor(image.height / f) }
+  }
 }

@@ -22,6 +22,11 @@ internal class Placement(
     val bottomLeft: Point,
     val alignment: Point?,
     val size: Int,
+    /**
+     * The nine numbers of the projective map [at] applies to (x + 0.5, y + 0.5),
+     * row by row, when it is that map and nothing more.
+     */
+    val matrix: DoubleArray?,
     /** Picture coordinates of module point (x, y), which may fall between centres: (0, 0) is module (0, 0)'s centre. */
     val at: (Double, Double) -> Point,
 ) {
@@ -50,6 +55,37 @@ internal class Work {
 
 /** Mirrors the sign of a JavaScript comparator result: NaN and zero both mean "equal". */
 private fun sign(d: Double): Int = if (d < 0) -1 else if (d > 0) 1 else 0
+
+/**
+ * Where each row of a black-and-white picture changes colour: for row y,
+ * every x from 1 up at which the pixel differs from the one before it, in
+ * order. Each row is worked out when first asked for and kept. A picture and
+ * its inverse change colour at the same places, so they share one of these.
+ */
+internal class Edges(private val image: BitImage) {
+    private val rows = arrayOfNulls<IntArray>(image.height)
+    private val scratch = IntArray(image.width)
+
+    fun row(y: Int): IntArray {
+        var edges = rows[y]
+        if (edges == null) {
+            val data = image.data
+            val start = y * image.width
+            var n = 0
+            var ink = data[start]
+            for (x in 1 until image.width) {
+                val v = data[start + x]
+                if (v != ink) {
+                    scratch[n++] = x
+                    ink = v
+                }
+            }
+            edges = scratch.copyOf(n)
+            rows[y] = edges
+        }
+        return edges
+    }
+}
 
 private fun dark(image: BitImage, x: Int, y: Int): Boolean {
     val i = y * image.width + x
@@ -179,7 +215,7 @@ private fun runs(
  * is how far a run may stray from its share, in modules; a blurred light
  * ring needs more than the default half module.
  */
-internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? = null): List<Finder> {
+internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? = null, edges: Edges = Edges(image)): List<Finder> {
     val width = image.width
     val height = image.height
     val found = ArrayList<Finder>()
@@ -242,33 +278,43 @@ internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? =
     }
 
     val skip = max(1, min(3, height / 200))
+    val counts = intArrayOf(0, 0, 0, 0, 0)
     var y = skip - 1
     while (y < height) {
-        val counts = intArrayOf(0, 0, 0, 0, 0)
+        // Run by run, as a walk along the row pixel by pixel would count them:
+        // dark runs into the even places, light runs into the odd ones.
+        counts.fill(0)
         var state = 0
-        val row = y * width
-        for (x in 0 until width) {
-            if (image.data[row + x].toInt() == 1) {
+        val changes = edges.row(y)
+        var ink = image.data[y * width].toInt() == 1
+        var x = 0
+        for (k in 0..changes.size) {
+            val end = if (k < changes.size) changes[k] else width
+            val length = end - x
+            if (ink) {
                 if (state and 1 != 0) state++
-                counts[state]++
-            } else if (state and 1 != 0) {
-                counts[state]++
-            } else if (state == 4) {
-                if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-                    counts.fill(0)
-                    state = 0
-                } else {
-                    counts[0] = counts[2]
-                    counts[1] = counts[3]
-                    counts[2] = counts[4]
-                    counts[3] = 1
-                    counts[4] = 0
-                    state = 3
+                counts[state] += length
+            } else if (state != 4) {
+                state++
+                counts[state] += length
+            } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
+                // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
+                counts.fill(0)
+                state = 0
+                if (length > 1) {
+                    state = 1
+                    counts[1] = length - 1
                 }
             } else {
-                state++
-                counts[state]++
+                counts[0] = counts[2]
+                counts[1] = counts[3]
+                counts[2] = counts[4]
+                counts[3] = length
+                counts[4] = 0
+                state = 3
             }
+            x = end
+            ink = !ink
         }
         if (state == 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
         y += skip
@@ -410,7 +456,7 @@ private class Candidate(var x: Double, var y: Double, var count: Int)
  * [wide] pixels along a row and [tall] down a column. Candidates seen on two
  * or more rows come first, then nearest the estimate.
  */
-private fun findAlignments(image: BitImage, estimate: Point, wide: Double, tall: Double, reach: Int, work: Work?): List<Point> {
+private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: Double, tall: Double, reach: Int, work: Work?): List<Point> {
     val moduleSize = max(wide, tall)
     val radius = ceil(reach * moduleSize).toInt()
     val left = max(0, floor(estimate.x - radius).toInt())
@@ -419,68 +465,75 @@ private fun findAlignments(image: BitImage, estimate: Point, wide: Double, tall:
     val bottom = min(image.height - 1, ceil(estimate.y + radius).toInt())
     if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return emptyList()
     if (work != null) work.scanned += (right - left + 1).toLong() * (bottom - top + 1)
-    fun fits(n: Double) = abs(n - wide) < wide * 0.6
-    fun fitsDown(n: Double) = abs(n - tall) < tall * 0.6
+    val data = image.data
+    val width = image.width
+    val slack = wide * 0.6
+    val slackDown = tall * 0.6
     fun vertical(x: Int, y: Int): Double {
         // Light, dark, light runs through (x, y) going up and down from the dark centre.
         var up = y
-        while (up >= top && dark(image, x, up)) up--
+        while (up >= top && data[up * width + x].toInt() == 1) up--
         var down = y
-        while (down <= bottom && dark(image, x, down)) down++
+        while (down <= bottom && data[down * width + x].toInt() == 1) down++
         val middle = down - up - 1
-        if (!fitsDown(middle.toDouble())) return Double.NaN
+        if (!(abs(middle - tall) < slackDown)) return Double.NaN
         var above = 0
         var yy = up
-        while (yy >= top && !dark(image, x, yy)) {
+        while (yy >= top && data[yy * width + x].toInt() != 1) {
             above++
             yy--
         }
         var below = 0
         yy = down
-        while (yy <= bottom && !dark(image, x, yy)) {
+        while (yy <= bottom && data[yy * width + x].toInt() != 1) {
             below++
             yy++
         }
-        if (!fitsDown(above.toDouble()) || !fitsDown(below.toDouble())) return Double.NaN
+        if (!(abs(above - tall) < slackDown) || !(abs(below - tall) < slackDown)) return Double.NaN
         return (up + 1 + down) / 2.0
     }
     val found = ArrayList<Candidate>()
     for (y in top..bottom) {
-        val runs = ArrayList<Int>()
+        val changes = edges.row(y)
+        val n = changes.size
+        // The first change of colour past the window's left edge.
+        var k = 0
+        var high = n
+        while (k < high) {
+            val middle = (k + high) shr 1
+            if (changes[middle] <= left) k = middle + 1 else high = middle
+        }
         var x = left
-        while (x <= right && dark(image, x, y)) x++ // skip a dark run cut by the window
+        // Skip a dark run cut by the window.
+        if (data[y * width + left].toInt() == 1) x = if (k < n && changes[k] <= right) changes[k++] else right + 1
+        // Runs alternate light, dark, light ...: the last two are kept, and the
+        // run that ends a light, dark, light three is checked with them.
         var start = x
-        var current = false
-        while (x <= right + 1) {
-            val d = x <= right && dark(image, x, y)
-            if (x <= right && d == current) {
-                x++
-                continue
-            }
-            runs.add(x - start)
+        var count = 0
+        var before = 0
+        var last = 0
+        while (true) {
+            x = if (k < n && changes[k] <= right) changes[k++] else right + 1
+            val run = x - start
             start = x
-            current = d
-            // runs alternate light, dark, light ... ; check the last three when they end in light
-            if (runs.size >= 3 && runs.size % 2 == 1) {
-                val l1 = runs[runs.size - 3]
-                val d1 = runs[runs.size - 2]
-                val l2 = runs[runs.size - 1]
-                if (fits(l1.toDouble()) && fits(d1.toDouble()) && fits(l2.toDouble())) {
-                    val cx = x - l2 - d1 / 2.0
-                    val cy = vertical(floor(cx).toInt(), y)
-                    if (!cy.isNaN()) {
-                        val same = found.firstOrNull { abs(it.x - cx) <= moduleSize && abs(it.y - cy) <= moduleSize }
-                        if (same != null) {
-                            same.x = (same.x * same.count + cx) / (same.count + 1)
-                            same.y = (same.y * same.count + cy) / (same.count + 1)
-                            same.count++
-                        } else {
-                            found.add(Candidate(cx, cy, 1))
-                        }
+            count++
+            if (count >= 3 && count and 1 == 1 && abs(before - wide) < slack && abs(last - wide) < slack && abs(run - wide) < slack) {
+                val cx = x - run - last / 2.0
+                val cy = vertical(floor(cx).toInt(), y)
+                if (!cy.isNaN()) {
+                    val same = found.firstOrNull { abs(it.x - cx) <= moduleSize && abs(it.y - cy) <= moduleSize }
+                    if (same != null) {
+                        same.x = (same.x * same.count + cx) / (same.count + 1)
+                        same.y = (same.y * same.count + cy) / (same.count + 1)
+                        same.count++
+                    } else {
+                        found.add(Candidate(cx, cy, 1))
                     }
                 }
             }
-            x++
+            if (x > right) break
+            before = last
+            last = run
         }
     }
     // A candidate seen on one row only counts as three modules further away.
@@ -525,12 +578,16 @@ private fun multiply(m: DoubleArray, n: DoubleArray): DoubleArray {
     return out
 }
 
-/** The map taking four module-space points to four picture points. */
-private fun quadToQuad(from: List<Point>, to: List<Point>): (Double, Double) -> Point {
+/** The matrix of the map taking four module-space points to four picture points. */
+private fun quadMatrix(from: List<Point>, to: List<Point>): DoubleArray {
     val toPicture = squareToQuad(to[0], to[1], to[2], to[3])
     val fromModules = adjoint(squareToQuad(from[0], from[1], from[2], from[3]))
     // Column-vector convention: picture = toPicture . fromModules^-1 . module.
-    val m = multiply(toPicture, fromModules)
+    return multiply(toPicture, fromModules)
+}
+
+/** The map of a matrix [quadMatrix] gives. */
+private fun projective(m: DoubleArray): (Double, Double) -> Point {
     return { x, y ->
         val w = m[6] * x + m[7] * y + m[8]
         Point((m[0] * x + m[1] * y + m[2]) / w, (m[3] * x + m[4] * y + m[5]) / w)
@@ -587,7 +644,7 @@ private fun sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossS
  * pattern (when the version has one), then one through the fourth corner.
  * [sizeHint] overrides the estimated module count.
  */
-internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null, work: Work? = null): List<Placement> {
+internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null, work: Work? = null, edges: Edges = Edges(image)): List<Placement> {
     val topLeft = triple[0].point()
     val topRight = triple[1].point()
     val bottomLeft = triple[2].point()
@@ -660,7 +717,7 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
         val scored = ArrayList<Scored>()
         for (reach in intArrayOf(4, 8, 16)) {
             for (estimate in estimates) {
-                for (p in findAlignments(image, estimate, wide, tall, reach, work)) {
+                for (p in findAlignments(image, edges, estimate, wide, tall, reach, work)) {
                     if (scored.any { distance(it.p, p) <= moduleSize / 2 }) continue
                     val score = max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
                     scored.add(Scored(p, score, near(p)))
@@ -680,7 +737,7 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
     val far = size - 3.5
     val finalSize = size
     fun map(alignment: Point?, fourth: Point): Placement {
-        val project = quadToQuad(
+        val matrix = quadMatrix(
             listOf(
                 Point(3.5, 3.5),
                 Point(far, 3.5),
@@ -689,7 +746,8 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
             ),
             listOf(topLeft, topRight, alignment ?: fourth, bottomLeft),
         )
-        return Placement(topLeft, topRight, bottomLeft, alignment, finalSize) { x, y -> project(x + 0.5, y + 0.5) }
+        val project = projective(matrix)
+        return Placement(topLeft, topRight, bottomLeft, alignment, finalSize, matrix) { x, y -> project(x + 0.5, y + 0.5) }
     }
     return alignments.map { map(it, corner) } + corners.map { map(null, it) }
 }

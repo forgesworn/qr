@@ -1,5 +1,5 @@
-import { binarise, invert, shrink, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
-import { estimateSize, finderTriples, findFinders, locate, type Finder, type Location, type Point, type Work } from './locate.js'
+import { binarise, invert, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
+import { edgesOf, estimateSize, finderTriples, findFinders, locate, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
 
@@ -82,12 +82,13 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (found) return found
   // Nothing read at full size: the picture shrunk, coarse to fine, for codes
   // whose modules are large or carry texture or scan lines (decoder step 9).
+  const shrunk = reductions(luminance)
   for (const f of REDUCTIONS) {
     if (Math.floor(width / f) < MIN_REDUCED || Math.floor(height / f) < MIN_REDUCED) continue
     // With no maps left no size can read, nor keep a candidate for a second look.
     if (budget.maps === 0) break
     budget.here = REDUCED_MAPS
-    const reduced = look(shrink(luminance, f), inversion, f, budget, work)
+    const reduced = look(shrunk(f), inversion, f, budget, work)
     if (reduced) return reduced
   }
   return undefined
@@ -116,20 +117,22 @@ interface Budget {
  * given in full-picture coordinates.
  */
 function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work): DecodeResult | undefined {
-  const bits = binarise(luminance)
+  const levels = thresholds(luminance)
+  const bits = binarise(luminance, levels)
   const strict = f > 1
   const candidates: Candidate[] = []
+  // The inverse changes colour where the picture does, so one set of edges serves both.
+  const edges = edgesOf(bits)
   if (inversion !== 'inverted') {
-    const found = search(bits, false, candidates, budget, strict, f, work)
+    const found = search(bits, edges, false, candidates, budget, strict, f, work)
     if (found) return found
   }
   if (inversion !== 'normal') {
-    const found = search(invert(bits), true, candidates, budget, strict, f, work)
+    const found = search(invert(bits), edges, true, candidates, budget, strict, f, work)
     if (found) return found
   }
   // Nothing read: look again at the few maps whose format copies agreed.
   if (candidates.length === 0 || budget.second === 0) return undefined
-  const levels = thresholds(luminance)
   for (const candidate of candidates) {
     if (budget.second === 0) break
     budget.second--
@@ -164,6 +167,7 @@ function where(location: Location, f: number): DecodeResult['location'] {
 
 function search(
   image: BitImage,
+  edges: Edges,
   inverted: boolean,
   candidates: Candidate[],
   budget: Budget,
@@ -173,16 +177,16 @@ function search(
 ): DecodeResult | undefined {
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
-    const triples = finderTriples(image, findFinders(image, tolerance, work)).slice(0, MAX_TRIPLES)
+    const triples = finderTriples(image, findFinders(image, tolerance, work, edges)).slice(0, MAX_TRIPLES)
     for (const triple of triples) {
-      const first = locate(image, triple, undefined, work)
+      const first = locate(image, triple, undefined, work, edges)
       // An estimate past version 40 by no more than the retries reach still
       // tries the sizes of 177 or less among them.
       const size = first.length > 0 ? first[0]!.size : over(image, triple)
       if (size === undefined) continue
       // The size estimate can be a version out; try the neighbours too.
       for (const delta of [0, -4, 4, -8, 8]) {
-        for (const location of delta === 0 ? first : locate(image, triple, size + delta, work)) {
+        for (const location of delta === 0 ? first : locate(image, triple, size + delta, work, edges)) {
           if (budget.maps === 0 || budget.here === 0) return undefined
           budget.maps--
           budget.here--
@@ -213,14 +217,30 @@ function read(
   strict: boolean,
   f: number,
 ): DecodeResult | undefined {
-  const { size, project } = location
+  const { size, project, matrix } = location
   const modules = new Uint8Array(size * size)
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const p = project(x, y)
-      const px = Math.floor(p.x)
-      const py = Math.floor(p.y)
-      if (px >= 0 && py >= 0 && px < image.width && py < image.height) modules[y * size + x] = image.data[py * image.width + px]!
+  if (matrix) {
+    // project(x, y), written out so that no point is made for each module.
+    const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = matrix as [number, number, number, number, number, number, number, number, number]
+    const { data, width, height } = image
+    for (let y = 0; y < size; y++) {
+      const v = y + 0.5
+      for (let x = 0; x < size; x++) {
+        const u = x + 0.5
+        const w = m6 * u + m7 * v + m8
+        const px = Math.floor((m0 * u + m1 * v + m2) / w)
+        const py = Math.floor((m3 * u + m4 * v + m5) / w)
+        if (px >= 0 && py >= 0 && px < width && py < height) modules[y * size + x] = data[py * width + px]!
+      }
+    }
+  } else {
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const p = project(x, y)
+        const px = Math.floor(p.x)
+        const py = Math.floor(p.y)
+        if (px >= 0 && py >= 0 && px < image.width && py < image.height) modules[y * size + x] = image.data[py * image.width + px]!
+      }
     }
   }
   const straightRead: ModuleReader = (x, y) => modules[y * size + x] === 1

@@ -371,7 +371,7 @@ private fun mesh(location: Placement, probe: Probe, work: Work?): Placement? {
         val dy = (1 - t) * ((1 - s) * oy[o] + s * oy[o + 1]) + t * ((1 - s) * oy[o + n] + s * oy[o + n + 1])
         location.at(x + dx, y + dy)
     }
-    return Placement(location.topLeft, location.topRight, location.bottomLeft, location.alignment, size, bent)
+    return Placement(location.topLeft, location.topRight, location.bottomLeft, location.alignment, size, null, bent)
 }
 
 /**

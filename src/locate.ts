@@ -19,6 +19,11 @@ export interface Location {
   readonly size: number
   /** Picture coordinates of the centre of module (x, y). */
   readonly project: (x: number, y: number) => Point
+  /**
+   * The nine numbers of the projective map `project` applies to
+   * (x + 0.5, y + 0.5), row by row, when it is that map and nothing more.
+   */
+  readonly matrix?: readonly number[] | undefined
 }
 
 /**
@@ -41,6 +46,42 @@ export interface Work {
 }
 
 const NONE: readonly number[] = []
+
+/**
+ * Where each row of a black-and-white picture changes colour: for row y,
+ * every x from 1 up at which the pixel differs from the one before it, in
+ * order. Each row is worked out when first asked for and kept. A picture and
+ * its inverse change colour at the same places, so they share one of these.
+ */
+export interface Edges {
+  readonly row: (y: number) => Int32Array
+}
+
+export function edgesOf(image: BitImage): Edges {
+  const { data, width, height } = image
+  const rows: (Int32Array | undefined)[] = new Array<Int32Array | undefined>(height)
+  const scratch = new Int32Array(width)
+  return {
+    row: (y) => {
+      let edges = rows[y]
+      if (edges === undefined) {
+        const start = y * width
+        let n = 0
+        let ink = data[start]!
+        for (let x = 1; x < width; x++) {
+          const v = data[start + x]!
+          if (v !== ink) {
+            scratch[n++] = x
+            ink = v
+          }
+        }
+        edges = scratch.slice(0, n)
+        rows[y] = edges
+      }
+      return edges
+    },
+  }
+}
 
 const dark = (image: BitImage, x: number, y: number): boolean => image.data[y * image.width + x] === 1
 
@@ -170,7 +211,7 @@ function runs(
  * is how far a run may stray from its share, in modules; a blurred light
  * ring needs more than the default half module.
  */
-export function findFinders(image: BitImage, tolerance = 0.5, work?: Work): Finder[] {
+export function findFinders(image: BitImage, tolerance = 0.5, work?: Work, edges: Edges = edgesOf(image)): Finder[] {
   const { width, height } = image
   const found: { x: number; y: number; moduleSize: number; count: number }[] = []
   // Candidates filed by 16-pixel cell, so merging compares only nearby ones
@@ -238,32 +279,42 @@ export function findFinders(image: BitImage, tolerance = 0.5, work?: Work): Find
 
   const data = image.data
   const skip = Math.max(1, Math.min(3, Math.floor(height / 200)))
+  const counts = [0, 0, 0, 0, 0]
   for (let y = skip - 1; y < height; y += skip) {
-    const counts = [0, 0, 0, 0, 0]
+    // Run by run, as a walk along the row pixel by pixel would count them:
+    // dark runs into the even places, light runs into the odd ones.
+    counts.fill(0)
     let state = 0
-    const row = y * width
-    for (let x = 0; x < width; x++) {
-      if (data[row + x] === 1) {
+    const changes = edges.row(y)
+    let ink = data[y * width] === 1
+    let x = 0
+    for (let k = 0; k <= changes.length; k++) {
+      const end = k < changes.length ? changes[k]! : width
+      const length = end - x
+      if (ink) {
         if (state & 1) state++
-        counts[state]!++
-      } else if (state & 1) {
-        counts[state]!++
-      } else if (state === 4) {
-        if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-          counts.fill(0)
-          state = 0
-        } else {
-          counts[0] = counts[2]!
-          counts[1] = counts[3]!
-          counts[2] = counts[4]!
-          counts[3] = 1
-          counts[4] = 0
-          state = 3
+        counts[state]! += length
+      } else if (state !== 4) {
+        state++
+        counts[state]! += length
+      } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
+        // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
+        counts.fill(0)
+        state = 0
+        if (length > 1) {
+          state = 1
+          counts[1] = length - 1
         }
       } else {
-        state++
-        counts[state]!++
+        counts[0] = counts[2]!
+        counts[1] = counts[3]!
+        counts[2] = counts[4]!
+        counts[3] = length
+        counts[4] = 0
+        state = 3
       }
+      x = end
+      ink = !ink
     }
     if (state === 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
   }
@@ -389,7 +440,7 @@ function blackWhiteBlack(image: BitImage, from: Point, to: Point): number {
  * `wide` pixels along a row and `tall` down a column. Candidates seen on two
  * or more rows come first, then nearest the estimate.
  */
-function findAlignments(image: BitImage, estimate: Point, wide: number, tall: number, reach: number, work?: Work): Point[] {
+function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: number, tall: number, reach: number, work?: Work): Point[] {
   const moduleSize = Math.max(wide, tall)
   const radius = Math.ceil(reach * moduleSize)
   const left = Math.max(0, Math.floor(estimate.x - radius))
@@ -398,54 +449,66 @@ function findAlignments(image: BitImage, estimate: Point, wide: number, tall: nu
   const bottom = Math.min(image.height - 1, Math.ceil(estimate.y + radius))
   if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return []
   if (work) work.scanned += (right - left + 1) * (bottom - top + 1)
-  const fits = (n: number) => Math.abs(n - wide) < wide * 0.6
-  const fitsDown = (n: number) => Math.abs(n - tall) < tall * 0.6
+  const data = image.data
+  const width = image.width
+  const slack = wide * 0.6
+  const slackDown = tall * 0.6
   const vertical = (x: number, y: number): number => {
     // Light, dark, light runs through (x, y) going up and down from the dark centre.
     let up = y
-    while (up >= top && dark(image, x, up)) up--
+    while (up >= top && data[up * width + x] === 1) up--
     let down = y
-    while (down <= bottom && dark(image, x, down)) down++
+    while (down <= bottom && data[down * width + x] === 1) down++
     const middle = down - up - 1
-    if (!fitsDown(middle)) return NaN
+    if (!(Math.abs(middle - tall) < slackDown)) return NaN
     let above = 0
-    for (let yy = up; yy >= top && !dark(image, x, yy); yy--) above++
+    for (let yy = up; yy >= top && data[yy * width + x] !== 1; yy--) above++
     let below = 0
-    for (let yy = down; yy <= bottom && !dark(image, x, yy); yy++) below++
-    if (!fitsDown(above) || !fitsDown(below)) return NaN
+    for (let yy = down; yy <= bottom && data[yy * width + x] !== 1; yy++) below++
+    if (!(Math.abs(above - tall) < slackDown) || !(Math.abs(below - tall) < slackDown)) return NaN
     return (up + 1 + down) / 2
   }
   const found: { x: number; y: number; count: number }[] = []
   for (let y = top; y <= bottom; y++) {
-    const runs: number[] = []
+    const changes = edges.row(y)
+    const n = changes.length
+    // The first change of colour past the window's left edge.
+    let k = 0
+    for (let high = n; k < high; ) {
+      const middle = (k + high) >> 1
+      if (changes[middle]! <= left) k = middle + 1
+      else high = middle
+    }
     let x = left
-    while (x <= right && dark(image, x, y)) x++ // skip a dark run cut by the window
+    if (data[y * width + left] === 1) x = k < n && changes[k]! <= right ? changes[k++]! : right + 1 // skip a dark run cut by the window
+    // Runs alternate light, dark, light ...: the last two are kept, and the
+    // run that ends a light, dark, light three is checked with them.
     let start = x
-    let current = false
-    for (; x <= right + 1; x++) {
-      const d = x <= right && dark(image, x, y)
-      if (x <= right && d === current) continue
-      runs.push(x - start)
+    let count = 0
+    let before = 0
+    let last = 0
+    for (;;) {
+      x = k < n && changes[k]! <= right ? changes[k++]! : right + 1
+      const run = x - start
       start = x
-      current = d
-      // runs alternate light, dark, light ... ; check the last three when they end in light
-      if (runs.length >= 3 && runs.length % 2 === 1) {
-        const [l1, d1, l2] = runs.slice(-3) as [number, number, number]
-        if (fits(l1) && fits(d1) && fits(l2)) {
-          const cx = x - l2 - d1 / 2
-          const cy = vertical(Math.floor(cx), y)
-          if (!Number.isNaN(cy)) {
-            const same = found.find((f) => Math.abs(f.x - cx) <= moduleSize && Math.abs(f.y - cy) <= moduleSize)
-            if (same) {
-              same.x = (same.x * same.count + cx) / (same.count + 1)
-              same.y = (same.y * same.count + cy) / (same.count + 1)
-              same.count++
-            } else {
-              found.push({ x: cx, y: cy, count: 1 })
-            }
+      count++
+      if (count >= 3 && (count & 1) === 1 && Math.abs(before - wide) < slack && Math.abs(last - wide) < slack && Math.abs(run - wide) < slack) {
+        const cx = x - run - last / 2
+        const cy = vertical(Math.floor(cx), y)
+        if (!Number.isNaN(cy)) {
+          const same = found.find((f) => Math.abs(f.x - cx) <= moduleSize && Math.abs(f.y - cy) <= moduleSize)
+          if (same) {
+            same.x = (same.x * same.count + cx) / (same.count + 1)
+            same.y = (same.y * same.count + cy) / (same.count + 1)
+            same.count++
+          } else {
+            found.push({ x: cx, y: cy, count: 1 })
           }
         }
       }
+      if (x > right) break
+      before = last
+      last = run
     }
   }
   // A candidate seen on one row only counts as three modules further away.
@@ -487,12 +550,16 @@ function multiply(m: readonly number[], n: readonly number[]): number[] {
   return out
 }
 
-/** The map taking four module-space points to four picture points. */
-function quadToQuad(from: readonly Point[], to: readonly Point[]): (x: number, y: number) => Point {
+/** The matrix of the map taking four module-space points to four picture points. */
+function quadMatrix(from: readonly Point[], to: readonly Point[]): number[] {
   const toPicture = squareToQuad(to[0]!, to[1]!, to[2]!, to[3]!)
   const fromModules = adjoint(squareToQuad(from[0]!, from[1]!, from[2]!, from[3]!))
   // Column-vector convention: picture = toPicture · fromModules⁻¹ · module.
-  const m = multiply(toPicture, fromModules)
+  return multiply(toPicture, fromModules)
+}
+
+/** The map of a matrix quadMatrix() gives. */
+function projective(m: readonly number[]): (x: number, y: number) => Point {
   return (x, y) => {
     const w = m[6]! * x + m[7]! * y + m[8]!
     return { x: (m[0]! * x + m[1]! * y + m[2]!) / w, y: (m[3]! * x + m[4]! * y + m[5]!) / w }
@@ -547,7 +614,7 @@ function sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossSize
  * pattern (when the version has one), then one through the fourth corner.
  * `sizeHint` overrides the estimated module count.
  */
-export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, work?: Work): Location[] {
+export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, work?: Work, edges: Edges = edgesOf(image)): Location[] {
   const [topLeft, topRight, bottomLeft] = triple
   const acrossSize = runModuleSize(image, topLeft, topRight)
   const downSize = runModuleSize(image, topLeft, bottomLeft)
@@ -606,7 +673,7 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
     const scored: { p: Point; score: number; away: number }[] = []
     for (const reach of [4, 8, 16]) {
       for (const estimate of estimates) {
-        for (const p of findAlignments(image, estimate, wide, tall, reach, work)) {
+        for (const p of findAlignments(image, edges, estimate, wide, tall, reach, work)) {
           if (scored.some((a) => distance(a.p, p) <= moduleSize / 2)) continue
           const score = Math.max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
           scored.push({ p, score, away: near(p) })
@@ -622,11 +689,12 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
   }
   const far = size - 3.5
   const map = (alignment: Point | undefined, corner: Point): Location => {
-    const project = quadToQuad(
+    const matrix = quadMatrix(
       [{ x: 3.5, y: 3.5 }, { x: far, y: 3.5 }, alignment ? { x: size - 6.5, y: size - 6.5 } : { x: far, y: far }, { x: 3.5, y: far }],
       [topLeft, topRight, alignment ?? corner, bottomLeft],
     )
-    return { topLeft, topRight, bottomLeft, alignment, size, project: (x, y) => project(x + 0.5, y + 0.5) }
+    const project = projective(matrix)
+    return { topLeft, topRight, bottomLeft, alignment, size, project: (x, y) => project(x + 0.5, y + 0.5), matrix }
   }
   return [...alignments.map((a) => map(a, corner)), ...corners.map((c) => map(undefined, c))]
 }

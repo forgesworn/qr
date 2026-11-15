@@ -47,6 +47,19 @@
   with no code in it now costs more on average. Two more photographs of the
   test set read, so the floor is 179.
 - The decoder reads hanzi segments (GB2312).
+- Decoding is faster with no change to what is read or to the work counted.
+  The row scans for finder and alignment patterns walk each row's changes
+  of colour, found once and shared by both polarities, and the three
+  reduced sizes come from one pass over the picture. Measured in Node on
+  one arm64 machine, on the photographs used in development (about 4
+  megapixels on average): the median frame that read took 6.7 ms against
+  10.6, the median frame that did not 11.3 ms against 28.2, and the totals
+  over the set, which the slowest frames dominate, fell to about 40% and
+  30%. A clean code that reads at the first try gains little, and a frame
+  of pure noise about a fifth. The Kotlin port's total was roughly half on
+  a desktop JVM. The rows' changes of colour are kept while a frame is
+  searched: up to 4 bytes a pixel more on a picture that is all fine
+  texture, and 6 to 10 MB more at the peak on 12-megapixel photographs.
 - The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given
   otherwise; input no version can hold is refused before anything is built

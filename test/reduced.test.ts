@@ -4,7 +4,7 @@
 // there must pass. The Kotlin port builds the same frames from the same
 // generator (ReducedTest.kt).
 import { describe, expect, it } from 'vitest'
-import { shrink } from '../src/binarise.js'
+import { reductions, shrink, type Luminance } from '../src/binarise.js'
 import { decodeCounted } from '../src/decode.js'
 import { encode, FORMAT_COORDS } from '../src/encode.js'
 import { type Work } from '../src/locate.js'
@@ -58,6 +58,19 @@ describe('reduced-size pass', () => {
     expect([...shrink(flat, 8).data]).toEqual([255])
     const half = { data: Uint8Array.from({ length: 64 }, (_, i) => (i < 32 ? 1 : 0)), width: 8, height: 8 }
     expect([...shrink(half, 8).data]).toEqual([1])
+  })
+
+  it('shrinks by 2, 4 and 8 from one pass to the same pictures', () => {
+    // Sides that leave every remainder, and some too small for a square of 8.
+    const random = prng(53)
+    for (const [width, height] of [[64, 64], [65, 71], [67, 62], [103, 9], [9, 103], [5, 3], [200, 131]] as const) {
+      const image: Luminance = { data: Uint8Array.from({ length: width * height }, () => Math.floor(random() * 256)), width, height }
+      const shrunk = reductions(image)
+      // Asked for in the decoder's order, coarse to fine, and then again.
+      for (const f of [8, 4, 2, 8, 2, 4] as const) expect(shrunk(f), `${width} x ${height} by ${f}`).toEqual(shrink(image, f))
+    }
+    const white: Luminance = { data: new Uint8Array(24 * 16).fill(255), width: 24, height: 16 }
+    expect(reductions(white)(8).data).toEqual(new Uint8Array(6).fill(255))
   })
 
   it('reads a close-up with scan lines only at reduced size, located in the full picture', () => {

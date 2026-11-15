@@ -135,13 +135,15 @@ internal fun thresholdAt(t: Thresholds, width: Int, height: Int, px: Int, py: In
     return t.values[by * t.across + bx]
 }
 
-/** Local-threshold binarisation ([thresholds]): 1 where a pixel is at or below its threshold. */
-internal fun binarise(image: Luminance): BitImage {
+/**
+ * Local-threshold binarisation: 1 where a pixel is at or below its threshold.
+ * [t] is the picture's [thresholds], for a caller that has them already.
+ */
+internal fun binarise(image: Luminance, t: Thresholds = thresholds(image)): BitImage {
     val data = image.data
     val width = image.width
     val height = image.height
     val out = ByteArray(width * height)
-    val t = thresholds(image)
     if (width < 40 || height < 40) {
         val threshold = t.values[0]
         for (i in data.indices) out[i] = if (data[i] <= threshold) 1 else 0
@@ -192,4 +194,49 @@ internal fun shrink(image: Luminance, f: Int): Luminance {
         for (x in 0 until width) out[y * width + x] = (sums[x] + half) / area
     }
     return Luminance(out, width, height)
+}
+
+/** Sums of the 2 x 2 squares of a grid [width] by [height]: width / 2 by height / 2 of them. */
+private fun quads(data: IntArray, width: Int, height: Int): IntArray {
+    val across = width / 2
+    val down = height / 2
+    val out = IntArray(across * down)
+    for (y in 0 until down) {
+        val upper = 2 * y * width
+        val lower = upper + width
+        val row = y * across
+        for (x in 0 until across) out[row + x] = data[upper + 2 * x] + data[upper + 2 * x + 1] + data[lower + 2 * x] + data[lower + 2 * x + 1]
+    }
+    return out
+}
+
+/**
+ * [shrink] for the factors 2, 4 and 8, from one pass over the picture: the
+ * 2 x 2 sums, then sums of those, each made when first asked for. A square
+ * of 4 is four squares of 2 and holds the same pixels, so the sums, and the
+ * pictures, are the ones [shrink] gives.
+ */
+internal class Reductions(private val image: Luminance) {
+    private val sums = arrayOfNulls<IntArray>(3)
+
+    private fun level(n: Int): IntArray {
+        var s = sums[n]
+        if (s == null) {
+            val f = 1 shl n
+            s = if (n == 0) quads(image.data, image.width, image.height) else quads(level(n - 1), image.width / f, image.height / f)
+            sums[n] = s
+        }
+        return s
+    }
+
+    /** The picture shrunk by [f], which is 2, 4 or 8. */
+    fun by(f: Int): Luminance {
+        val n = if (f == 2) 0 else if (f == 4) 1 else 2
+        val s = level(n)
+        val shift = 2 * (n + 1)
+        val half = 1 shl (shift - 1)
+        val out = IntArray(s.size)
+        for (i in s.indices) out[i] = (s[i] + half) shr shift
+        return Luminance(out, image.width / f, image.height / f)
+    }
 }

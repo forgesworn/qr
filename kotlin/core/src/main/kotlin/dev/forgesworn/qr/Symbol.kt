@@ -63,6 +63,39 @@ private val FORMATS: List<FormatEntry> = EC_ORDER.flatMap { ecc ->
 }
 private val VERSIONS: List<VersionEntry> = (0 until 34).map { i -> VersionEntry(versionBits(i + 7), i + 7) }
 
+private val PLACEMENTS = java.util.concurrent.atomic.AtomicReferenceArray<IntArray>(41)
+
+/**
+ * The modules of a version that carry the bit stream, in the order the
+ * standard places it: two columns at a time from the right, snaking up and
+ * down, skipping the function patterns. Each is y * 256 + x. Worked out once
+ * a version and kept; two threads that both work one out keep equal arrays.
+ */
+private fun placement(version: Int): IntArray {
+    PLACEMENTS.get(version)?.let { return it }
+    val grid = Grid(version)
+    val size = 17 + 4 * version
+    val found = IntArray(size * size)
+    var n = 0
+    var upward = true
+    var right = size - 1
+    while (right >= 1) {
+        if (right == 6) right = 5
+        for (step in 0 until size) {
+            val y = if (upward) size - 1 - step else step
+            for (i in 0 until 2) {
+                val x = right - i
+                if (!grid.isReserved(x, y)) found[n++] = (y shl 8) or x
+            }
+        }
+        upward = !upward
+        right -= 2
+    }
+    val places = found.copyOf(n)
+    PLACEMENTS.set(version, places)
+    return places
+}
+
 private fun popcount(value: Int): Int {
     var n = value
     var c = 0
@@ -148,7 +181,6 @@ internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
     }
     val format = nearest(FORMATS, { it.bits }, intArrayOf(first, second)) ?: return null
 
-    val grid = Grid(version)
     val blocksInfo = blocksFor(version, format.ecc)
     val ecPerBlock = blocksInfo[0]
     val g1 = blocksInfo[1]
@@ -157,22 +189,12 @@ internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
     val blockCount = g1 + g2
     val total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
     val stream = IntArray(total)
-    var bit = 0
-    var upward = true
-    var right = size - 1
-    while (right >= 1 && bit < total * 8) {
-        if (right == 6) right = 5
-        for (step in 0 until size) {
-            val y = if (upward) size - 1 - step else step
-            for (i in 0 until 2) {
-                val x = right - i
-                if (grid.isReserved(x, y) || bit >= total * 8) continue
-                if (read.read(x, y) != maskBit(format.mask, x, y)) stream[bit ushr 3] = stream[bit ushr 3] or (0x80 ushr (bit and 7))
-                bit++
-            }
-        }
-        upward = !upward
-        right -= 2
+    val places = placement(version)
+    val bits = minOf(places.size, total * 8)
+    for (bit in 0 until bits) {
+        val x = places[bit] and 255
+        val y = places[bit] shr 8
+        if (read.read(x, y) != maskBit(format.mask, x, y)) stream[bit ushr 3] = stream[bit ushr 3] or (0x80 ushr (bit and 7))
     }
 
     val blocks = ArrayList<IntArray>()

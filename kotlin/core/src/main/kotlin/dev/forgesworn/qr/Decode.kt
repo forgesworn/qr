@@ -124,12 +124,13 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (found != null) return found
     // Nothing read at full size: the picture shrunk, coarse to fine, for codes
     // whose modules are large or carry texture or scan lines (decoder step 9).
+    val shrunk = Reductions(luminance)
     for (f in REDUCTIONS) {
         if (luminance.width / f < MIN_REDUCED || luminance.height / f < MIN_REDUCED) continue
         // With no maps left no size can read, nor keep a candidate for a second look.
         if (budget.maps == 0) break
         budget.here = REDUCED_MAPS
-        val reduced = look(shrink(luminance, f), inversion, f, budget, work)
+        val reduced = look(shrunk.by(f), inversion, f, budget, work)
         if (reduced != null) return reduced
     }
     return null
@@ -142,20 +143,22 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
  * given in full-picture coordinates.
  */
 private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?): DecodeResult? {
-    val bits = binarise(luminance)
+    val levels = thresholds(luminance)
+    val bits = binarise(luminance, levels)
+    // The inverse changes colour where the picture does, so one set of edges serves both.
+    val edges = Edges(bits)
     val strict = f > 1
     val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
     if (inversion != Inversion.INVERTED) {
-        val found = search(bits, false, candidates, budget, strict, f, work)
+        val found = search(bits, edges, false, candidates, budget, strict, f, work)
         if (found != null) return found
     }
     if (inversion != Inversion.NORMAL) {
-        val found = search(invert(bits), true, candidates, budget, strict, f, work)
+        val found = search(invert(bits), edges, true, candidates, budget, strict, f, work)
         if (found != null) return found
     }
     // Nothing read: look again at the few maps whose format copies agreed.
     if (candidates.isEmpty() || budget.second == 0) return null
-    val levels = thresholds(luminance)
     for (candidate in candidates) {
         if (budget.second == 0) break
         budget.second--
@@ -178,6 +181,7 @@ private fun where(location: Placement, f: Int): QrLocation {
 
 private fun search(
     image: BitImage,
+    edges: Edges,
     inverted: Boolean,
     candidates: MutableList<Retry>,
     budget: Budget,
@@ -187,15 +191,15 @@ private fun search(
 ): DecodeResult? {
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
-        val triples = finderTriples(image, findFinders(image, tolerance, work)).take(MAX_TRIPLES)
+        val triples = finderTriples(image, findFinders(image, tolerance, work, edges)).take(MAX_TRIPLES)
         for (triple in triples) {
-            val first = locate(image, triple, null, work)
+            val first = locate(image, triple, null, work, edges)
             // An estimate past version 40 by no more than the retries reach still
             // tries the sizes of 177 or less among them.
             val size = if (first.isNotEmpty()) first[0].size else over(image, triple) ?: continue
             // The size estimate can be a version out; try the neighbours too.
             for (delta in intArrayOf(0, -4, 4, -8, 8)) {
-                for (location in if (delta == 0) first else locate(image, triple, size + delta, work)) {
+                for (location in if (delta == 0) first else locate(image, triple, size + delta, work, edges)) {
                     if (budget.maps == 0 || budget.here == 0) return null
                     budget.maps--
                     budget.here--
@@ -228,11 +232,23 @@ private fun read(
 ): DecodeResult? {
     val size = location.size
     val modules = ByteArray(size * size)
+    val m = location.matrix
     for (y in 0 until size) {
         for (x in 0 until size) {
-            val p = location.project(x, y)
-            val px = floor(p.x)
-            val py = floor(p.y)
+            val px: Double
+            val py: Double
+            if (m != null) {
+                // project(x, y), written out so that no point is made for each module.
+                val u = x + 0.5
+                val v = y + 0.5
+                val w = m[6] * u + m[7] * v + m[8]
+                px = floor((m[0] * u + m[1] * v + m[2]) / w)
+                py = floor((m[3] * u + m[4] * v + m[5]) / w)
+            } else {
+                val p = location.project(x, y)
+                px = floor(p.x)
+                py = floor(p.y)
+            }
             if (px >= 0 && py >= 0 && px < image.width && py < image.height) {
                 modules[y * size + x] = image.data[py.toInt() * image.width + px.toInt()]
             }

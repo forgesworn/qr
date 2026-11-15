@@ -85,6 +85,38 @@ function nearest<T extends { bits: number }>(table: readonly T[], reads: readonl
   return best
 }
 
+const PLACEMENTS: (Uint16Array | undefined)[] = []
+
+/**
+ * The modules of a version that carry the bit stream, in the order the
+ * standard places it: two columns at a time from the right, snaking up and
+ * down, skipping the function patterns. Each is y * 256 + x. Worked out once
+ * a version and kept.
+ */
+function placement(version: number): Uint16Array {
+  let places = PLACEMENTS[version]
+  if (places === undefined) {
+    const grid = new Grid(version)
+    const size = grid.size
+    const found: number[] = []
+    let upward = true
+    for (let right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5
+      for (let step = 0; step < size; step++) {
+        const y = upward ? size - 1 - step : step
+        for (let i = 0; i < 2; i++) {
+          const x = right - i
+          if (!grid.isReserved(x, y)) found.push((y << 8) | x)
+        }
+      }
+      upward = !upward
+    }
+    places = Uint16Array.from(found)
+    PLACEMENTS[version] = places
+  }
+  return places
+}
+
 /**
  * The version a symbol of `size` modules declares: from the size below
  * version 7, else from its version blocks, or undefined when neither copy
@@ -136,25 +168,16 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
   const format = nearest(FORMATS, [first, second])
   if (format === undefined) return undefined
 
-  const grid = new Grid(version)
   const [ecPerBlock, g1, d1, g2] = blocksFor(version, format.ecc)
   const blockCount = g1 + g2
   const total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
   const stream = new Uint8Array(total)
-  let bit = 0
-  let upward = true
-  for (let right = size - 1; right >= 1 && bit < total * 8; right -= 2) {
-    if (right === 6) right = 5
-    for (let step = 0; step < size; step++) {
-      const y = upward ? size - 1 - step : step
-      for (let i = 0; i < 2; i++) {
-        const x = right - i
-        if (grid.isReserved(x, y) || bit >= total * 8) continue
-        if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
-        bit++
-      }
-    }
-    upward = !upward
+  const places = placement(version)
+  const bits = Math.min(places.length, total * 8)
+  for (let bit = 0; bit < bits; bit++) {
+    const x = places[bit]! & 255
+    const y = places[bit]! >> 8
+    if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
   }
 
   const blocks: Uint8Array[] = []

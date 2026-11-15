@@ -360,7 +360,7 @@ function mesh(location: Location, probe: Probe, work?: Work): Location | undefin
     const dy = (1 - t) * ((1 - s) * oy[o]! + s * oy[o + 1]!) + t * ((1 - s) * oy[o + n]! + s * oy[o + n + 1]!)
     return project(x + dx, y + dy)
   }
-  return { ...location, project: bent }
+  return { ...location, project: bent, matrix: undefined }
 }
 
 /**
