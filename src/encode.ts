@@ -84,7 +84,12 @@ interface Part {
 }
 
 /** Encodes text (as UTF-8 where byte mode is needed) or bytes as one QR code. */
-export function encode(data: string | Uint8Array, options: EncodeOptions = {}): QrCode {
+export function encode(data: string | Uint8Array, options: EncodeOptions | null = {}): QrCode {
+  if (typeof data !== 'string' && !isBytes(data)) {
+    throw new TypeError(`encode takes a string or a Uint8Array, not ${describe(data)}`)
+  }
+  // null means no options, as undefined does.
+  if (options === null) options = {}
   const ecc = options.ecc ?? 'M'
   if (!EC_ORDER.includes(ecc)) throw new RangeError(`Unknown error correction level: ${String(ecc)}`)
   const mask = options.mask
@@ -181,6 +186,19 @@ export function encode(data: string | Uint8Array, options: EncodeOptions = {}): 
   const segments = parts.map((p) => ({ mode: p.mode, count: p.data.length }))
   const mode = MODES[Math.max(...parts.map((p) => MODES.indexOf(p.mode)))]!
   return { version, ecc, mask: chosen, mode, segments, size: grid.size, modules }
+}
+
+/** A Uint8Array (a Buffer is one), also from another realm, where instanceof would say no. */
+function isBytes(value: unknown): value is Uint8Array {
+  return Object.prototype.toString.call(value) === '[object Uint8Array]'
+}
+
+/** A short name for a wrong argument, for error messages. */
+function describe(value: unknown): string {
+  if (value === null || value === undefined) return String(value)
+  if (Array.isArray(value)) return 'an array'
+  const name = typeof value === 'object' ? Object.prototype.toString.call(value).slice(8, -1) : typeof value
+  return `${/^[AEIOU]/.test(name) ? 'an' : 'a'} ${name}`
 }
 
 function validVersion(v: number): boolean {

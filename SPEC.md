@@ -11,6 +11,11 @@ Section numbers refer to ISO/IEC 18004:2015.
   U+FFFD. Byte segments carry the UTF-8 of their code points, so no
   segment boundary falls inside a character.
 - Bytes are encoded as given, always as one byte segment.
+- The data is a string or a byte array and nothing else; anything else is
+  an argument error (`TypeError`). `null` options mean no options, as
+  omitted options do. Level, mode, version, `minVersion` and mask outside
+  their ranges are argument errors (`RangeError`). Kotlin is typed and
+  checks the ranges alone.
 
 ## Mode
 
