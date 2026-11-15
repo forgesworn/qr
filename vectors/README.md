@@ -78,8 +78,10 @@ For each, in the order a port can build the decoder:
   `null`) as `[x, y]` in picture coordinates.
 - `work`: what the decoder counted on the way (SPEC.md, Bounded work):
   `steps`, `compared`, `scanned`, `maps`, `second`, `meshes`, `probed` and
-  `reduced`. A port that reaches the same result by a different amount of
-  work has not implemented the same search, and its bounds are unproven.
+  `reduced`. SPEC.md lets a port find codes another way; one that does can
+  use only `result` here. A port that follows the reference pipeline must
+  match every stage and count, and then the bounds on its work and the
+  evidence that it reads no wrong text carry over from the reference.
 
 Regenerate with `QR_WRITE_CONFORMANCE=1 npx vitest run
 test/conformance.test.ts`. A change to this file is a behaviour change: it

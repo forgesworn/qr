@@ -200,7 +200,12 @@ What the oracle backs, and what it does not:
 
 The decoder is not bound by the vectors in the same way: ports may find
 codes differently, but must return the same payload for any symbol they
-read. The TypeScript pipeline, for reference:
+read. A port that follows the pipeline below exactly can be held to
+`vectors/conformance.json` a stage at a time, results and work counts
+included, and the evidence gathered on this pipeline that it does not read
+wrong text then applies to it; the Kotlin port and the Rust front end do.
+The sections after the list give the detail that takes. The TypeScript
+pipeline:
 
 1. Luminance: RGBA to grey as `(77 R + 150 G + 29 B) >> 8`, with alpha
    blended onto white, so a code drawn on a transparent canvas reads.
@@ -266,6 +271,85 @@ read. The TypeScript pipeline, for reference:
    polarity. See below.
 9. Reduced size: only when the second look has found nothing too, the
    picture shrunk and searched again. See below.
+
+### Binarisation, exactly
+
+Step 2, as `vectors/conformance.json` checks it (`bits`).
+
+1. A picture under 40 pixels on either side has one threshold,
+   `(min + max) / 2` over all its pixels, and when `max - min` is under 24
+   no pixel is dark.
+2. Otherwise there are `ceil(width / 8)` by `ceil(height / 8)` blocks.
+   Block (bx, by) covers the 8 x 8 pixels from `min(8 bx, width - 8)`,
+   `min(8 by, height - 8)`, so the last block of a row or column overlaps
+   the one before it.
+3. Levels, taken block by block along each row, top row first. A block's
+   level is the mean of its 64 pixels. If its `max - min` is 24 or less it
+   is flat: its level is `min / 2`, and when it has a block above and a
+   block to its left, `around = (above + 2 left + above-left) / 4` from the
+   levels already taken, and the level is `around` if `min < around`.
+4. A block's threshold is the mean of the 25 levels of the 5 x 5 blocks
+   centred on (`bx` held to 2 .. across - 3, `by` held to 2 .. down - 3):
+   near an edge the window moves in, it is not cut. The 25 are summed a row
+   at a time, left to right, top row first, and divided by 25.
+5. A pixel is dark when it is at or below its block's threshold. Where
+   blocks overlap, the later block in the order of 3 decides.
+
+### Finder scan, exactly
+
+Step 3, as `vectors/conformance.json` checks it (`finders`), run once with
+tolerance 0.5 and once with 0.8 in each polarity.
+
+1. Rows `skip - 1`, `2 skip - 1`, ... are scanned, with
+   `skip = floor(height / 200)` held to 1 .. 3.
+2. Along a row, five counts hold the lengths of dark, light, dark, light,
+   dark runs. A dark run is added to the dark place in hand, moving on to
+   the next dark place if a light run was counted last. A light run is
+   added to the next light place, unless the fifth count is in hand: then
+   the five are tested (3 and 4) with `end` the x of that light run's first
+   pixel. If they pass, the counts are cleared and the light run less its
+   first pixel becomes the second count, with the first count zero; a light
+   run of one pixel leaves all five zero, and the next dark run is the
+   first count. If they fail, the third, fourth and fifth counts become the
+   first, second and third, and the light run the fourth. A row that ends
+   with the fifth count in hand is tested with `end = width`.
+3. Ratio test with a tolerance: all five counts non-zero and their total at
+   least 7; with `module = total / 7` and `slack = module * tolerance`, each
+   outer count is under `slack` from `module` and the centre count under
+   `3 slack` from `3 module`.
+4. A row sighting that passes the ratio test is checked three ways, each a
+   walk from a start pixel: back through the dark centre, then a light run
+   while it is no longer than `limit`, then a dark run likewise; then
+   forward from the pixel after the start through the rest of the centre, a
+   light run while it is shorter than `limit`, and a dark run likewise. The
+   walk fails if a light run leaves the picture, if a backward run exceeds
+   `limit` or a forward one reaches it, or if the centre passes
+   `2 total` (on the diagonal, `32 (limit + 1)`), where `total` is the row
+   sighting's. Its five counts must pass the ratio test, and the walk gives
+   the centre as `end - c4 - c3 - c2 / 2` from the start, `end` being the
+   steps forward to the first pixel past the last run. `steps` counts the
+   five counts of every walk, failed ones too.
+   - Down the column through (`floor(cx)`, y), where
+     `cx = end - c4 - c3 - c2 / 2` from the row and `limit` is the row's
+     centre count: fails if its total is `2 total` or more, or half of
+     `total` or less. It gives `cy`.
+   - Back across the row through (`floor(cx)`, `floor(cy)`), same limit:
+     fails if `5 |its total - total| >= 2 total`. It gives `cx` again, as
+     `floor(cx)` plus the walk's centre.
+   - Down the diagonal (1, 1) through (`floor(cx)`, `floor(cy)`), with
+     twice the limit and the tolerance plus 0.25; no test of its total.
+5. A sighting that passes has module size `total / 7`. It merges into the
+   earliest stored candidate within one of its module sizes in x and in y
+   whose module size is within 1, or within a quarter of the candidate's:
+   x, y and module size become running means, `(old * count + new) /
+   (count + 1)`, and the count goes up. Otherwise it is stored with count
+   1. Candidates are filed by where they now lie in 16-pixel cells, column
+   `min(floor(width / 16), floor(max(0, x) / 16))` and row
+   `floor(max(0, y) / 16)`, and only the cells the square of one module
+   size around the sighting touches are looked in; `compared` counts every
+   candidate looked at.
+6. The candidates are returned most-sighted first, equal counts in the
+   order first stored.
 
 ### Second look
 
