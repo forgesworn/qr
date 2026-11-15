@@ -10,9 +10,10 @@ import org.junit.Test
 
 /**
  * The reduced-size pass (SPEC.md, decoder step 9): the shrink's exact
- * arithmetic, and a close-up whose large modules carry scan lines and noise,
- * which reads only once the picture is shrunk. The same frame as
- * test/reduced.test.ts, from the same generator.
+ * arithmetic, a close-up whose large modules carry scan lines and noise,
+ * which reads only once the picture is shrunk, and the format gate a read
+ * there must pass. The same frames as test/reduced.test.ts, from the same
+ * generator.
  */
 class ReducedTest {
     private class Random(seed: Long) {
@@ -30,10 +31,17 @@ class ReducedTest {
     /**
      * The code at 24 px a module, four modules of quiet zone, a dark scan line
      * every third row across everything, and seeded noise of up to 12 either way.
-     * With [invert], light and dark change places, the scan lines too.
+     * With [invert], light and dark change places, the scan lines too. [damage]
+     * turns over that many modules of the format copy beside the top-left
+     * finder, and [lines] false leaves the scan lines out.
      */
-    private fun closeUp(invert: Boolean): ByteArray {
+    private fun closeUp(invert: Boolean, damage: Int = 0, lines: Boolean = true): ByteArray {
         val qr = encode(text, EncodeOptions(ecc = ErrorCorrection.M))
+        val modules = qr.modules.copyOf()
+        for (i in 0 until damage) {
+            val at = FORMAT_COORDS[i][1] * qr.size + FORMAT_COORDS[i][0]
+            modules[at] = (modules[at].toInt() xor 1).toByte()
+        }
         val side = (qr.size + 8) * module
         val data = ByteArray(side * side)
         val random = Random(7)
@@ -41,7 +49,7 @@ class ReducedTest {
             for (x in 0 until side) {
                 val mx = x / module - 4
                 val my = y / module - 4
-                val dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && qr.modules[my * qr.size + mx].toInt() == 1) || y % 3 == 0
+                val dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && modules[my * qr.size + mx].toInt() == 1) || (lines && y % 3 == 0)
                 val v = (if (dark != invert) 40 else 215) + floor((random.next() * 2 - 1) * 12).toInt()
                 data[y * side + x] = maxOf(0, minOf(255, v)).toByte()
             }
@@ -90,5 +98,23 @@ class ReducedTest {
         assertTrue(work.reduced > 0)
         assertNull(decode(closeUp(true), side, side, inversion = Inversion.NORMAL))
         assertNull(decode(closeUp(false), side, side, inversion = Inversion.INVERTED))
+    }
+
+    @Test
+    fun refusesAReadAtReducedSizeWhoseFormatCopiesDoNotBothAgree() {
+        // Two modules of one copy turned over: both copies lie within 2 bits of
+        // the format word, so the close-up reads as before.
+        val two = Work()
+        assertEquals(text, decodeCounted(closeUp(false, 2), side, side, two)?.text)
+        assertTrue(two.reduced > 0)
+        // Three: the other copy still gives the level and mask, and without scan
+        // lines the symbol reads at full size, where one copy is enough.
+        val plain = Work()
+        assertEquals(text, decodeCounted(closeUp(false, 3, false), side, side, plain)?.text)
+        assertEquals(0L, plain.reduced)
+        // With them it can only be read at reduced size, and is refused there.
+        val three = Work()
+        assertNull(decodeCounted(closeUp(false, 3), side, side, three))
+        assertTrue(three.reduced > 0)
     }
 }

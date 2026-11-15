@@ -1,11 +1,12 @@
 // The reduced-size pass (SPEC.md, decoder step 9): the shrink's exact
-// arithmetic, and a close-up whose large modules carry scan lines and noise,
-// which reads only once the picture is shrunk. The Kotlin port builds the same
-// frame from the same generator (ReducedTest.kt).
+// arithmetic, a close-up whose large modules carry scan lines and noise,
+// which reads only once the picture is shrunk, and the format gate a read
+// there must pass. The Kotlin port builds the same frames from the same
+// generator (ReducedTest.kt).
 import { describe, expect, it } from 'vitest'
 import { shrink } from '../src/binarise.js'
 import { decodeCounted } from '../src/decode.js'
-import { encode } from '../src/encode.js'
+import { encode, FORMAT_COORDS } from '../src/encode.js'
 import { type Work } from '../src/locate.js'
 import { prng } from './photo.js'
 
@@ -15,10 +16,17 @@ const MODULE = 24
 /**
  * The code at 24 px a module, four modules of quiet zone, a dark scan line
  * every third row across everything, and seeded noise of up to 12 either way.
- * With `invert`, light and dark change places, the scan lines too.
+ * With `invert`, light and dark change places, the scan lines too. `damage`
+ * turns over that many modules of the format copy beside the top-left finder,
+ * and `lines` false leaves the scan lines out.
  */
-function closeUp(invert: boolean): { data: Uint8Array; width: number; height: number } {
+function closeUp(invert: boolean, damage = 0, lines = true): { data: Uint8Array; width: number; height: number } {
   const qr = encode(TEXT, { ecc: 'M' })
+  const modules = Uint8Array.from(qr.modules)
+  for (let i = 0; i < damage; i++) {
+    const [x, y] = FORMAT_COORDS[i]!
+    modules[y * qr.size + x]! ^= 1
+  }
   const side = (qr.size + 8) * MODULE
   const data = new Uint8Array(side * side)
   const random = prng(7)
@@ -26,7 +34,7 @@ function closeUp(invert: boolean): { data: Uint8Array; width: number; height: nu
     for (let x = 0; x < side; x++) {
       const mx = Math.floor(x / MODULE) - 4
       const my = Math.floor(y / MODULE) - 4
-      const dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && qr.modules[my * qr.size + mx] === 1) || y % 3 === 0
+      const dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && modules[my * qr.size + mx] === 1) || (lines && y % 3 === 0)
       const v = (dark !== invert ? 40 : 215) + Math.floor((random() * 2 - 1) * 12)
       data[y * side + x] = Math.max(0, Math.min(255, v))
     }
@@ -75,5 +83,22 @@ describe('reduced-size pass', () => {
     expect(work.reduced).toBeGreaterThan(0)
     expect(decodeCounted(frame, { inversion: 'normal' })).toBeUndefined()
     expect(decodeCounted(closeUp(false), { inversion: 'inverted' })).toBeUndefined()
+  })
+
+  it('refuses a read at reduced size whose format copies do not both agree', () => {
+    // Two modules of one copy turned over: both copies lie within 2 bits of
+    // the format word, so the close-up reads as before.
+    const two = counter()
+    expect(decodeCounted(closeUp(false, 2), {}, two)?.text).toBe(TEXT)
+    expect(two.reduced).toBeGreaterThan(0)
+    // Three: the other copy still gives the level and mask, and without scan
+    // lines the symbol reads at full size, where one copy is enough.
+    const plain = counter()
+    expect(decodeCounted(closeUp(false, 3, false), {}, plain)?.text).toBe(TEXT)
+    expect(plain.reduced).toBe(0)
+    // With them it can only be read at reduced size, and is refused there.
+    const three = counter()
+    expect(decodeCounted(closeUp(false, 3), {}, three)).toBeUndefined()
+    expect(three.reduced).toBeGreaterThan(0)
   })
 })

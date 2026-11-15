@@ -316,6 +316,47 @@ class FalseReadsTest {
         return frames
     }
 
+    /** Maps sampled at reduced size a frame, at most: three factors, 30 each. */
+    private val reducedMaps = 3 * 30
+
+    /**
+     * Frames with no symbol whose sides sit at the smallest reduced size: 21
+     * pixels times each factor, one more and one fewer, as squares and as strips,
+     * and strips too thin for any factor. Each as noise, as blank paper and as
+     * finder patterns at 2 pixels a module.
+     */
+    private fun emptySmall(random: Random): List<Frame> {
+        val sides = ArrayList<IntArray>()
+        for (f in intArrayOf(2, 4, 8)) {
+            for (d in intArrayOf(-1, 0, 1)) {
+                val s = 21 * f + d
+                sides.add(intArrayOf(s, s))
+                sides.add(intArrayOf(s, 400))
+                sides.add(intArrayOf(400, s))
+            }
+        }
+        for (pair in listOf(1 to 1, 1 to 500, 500 to 1, 20 to 20, 21 to 21, 21 to 1000, 1000 to 21, 8 to 2000, 2000 to 8)) {
+            sides.add(intArrayOf(pair.first, pair.second))
+        }
+        val frames = ArrayList<Frame>()
+        for ((width, height) in sides) {
+            for (kind in 0 until 3) {
+                frames.add(
+                    fill(width, height) { x, y ->
+                        val i = (x % 20) / 2
+                        val j = (y % 20) / 2
+                        when (kind) {
+                            0 -> fl(random.next() * 256)
+                            1 -> 255
+                            else -> if (i < 7 && j < 7 && maxOf(abs(i - 3), abs(j - 3)) != 2) 20 else 230
+                        }
+                    },
+                )
+            }
+        }
+        return frames
+    }
+
     @Test
     fun readsDamagedSymbolsAsNothingOrTheirOwnText() {
         val random = Random(2718)
@@ -402,6 +443,7 @@ class FalseReadsTest {
                 val got = decodeCounted(frame.data, frame.width, frame.height, work)
                 if (got != null) assertEquals(text, got.text)
                 assertTrue(work.maps <= 4 * 6 * 5 * 6)
+                assertTrue(work.reduced <= reducedMaps)
                 assertTrue(work.second <= 4)
                 assertTrue(work.probed <= MESH_PROBES)
                 if (kind == Kind.CODEWORDS) {
@@ -435,6 +477,7 @@ class FalseReadsTest {
                     val work = Work()
                     assertNull("$version$ecc mask $mask at $scale", decodeCounted(frame.data, frame.width, frame.height, work))
                     assertTrue(work.reduced > 0)
+                    assertTrue(work.reduced <= reducedMaps)
                     assertTrue(work.maps <= 4 * 6 * 5 * 6)
                     assertTrue(work.second <= 4)
                     trials++
@@ -452,11 +495,23 @@ class FalseReadsTest {
             val work = Work()
             assertNull(decodeCounted(frame.data, frame.width, frame.height, work))
             assertTrue(work.maps <= 4 * 6 * 5 * 6)
+            assertTrue(work.reduced <= reducedMaps)
             assertTrue(work.second <= 4)
             if (work.reduced > 0) reached++
         }
         // The finder tiles at least are mapped at reduced size.
         assertTrue(reached >= 2)
+    }
+
+    @Test
+    fun readsFramesAtAndAroundTheSmallestReducedSizeAsNothing() {
+        for (frame in emptySmall(Random(41))) {
+            val work = Work()
+            assertNull("${frame.width} x ${frame.height}", decodeCounted(frame.data, frame.width, frame.height, work))
+            assertTrue(work.maps <= 4 * 6 * 5 * 6)
+            assertTrue(work.reduced <= reducedMaps)
+            assertTrue(work.second <= 4)
+        }
     }
 
     @Test

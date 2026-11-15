@@ -358,8 +358,8 @@ full one; the first read ends the search.
    what the full size and the factors before have left of it, and each
    factor takes at most 30 of them; once none are left the pass stops.
    Second looks come out of the frame's 4, shared by every size. The 30
-   keeps noise within the work bound below; the codes this pass is for read
-   on one of their first few maps.
+   keeps noise within the work bound below; a code that needs more than 30
+   maps at one size is not read at that size.
 4. Gate: at reduced size a read, in step 6 or in the second look, counts
    only if both of its format copies, sampled in the orientation it was
    read in, lie within 2 bits of the format word of its decoded level and

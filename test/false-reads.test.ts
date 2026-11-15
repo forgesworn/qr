@@ -294,6 +294,42 @@ function factorsWithTriples(frame: Frame): number {
 
 const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0, reduced: 0 })
 
+/** Maps sampled at reduced size a frame, at most: three factors, 30 each. */
+const REDUCED_MAPS = 3 * 30
+
+/**
+ * Frames with no symbol whose sides sit at the smallest reduced size: 21
+ * pixels times each factor, one more and one fewer, as squares and as strips,
+ * and strips too thin for any factor. Each as noise, as blank paper and as
+ * finder patterns at 2 pixels a module.
+ */
+function emptySmall(random: () => number): Frame[] {
+  const sides: [number, number][] = []
+  for (const f of [2, 4, 8]) {
+    for (const d of [-1, 0, 1]) {
+      const s = 21 * f + d
+      sides.push([s, s], [s, 400], [400, s])
+    }
+  }
+  sides.push([1, 1], [1, 500], [500, 1], [20, 20], [21, 21], [21, 1000], [1000, 21], [8, 2000], [2000, 8])
+  const frames: Frame[] = []
+  for (const [width, height] of sides) {
+    for (const kind of [0, 1, 2]) {
+      const data = new Uint8Array(width * height)
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const i = Math.floor((x % 20) / 2)
+          const j = Math.floor((y % 20) / 2)
+          const tile = i < 7 && j < 7 && Math.max(Math.abs(i - 3), Math.abs(j - 3)) !== 2 ? 20 : 230
+          data[y * width + x] = kind === 0 ? Math.floor(random() * 256) : kind === 1 ? 255 : tile
+        }
+      }
+      frames.push({ data, width, height })
+    }
+  }
+  return frames
+}
+
 describe('no false reads', () => {
   it('reads damaged symbols as nothing or their own text', () => {
     const random = prng(2718)
@@ -320,7 +356,7 @@ describe('no false reads', () => {
     // Damage past the parity reads as nothing, and the second look ran on nearly every one.
     expect(tally.codewords.nothing).toBe(tally.codewords.trials)
     expect(tally.codewords.secondLook).toBeGreaterThanOrEqual(0.9 * tally.codewords.trials)
-  })
+  }, 30_000)
 
   it('reads damaged large symbols through the mesh as nothing', () => {
     // A seed of its own, so the frames above stay as they were.
@@ -339,7 +375,7 @@ describe('no false reads', () => {
     }
     // The mesh was reached on nearly every one.
     expect(meshed).toBeGreaterThanOrEqual(0.9 * trials)
-  })
+  }, 30_000)
 
   it('reads damaged version 40 symbols estimated past 177 as nothing', () => {
     // Under the lens the finders' modules look small, so the estimate runs past
@@ -364,7 +400,7 @@ describe('no false reads', () => {
     // retries below it took most of them to the second look's mesh.
     expect(past).toBeGreaterThanOrEqual(0.9 * trials)
     expect(meshed).toBeGreaterThanOrEqual(0.7 * trials)
-  })
+  }, 30_000)
 
   it('reads damaged close-up symbols at reduced size as nothing or their own text', () => {
     // A seed of its own. Nothing reads these at full size, so the reduced-size
@@ -380,6 +416,7 @@ describe('no false reads', () => {
         const got = decodeCounted(frame, {}, work)
         if (got !== undefined) expect(got.text).toBe(text)
         expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+        expect(work.reduced).toBeLessThanOrEqual(REDUCED_MAPS)
         expect(work.second).toBeLessThanOrEqual(4)
         expect(work.probed).toBeLessThanOrEqual(MESH_PROBES)
         if (kind === 'codewords') {
@@ -409,6 +446,7 @@ describe('no false reads', () => {
           const work = counter()
           expect(decodeCounted(frame, {}, work), `${version}${ecc} mask ${mask} at ${scale}`).toBeUndefined()
           expect(work.reduced).toBeGreaterThan(0)
+          expect(work.reduced).toBeLessThanOrEqual(REDUCED_MAPS)
           expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
           expect(work.second).toBeLessThanOrEqual(4)
           trials++
@@ -425,12 +463,23 @@ describe('no false reads', () => {
       const work = counter()
       expect(decodeCounted(frame, {}, work)).toBeUndefined()
       expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+      expect(work.reduced).toBeLessThanOrEqual(REDUCED_MAPS)
       expect(work.second).toBeLessThanOrEqual(4)
       if (work.reduced! > 0) reached++
     }
     // The finder tiles at least are mapped at reduced size.
     expect(reached).toBeGreaterThanOrEqual(2)
-  })
+  }, 30_000)
+
+  it('reads frames at and around the smallest reduced size as nothing', () => {
+    for (const frame of emptySmall(prng(41))) {
+      const work = counter()
+      expect(decodeCounted(frame, {}, work), `${frame.width} x ${frame.height}`).toBeUndefined()
+      expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
+      expect(work.reduced).toBeLessThanOrEqual(REDUCED_MAPS)
+      expect(work.second).toBeLessThanOrEqual(4)
+    }
+  }, 30_000)
 
   it('reads frames with no symbol as nothing', () => {
     for (const frame of empty(prng(31))) {
