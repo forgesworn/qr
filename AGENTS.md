@@ -61,7 +61,12 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
   `rust/examples/render_dump.rs` and `rust/bench/render-dump.mjs` print a
   hash per rendering for the same comparison; `rust/bench/` times its
   WebAssembly build against the TypeScript and checks the WebAssembly
-  encoder against it.
+  encoder against it. The module returns the whole decode result through
+  raw handle exports (`read_picture`, `read_grid` and accessors, in
+  `rust/src/lib.rs`), wrapped by `decodeFull` and `decodeGrid` in
+  `rust/bench/loader.js`; `rust/bench/wasm-dump.mjs`, `wasm-symbols.mjs`,
+  `wasm-pack.mjs`, `wasm-options.mjs` and `wasm-leak.mjs` check it against
+  the TypeScript, the native Rust and the pack.
 - `kotlin/core/src/main/kotlin/dev/forgesworn/qr/` - the Kotlin port; it is
   vendored as a unit, so keep it self-contained (no Android or third-party
   imports). `kotlin/core/src/test/` reads `vectors/` and uses ZXing as a
