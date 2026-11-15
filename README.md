@@ -651,7 +651,7 @@ the same location to the last bit and the same counted work as the
 TypeScript. It is not published as a crate or a package yet.
 
 It builds for `wasm32-unknown-unknown` without a binding generator, to a
-module of about 200 kB before any size optimisation. On the machine the
+module of about 200 kB, or about 60 kB compressed for transfer. On the machine the
 project is measured on that build decodes in roughly half the time the
 TypeScript takes. Two differences from the other ports, both on the safe
 side: it carries no character tables, so text in kanji mode or under most
