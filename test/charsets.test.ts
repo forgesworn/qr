@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { fromEci, hanziText, kanjiText } from '../src/text.js'
+import { fromEci, hanziText, kanjiText, unread } from '../src/text.js'
 import { readSymbol } from '../src/symbol.js'
 import { bitsOf, seg, symbol } from './builder.js'
 
@@ -88,7 +88,7 @@ describe('character sets', () => {
   it('reads single-byte and multi-byte ECIs the way the fixture records', () => {
     const got = build()
     for (const [eci, text] of Object.entries(fixture.single)) {
-      // A platform may lack a set, and then the ECI falls back: Node 22's ICU has no ISO 8859-16.
+      // A platform may lack a set, and then reads no text into it: Node 22's ICU has no ISO 8859-16.
       if (eci === '18' && got.single[eci] === undefined) continue
       expect(got.single[eci], `ECI ${eci}`).toBe(text)
     }
@@ -142,10 +142,19 @@ describe('character sets', () => {
     expect(read([...seg.eci(27), ...seg.bytes(Uint8Array.of(0x41, 0xe9), 8)])!.text).toBe('A�')
   })
 
-  it('leaves ECI 3 as Latin-1 and an unassigned ECI to the fallback', () => {
+  it('leaves ECI 3 as Latin-1 and guesses nothing under an ECI it does not know', () => {
     expect(read([...seg.eci(3), ...seg.bytes(Uint8Array.of(0xe9), 8)])!.text).toBe('é')
-    expect(read([...seg.eci(14), ...seg.bytes(Uint8Array.of(0xe9), 8)])!.text).toBe('é')
-    expect(read([...seg.eci(900), ...seg.bytes(Uint8Array.of(0x68, 0x69), 8)])!.text).toBe('hi')
+    // 14 is not assigned and 900 is not listed: no character set to read the bytes as.
+    expect(read([...seg.eci(14), ...seg.bytes(Uint8Array.of(0xe9), 8)])!.text).toBe('\ufffd')
+    const got = read([...seg.eci(900), ...seg.bytes(Uint8Array.of(0x68, 0x69), 8)])!
+    expect(got.text).toBe('\ufffd\ufffd')
+    // The bytes and the assignment are still there for a caller that can read them.
+    expect(Array.from(got.bytes)).toEqual([0x68, 0x69])
+    expect(got.eci).toEqual([900])
+    // Under a single-byte set the ASCII is certain; under a multi-byte one nothing is.
+    expect(unread(9, Uint8Array.of(0xc1, 0x41))).toBe('\ufffdA')
+    expect(unread(28, Uint8Array.of(0xa4, 0x41))).toBe('\ufffd\ufffd')
+    expect(unread(25, Uint8Array.of(0x00, 0x41))).toBe('\ufffd\ufffd')
   })
 
   it('never changes bytes', () => {
@@ -169,7 +178,7 @@ describe('a platform without the labels', () => {
     return { ...text, ...sym }
   }
 
-  it('imports and falls back when TextDecoder is absent', async () => {
+  it('imports and guesses nothing when TextDecoder is absent', async () => {
     vi.stubGlobal('TextDecoder', undefined)
     const m = await fresh()
     expect(m.fromEci(9, Uint8Array.of(0xc1))).toBeUndefined()
@@ -178,10 +187,11 @@ describe('a platform without the labels', () => {
     expect(m.hanziText(0xaa, 0xa1)).toBeUndefined()
     const { modules, size } = symbol([...seg.eci(9), ...seg.bytes(Uint8Array.of(0xc1, 0x41), 8)], 2, 'L', 1)
     const got = m.readSymbol((x, y) => modules[y * size + x] === 1, size)!
-    expect(got.text).toBe('ÁA')
+    // Greek under ECI 9: the capital alpha cannot be read here, and is not read as a Latin letter.
+    expect(got.text).toBe('\ufffdA')
   })
 
-  it('falls back for a label the platform rejects', async () => {
+  it('reads nothing into a label the platform rejects', async () => {
     vi.stubGlobal(
       'TextDecoder',
       class {

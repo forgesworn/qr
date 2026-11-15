@@ -1704,6 +1704,49 @@
    }
   },
   {
+   "name": "an ECI that names no character set this decoder knows: no text is guessed",
+   "size": 25,
+   "rows": [
+    "fe99bf80",
+    "82eea080",
+    "ba3bae80",
+    "ba222e80",
+    "baf72e80",
+    "82912080",
+    "feaabf80",
+    "00bb8000",
+    "e6e67980",
+    "41e64480",
+    "06910d80",
+    "6dc42200",
+    "af5d9f80",
+    "1c889c00",
+    "cf6ef480",
+    "109bda00",
+    "ca06fa80",
+    "00a78800",
+    "fe51af00",
+    "82a48980",
+    "ba5dff80",
+    "ba691600",
+    "bacfbd00",
+    "82ba7780",
+    "fea65e80"
+   ],
+   "result": {
+    "bytes": "6869",
+    "text": "��",
+    "version": 2,
+    "ecc": "L",
+    "mask": 1,
+    "eci": [
+     900
+    ],
+    "corrected": 0,
+    "mirrored": false
+   }
+  },
+  {
    "name": "kanji mode",
    "size": 25,
    "rows": [

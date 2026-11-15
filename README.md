@@ -446,7 +446,8 @@ Defaults worth knowing: `margin` is 4 modules everywhere; `dark` is
 `width` says otherwise.
 
 **Text.** A string is encoded as UTF-8. When reading, `text` follows the
-symbol's ECI if it has one. Without one, byte data is UTF-8 when it is
+symbol's ECI if it has one; under an ECI the platform cannot read, what
+cannot be read is U+FFFD and never a guess. Without one, byte data is UTF-8 when it is
 valid UTF-8, Shift_JIS when it has the shape of Shift_JIS text, and Latin-1
 otherwise; kanji and hanzi segments read as text. `bytes` is there for
 payloads that are not text. [SPEC.md](SPEC.md) has the detail.
@@ -660,10 +661,10 @@ outcome. It is not packaged: `rust/bench/loader.js` is the small loader
 the comparisons use.
 
 The Rust port carries no character tables. `bytes` is always exact, but
-`text` differs from the other ports: a kanji character is U+FFFD, a byte
-segment under an ECI it has no decoder for is read as UTF-8 or Latin-1 as
-if the ECI were absent, and hanzi-mode symbols are refused. Read `bytes`
-and the ECI yourself where the character set matters.
+`text` holds less than in the other ports: a kanji character is U+FFFD,
+and so is every byte it cannot read under an ECI it has no decoder for
+(the ASCII survives under the single-byte sets), and hanzi-mode symbols are
+refused. Read `bytes` and the ECI yourself where the character set matters.
 
 ```bash
 cd rust

@@ -39,6 +39,7 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text
 - `decode` and `decodeModules` return `undefined`, not `null`, when nothing reads; they throw only for arguments that cannot be a picture.
 - `isDark(qr, x, y)`: column then row.
 - `encode` is synchronous; `toSvg` returns a string, not an element.
+- Under an ECI the platform cannot decode, `text` holds U+FFFD for what it cannot read, never a guess; use `bytes` and `eci` there.
 - `modules` has no quiet zone: add 4 modules of margin in your own drawing.
 - Options that shape the symbol (`ecc`, `version`, `mask`, `mode`) go to `encode`; options for how it looks (`margin`, `dark`, `light`, `width`, `title`) go to the renderer.
 - Throttle camera loops to a few scans a second.

@@ -234,6 +234,7 @@ function build(write: boolean): Pack {
   }
   built('ECI 23, Windows 1252: the euro sign', [...seg.eci(23), ...seg.bytes(Uint8Array.of(0x80, 0x31), 8)])
   built('ECI 26, UTF-8, around a kanji segment', [...seg.eci(26), ...seg.bytes(Uint8Array.of(0xc3, 0xa9), 8), ...seg.kanji([0x0d9f], 8), ...seg.bytes(Uint8Array.of(0xc3, 0xa9), 8)])
+  built('an ECI that names no character set this decoder knows: no text is guessed', [...seg.eci(900), ...seg.bytes(Uint8Array.of(0x68, 0x69), 8)])
   built('kanji mode', seg.kanji([0x0d9f, 0x1aaa], 8))
   built('hanzi mode, GB2312', seg.hanzi([0x122f, 0x0f23], 8))
   built('hanzi mode with another subset: no read', seg.hanzi([0x122f], 8, 2))

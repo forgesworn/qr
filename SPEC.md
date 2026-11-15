@@ -308,8 +308,8 @@ pipeline:
 7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
    hanzi (kept as GB2312 bytes), ECI, structured append and FNC1 (both
    reported; see below).
-   Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
-   otherwise or under ECI 1 or 3. Kanji and the other ECIs follow
+   Byte text is UTF-8 under ECI 26, Latin-1 under ECI 1 or 3, and with
+   no ECI in force UTF-8 when it is valid UTF-8 and Latin-1 otherwise. Kanji and the other ECIs follow
    "Text for kanji and other ECIs" below. A byte run with no ECI in force
    that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
    test under "Shift_JIS without an ECI" below.
@@ -951,12 +951,17 @@ Every port must agree on these:
   GB 18030 (a superset of GB 2312 and GBK), 30 EUC-KR, 33 UTF-16LE. Ill-formed
   input becomes U+FFFD, and a leading byte order mark is kept.
 - An ECI with no entry above, and any ECI whose character set the platform
-  lacks, is read as if no ECI were present: valid UTF-8 is UTF-8, else
-  Latin-1. This is the one thing left to the platform, with the exact
-  mapping tables of the sets above; a platform's tables may differ from
-  another's for rare code points (the JVM lacks ISO 8859-10 and -14 on a
-  standard JDK, for instance, and Node 22 lacks ISO 8859-16, and so each
-  falls back for those).
+  lacks, is never guessed at: the symbol has said what its bytes are, and
+  reading them as something else would be a wrong text. Under one of the
+  single-byte sets (ECI 4 to 13, 15 to 18, 21, 22 and 24), which are all
+  ASCII below 0x80, those bytes are their ASCII characters and every other
+  byte is U+FFFD. Under any other ECI every byte is U+FFFD. `bytes` and
+  `eci` still hold what the symbol carries, for a caller that can read it.
+- What is left to the platform is which of the sets above it has, and
+  their exact mapping tables; a platform's tables may differ from another's
+  for rare code points. The JVM lacks ISO 8859-10 and -14 on a standard
+  JDK, for instance, Node 22 lacks ISO 8859-16, and the Rust port has none
+  but the ones read by hand.
 
 `test/charsets.json` records the JavaScript platform's text for every
 13-bit kanji value and every 13-bit hanzi value (U+0000 where it makes the

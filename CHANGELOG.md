@@ -63,6 +63,11 @@
 - SPEC.md states every stage of the decoder exactly, and the details of
   the encoder that were left to the code; lengths are a square root of
   squares so that ports agree to the last place.
+- Text under an ECI the platform cannot read, or one that names no set the
+  decoder knows, is no longer guessed as UTF-8 or Latin-1: what cannot be
+  read is U+FFFD, with ASCII kept under the single-byte sets. `bytes` and
+  `eci` are unchanged. Greek under ECI 9, read where there is no decoder
+  for it, used to come back as accented Latin letters.
 - The decoder reads hanzi segments (GB2312).
 - Decoding is faster with no change to what is read or to the work counted.
   The row scans for finder and alignment patterns walk each row's changes

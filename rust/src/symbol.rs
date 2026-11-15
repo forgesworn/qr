@@ -935,10 +935,19 @@ fn from_eci(eci: u32, bytes: &[u8]) -> Option<String> {
     }
 }
 
+/// Text for bytes under an ECI this port cannot read: never a guess at another
+/// character set. Under a single-byte set (ISO 8859, the Windows code pages),
+/// which is ASCII below 0x80, those bytes are kept; every other byte, and every
+/// byte under any other ECI, is U+FFFD.
+fn unread(eci: u32, bytes: &[u8]) -> String {
+    let ascii = matches!(eci, 4..=13 | 15..=18 | 21 | 22 | 24);
+    bytes.iter().map(|&b| if ascii && b < 0x80 { b as char } else { '\u{fffd}' }).collect()
+}
+
 /// ECI 26 is UTF-8; 3 and 1 are Latin-1; 27, 170 and 23 by hand. Every other
-/// ECI is read as a set the platform lacks, so as if there were none: valid
-/// UTF-8 is UTF-8, else Latin-1. The no-ECI Shift_JIS rule needs a Shift_JIS
-/// decoder and, with none, ends in Latin-1 all the same, so it is left out.
+/// ECI is a set this port lacks, and is not guessed at (`unread`). With no
+/// ECI, valid UTF-8 is UTF-8, else Latin-1; the Shift_JIS rule for that case
+/// needs a Shift_JIS decoder and, with none, ends in Latin-1 all the same.
 fn decode_run(run: &Run) -> String {
     if let Some(text) = &run.fixed {
         return text.clone();
@@ -952,9 +961,7 @@ fn decode_run(run: &Run) -> String {
     }
     if let Some(eci) = run.eci {
         if !bytes.is_empty() {
-            if let Some(text) = from_eci(eci, bytes) {
-                return text;
-            }
+            return from_eci(eci, bytes).unwrap_or_else(|| unread(eci, bytes));
         }
     }
     if is_utf8(bytes) {

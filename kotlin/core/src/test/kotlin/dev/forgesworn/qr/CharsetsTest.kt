@@ -61,7 +61,7 @@ class CharsetsTest {
         for (v in listOf(0x30 * 0x60 + 0x5e, 9 * 0x60, 0x52 * 0x60, 0x31 * 0x60 + 0x59, 5 * 0x60 + 0x38, 7 * 0x60 + 0x1b)) assertNull(read(Seg.hanzi(listOf(0x122f, v), 8)))
     }
 
-    // ISO 8859-10 and -14 are absent from the JDK; those ECIs fall back.
+    // ISO 8859-10 and -14 are absent from the JDK; no text is read into those ECIs.
     private val absentOnJvm = setOf("12", "16")
 
     @Test
@@ -83,11 +83,15 @@ class CharsetsTest {
     }
 
     @Test
-    fun anAbsentCharsetFallsBackToLatin1() {
+    fun anAbsentCharsetIsNotGuessedAt() {
         for (eci in absentOnJvm) {
             if (fromEci(eci.toInt(), b(0xe9)) != null) continue
-            assertEquals("\u00e9", read(Seg.eci(eci.toInt()) + Seg.bytes(b(0xe9), 8))!!.text)
+            assertEquals("\ufffdA", read(Seg.eci(eci.toInt()) + Seg.bytes(b(0xe9, 0x41), 8))!!.text)
         }
+        // Under a single-byte set the ASCII is certain; under a multi-byte one nothing is.
+        assertEquals("\ufffdA", unread(9, b(0xc1, 0x41)))
+        assertEquals("\ufffd\ufffd", unread(28, b(0xa4, 0x41)))
+        assertEquals("\ufffd\ufffd", unread(25, b(0x00, 0x41)))
     }
 
     @Test
@@ -135,10 +139,14 @@ class CharsetsTest {
     }
 
     @Test
-    fun leavesEci3AsLatin1AndUnassignedEcisToTheFallback() {
+    fun leavesEci3AsLatin1AndGuessesNothingUnderAnEciItDoesNotKnow() {
         assertEquals("é", read(Seg.eci(3) + Seg.bytes(b(0xe9), 8))!!.text)
-        assertEquals("é", read(Seg.eci(14) + Seg.bytes(b(0xe9), 8))!!.text)
-        assertEquals("hi", read(Seg.eci(900) + Seg.bytes(b(0x68, 0x69), 8))!!.text)
+        // 14 is not assigned and 900 is not listed: no character set to read the bytes as.
+        assertEquals("\ufffd", read(Seg.eci(14) + Seg.bytes(b(0xe9), 8))!!.text)
+        val got = read(Seg.eci(900) + Seg.bytes(b(0x68, 0x69), 8))!!
+        assertEquals("\ufffd\ufffd", got.text)
+        assertEquals(listOf(0x68, 0x69), got.bytes.map { it.toInt() })
+        assertEquals(listOf(900), got.eci)
     }
 
     @Test
