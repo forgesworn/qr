@@ -250,8 +250,10 @@ read. The TypeScript pipeline, for reference:
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
-the picture shows, under these caps. None of them can lose a read that the
-uncapped search would make.
+the picture shows, under these caps. The first two cannot lose a read
+that the uncapped search would make; the counts in the others are limits,
+and a picture with more finder-like shapes than they allow may hide a code
+among them.
 
 - Finder candidates are filed by 16-pixel cell, so merging a sighting
   compares it only with candidates stored in the cells within a module of
