@@ -21,6 +21,13 @@
   centres onto the timing patterns and edges the picture shows and sampling
   grey. It reads codes on curved or warped surfaces that were missed
   before; tests of damaged symbols require nothing or the original text.
+- From version 7 that second look first bends the placement onto the
+  alignment patterns it can find, so large symbols photographed through a
+  lens or on paper that is not flat read. It makes no more reads than
+  before, and a placement whose version information names another size no
+  longer takes one of the four places.
+- Fixed: a version 40 symbol whose size estimate came out just past 177
+  modules was given up on without trying 177.
 - The decoder reads hanzi segments (GB2312).
 - The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given
