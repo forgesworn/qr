@@ -7,6 +7,8 @@ package dev.forgesworn.qr
  * @property bytes The payload as bytes: byte-mode data as stored, numeric and alphanumeric as ASCII.
  * @property eci ECI assignment numbers in the order they appeared; empty if none.
  * @property corrected Codewords Reed-Solomon had to correct.
+ * @property structuredAppend Set when the symbol is one of a structured-append set; [text] and [bytes] then hold this symbol's part only.
+ * @property fnc1 Set when the symbol carries an FNC1 indicator.
  */
 internal class Payload(
     val text: String,
@@ -16,7 +18,36 @@ internal class Payload(
     val mask: Int,
     val eci: List<Int>,
     val corrected: Int,
+    val structuredAppend: StructuredAppend? = null,
+    val fnc1: Fnc1? = null,
 )
+
+/** The header of a structured-append symbol. */
+data class StructuredAppend(
+    /** This symbol's place in the set, counting from 0. */
+    val index: Int,
+    /** How many symbols the set has, 1 to 16. */
+    val total: Int,
+    /** The parity byte: the XOR of every byte of the whole message, the same in each symbol of the set. */
+    val parity: Int,
+)
+
+/** Which FNC1 indicator a symbol carries. */
+enum class Fnc1Position {
+    /** The GS1 format. */
+    FIRST,
+
+    /** An industry application, named by an application indicator. */
+    SECOND,
+}
+
+/**
+ * An FNC1 indicator. In alphanumeric segments `%` then reads as the group
+ * separator U+001D and `%%` as `%`, in text and bytes alike.
+ *
+ * @property applicationIndicator Second position only: one letter or two digits, as a string.
+ */
+data class Fnc1(val position: Fnc1Position, val applicationIndicator: String? = null)
 
 /** Reads modules through a callback: true for dark, x across, y down. */
 internal fun interface ModuleReader {
@@ -141,7 +172,7 @@ internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
     }
 
     val parsed = parse(data, version) ?: return null
-    return Payload(parsed.text, parsed.bytes, version, format.ecc, format.mask, parsed.eci, corrected)
+    return Payload(parsed.text, parsed.bytes, version, format.ecc, format.mask, parsed.eci, corrected, parsed.structuredAppend, parsed.fnc1)
 }
 
 /** Thrown inside [parse] when the bit stream ends early; never leaves this file. */
@@ -167,7 +198,19 @@ private class Run(val eci: Int?) {
     val bytes = ArrayList<Int>()
 }
 
-private class Parsed(val text: String, val bytes: ByteArray, val eci: List<Int>)
+private class Parsed(
+    val text: String,
+    val bytes: ByteArray,
+    val eci: List<Int>,
+    val structuredAppend: StructuredAppend?,
+    val fnc1: Fnc1?,
+)
+
+/** ISO 18004 7.4.8.3: 0-99 are two digits, ASCII + 100 gives a letter. */
+private fun applicationIndicator(value: Int): String? =
+    if (value <= 99) value.toString().padStart(2, '0')
+    else if (value in 165..190 || value in 197..222) (value - 100).toChar().toString()
+    else null
 
 private val KANJI_COUNT_BITS = intArrayOf(8, 10, 12)
 private val NUMERIC_COUNT_BITS = intArrayOf(10, 12, 14)
@@ -181,6 +224,8 @@ private fun parse(data: IntArray, version: Int): Parsed? {
     runs.add(Run(null))
     val eci = ArrayList<Int>()
     val out = ArrayList<Int>()
+    var structuredAppend: StructuredAppend? = null
+    var fnc1: Fnc1? = null
     fun emit(byte: Int) {
         runs[runs.size - 1].bytes.add(byte)
         out.add(byte)
@@ -204,17 +249,33 @@ private fun parse(data: IntArray, version: Int): Parsed? {
                 }
             } else if (mode == 2) {
                 var count = bits.read(ALPHANUMERIC_COUNT_BITS[band])
+                val segment = ArrayList<Int>()
                 while (count >= 2) {
                     val v = bits.read(11)
                     if (v >= 45 * 45) return null
-                    emit(ALPHANUMERIC[v / 45].code)
-                    emit(ALPHANUMERIC[v % 45].code)
+                    segment.add(ALPHANUMERIC[v / 45].code)
+                    segment.add(ALPHANUMERIC[v % 45].code)
                     count -= 2
                 }
                 if (count == 1) {
                     val v = bits.read(6)
                     if (v >= 45) return null
-                    emit(ALPHANUMERIC[v].code)
+                    segment.add(ALPHANUMERIC[v].code)
+                }
+                // Under FNC1, within one segment: %% is %, and a lone % is the group separator.
+                var i = 0
+                while (i < segment.size) {
+                    if (fnc1 != null && segment[i] == 0x25) {
+                        if (i + 1 < segment.size && segment[i + 1] == 0x25) {
+                            i++
+                        } else {
+                            emit(0x1d)
+                            i++
+                            continue
+                        }
+                    }
+                    emit(segment[i])
+                    i++
                 }
             } else if (mode == 4) {
                 val count = bits.read(BYTE_COUNT_BITS[band])
@@ -243,11 +304,14 @@ private fun parse(data: IntArray, version: Int): Parsed? {
                 eci.add(value)
                 runs.add(Run(value))
             } else if (mode == 3) {
-                bits.read(16) // structured append: position, total and parity; one symbol is read alone
+                val sequence = bits.read(8)
+                val parity = bits.read(8)
+                if (structuredAppend == null) structuredAppend = StructuredAppend(sequence ushr 4, (sequence and 15) + 1, parity)
             } else if (mode == 5) {
-                // FNC1 in first position: GS1 data follows in ordinary segments
+                if (fnc1 == null) fnc1 = Fnc1(Fnc1Position.FIRST)
             } else if (mode == 9) {
-                bits.read(8) // FNC1 in second position: application indicator
+                val indicator = applicationIndicator(bits.read(8)) ?: return null
+                if (fnc1 == null) fnc1 = Fnc1(Fnc1Position.SECOND, indicator)
             } else {
                 return null
             }
@@ -257,7 +321,7 @@ private fun parse(data: IntArray, version: Int): Parsed? {
     }
     val text = StringBuilder()
     for (run in runs) text.append(if (run.eci == -1) "�" else decodeRun(run))
-    return Parsed(text.toString(), ByteArray(out.size) { out[it].toByte() }, eci)
+    return Parsed(text.toString(), ByteArray(out.size) { out[it].toByte() }, eci, structuredAppend, fnc1)
 }
 
 /** ECI 26 is UTF-8; 3 and 1 are Latin-1. Without ECI, valid UTF-8 is taken as UTF-8, else Latin-1. */

@@ -121,9 +121,37 @@ read. The TypeScript pipeline, for reference:
    mirrored codes, and the whole search is repeated on the inverted
    picture.
 7. Segments: numeric, alphanumeric, byte, kanji (kept as Shift_JIS bytes),
-   ECI, structured append (header skipped) and FNC1 (indicators skipped).
+   ECI, structured append and FNC1 (both reported; see below).
    Byte text is UTF-8 under ECI 26 or when it is valid UTF-8, and Latin-1
    otherwise or under ECI 1 or 3.
+
+### Structured append and FNC1
+
+A structured-append header (mode 0011: a 4-bit index counting from 0, a
+4-bit total less one, an 8-bit parity) is reported as `structuredAppend`
+with `index`, `total` (1 to 16) and `parity`. The decoder reads one symbol
+alone: `text` and `bytes` hold that symbol's part only, and joining parts is
+the caller's job. Only the first header in a symbol counts. Index and total
+are reported as read, even when the index is not below the total.
+
+FNC1 in first position (mode 0101, the GS1 format) is reported as `fnc1`
+with `position` `first`. FNC1 in second position (mode 1001) is followed by
+an 8-bit application indicator, reported as `applicationIndicator`, a
+string: 0 to 99 are two digits (`05`, `37`), 165 to 190 and 197 to 222 are
+the letter whose ASCII code is the value less 100. Any other value makes
+the symbol unreadable. Only the first FNC1 indicator counts.
+
+From the indicator onwards, an alphanumeric segment is rewritten before it
+joins the payload: within the segment, `%%` becomes `%` and a lone `%`
+becomes the group separator U+001D. The segment is rewritten alone, so a
+`%` ending one segment and a `%` starting the next are two separators.
+Numeric and byte segments are untouched, and so is everything before the
+indicator. `bytes` holds the rewritten data, so it always equals `text`
+encoded as UTF-8 for alphanumeric and numeric data. A reference decoder
+does the same for first position; it does not read the second-position
+application indicator at all, so there is none to compare against.
+
+Both fields are absent, not null, for an ordinary symbol.
 
 ## Decode fixtures
 
