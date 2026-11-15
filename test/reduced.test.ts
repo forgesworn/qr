@@ -18,9 +18,10 @@ const MODULE = 24
  * every third row across everything, and seeded noise of up to 12 either way.
  * With `invert`, light and dark change places, the scan lines too. `damage`
  * turns over that many modules of the format copy beside the top-left finder,
- * and `lines` false leaves the scan lines out.
+ * `lines` false leaves the scan lines out, and `mirror` draws the symbol
+ * turned over about its diagonal.
  */
-function closeUp(invert: boolean, damage = 0, lines = true): { data: Uint8Array; width: number; height: number } {
+function closeUp(invert: boolean, damage = 0, lines = true, mirror = false): { data: Uint8Array; width: number; height: number } {
   const qr = encode(TEXT, { ecc: 'M' })
   const modules = Uint8Array.from(qr.modules)
   for (let i = 0; i < damage; i++) {
@@ -34,7 +35,7 @@ function closeUp(invert: boolean, damage = 0, lines = true): { data: Uint8Array;
     for (let x = 0; x < side; x++) {
       const mx = Math.floor(x / MODULE) - 4
       const my = Math.floor(y / MODULE) - 4
-      const dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && modules[my * qr.size + mx] === 1) || (lines && y % 3 === 0)
+      const dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && modules[mirror ? mx * qr.size + my : my * qr.size + mx] === 1) || (lines && y % 3 === 0)
       const v = (dark !== invert ? 40 : 215) + Math.floor((random() * 2 - 1) * 12)
       data[y * side + x] = Math.max(0, Math.min(255, v))
     }
@@ -99,6 +100,17 @@ describe('reduced-size pass', () => {
     // With them it can only be read at reduced size, and is refused there.
     const three = counter()
     expect(decodeCounted(closeUp(false, 3), {}, three)).toBeUndefined()
+    expect(three.reduced).toBeGreaterThan(0)
+  })
+
+  it('holds a mirrored read at reduced size to the same gate', () => {
+    const two = counter()
+    const got = decodeCounted(closeUp(false, 2, true, true), {}, two)
+    expect(got?.text).toBe(TEXT)
+    expect(got?.mirrored).toBe(true)
+    expect(two.reduced).toBeGreaterThan(0)
+    const three = counter()
+    expect(decodeCounted(closeUp(false, 3, true, true), {}, three)).toBeUndefined()
     expect(three.reduced).toBeGreaterThan(0)
   })
 })

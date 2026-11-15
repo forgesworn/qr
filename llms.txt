@@ -20,6 +20,7 @@ npm install @forgesworn/qr
 - `toTerminal(qr, { margin = 4, ink = 'light' | 'dark' }): string` - half-block text; 'light' ink for dark terminal backgrounds.
 - `decode(image: { data, width, height }, { rowStride?, channels?: 1 | 4, inversion?: 'normal' | 'inverted' | 'both' }): DecodeResult | undefined` - data is RGBA (ImageData) or greyscale; result `{ text, bytes, version, ecc, mask, eci, corrected, mirrored, inverted, location, structuredAppend?, fnc1? }`; `text` follows the ECI, else UTF-8, Shift_JIS or Latin-1 by content, and kanji and hanzi segments read as text; `structuredAppend` is `{ index, total, parity }`, `fnc1` is `{ position: 'first' | 'second', applicationIndicator? }`; undefined when no readable code is found.
 - `decodeModules(modules, size)` - reads a row-major module grid (no quiet zone), straight or mirrored.
+- The decoder is built to return `undefined` rather than a wrong text: a block corrected past the standard's capacity is refused. Work on a frame is capped, but a frame with no code costs more than one with a code, so throttle camera loops.
 
 ## Example
 

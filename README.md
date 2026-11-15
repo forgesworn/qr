@@ -109,8 +109,9 @@ The decoder is built to return nothing rather than a wrong text: a block
 that needed more corrections than the standard allows is refused, and the
 tests require damaged symbols to read as nothing or as exactly what was
 written. When the first search of a frame reads nothing, the decoder looks
-again at the likeliest placements and then at the picture shrunk by 8, 4
-and 2, and holds a read there to a stricter format check.
+again at up to four placements whose two format copies agree, and then at
+the picture shrunk by 8, 4 and 2, where a read counts only if both format
+copies agree with it.
 
 A frame with no code in it costs more than one with a code; on a 1280x720
 frame of pure noise, expect a few hundred milliseconds on a laptop, so

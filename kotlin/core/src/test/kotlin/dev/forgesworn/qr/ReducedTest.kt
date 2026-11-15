@@ -33,9 +33,10 @@ class ReducedTest {
      * every third row across everything, and seeded noise of up to 12 either way.
      * With [invert], light and dark change places, the scan lines too. [damage]
      * turns over that many modules of the format copy beside the top-left
-     * finder, and [lines] false leaves the scan lines out.
+     * finder, [lines] false leaves the scan lines out, and [mirror] draws the
+     * symbol turned over about its diagonal.
      */
-    private fun closeUp(invert: Boolean, damage: Int = 0, lines: Boolean = true): ByteArray {
+    private fun closeUp(invert: Boolean, damage: Int = 0, lines: Boolean = true, mirror: Boolean = false): ByteArray {
         val qr = encode(text, EncodeOptions(ecc = ErrorCorrection.M))
         val modules = qr.modules.copyOf()
         for (i in 0 until damage) {
@@ -49,7 +50,7 @@ class ReducedTest {
             for (x in 0 until side) {
                 val mx = x / module - 4
                 val my = y / module - 4
-                val dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && modules[my * qr.size + mx].toInt() == 1) || (lines && y % 3 == 0)
+                val dark = (mx >= 0 && my >= 0 && mx < qr.size && my < qr.size && modules[if (mirror) mx * qr.size + my else my * qr.size + mx].toInt() == 1) || (lines && y % 3 == 0)
                 val v = (if (dark != invert) 40 else 215) + floor((random.next() * 2 - 1) * 12).toInt()
                 data[y * side + x] = maxOf(0, minOf(255, v)).toByte()
             }
@@ -115,6 +116,18 @@ class ReducedTest {
         // With them it can only be read at reduced size, and is refused there.
         val three = Work()
         assertNull(decodeCounted(closeUp(false, 3), side, side, three))
+        assertTrue(three.reduced > 0)
+    }
+
+    @Test
+    fun holdsAMirroredReadAtReducedSizeToTheSameGate() {
+        val two = Work()
+        val got = decodeCounted(closeUp(false, 2, true, true), side, side, two)
+        assertEquals(text, got?.text)
+        assertEquals(true, got?.mirrored)
+        assertTrue(two.reduced > 0)
+        val three = Work()
+        assertNull(decodeCounted(closeUp(false, 3, true, true), side, side, three))
         assertTrue(three.reduced > 0)
     }
 }
