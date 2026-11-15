@@ -3,6 +3,7 @@
 //! reduced pictures by SHA-256 and the finder candidates exactly.
 
 use forgesworn_qr::binarise::{binarise, invert, shrink, thresholds, to_luminance, Image, Reductions};
+use forgesworn_qr::decode::decode_ordinary;
 use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
 use forgesworn_qr::place::{estimate_size, finder_triples, locate};
 use forgesworn_qr::symbol::decode_modules;
@@ -309,5 +310,69 @@ fn symbols() {
         "symbols: {} of {} entries matched ({read} read, {refused} refused; {by_spec} of the read ones checked for text against SPEC.md, not the recording)",
         read + refused,
         entries.len()
+    );
+}
+
+fn point(v: &Value) -> [f64; 2] {
+    let a = v.as_array().unwrap();
+    [a[0].as_f64().unwrap(), a[1].as_f64().unwrap()]
+}
+
+/// The ordinary search, against every frame it can be compared on: those the
+/// TypeScript read without a second look or a reduced pass (result, exact
+/// location and all eight work counters), and those it did not read at all or
+/// read only by one of the two (which the ordinary search must not read).
+#[test]
+fn ordinary_search() {
+    let pack = pack();
+    let frames = pack["frames"].as_array().unwrap();
+    let (mut compared, mut unread, mut beyond) = (0, 0, 0);
+    for entry in frames {
+        let file = entry["file"].as_str().unwrap();
+        let grey = load_grey(file);
+        let mut work = Work::default();
+        let got = decode_ordinary(&grey.data, grey.width, grey.height, 1, Some(&mut work));
+        let w = &entry["work"];
+        let want = &entry["result"];
+        if want.is_null() {
+            assert!(got.is_none(), "{file}: the pack reads nothing here");
+            unread += 1;
+            continue;
+        }
+        if w["second"].as_u64() != Some(0) || w["reduced"].as_u64() != Some(0) {
+            assert!(got.is_none(), "{file}: the pack needed a second look or a reduced pass, so the ordinary search must read nothing");
+            beyond += 1;
+            continue;
+        }
+        let got = got.unwrap_or_else(|| panic!("{file}: should read"));
+        let p = &got.payload;
+        assert_eq!(hex(&p.bytes), want["bytes"].as_str().unwrap(), "{file}: bytes");
+        assert_eq!(p.text, want["text"].as_str().unwrap(), "{file}: text");
+        assert_eq!(p.version as u64, want["version"].as_u64().unwrap(), "{file}: version");
+        assert_eq!(p.ecc.letter().to_string(), want["ecc"].as_str().unwrap(), "{file}: ecc");
+        assert_eq!(p.mask as u64, want["mask"].as_u64().unwrap(), "{file}: mask");
+        let eci: Vec<u64> = want["eci"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap()).collect();
+        assert_eq!(p.eci.iter().map(|&v| v as u64).collect::<Vec<_>>(), eci, "{file}: eci");
+        assert_eq!(p.corrected as u64, want["corrected"].as_u64().unwrap(), "{file}: corrected");
+        assert_eq!(got.mirrored, want["mirrored"].as_bool().unwrap(), "{file}: mirrored");
+        assert_eq!(got.inverted, want["inverted"].as_bool().unwrap(), "{file}: inverted");
+        let loc = &want["location"];
+        let at = |p: &forgesworn_qr::place::Point| [p.x, p.y];
+        assert_eq!(at(&got.location.top_left), point(&loc["topLeft"]), "{file}: topLeft");
+        assert_eq!(at(&got.location.top_right), point(&loc["topRight"]), "{file}: topRight");
+        assert_eq!(at(&got.location.bottom_left), point(&loc["bottomLeft"]), "{file}: bottomLeft");
+        match (&got.location.alignment, loc["alignment"].is_null()) {
+            (None, true) => {}
+            (Some(a), false) => assert_eq!(at(a), point(&loc["alignment"]), "{file}: alignment"),
+            (g, _) => panic!("{file}: alignment {g:?} against {}", loc["alignment"]),
+        }
+        let counted = [work.steps, work.compared, work.scanned, work.maps, work.second, work.meshes, work.probed, work.reduced];
+        let recorded = ["steps", "compared", "scanned", "maps", "second", "meshes", "probed", "reduced"].map(|k| w[k].as_u64().unwrap());
+        assert_eq!(counted, recorded, "{file}: work counters (steps, compared, scanned, maps, second, meshes, probed, reduced)");
+        compared += 1;
+    }
+    eprintln!(
+        "ordinary search: {compared} frames read and matched (result, exact location, all eight work counters); {unread} unread and {beyond} needing a second look or a reduced pass correctly not read here; {} frames in all",
+        frames.len()
     );
 }

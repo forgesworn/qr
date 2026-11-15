@@ -1,8 +1,12 @@
-//! The front end of the QR decoder, ported from the TypeScript reference:
-//! greyscale, binarisation, reduction and the finder scan (SPEC.md, decoder
-//! steps 1, 2, 3 and 9). It stops at the finder candidates.
+//! The QR decoder, ported from the TypeScript reference: greyscale,
+//! binarisation, reduction and the finder scan (SPEC.md, decoder steps 1, 2, 3
+//! and 9), finder triples, size estimates and sampling maps (steps 4 and 5),
+//! and reading a module grid (steps 6 and 7). `decode::decode_ordinary` is the
+//! ordinary search at full size. The second look and the reduced-size pass are
+//! not ported.
 
 pub mod binarise;
+pub mod decode;
 pub mod locate;
 pub mod place;
 pub mod symbol;
@@ -81,5 +85,21 @@ mod exports {
     pub unsafe extern "C" fn front(ptr: *const u8, width: u32, height: u32, channels: u32) -> u32 {
         let len = width as usize * height as usize * channels as usize;
         super::front(std::slice::from_raw_parts(ptr, len), width as usize, height as usize, channels as usize)
+    }
+
+    /// Runs the ordinary search on `width` x `height` pixels at `ptr`,
+    /// `channels` bytes each (1 or 4). Returns 0 when nothing reads, else the
+    /// number of payload bytes read plus 1.
+    ///
+    /// # Safety
+    /// `ptr` must address `width * height * channels` readable bytes.
+    #[no_mangle]
+    pub unsafe extern "C" fn ordinary(ptr: *const u8, width: u32, height: u32, channels: u32) -> u32 {
+        let len = width as usize * height as usize * channels as usize;
+        let pixels = std::slice::from_raw_parts(ptr, len);
+        match super::decode::decode_ordinary(pixels, width as usize, height as usize, channels as usize, None) {
+            Some(reading) => reading.payload.bytes.len() as u32 + 1,
+            None => 0,
+        }
     }
 }
