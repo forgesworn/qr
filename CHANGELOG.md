@@ -12,6 +12,19 @@
 - A test set of 185 real photographs, fetched by hash at test time and not
   committed, with a floor on how many are read and a rule that none may
   decode to the wrong text.
+- The decoder reads steeply tilted codes: finders stretched by perspective,
+  triples whose far side is much narrower, and an alignment search placed
+  by a projective map. A symbol of version 7 or above whose two version
+  blocks are both unreadable is read from its size.
+- `encode` takes only a string or a `Uint8Array` and says what it was given
+  otherwise; input no version can hold is refused before anything is built
+  from it, so a named mode with over-long text now throws `QrCapacityError`
+  first. `decode` takes only `Uint8Array` or `Uint8ClampedArray` data,
+  refuses a buffer of three bytes a pixel unless `channels` is named, and
+  checks `inversion`. `null` options mean none in both.
+- The tests read every version at every level, filled to the last byte,
+  back with an independent decoder; one vector added, version 23 at
+  level L.
 - Fixed: `decode` checks the data length when `channels` is given; `isDark`
   is false outside the symbol; a fixed `version` below `minVersion` throws;
   `toSvg` output always parses as XML, and an empty `title` adds no image
