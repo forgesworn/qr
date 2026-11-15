@@ -57,7 +57,6 @@ class DecodeResult internal constructor(
 }
 
 private const val MAX_TRIPLES = 6
-
 private fun check(width: Int, height: Int, rowStride: Int, length: Int) {
     if (width < 1 || height < 1) throw IllegalArgumentException("Width and height must be positive integers")
     if (rowStride < width) throw IllegalArgumentException("rowStride must be an integer of at least width")
@@ -98,26 +97,33 @@ fun decode(
     return decodeLuminance(toLuminance(argb, width, height, rowStride), inversion)
 }
 
-private fun decodeLuminance(luminance: Luminance, inversion: Inversion): DecodeResult? {
+/** As [decode] for a greyscale picture, counting the search's work into [work]; for tests. */
+internal fun decodeCounted(luminance: ByteArray, width: Int, height: Int, work: Work): DecodeResult? {
+    check(width, height, width, luminance.size)
+    return decodeLuminance(toLuminance(luminance, width, height, width), Inversion.BOTH, work)
+}
+
+private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
     val bits = binarise(luminance)
     if (inversion != Inversion.INVERTED) {
-        val found = search(bits, false)
+        val found = search(bits, false, work)
         if (found != null) return found
     }
-    if (inversion != Inversion.NORMAL) return search(invert(bits), true)
+    if (inversion != Inversion.NORMAL) return search(invert(bits), true, work)
     return null
 }
 
-private fun search(image: BitImage, inverted: Boolean): DecodeResult? {
+private fun search(image: BitImage, inverted: Boolean, work: Work?): DecodeResult? {
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
-        val triples = finderTriples(image, findFinders(image, tolerance)).take(MAX_TRIPLES)
+        val triples = finderTriples(image, findFinders(image, tolerance, work)).take(MAX_TRIPLES)
         for (triple in triples) {
-            val first = locate(image, triple)
+            val first = locate(image, triple, null, work)
             if (first.isEmpty()) continue
             // The size estimate can be a version out; try the neighbours too.
             for (delta in intArrayOf(0, -4, 4, -8, 8)) {
-                for (location in if (delta == 0) first else locate(image, triple, first[0].size + delta)) {
+                for (location in if (delta == 0) first else locate(image, triple, first[0].size + delta, work)) {
+                    if (work != null) work.maps++
                     val result = read(image, location, inverted)
                     if (result != null) return result
                 }

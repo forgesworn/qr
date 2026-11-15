@@ -1,5 +1,5 @@
 import { binarise, invert, toLuminance, type BitImage } from './binarise.js'
-import { finderTriples, findFinders, locate, type Location, type Point } from './locate.js'
+import { finderTriples, findFinders, locate, type Location, type Point, type Work } from './locate.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
 
 /** Pixels to read: RGBA (4 bytes a pixel, as ImageData gives) or greyscale (1 byte a pixel). */
@@ -53,6 +53,11 @@ function channelsFor(image: ImageLike, stride: number, given: 1 | 4 | undefined)
  * readable code is found.
  */
 export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeResult | undefined {
+  return decodeCounted(image, options)
+}
+
+/** As decode(), counting the search's work into `work`; for tests, not exported from the package. */
+export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, work?: Work): DecodeResult | undefined {
   if (image === null || typeof image !== 'object') throw new TypeError('decode needs { data, width, height }')
   const kind = Object.prototype.toString.call(image.data).slice(8, -1)
   if (kind !== 'Uint8Array' && kind !== 'Uint8ClampedArray') {
@@ -72,23 +77,24 @@ export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeRes
   const channels = channelsFor(image, stride, options.channels)
   const bits = binarise(toLuminance(image.data, width, height, channels, stride))
   if (inversion !== 'inverted') {
-    const found = search(bits, false)
+    const found = search(bits, false, work)
     if (found) return found
   }
-  if (inversion !== 'normal') return search(invert(bits), true)
+  if (inversion !== 'normal') return search(invert(bits), true, work)
   return undefined
 }
 
-function search(image: BitImage, inverted: boolean): DecodeResult | undefined {
+function search(image: BitImage, inverted: boolean, work?: Work): DecodeResult | undefined {
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
-    const triples = finderTriples(image, findFinders(image, tolerance)).slice(0, MAX_TRIPLES)
+    const triples = finderTriples(image, findFinders(image, tolerance, work)).slice(0, MAX_TRIPLES)
     for (const triple of triples) {
-      const first = locate(image, triple)
+      const first = locate(image, triple, undefined, work)
       if (first.length === 0) continue
       // The size estimate can be a version out; try the neighbours too.
       for (const delta of [0, -4, 4, -8, 8]) {
-        for (const location of delta === 0 ? first : locate(image, triple, first[0]!.size + delta)) {
+        for (const location of delta === 0 ? first : locate(image, triple, first[0]!.size + delta, work)) {
+          if (work) work.maps++
           const result = read(image, location, inverted)
           if (result) return result
         }

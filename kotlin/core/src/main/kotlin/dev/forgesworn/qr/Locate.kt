@@ -26,6 +26,18 @@ internal class Placement(
     val project: (Int, Int) -> Point,
 )
 
+/**
+ * Work the search does, counted for tests that bound it: pixels stepped in
+ * cross-checks, stored candidates compared while merging, pixels in the
+ * windows searched for alignment patterns, and maps sampled.
+ */
+internal class Work {
+    var steps = 0L
+    var compared = 0L
+    var scanned = 0L
+    var maps = 0L
+}
+
 /** Mirrors the sign of a JavaScript comparator result: NaN and zero both mean "equal". */
 private fun sign(d: Double): Int = if (d < 0) -1 else if (d > 0) 1 else 0
 
@@ -71,15 +83,41 @@ private fun crossCheck(
     maxCount: Int,
     originalTotal: Int,
     tolerance: Double = 0.5,
+    work: Work? = null,
+): Double {
+    val counts = intArrayOf(0, 0, 0, 0, 0)
+    try {
+        return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+    } finally {
+        if (work != null) work.steps += counts.sum()
+    }
+}
+
+private fun runs(
+    image: BitImage,
+    x: Int,
+    y: Int,
+    dx: Int,
+    dy: Int,
+    maxCount: Int,
+    originalTotal: Int,
+    tolerance: Double,
+    counts: IntArray,
 ): Double {
     val width = image.width
     val height = image.height
     fun inside(px: Int, py: Int) = px >= 0 && py >= 0 && px < width && py < height
-    val counts = intArrayOf(0, 0, 0, 0, 0)
+    // A centre run past these lengths could not pass the checks below, so
+    // stopping there loses nothing and keeps a long dark stripe from costing its
+    // length. Back along the row or down the column, the total would be more
+    // than twice the row's. On the diagonal, whose four outer runs stop at
+    // maxCount, a centre in proportion is under 29 times maxCount (at the
+    // loosest tolerance, 1.05).
+    val longest = if (dx != 0 && dy != 0) 32 * (maxCount + 1) else 2 * originalTotal
     var px = x
     var py = y
     while (inside(px, py) && dark(image, px, py)) {
-        counts[2]++
+        if (++counts[2] > longest) return Double.NaN
         px -= dx
         py -= dy
     }
@@ -98,7 +136,7 @@ private fun crossCheck(
     px = x + dx
     py = y + dy
     while (inside(px, py) && dark(image, px, py)) {
-        counts[2]++
+        if (++counts[2] > longest) return Double.NaN
         px += dx
         py += dy
     }
@@ -131,37 +169,65 @@ private fun crossCheck(
  * is how far a run may stray from its share, in modules; a blurred light
  * ring needs more than the default half module.
  */
-internal fun findFinders(image: BitImage, tolerance: Double = 0.5): List<Finder> {
+internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? = null): List<Finder> {
     val width = image.width
     val height = image.height
     val found = ArrayList<Finder>()
-    fun consider(counts: IntArray, row: Int, end: Int): Boolean {
+    // Candidates filed by 16-pixel cell, so merging compares only nearby ones
+    // and a picture full of finder-like patterns costs in proportion to its size.
+    val cellSize = 16
+    val columns = width / cellSize + 1
+    fun across(x: Double): Int = min(columns - 1, floor(max(0.0, x) / cellSize).toInt())
+    fun down(y: Double): Int = floor(max(0.0, y) / cellSize).toInt()
+    val cells = HashMap<Int, ArrayList<Int>>()
+    fun file(i: Int) {
+        cells.getOrPut(down(found[i].y) * columns + across(found[i].x)) { ArrayList() }.add(i)
+    }
+    fun consider(counts: IntArray, y: Int, end: Int): Boolean {
         val total = counts.sum()
         var cx = centreFromEnd(counts, end.toDouble())
         val maxCount = counts[2]
-        val dy = crossCheck(image, floor(cx).toInt(), row, 0, 1, maxCount, total, tolerance)
+        val dy = crossCheck(image, floor(cx).toInt(), y, 0, 1, maxCount, total, tolerance, work)
         if (dy.isNaN()) return false
-        val cy = row + dy
-        val dx = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 0, maxCount, total, tolerance)
+        val cy = y + dy
+        val dx = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 0, maxCount, total, tolerance, work)
         if (dx.isNaN()) return false
         cx = floor(cx) + dx
-        val diagonal = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 1, maxCount * 2, total, tolerance + 0.25)
+        val diagonal = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 1, maxCount * 2, total, tolerance + 0.25, work)
         if (diagonal.isNaN()) return false
         val moduleSize = total / 7.0
-        for (f in found) {
-            if (abs(cy - f.y) <= moduleSize &&
-                abs(cx - f.x) <= moduleSize &&
-                (abs(moduleSize - f.moduleSize) <= 1 || abs(moduleSize - f.moduleSize) <= f.moduleSize * 0.25)
-            ) {
-                val n = f.count + 1
-                f.x = (f.x * f.count + cx) / n
-                f.y = (f.y * f.count + cy) / n
-                f.moduleSize = (f.moduleSize * f.count + moduleSize) / n
-                f.count = n
-                return true
+        // The earliest stored candidate within a module, of a like module size, takes this sighting.
+        var match = -1
+        for (r in down(cy - moduleSize)..down(cy + moduleSize)) {
+            for (c in across(cx - moduleSize)..across(cx + moduleSize)) {
+                val cell = cells[r * columns + c] ?: continue
+                for (i in cell) {
+                    if (work != null) work.compared++
+                    val f = found[i]
+                    if ((match < 0 || i < match) &&
+                        abs(cy - f.y) <= moduleSize &&
+                        abs(cx - f.x) <= moduleSize &&
+                        (abs(moduleSize - f.moduleSize) <= 1 || abs(moduleSize - f.moduleSize) <= f.moduleSize * 0.25)
+                    ) match = i
+                }
             }
         }
+        if (match >= 0) {
+            val f = found[match]
+            val before = down(f.y) * columns + across(f.x)
+            val n = f.count + 1
+            f.x = (f.x * f.count + cx) / n
+            f.y = (f.y * f.count + cy) / n
+            f.moduleSize = (f.moduleSize * f.count + moduleSize) / n
+            f.count = n
+            if (down(f.y) * columns + across(f.x) != before) {
+                cells[before]!!.remove(match)
+                file(match)
+            }
+            return true
+        }
         found.add(Finder(cx, cy, moduleSize, 1))
+        file(found.size - 1)
         return true
     }
 
@@ -334,7 +400,7 @@ private class Candidate(var x: Double, var y: Double, var count: Int)
  * [wide] pixels along a row and [tall] down a column. Candidates seen on two
  * or more rows come first, then nearest the estimate.
  */
-private fun findAlignments(image: BitImage, estimate: Point, wide: Double, tall: Double, reach: Int): List<Point> {
+private fun findAlignments(image: BitImage, estimate: Point, wide: Double, tall: Double, reach: Int, work: Work?): List<Point> {
     val moduleSize = max(wide, tall)
     val radius = ceil(reach * moduleSize).toInt()
     val left = max(0, floor(estimate.x - radius).toInt())
@@ -342,6 +408,7 @@ private fun findAlignments(image: BitImage, estimate: Point, wide: Double, tall:
     val top = max(0, floor(estimate.y - radius).toInt())
     val bottom = min(image.height - 1, ceil(estimate.y + radius).toInt())
     if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return emptyList()
+    if (work != null) work.scanned += (right - left + 1).toLong() * (bottom - top + 1)
     fun fits(n: Double) = abs(n - wide) < wide * 0.6
     fun fitsDown(n: Double) = abs(n - tall) < tall * 0.6
     fun vertical(x: Int, y: Int): Double {
@@ -488,7 +555,7 @@ private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): 
  * pattern (when the version has one), then one through the fourth corner.
  * [sizeHint] overrides the estimated module count.
  */
-internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null): List<Placement> {
+internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null, work: Work? = null): List<Placement> {
     val topLeft = triple[0].point()
     val topRight = triple[1].point()
     val bottomLeft = triple[2].point()
@@ -572,7 +639,7 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
         val scored = ArrayList<Scored>()
         for (reach in intArrayOf(4, 8, 16)) {
             for (estimate in estimates) {
-                for (p in findAlignments(image, estimate, wide, tall, reach)) {
+                for (p in findAlignments(image, estimate, wide, tall, reach, work)) {
                     if (scored.any { distance(it.p, p) <= moduleSize / 2 }) continue
                     val score = max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
                     scored.add(Scored(p, score, near(p)))
