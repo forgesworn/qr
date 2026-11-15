@@ -111,7 +111,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion): DecodeR
 private fun search(image: BitImage, inverted: Boolean): DecodeResult? {
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
-        val triples = finderTriples(findFinders(image, tolerance)).take(MAX_TRIPLES)
+        val triples = finderTriples(image, findFinders(image, tolerance)).take(MAX_TRIPLES)
         for (triple in triples) {
             val first = locate(image, triple)
             if (first.isEmpty()) continue

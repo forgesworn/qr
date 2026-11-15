@@ -1,5 +1,5 @@
 {
- "note": "Synthetic frames for decoder ports. Each PNG is 8-bit greyscale; text is the exact payload. \"typescript\" and \"jsqr\" record which decoders read it when the frames were made. All payloads are made up.",
+ "note": "Synthetic frames for decoder ports. Each PNG is 8-bit greyscale; text is the exact payload. \"typescript\" records whether this decoder read it when the frames were made, and \"jsqr\" whether an independent decoder did. All payloads are made up.",
  "frames": [
   {
    "file": "frame-01.png",
@@ -515,7 +515,7 @@
     "mirror": false,
     "seed": 30
    },
-   "typescript": false,
+   "typescript": true,
    "jsqr": false
   },
   {
@@ -626,6 +626,234 @@
    },
    "typescript": true,
    "jsqr": false
+  },
+  {
+   "file": "frame-37.png",
+   "text": "https://example.com/r/f54deebfa2ef?k=_HjgvlC2CK3ubv3wrlGlGl",
+   "ecc": "Q",
+   "version": 5,
+   "shot": {
+    "scale": 5.42,
+    "angle": 259,
+    "perspective": 0.41,
+    "noise": 0,
+    "blur": 1,
+    "invert": false,
+    "mirror": false,
+    "turn": 0,
+    "seed": 37
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-38.png",
+   "text": "bunker://af1223369d4f177c849525d6335e48a1a6b24fc4254106707e8718346eab70fa?relay=wss%3A%2F%2Frelay.example.com&secret=6f2126dce55c27e8",
+   "ecc": "H",
+   "version": 11,
+   "shot": {
+    "scale": 3.13,
+    "angle": 112.8,
+    "perspective": 0.32,
+    "noise": 0,
+    "blur": 0,
+    "invert": true,
+    "mirror": false,
+    "turn": 1,
+    "seed": 38
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-39.png",
+   "text": "nostrconnect://cb64186299ddb66329f9af1225178616606aeb0371e7de887b14451d5a679204?relay=wss%3A%2F%2Frelay.example.com&secret=1bfaadbb&name=Example",
+   "ecc": "Q",
+   "version": 10,
+   "shot": {
+    "scale": 3.18,
+    "angle": 71.7,
+    "perspective": 0.4,
+    "noise": 27,
+    "blur": 1,
+    "invert": false,
+    "mirror": false,
+    "turn": 2,
+    "seed": 39
+   },
+   "typescript": false,
+   "jsqr": false
+  },
+  {
+   "file": "frame-40.png",
+   "text": "LIGHTNING:LNBCGG0W0U5Y0Q4T27P63JH083EGCA20SKVVN116K3E5F1ECQ6YFN2GW1XFENXVR6ND4QRQGTXWFMWJC58RVT5PQ6Z51GYZZKAGVGKXC8DGZ3CTTH6S2CALTWZPJKDMRT8AU8Z6K9818DNT8335FPHDT5C2AS37Q8FJP01TZ34D73Z8ZP9KCT9WDWAE812D4K16W78QNSF85ZK4U9E",
+   "ecc": "M",
+   "version": 8,
+   "shot": {
+    "scale": 4.32,
+    "angle": 167.6,
+    "perspective": 0.33,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 3,
+    "seed": 40
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-41.png",
+   "text": "950219424957992014196102284079000345978277920199",
+   "ecc": "M",
+   "version": 2,
+   "shot": {
+    "scale": 4.32,
+    "angle": 42.2,
+    "perspective": 0.42,
+    "noise": 24,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 0,
+    "seed": 41
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-42.png",
+   "text": "https://example.com/r/53a49022a69b?k=Oj6-HTfpOjThDo_2-RpFWN&h=z8MgZJ_Zv7xHd13_CH0Zw9OH2ayn5Vec_v6ZUDPxOYEiosYr3fdP6i-4ohN6p12F31qmvLOX_Sh8_35PZ_0pvbbJk_voBHFjfGHk1hgra17P0OWtAPcJSholmAR9dN",
+   "ecc": "H",
+   "version": 14,
+   "shot": {
+    "scale": 5.41,
+    "angle": 347.8,
+    "perspective": 0.35,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 1,
+    "seed": 42
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-43.png",
+   "text": "https://example.com/r/28bd747b81e1?k=2_BC0PTbSQ70Yr0-pPWY_0",
+   "ecc": "H",
+   "version": 7,
+   "shot": {
+    "scale": 4.06,
+    "angle": 5.6,
+    "perspective": 0.39,
+    "noise": 11,
+    "blur": 1,
+    "invert": false,
+    "mirror": true,
+    "turn": 2,
+    "seed": 43
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-44.png",
+   "text": "bunker://f096d2d7cb649c0f578da1bf70b559b62951a01a4ac175e1bb4d47859c2f4ef1?relay=wss%3A%2F%2Frelay.example.com&secret=0c1ecf471f01870d",
+   "ecc": "Q",
+   "version": 10,
+   "shot": {
+    "scale": 4.59,
+    "angle": 256.7,
+    "perspective": 0.44,
+    "noise": 24,
+    "blur": 1,
+    "invert": true,
+    "mirror": false,
+    "turn": 3,
+    "seed": 44
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-45.png",
+   "text": "nostrconnect://34f80b1f9e1067852301daaee3ccf3eccdad7b96e7cfb62b82b2251b35437bfe?relay=wss%3A%2F%2Frelay.example.com&secret=cf1bc006&name=Example",
+   "ecc": "M",
+   "version": 8,
+   "shot": {
+    "scale": 5.75,
+    "angle": 116.3,
+    "perspective": 0.43,
+    "noise": 23,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 0,
+    "seed": 45
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-46.png",
+   "text": "LIGHTNING:LNBC1EXT3GHNQYGJ10D3RQSYVR8XFU73QF24UEEU9WWP7ZZC1SX3G19GP1FS292NV5GX7FM6CG8XHS17GHMAGS5CRNYD0XCH0EA7MH2UT90F9J9PW8AEFMQMEJP0JZSFYA31GJGCFRW6U22ATRPA4AJYDWXTF8RD8QCW9JQ2DF701NDTGFGHDKCRQADU52EDD7EKRGXV1",
+   "ecc": "H",
+   "version": 12,
+   "shot": {
+    "scale": 5.04,
+    "angle": 195.6,
+    "perspective": 0.37,
+    "noise": 24,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 1,
+    "seed": 46
+   },
+   "typescript": true,
+   "jsqr": false
+  },
+  {
+   "file": "frame-47.png",
+   "text": "622591144140293920910113086079005485187617602000",
+   "ecc": "M",
+   "version": 2,
+   "shot": {
+    "scale": 4.16,
+    "angle": 124.5,
+    "perspective": 0.4,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 2,
+    "seed": 47
+   },
+   "typescript": true,
+   "jsqr": true
+  },
+  {
+   "file": "frame-48.png",
+   "text": "https://example.com/r/bbb98975665a?k=JYAyZyGggz2P_UQUg5IULk&h=787cVH9EFQUA-cOKt-EPzfVEaArdBL-h62yLL1tbhZQYCxiM2zwaZqKcY8KAEyv9O2Oq3DL9319Uq1Fu",
+   "ecc": "L",
+   "version": 7,
+   "shot": {
+    "scale": 3.57,
+    "angle": 34.8,
+    "perspective": 0.31,
+    "noise": 0,
+    "blur": 0,
+    "invert": false,
+    "mirror": false,
+    "turn": 3,
+    "seed": 48
+   },
+   "typescript": true,
+   "jsqr": true
   }
  ]
 }

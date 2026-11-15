@@ -69,7 +69,7 @@ export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeRes
 function search(image: BitImage, inverted: boolean): DecodeResult | undefined {
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
-    const triples = finderTriples(findFinders(image, tolerance)).slice(0, MAX_TRIPLES)
+    const triples = finderTriples(image, findFinders(image, tolerance)).slice(0, MAX_TRIPLES)
     for (const triple of triples) {
       const first = locate(image, triple)
       if (first.length === 0) continue
