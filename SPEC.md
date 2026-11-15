@@ -596,11 +596,11 @@ and mirrored, dark on light and light on dark, while an empty payload and
 payloads of zero bytes that leave whole blocks zero must read back.
 
 The reduced-size pass has tests of its own in both ports, from seeds of
-their own. 200 symbols of versions 1 to 4, one block a few codewords past
-its parity, and 100 with 4 to 16% of modules flipped anywhere, drawn at
+their own. 200 symbols of versions 1 to 4, one block one to three
+codewords past what Table 9 lets it correct, and 100 with 4 to 16% of modules flipped anywhere, drawn at
 16, 24 or 32 pixels a module with noise, some mirrored or inverted: each
-must read as nothing or its own text, every one damaged past its parity
-as nothing, and on every one of those the counter must show maps sampled
+must read as nothing or its own text, every one damaged past that as
+nothing, and on every one of those the counter must show maps sampled
 at reduced size; on nearly all, maps were left and every factor's picture
 held a finder triple, so each factor was searched. Symbols of nothing but
 zero codewords, at versions 1, 2 and 5, all eight masks, 16 and 24 pixels

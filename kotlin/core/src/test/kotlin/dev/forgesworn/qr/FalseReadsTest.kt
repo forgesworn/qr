@@ -175,8 +175,8 @@ class FalseReadsTest {
     /**
      * A symbol of version 1 to 4 drawn with large modules, 16, 24 or 32 pixels,
      * so the reduced-size pass finds it at every factor. CODEWORDS damages one
-     * block a few codewords past its parity, finders, timing and format whole;
-     * FLIPS turns over modules anywhere.
+     * block one to three codewords past what it may correct, finders, timing
+     * and format whole; FLIPS turns over modules anywhere.
      */
     private fun damagedClose(kind: Kind, random: Random): Pair<String, Frame> {
         val version = 1 + fl(random.next() * 4)
@@ -192,8 +192,8 @@ class FalseReadsTest {
         if (kind == Kind.CODEWORDS) {
             val blocks = codewordModules(qr.version, ecc)
             val block = blocks[fl(random.next() * blocks.size)]
-            val ec = blocksFor(qr.version, ecc)[0]
-            val errors = minOf(block.size, ec / 2 + 1 + fl(random.next() * 3))
+            // One to three errors past what Table 9 lets the block correct.
+            val errors = minOf(block.size, correctable(qr.version, ecc) + 1 + fl(random.next() * 3))
             val order = IntArray(block.size) { it }
             for (i in 0 until errors) {
                 val j = i + fl(random.next() * (order.size - i))

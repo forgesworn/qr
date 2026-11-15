@@ -5,6 +5,7 @@
 // builds the same frames from the same generator (FalseReadsTest.kt).
 import { describe, expect, it } from 'vitest'
 import { decodeCounted } from '../src/decode.js'
+import { correctable } from '../src/symbol.js'
 import { blocksFor, encode, Grid, type ErrorCorrection } from '../src/encode.js'
 import { binarise, invert, shrink, toLuminance } from '../src/binarise.js'
 import { estimateSize, finderTriples, findFinders, type Work } from '../src/locate.js'
@@ -171,8 +172,8 @@ function damagedLarge(random: () => number, only?: number, lens: readonly number
 /**
  * A symbol of version 1 to 4 drawn with large modules, 16, 24 or 32 pixels,
  * so the reduced-size pass finds it at every factor. `codewords` damages one
- * block a few codewords past its parity, finders, timing and format whole;
- * `flips` turns over modules anywhere.
+ * block one to three codewords past what it may correct, finders, timing
+ * and format whole; `flips` turns over modules anywhere.
  */
 function damagedClose(kind: 'codewords' | 'flips', random: () => number): { text: string; frame: Frame } {
   const version = 1 + Math.floor(random() * 4)
@@ -188,8 +189,8 @@ function damagedClose(kind: 'codewords' | 'flips', random: () => number): { text
   if (kind === 'codewords') {
     const blocks = codewordModules(qr.version, ecc)
     const block = blocks[Math.floor(random() * blocks.length)]!
-    const ec = blocksFor(qr.version, ecc)[0]
-    const errors = Math.min(block.length, Math.floor(ec / 2) + 1 + Math.floor(random() * 3))
+    // One to three errors past what Table 9 lets the block correct.
+    const errors = Math.min(block.length, correctable(qr.version, ecc) + 1 + Math.floor(random() * 3))
     const order = block.map((_, i) => i)
     for (let i = 0; i < errors; i++) {
       const j = i + Math.floor(random() * (order.length - i))

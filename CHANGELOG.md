@@ -44,7 +44,8 @@
   a screen's moire or grain read. The reduced sizes share the frame's caps
   on maps and second looks, and a read there counts only if both format
   copies agree with its level and mask. The caps are unchanged, but a frame
-  with no code in it now costs more on average.
+  with no code in it now costs more on average. Two more photographs of the
+  test set read, so the floor is 179.
 - The decoder reads hanzi segments (GB2312).
 - The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given
