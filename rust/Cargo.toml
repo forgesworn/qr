@@ -4,7 +4,7 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 license = "MIT"
-description = "The front end of the QR decoder: greyscale, binarisation, reduction and the finder scan."
+description = "The QR decoder's ordinary search: greyscale, binarisation, finders, sampling maps and module reading."
 
 [lib]
 crate-type = ["rlib", "cdylib"]
