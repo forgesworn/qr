@@ -7,7 +7,7 @@ Instructions in this file apply to the entire repository.
 `@forgesworn/qr`: a QR code encoder with no runtime dependencies, for
 browsers, workers and Node. ESM only, Node.js `>=22.13`. SPEC.md defines
 the encoder exactly. The decoder is in `src/` too. A pure-JVM Kotlin port of
-both is in `kotlin/`; a Rust port is planned to the same spec and the same
+both is in `kotlin/`; a Rust port is in progress to the same spec and the same
 vectors.
 
 ## Commands
@@ -50,13 +50,18 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
   hash-checked jar and is not committed.
 - `test/` - Vitest suites.
 - `rust/` - a Rust port in progress, with no dependencies: the whole
-  decoder (ordinary search, second look and reduced sizes) and no encoder.
+  decoder (ordinary search, second look and reduced sizes), the encoder
+  (`encode`, optimal segmentation) and the SVG and terminal renderers; no
+  canvas renderer.
   It bundles no character tables, so kanji and most ECI text is as
   SPEC.md gives for a platform without them, and it refuses hanzi symbols.
   `rust/examples/dump.rs` and `rust/bench/dump.mjs` print the same line
   for each reading, to be compared with `cmp`. Its tests read
-  `vectors/conformance.json`; `rust/bench/` times its WebAssembly build
-  against the TypeScript.
+  `vectors/conformance.json` and `vectors/encode-vectors.json`;
+  `rust/examples/render_dump.rs` and `rust/bench/render-dump.mjs` print a
+  hash per rendering for the same comparison; `rust/bench/` times its
+  WebAssembly build against the TypeScript and checks the WebAssembly
+  encoder against it.
 - `kotlin/core/src/main/kotlin/dev/forgesworn/qr/` - the Kotlin port; it is
   vendored as a unit, so keep it self-contained (no Android or third-party
   imports). `kotlin/core/src/test/` reads `vectors/` and uses ZXing as a
