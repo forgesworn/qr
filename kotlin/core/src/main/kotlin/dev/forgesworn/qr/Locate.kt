@@ -3,7 +3,6 @@ package dev.forgesworn.qr
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -92,9 +91,16 @@ private fun dark(image: BitImage, x: Int, y: Int): Boolean {
     return i >= 0 && i < image.data.size && image.data[i].toInt() == 1
 }
 
-private fun distance(a: Point, b: Point): Double = hypot(a.x - b.x, a.y - b.y)
+/**
+ * The length of (dx, dy) as sqrt(dx * dx + dy * dy): two products, a sum and
+ * a square root, which every language rounds the same way. A library's
+ * hypot may differ in the last place from one platform to the next.
+ */
+private fun length(dx: Double, dy: Double): Double = sqrt(dx * dx + dy * dy)
 
-private fun distance(a: Finder, b: Finder): Double = hypot(a.x - b.x, a.y - b.y)
+private fun distance(a: Point, b: Point): Double = length(a.x - b.x, a.y - b.y)
+
+private fun distance(a: Finder, b: Finder): Double = length(a.x - b.x, a.y - b.y)
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
 private fun finderRatio(counts: IntArray, tolerance: Double = 0.5): Boolean {
@@ -369,7 +375,7 @@ internal fun finderTriples(image: BitImage, finders: List<Finder>): List<Array<F
                 val uy = p.y - topLeft.y
                 val vx = q.x - topLeft.x
                 val vy = q.y - topLeft.y
-                val cos = abs(ux * vx + uy * vy) / hypot(ux, uy) / hypot(vx, vy)
+                val cos = abs(ux * vx + uy * vy) / length(ux, uy) / length(vx, vy)
                 val mismatch = abs(one - other) / max(one, other)
                 if (cos > 0.5 || mismatch > 0.25) continue
                 // In picture coordinates (y down) top-right x bottom-left is positive.
@@ -417,7 +423,7 @@ private fun blackWhiteBlack(image: BitImage, from: Point, to: Point): Double {
             val ry = if (steep) x else y
             if (rx < 0 || ry < 0 || rx >= image.width || ry >= image.height) break
             if ((state == 1) == dark(image, rx, ry)) {
-                if (state == 2) return hypot((x - sx).toDouble(), (y - sy).toDouble())
+                if (state == 2) return length((x - sx).toDouble(), (y - sy).toDouble())
                 state++
             }
             error += dy
@@ -428,7 +434,7 @@ private fun blackWhiteBlack(image: BitImage, from: Point, to: Point): Double {
             }
             x += xstep
         }
-        return if (state == 2) hypot((tx + xstep - sx).toDouble(), (ty - sy).toDouble()) else Double.NaN
+        return if (state == 2) length((tx + xstep - sx).toDouble(), (ty - sy).toDouble()) else Double.NaN
     }
 
     val sx = floor(from.x).toInt()

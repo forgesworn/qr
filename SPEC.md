@@ -272,6 +272,13 @@ pipeline:
 9. Reduced size: only when the second look has found nothing too, the
    picture shrunk and searched again. See below.
 
+### Arithmetic
+
+Real numbers are IEEE 754 doubles, and each expression is evaluated in the
+order written. A length is `sqrt(dx * dx + dy * dy)`, never a library
+`hypot`, whose last place differs between platforms. Rounding to a whole
+number is `floor(x + 0.5)`. Sorts keep the order of equal items.
+
 ### Binarisation, exactly
 
 Step 2, as `vectors/conformance.json` checks it (`bits`).
