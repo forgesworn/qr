@@ -2,12 +2,15 @@
 // `npm run fetch-photos` to download them into vectors/photos-cache/ (hash-checked
 // and converted to 8-bit greyscale). Without the cache this file skips.
 //
-// vectors/photos.json holds the expected text and the baseline. The test fails if
+// vectors/photos.json holds paths, hashes and the baseline; the expected text is
+// read at run time from the hash-pinned .txt files in the cache. The test fails if
 // any photo decodes to the wrong text, or if fewer photos are read than the
 // recorded floor. QR_WRITE_PHOTOS=1 re-takes the baseline from the current decoder.
 //
 // Expected text is compared exactly as stored (UTF-8, no trimming, no newline
 // normalisation): some expected texts end in a newline or hold CRLF on purpose.
+// Failure messages name the photo and what the decoder returned, never the expected text.
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import jsQRModule from 'jsqr'
 import { describe, expect, it } from 'vitest'
@@ -27,7 +30,7 @@ interface Photo {
   file: string
   sha256: string
   pixelsSha256?: string
-  text: string
+  textSha256: string
   /** This decoder read it when the baseline was taken. */
   typescript: boolean
   /** The comparison library read it when the baseline was taken (information only). */
@@ -43,7 +46,13 @@ interface Manifest {
 
 const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8')) as Manifest
 const greyUrl = (p: Photo) => new URL(`grey/${p.id}.png`, CACHE)
-const cached = manifest.photos.every((p) => existsSync(greyUrl(p)))
+const textUrl = (p: Photo) => new URL(`raw/${p.id}.txt`, CACHE)
+const cached = manifest.photos.every((p) => existsSync(greyUrl(p)) && existsSync(textUrl(p)))
+function expected(p: Photo): string {
+  const bytes = readFileSync(textUrl(p))
+  if (createHash('sha256').update(bytes).digest('hex') !== p.textSha256) throw new Error(`expected-text file for ${p.id} does not match its hash; run npm run fetch-photos`)
+  return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+}
 const load = (p: Photo) => readPng(new Uint8Array(readFileSync(greyUrl(p))))
 
 function summary(photos: Photo[]): string {
@@ -73,10 +82,11 @@ describe.skipIf(!cached)('photographs', () => {
       const wrong: string[] = []
       for (const p of manifest.photos) {
         const image = load(p)
+        const want = expected(p)
         const text = decode(image)?.text
-        if (text !== undefined && text !== p.text) wrong.push(`${p.id}: ${JSON.stringify(text).slice(0, 80)} instead of ${JSON.stringify(p.text).slice(0, 80)}`)
-        p.typescript = text === p.text
-        p.jsqr = jsQR(toRgba(image), image.width, image.height, { inversionAttempts: 'attemptBoth' })?.data === p.text
+        if (text !== undefined && text !== want) wrong.push(`${p.id}: decoder returned ${JSON.stringify(text).slice(0, 80)}`)
+        p.typescript = text === want
+        p.jsqr = jsQR(toRgba(image), image.width, image.height, { inversionAttempts: 'attemptBoth' })?.data === want
         const px = pixels.get(p.id)
         if (px) p.pixelsSha256 = px
       }
@@ -98,13 +108,13 @@ describe.skipIf(!cached)('photographs', () => {
   it('never returns the wrong text', () => {
     const wrong = manifest.photos.filter((p) => {
       const text = read(p)
-      return text !== undefined && text !== p.text
+      return text !== undefined && text !== expected(p)
     })
     expect(wrong.map((p) => p.id)).toEqual([])
   }, 1_800_000)
 
   it('reads at least as many photographs as the recorded baseline', () => {
-    const readIds = manifest.photos.filter((p) => read(p) === p.text).map((p) => p.id)
+    const readIds = manifest.photos.filter((p) => read(p) === expected(p)).map((p) => p.id)
     const lost = manifest.photos.filter((p) => p.typescript && !readIds.includes(p.id)).map((p) => p.id)
     console.log(`photographs read: ${readIds.length}/${manifest.photos.length} (floor ${manifest.ratchet.typescript}); baseline images no longer read: ${lost.join(' ') || 'none'}`)
     expect(readIds.length).toBeGreaterThanOrEqual(manifest.ratchet.typescript)
