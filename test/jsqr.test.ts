@@ -75,6 +75,46 @@ describe('jsQR reads what we encode', () => {
     }
   })
 
+  it('reads mixed segments, with and without the ECI designator', () => {
+    const runs = ['abcdefghxyz-._~?=&', '0123456789', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:', 'éü☕会😀']
+    let mixed = 0
+    for (let i = 0; i < 80; i++) {
+      let text = ''
+      const length = 1 + Math.floor(rand() ** 2 * 1200)
+      while (text.length < length) {
+        const set = runs[Math.floor(rand() * runs.length)]!
+        for (let k = 1 + Math.floor(rand() * 30); k > 0; k--) text += Array.from(set)[Math.floor(rand() * Array.from(set).length)]
+      }
+      const ecc = LEVELS[i % 4]!
+      let qr: QrCode
+      try {
+        qr = encode(text, { ecc, eci: i % 2 === 1 })
+      } catch {
+        continue
+      }
+      if (qr.segments.length > 1) mixed++
+      expect(read(qr), `${i}: ${qr.segments.length} segments, v${qr.version}${ecc}`).toEqual([...new TextEncoder().encode(text)])
+    }
+    expect(mixed).toBeGreaterThan(50)
+  })
+
+  it('reads payment-URI shapes encoded as mixed segments', () => {
+    const bech32 = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+    const pick = (n: number) => Array.from({ length: n }, () => bech32[Math.floor(rand() * 32)]).join('').toUpperCase()
+    for (const text of [
+      `lightning:LNBC2500U1P${pick(330)}`,
+      `bitcoin:BC1Q${pick(38)}?amount=0.00025000&lightning=LNBC2500U1P${pick(330)}`,
+      `lightning:LNURL1${pick(180)}`,
+      'https://id.example.com/01/09506000134352/10/ABC123/21/000000012345',
+    ]) {
+      for (const ecc of LEVELS) {
+        const qr = encode(text, { ecc })
+        expect(qr.segments.length).toBeGreaterThan(1)
+        expect(read(qr)).toEqual([...new TextEncoder().encode(text)])
+      }
+    }
+  })
+
   it('reads arbitrary bytes', () => {
     const bytes = Uint8Array.from({ length: 256 }, (_, i) => i)
     expect(read(encode(bytes, { ecc: 'L' }))).toEqual([...bytes])

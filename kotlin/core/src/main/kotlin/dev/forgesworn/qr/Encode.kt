@@ -5,8 +5,15 @@ import kotlin.math.abs
 /** Error correction level: about 7, 15, 25 or 30 per cent of codewords recoverable. */
 enum class ErrorCorrection { L, M, Q, H }
 
-/** Data mode of the single segment a code carries. */
+/** Data mode of a segment. */
 enum class Mode { NUMERIC, ALPHANUMERIC, BYTE }
+
+/**
+ * One data segment of a symbol, in stream order.
+ *
+ * @property count The character count field: characters in numeric and alphanumeric mode, bytes in byte mode.
+ */
+data class Segment(val mode: Mode, val count: Int)
 
 /**
  * Options for [encode].
@@ -16,11 +23,12 @@ enum class Mode { NUMERIC, ALPHANUMERIC, BYTE }
  *   [minVersion], that fits.
  * @property minVersion Smallest version to consider when choosing one. Default 1.
  * @property mask Mask pattern, 0-7. Default: the pattern with the lowest penalty score.
- * @property mode Data mode. Default for text: numeric if every character is a digit, alphanumeric if
- *   every character is in that set, otherwise byte. Bytes are always byte mode.
- * @property eci In byte mode, prefix an ECI designator for UTF-8 (assignment 26) so a reader need not
- *   guess the encoding. Default false: most readers assume UTF-8 for byte mode, and the designator
- *   costs 12 bits.
+ * @property mode Encode the whole text as one segment of this mode. Default for text: the mix of
+ *   numeric, alphanumeric and byte segments with the fewest bits (SPEC.md, Mode). Bytes are always
+ *   one byte segment.
+ * @property eci When the symbol has a byte segment, start the stream with an ECI designator for UTF-8
+ *   (assignment 26) so a reader need not guess the encoding. Default false: most readers assume
+ *   UTF-8 for byte mode, and the designator costs 12 bits.
  */
 data class EncodeOptions(
     val ecc: ErrorCorrection = ErrorCorrection.M,
@@ -34,8 +42,11 @@ data class EncodeOptions(
 /**
  * An encoded symbol.
  *
+ * @property mode The widest mode among [segments]: byte if any is byte, else alphanumeric if any is,
+ *   else numeric.
  * @property size Modules per side, 17 + 4 * version. Excludes the quiet zone.
  * @property modules Row-major modules, `size * size` entries, 1 for dark.
+ * @property segments The data segments in stream order.
  */
 class QrCode(
     val version: Int,
@@ -44,11 +55,12 @@ class QrCode(
     val mode: Mode,
     val size: Int,
     val modules: ByteArray,
+    val segments: List<Segment> = listOf(),
 ) {
     /** True if the module at column [x], row [y] is dark; false outside the symbol, as the quiet zone is light. */
     fun isDark(x: Int, y: Int): Boolean = x in 0 until size && y in 0 until size && modules[y * size + x].toInt() == 1
 
-    override fun toString(): String = "QrCode(version=$version, ecc=$ecc, mask=$mask, mode=$mode, size=$size)"
+    override fun toString(): String = "QrCode(version=$version, ecc=$ecc, mask=$mask, mode=$mode, size=$size, segments=$segments)"
 }
 
 /** Thrown when the data does not fit the requested or any version. */
@@ -60,6 +72,7 @@ fun isDark(qr: QrCode, x: Int, y: Int): Boolean = qr.isDark(x, y)
 internal const val ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ \$%*+-./:"
 internal val EC_ORDER: Array<ErrorCorrection> = arrayOf(ErrorCorrection.L, ErrorCorrection.M, ErrorCorrection.Q, ErrorCorrection.H)
 private val EC_FORMAT_BITS: IntArray = intArrayOf(1, 0, 3, 2) // L, M, Q, H
+private val MODES: Array<Mode> = arrayOf(Mode.NUMERIC, Mode.ALPHANUMERIC, Mode.BYTE)
 private fun modeBits(mode: Mode): Int = when (mode) {
     Mode.NUMERIC -> 1
     Mode.ALPHANUMERIC -> 2
@@ -75,11 +88,16 @@ private fun countBitsFor(mode: Mode, band: Int): Int = when (mode) {
 private const val ECI_MODE = 7
 private const val ECI_UTF8 = 26
 
-/** Encodes text (as UTF-8 in byte mode) as one QR code. */
+/** Encodes text (as UTF-8 in byte segments) as one QR code. */
 fun encode(text: String, options: EncodeOptions = EncodeOptions()): QrCode = encodeData(text, null, options)
 
-/** Encodes bytes, always in byte mode, as one QR code. */
+/** Encodes bytes, always as one byte segment, as one QR code. */
 fun encode(data: ByteArray, options: EncodeOptions = EncodeOptions()): QrCode = encodeData(null, data, options)
+
+/** One segment's data: the characters in numeric and alphanumeric mode, the bytes in byte mode. */
+private class Part(val mode: Mode, val text: String?, val bytes: ByteArray?) {
+    val count: Int get() = text?.length ?: bytes!!.size
+}
 
 private fun encodeData(text: String?, bytes: ByteArray?, options: EncodeOptions): QrCode {
     val ecc = options.ecc
@@ -95,25 +113,49 @@ private fun encodeData(text: String?, bytes: ByteArray?, options: EncodeOptions)
     if (!validVersion(minVersion)) throw IllegalArgumentException("minVersion must be an integer from 1 to 40")
     if (fixedVersion != null && fixedVersion < minVersion) throw IllegalArgumentException("Version is below minVersion")
 
-    val mode = chooseMode(text, options.mode)
-    val payload = segmentBits(text, bytes, mode)
-    val eci = mode == Mode.BYTE && options.eci
-
-    val version = fixedVersion ?: chooseVersion(mode, payload, eci, ecc, minVersion)
-    val capacity = dataCodewords(version, ecc) * 8
-    val countBits = countBitsFor(mode, countBand(version))
-    if (payload.count >= (1 shl countBits) || headerLength(countBits, eci) + payload.bits.size > capacity) {
-        throw QrCapacityError("Data does not fit version $version at level $ecc")
+    // One segment for bytes or a named mode; otherwise the cheapest mix, which
+    // depends on the count field band, so it is worked out per band as needed.
+    val single = singlePart(text, bytes, options.mode)
+    val analysed = if (single == null) analyse(text!!) else null
+    val plans = arrayOfNulls<List<Part>>(3)
+    fun plan(version: Int): List<Part> {
+        val band = countBand(version)
+        return plans[band] ?: (if (analysed == null) listOf(single!!) else optimalParts(analysed, band)).also { plans[band] = it }
+    }
+    fun fits(version: Int): Boolean {
+        val capacity = dataCodewords(version, ecc) * 8
+        // The data bits with each character in its cheapest mode bound every segmentation from below.
+        if (analysed != null && analysed.floor > capacity) return false
+        return streamLength(plan(version), version, options.eci) <= capacity
     }
 
+    var version = 0
+    if (fixedVersion != null) {
+        if (!fits(fixedVersion)) throw QrCapacityError("Data does not fit version $fixedVersion at level $ecc")
+        version = fixedVersion
+    } else {
+        for (v in minVersion..40) {
+            if (fits(v)) {
+                version = v
+                break
+            }
+        }
+        if (version == 0) throw QrCapacityError("Data does not fit any version at level $ecc")
+    }
+
+    val parts = plan(version)
+    val band = countBand(version)
+    val capacity = dataCodewords(version, ecc) * 8
     val bits = ArrayList<Int>(capacity)
-    if (eci) {
+    if (options.eci && parts.any { it.mode == Mode.BYTE }) {
         push(bits, ECI_MODE, 4)
         push(bits, ECI_UTF8, 8)
     }
-    push(bits, modeBits(mode), 4)
-    push(bits, payload.count, countBits)
-    for (bit in payload.bits) bits.add(bit)
+    for (part in parts) {
+        push(bits, modeBits(part.mode), 4)
+        push(bits, part.count, countBitsFor(part.mode, band))
+        appendData(bits, part)
+    }
     var t = 0
     while (t < 4 && bits.size < capacity) {
         bits.add(0)
@@ -158,53 +200,57 @@ private fun encodeData(text: String?, bytes: ByteArray?, options: EncodeOptions)
     } else {
         modules = grid.render(ecc, chosen)
     }
-    return QrCode(version, ecc, chosen, mode, grid.size, modules)
+    val mode = MODES[parts.maxOf { it.mode.ordinal }]
+    return QrCode(version, ecc, chosen, mode, grid.size, modules, parts.map { Segment(it.mode, it.count) })
 }
 
 private fun validVersion(v: Int): Boolean = v in 1..40
 
 internal fun countBand(version: Int): Int = if (version <= 9) 0 else if (version <= 26) 1 else 2
 
-private fun headerLength(countBits: Int, eci: Boolean): Int = (if (eci) 12 else 0) + 4 + countBits
-
-private fun chooseMode(text: String?, requested: Mode?): Mode {
+/** The one segment for bytes, a named mode or empty text; null when the encoder chooses a mix. */
+private fun singlePart(text: String?, bytes: ByteArray?, requested: Mode?): Part? {
     if (text == null) {
         if (requested != null && requested != Mode.BYTE) throw IllegalArgumentException("Bytes can only be encoded in byte mode")
-        return Mode.BYTE
+        return Part(Mode.BYTE, null, bytes!!)
     }
     if (requested == Mode.NUMERIC) {
         for (c in text) if (c < '0' || c > '9') throw IllegalArgumentException("Numeric mode takes digits only")
-        return Mode.NUMERIC
+        return Part(Mode.NUMERIC, text, null)
     }
     if (requested == Mode.ALPHANUMERIC) {
         for (c in text) if (ALPHANUMERIC.indexOf(c) < 0) throw IllegalArgumentException("Not in the alphanumeric set: $c")
-        return Mode.ALPHANUMERIC
+        return Part(Mode.ALPHANUMERIC, text, null)
     }
-    if (requested == Mode.BYTE) return Mode.BYTE
-    var numeric = true
-    for (c in text) {
-        if (c in '0'..'9') continue
-        if (ALPHANUMERIC.indexOf(c) < 0) return Mode.BYTE
-        numeric = false
-    }
-    return if (text.isNotEmpty() && numeric) Mode.NUMERIC else if (text.isNotEmpty()) Mode.ALPHANUMERIC else Mode.BYTE
+    if (requested == Mode.BYTE || text.isEmpty()) return Part(Mode.BYTE, null, utf8(text))
+    return null
 }
 
-private class SegmentPayload(
-    /** Characters for numeric and alphanumeric, bytes for byte mode. */
-    val count: Int,
-    val bits: List<Int>,
-)
-
-private fun segmentBits(text: String?, bytes: ByteArray?, mode: Mode): SegmentPayload {
-    val bits = ArrayList<Int>()
-    if (mode == Mode.BYTE) {
-        val data = bytes ?: utf8(text!!)
-        for (b in data) push(bits, b.toInt() and 0xff, 8)
-        return SegmentPayload(data.size, bits)
+/** Bits before the terminator: one ECI designator if asked for and any segment is byte, then each segment. */
+private fun streamLength(parts: List<Part>, version: Int, eci: Boolean): Int {
+    val band = countBand(version)
+    var total = if (eci && parts.any { it.mode == Mode.BYTE }) 12 else 0
+    for (part in parts) {
+        val countBits = countBitsFor(part.mode, band)
+        if (part.count >= (1 shl countBits)) return Int.MAX_VALUE
+        total += 4 + countBits + dataLength(part.mode, part.count)
     }
-    val t = text!!
-    if (mode == Mode.NUMERIC) {
+    return total
+}
+
+private fun dataLength(mode: Mode, n: Int): Int = when (mode) {
+    Mode.NUMERIC -> n / 3 * 10 + intArrayOf(0, 4, 7)[n % 3]
+    Mode.ALPHANUMERIC -> n / 2 * 11 + n % 2 * 6
+    Mode.BYTE -> n * 8
+}
+
+private fun appendData(bits: MutableList<Int>, part: Part) {
+    if (part.mode == Mode.BYTE) {
+        for (b in part.bytes!!) push(bits, b.toInt() and 0xff, 8)
+        return
+    }
+    val t = part.text!!
+    if (part.mode == Mode.NUMERIC) {
         var i = 0
         while (i < t.length) {
             val group = t.substring(i, minOf(i + 3, t.length))
@@ -220,12 +266,92 @@ private fun segmentBits(text: String?, bytes: ByteArray?, mode: Mode): SegmentPa
             i += 2
         }
     }
-    return SegmentPayload(t.length, bits)
 }
 
-/** UTF-8 bytes of [text], with lone surrogates as U+FFFD (as JavaScript's TextEncoder does). */
-internal fun utf8(text: String): ByteArray {
-    val out = ArrayList<Byte>(text.length)
+// Optimal segmentation (SPEC.md, Mode). The state before a character is the
+// open segment: 0 none, 1-3 numeric holding 3k, 3k+1 or 3k+2 digits, 4-5
+// alphanumeric holding an even or odd count, 6 byte. Costs are whole bits, so
+// totals and ties are exact. A backward pass gives each state's least
+// (bits, segments) to the end; the forward walk takes the first mode, in the
+// order numeric, alphanumeric, byte, that keeps that least.
+private val STATE_MODE = intArrayOf(-1, 0, 0, 0, 1, 1, 2)
+
+/** Bits for one more character in each state's segment (per UTF-8 byte in byte mode), and the state after it. */
+private val STEP_BITS = intArrayOf(0, 4, 3, 3, 6, 5, 8)
+private val STEP_NEXT = intArrayOf(0, 2, 3, 1, 5, 4, 6)
+
+/** The state whose step a new segment's first character takes, per mode. */
+private val OPENING = intArrayOf(1, 4, 6)
+
+/**
+ * Text ready for segmentation: code points, their kinds (0 digit, 1 other alphanumeric, 2 anything
+ * else) and UTF-8 lengths, and [floor], the data bits with each character in its cheapest mode and
+ * no headers, a lower bound for every segmentation.
+ */
+private class Analysed(val cps: IntArray, val kinds: IntArray, val lengths: IntArray, val floor: Double)
+
+private fun analyse(text: String): Analysed {
+    // Over 16384 code units is over 8192 characters, more than any symbol holds.
+    if (text.length > 16384) return Analysed(IntArray(0), IntArray(0), IntArray(0), Double.POSITIVE_INFINITY)
+    val cps = codePoints(text)
+    val kinds = IntArray(cps.size) {
+        val cp = cps[it]
+        if (cp in 0x30..0x39) 0 else if (cp < 0x80 && ALPHANUMERIC.indexOf(cp.toChar()) >= 0) 1 else 2
+    }
+    val lengths = IntArray(cps.size) {
+        val cp = cps[it]
+        if (cp < 0x80) 1 else if (cp < 0x800) 2 else if (cp < 0x10000) 3 else 4
+    }
+    var floor = 0.0
+    for (i in cps.indices) floor += if (kinds[i] == 0) 10.0 / 3 else if (kinds[i] == 1) 5.5 else 8.0 * lengths[i]
+    return Analysed(cps, kinds, lengths, floor)
+}
+
+/** The segments with the fewest bits at this band, with SPEC.md's tie-breaks. */
+private fun optimalParts(t: Analysed, band: Int): List<Part> {
+    val n = t.cps.size
+    val head = IntArray(3) { 4 + countBitsFor(MODES[it], band) }
+    // Cost to the end from each (position, state), as bits * 8192 + segments.
+    // Fewer than 8192 segments: text past the floor check has under 7100 characters.
+    val cost = LongArray((n + 1) * 7)
+    fun via(i: Int, s: Int, m: Int): Long {
+        val open = STATE_MODE[s] != m
+        val st = if (open) OPENING[m] else s
+        val bits = STEP_BITS[st] * (if (m == 2) t.lengths[i] else 1) + (if (open) head[m] else 0)
+        return bits.toLong() * 8192 + (if (open) 1 else 0) + cost[(i + 1) * 7 + STEP_NEXT[st]]
+    }
+    for (i in n - 1 downTo 0) {
+        for (s in 0 until 7) {
+            var best = Long.MAX_VALUE
+            for (m in t.kinds[i] until 3) best = minOf(best, via(i, s, m))
+            cost[i * 7 + s] = best
+        }
+    }
+    val parts = ArrayList<Part>()
+    fun close(start: Int, end: Int, m: Int) {
+        val slice = t.cps.copyOfRange(start, end)
+        parts.add(if (m == 2) Part(Mode.BYTE, null, encodeUtf8(slice)) else Part(MODES[m], String(slice, 0, slice.size), null))
+    }
+    var state = 0
+    var start = 0
+    for (i in 0 until n) {
+        var m = t.kinds[i]
+        while (via(i, state, m) != cost[i * 7 + state]) m++
+        val open = STATE_MODE[state] != m
+        if (open) {
+            if (i > 0) close(start, i, STATE_MODE[state])
+            start = i
+        }
+        state = STEP_NEXT[if (open) OPENING[m] else state]
+    }
+    close(start, n, STATE_MODE[state])
+    return parts
+}
+
+/** Code points of [text], with lone surrogates as U+FFFD (as JavaScript's TextEncoder does). */
+private fun codePoints(text: String): IntArray {
+    val out = IntArray(text.length)
+    var n = 0
     var i = 0
     while (i < text.length) {
         var c = text[i].code
@@ -236,7 +362,18 @@ internal fun utf8(text: String): ByteArray {
                 i++
             }
         }
-        if (c in 0xd800..0xdfff) c = 0xfffd
+        out[n++] = if (c in 0xd800..0xdfff) 0xfffd else c
+        i++
+    }
+    return out.copyOf(n)
+}
+
+/** UTF-8 bytes of [text], with lone surrogates as U+FFFD (as JavaScript's TextEncoder does). */
+internal fun utf8(text: String): ByteArray = encodeUtf8(codePoints(text))
+
+private fun encodeUtf8(cps: IntArray): ByteArray {
+    val out = ArrayList<Byte>(cps.size)
+    for (c in cps) {
         if (c < 0x80) {
             out.add(c.toByte())
         } else if (c < 0x800) {
@@ -252,18 +389,8 @@ internal fun utf8(text: String): ByteArray {
             out.add((0x80 or ((c shr 6) and 63)).toByte())
             out.add((0x80 or (c and 63)).toByte())
         }
-        i++
     }
     return out.toByteArray()
-}
-
-private fun chooseVersion(mode: Mode, payload: SegmentPayload, eci: Boolean, ecc: ErrorCorrection, minVersion: Int): Int {
-    for (v in minVersion..40) {
-        val countBits = countBitsFor(mode, countBand(v))
-        if (payload.count >= (1 shl countBits)) continue
-        if (headerLength(countBits, eci) + payload.bits.size <= dataCodewords(v, ecc) * 8) return v
-    }
-    throw QrCapacityError("Data does not fit any version at level $ecc")
 }
 
 /** [EC codewords per block, group 1 blocks, group 1 data codewords per block, group 2 blocks]. */

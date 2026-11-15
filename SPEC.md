@@ -7,34 +7,77 @@ Section numbers refer to ISO/IEC 18004:2015.
 
 ## Input
 
-- Text is encoded as UTF-8. Lone surrogates become U+FFFD.
-- Bytes are encoded as given, always in byte mode.
+- Text is a sequence of Unicode code points; lone surrogates become
+  U+FFFD. Byte segments carry the UTF-8 of their code points, so no
+  segment boundary falls inside a character.
+- Bytes are encoded as given, always as one byte segment.
 
 ## Mode
 
-One segment per symbol. Unless the caller names a mode, text whose every
-character is a digit is numeric; text whose every character is in
-`0-9 A-Z space $ % * + - . / :` is alphanumeric; anything else, and the
-empty string, is byte. Kanji mode and mixed segments are not produced.
+Bytes, text with a mode named by the caller, and the empty string are one
+segment: bytes and the empty string in byte mode (the empty string as a
+byte segment of count 0), named-mode text in that mode, which must hold
+every character. Kanji mode is not produced.
 
-With `eci: true`, a byte-mode symbol starts with the ECI designator
-`0111` and assignment 26 (UTF-8) as 8 bits (section 7.4.2). Numeric and
-alphanumeric symbols never carry one.
+Other text is split into numeric, alphanumeric and byte segments with
+the fewest bits, worked out exactly in whole bits as follows.
+
+- A digit `0-9` may go in any mode; any other character of
+  `A-Z space $ % * + - . / :` in alphanumeric or byte; anything else in
+  byte only.
+- A segment costs 4 bits of mode indicator, the count field (width by
+  version band below), and its data: numeric `10 * floor(n / 3)` plus 0,
+  4 or 7 for `n mod 3` = 0, 1, 2; alphanumeric `11 * floor(n / 2)` plus 6
+  if `n` is odd; byte 8 per UTF-8 byte. `n` is the segment's characters
+  (bytes in byte mode).
+- Count field widths are numeric 10, 12, 14; alphanumeric 9, 11, 13; byte
+  8, 16, 16 for versions 1-9, 10-26 and 27-40. The segmentation is chosen
+  for one band at a time, and a symbol uses the one for its version's
+  band, a fixed version included: the same text can split differently at
+  versions 9 and 10, or 26 and 27.
+- The ECI designator (below) costs 12 bits and appears only with a byte
+  segment. A byte segment is needed exactly when some character is
+  outside the alphanumeric set, so this cost is the same for every
+  segmentation of a text and does not affect the choice.
+- Count field limits never bind: a segment whose count overflows its
+  field cannot fit the capacity of any version in that band.
+
+Among the segmentations with the fewest bits, the one chosen has the
+fewest segments; among those, the one whose mode per character, read from
+the start, is earliest in the order numeric, alphanumeric, byte at the
+first character where two differ. Adjacent segments never share a mode.
+The result is unique, so every port gives the same segment list and bit
+stream. Some consequences: `abc123` is one byte segment (byte `abc` plus
+numeric `123` costs the same 60 bits at versions 1-9, but takes two
+segments); a run of six or seven digits between byte characters splits
+off at versions 1-9 only, and a run of eight at versions 1-26 only.
+
+The symbol reports its segments in order, each as a mode and a count, and
+its `mode` as the widest among them: byte if any segment is byte, else
+alphanumeric if any is, else numeric. For text that needs no named mode
+this is the mode the encoder used before it mixed segments.
+
+With `eci: true` and at least one byte segment, the stream starts with
+one ECI designator, `0111` and assignment 26 (UTF-8) as 8 bits (section
+7.4.2), before the first segment, whatever its mode. It covers every
+byte segment after it. A symbol with no byte segment never carries one.
 
 ## Version and level
 
 Level M unless the caller names one. The version is the smallest, from
-`minVersion` (default 1), whose data capacity holds the header (ECI if any,
-4-bit mode, character count in the width for that version band:
-1-9, 10-26, 27-40) and the data, and whose count field can hold the
-character count. A requested version that cannot hold the data is an
+`minVersion` (default 1), whose data capacity holds the stream (ECI if
+any, then every segment's header and data) for the segmentation of that
+version's band. A requested version that cannot hold the data is an
 error, never a silent upgrade. A requested version below `minVersion` is
 an argument error (`RangeError`, `IllegalArgumentException` in Kotlin),
 not a capacity error.
 
 ## Bit stream and error correction
 
-Terminator of up to four zero bits, zero bits to a byte boundary, then
+The segments in order, each its 4-bit mode indicator (numeric `0001`,
+alphanumeric `0010`, byte `0100`), count and data (section 7.4.3 to
+7.4.5), after the ECI designator if there is one. Then a terminator of
+up to four zero bits, zero bits to a byte boundary, then
 pad bytes `0xEC`, `0x11` alternately (section 7.4.10). Codewords split into
 blocks as Table 9 gives (group 2 blocks hold one more data codeword);
 Reed-Solomon over GF(256) with polynomial `0x11D`, generator roots
@@ -90,11 +133,42 @@ module rows per line with U+2580 (upper half), U+2584 (lower half), U+2588
 
 ## Vectors
 
-`vectors/encode-vectors.json` holds module matrices produced by ZXing core
-3.5.3 (`scripts/generate-vectors.sh`). They cover every version at full
-capacity, every mask, every level, all three modes, both count-length band
-edges, the empty string and UTF-8 with ECI. ZXing is a development-time
-oracle only and is not part of the package.
+`vectors/encode-vectors.json` holds 147 symbols produced with an
+independent reference encoder, pinned by version and hash in
+`scripts/generate-vectors.sh`. Each gives the input and options, the
+version, mask, widest mode, segment list, stream length in bits before
+the terminator, and the module rows. They cover every version at full
+capacity, every mask, every level, all three modes, both count field
+band edges, the empty string, UTF-8 with ECI, every ordered pair of
+modes in a mixed stream, three modes in one stream, ties, mixed
+segments either side of versions 9/10 and 26/27 (chosen and fixed),
+multi-byte UTF-8 with digit runs, ECI with and without a byte segment,
+and payment-URI shapes at every level. The reference encoder is a
+development-time oracle only and is not part of the package.
+
+What the oracle backs, and what it does not:
+
+- Oracle-backed: given a segment list, the bit stream (mode indicators,
+  count fields, data encoding), terminator, padding, Reed-Solomon
+  blocks, interleaving, matrix and mask penalties come from the
+  reference encoder's own routines, called from a generator compiled into
+  its encoder package. The ECI designator and the loop over masks are
+  written in the generator, as those routines are private. Every
+  single-segment symbol also matches the reference encoder's public
+  encode call module for module.
+- Not oracle-backed: the segment lists. The generator works them out with
+  its own implementation of the rule above, written apart from either
+  port. They are checked independently: against every per-character mode
+  assignment for short strings in all three bands; against a search over
+  every segment boundary for every vector text and random long text;
+  against the reference encoder's own minimal-segmentation mode for ASCII
+  text without ECI (never more bits nor a larger version, and fewer bits
+  on one vector, `mixed-three-modes`, 254 against 256); and by an
+  independent decoder reading mixed symbols back, with and without ECI.
+- The choice among segmentations with equal bits (the tie-breaks) is this
+  specification's own; only the bit count and version are compared with
+  the reference encoder's minimal mode, which need not break ties the
+  same way.
 
 ## Decoder
 
