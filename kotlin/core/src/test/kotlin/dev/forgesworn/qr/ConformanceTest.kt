@@ -58,6 +58,15 @@ class ConformanceTest {
     }
 
     @Test
+    fun holdsTheTablesOfEveryVersion() {
+        val tables = pack["tables"] as Map<String, Any?>
+        val blocks = (tables["blocks"] as List<List<List<Number>>>).map { levels -> levels.map { b -> b.map { it.toInt() } } }
+        val alignment = (tables["alignment"] as List<List<Number>>).map { c -> c.map { it.toInt() } }
+        assertEquals(EC_BLOCKS.map { levels -> levels.map { it.toList() } }, blocks)
+        assertEquals(ALIGNMENT_CENTRES.map { it.toList() }, alignment)
+    }
+
+    @Test
     fun convertsArgbToGreyscaleAsRecorded() {
         for (v in pack["luminance"] as List<Map<String, Any?>>) {
             val width = (v["width"] as Number).toInt()

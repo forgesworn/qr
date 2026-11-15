@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest'
 import { binarise, shrink, toLuminance } from '../src/binarise.js'
 import { decodeCounted, decodeModules } from '../src/decode.js'
 import { blocksFor, encode, FORMAT_COORDS, Grid, type ErrorCorrection } from '../src/encode.js'
+import { ALIGNMENT_CENTRES, EC_BLOCKS } from '../src/tables.js'
 import { estimateSize, findFinders, finderTriples, locate, type Work } from '../src/locate.js'
 import { seg, symbol } from './builder.js'
 import { bent, prng } from './photo.js'
@@ -36,6 +37,7 @@ interface Reading {
 
 interface Pack {
   note: string
+  tables: { blocks: number[][][]; alignment: number[][] }
   luminance: { width: number; height: number; rgba: string; grey: string }[]
   symbols: { name: string; size: number; rows: string[]; result: Reading | null }[]
   frames: {
@@ -273,7 +275,12 @@ function build(write: boolean): Pack {
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +
     'Generated from the TypeScript implementation; the Kotlin port passes them unchanged. All payloads are made up.'
-  return { note, luminance, symbols, frames }
+  // The standard's Table 9 and Annex E, so that a port need not own a copy of it.
+  const tables = {
+    blocks: EC_BLOCKS.map((levels) => levels.map((b) => [...b])),
+    alignment: ALIGNMENT_CENTRES.map((centres) => [...centres]),
+  }
+  return { note, tables, luminance, symbols, frames }
 }
 
 describe('conformance pack', () => {
@@ -297,6 +304,21 @@ describe('conformance pack', () => {
     expect(f.some((x) => x.result?.location.alignment)).toBe(true)
     expect(pack.symbols.some((s) => s.result === null)).toBe(true)
     expect(pack.symbols.some((s) => s.result?.corrected === 2)).toBe(true)
+  })
+
+  it('holds the tables of every version', () => {
+    expect(pack.tables.blocks.length).toBe(40)
+    expect(pack.tables.alignment.length).toBe(40)
+    for (let version = 1; version <= 40; version++) {
+      const size = 17 + 4 * version
+      const centres = pack.tables.alignment[version - 1]!
+      expect(centres.length, `version ${version}`).toBe(version === 1 ? 0 : Math.floor(version / 7) + 2)
+      if (centres.length > 0) expect([centres[0], centres[centres.length - 1]]).toEqual([6, size - 7])
+      // Every level's blocks hold the version's codewords between them.
+      const totals = pack.tables.blocks[version - 1]!.map(([ec, g1, d1, g2]) => g1! * d1! + g2! * (d1! + 1) + (g1! + g2!) * ec!)
+      expect(new Set(totals).size, `version ${version}`).toBe(1)
+      ;(['L', 'M', 'Q', 'H'] as const).forEach((ecc, i) => expect(blocksFor(version, ecc)).toEqual(pack.tables.blocks[version - 1]![i]))
+    }
   })
 
   it('converts RGBA to greyscale as recorded', () => {

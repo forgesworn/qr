@@ -13,7 +13,8 @@ within a tolerance.
 ## The order to work through
 
 1. `encode-vectors.json`: the encoder.
-2. `conformance.json`, `luminance`: greyscale from RGBA.
+2. `conformance.json`, `tables` and `luminance`: the standard's tables, and
+   greyscale from RGBA.
 3. `conformance.json`, `symbols`: reading a module grid.
 4. `conformance.json`, `frames`: reading a picture, a stage at a time.
 5. `decode-frames.json` and `photos.json`: reading rates, once the rest holds.
@@ -29,6 +30,17 @@ were built by an independent open-source encoder used as an oracle; the
 choice of segments is this library's own and SPEC.md defines it.
 
 ## `conformance.json`
+
+### `tables`
+
+The two tables of the standard a port would otherwise need a copy of it
+for. `blocks[version - 1][level]`, with levels in the order L, M, Q, H, is
+Table 9's row: the check codewords in a block, the number of blocks in the
+first group, the data codewords in each of those, and the number of blocks
+in the second group, whose blocks hold one more data codeword.
+`alignment[version - 1]` is Annex E's list of alignment pattern centre
+coordinates, empty for version 1; a pattern sits at every pair of them
+except the three that fall on finder patterns.
 
 ### `luminance`
 
