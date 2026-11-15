@@ -32,6 +32,13 @@
   checkerboard, stripes, a screen's moire) could be returned as a read with
   empty text. A symbol whose data codewords are all zero now reads as
   nothing; an empty payload as `encode('')` writes it still reads.
+- The decoder refuses a block that needed more corrections than Table 9
+  allows it. That changes versions 1-L, 1-M and 2-L only, where the standard
+  holds back check codewords to catch a misdecode and Reed-Solomon alone
+  would correct one error more (3, 5 and 5 against 2, 4 and 4). A damaged
+  symbol at those three sizes that was read on its last correctable error
+  now reads as nothing; one photograph of the test set is lost to it, so
+  the floor is 177.
 - The decoder reads hanzi segments (GB2312).
 - The locator's work on a frame full of finder-like patterns is bounded.
 - `encode` takes only a string or a `Uint8Array` and says what it was given

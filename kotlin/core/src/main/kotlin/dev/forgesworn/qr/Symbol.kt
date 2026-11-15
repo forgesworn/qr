@@ -106,6 +106,26 @@ internal fun readVersion(read: ModuleReader, size: Int): Int? {
 }
 
 /**
+ * The errors a block of this symbol may have had corrected: half of its check
+ * codewords once the p of Table 9 is withheld to catch a misdecode. Only
+ * versions 1 to 3 withhold any; Reed-Solomon alone would correct one more at
+ * 1-L, 1-M and 2-L.
+ */
+internal fun correctable(version: Int, ecc: ErrorCorrection): Int {
+    val p = when {
+        version == 1 -> when (ecc) {
+            ErrorCorrection.L -> 3
+            ErrorCorrection.M -> 2
+            else -> 1
+        }
+        version == 2 && ecc == ErrorCorrection.L -> 2
+        version == 3 && ecc == ErrorCorrection.L -> 1
+        else -> 0
+    }
+    return (blocksFor(version, ecc)[0] - p) / 2
+}
+
+/**
  * Decodes a symbol from its modules. [size] must be 17 + 4v. From version 7
  * a version block that decodes decides, and a size that disagrees fails;
  * if neither decodes, the size decides. Returns null when the symbol
@@ -167,9 +187,10 @@ internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
     val data = IntArray(g1 * d1 + g2 * (d1 + 1))
     var corrected = 0
     var offset = 0
+    val limit = correctable(version, format.ecc)
     for (b in 0 until blockCount) {
         val fixed = correct(blocks[b], ecPerBlock)
-        if (fixed < 0) return null
+        if (fixed < 0 || fixed > limit) return null
         corrected += fixed
         val length = if (b < g1) d1 else d1 + 1
         System.arraycopy(blocks[b], 0, data, offset, length)

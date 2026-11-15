@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { blocksFor, Grid } from '../src/encode.js'
 import { decode, decodeModules, encode, type ErrorCorrection } from '../src/index.js'
-import { readSymbol } from '../src/symbol.js'
+import { correctable, readSymbol } from '../src/symbol.js'
 
 /**
  * A symbol whose every codeword is zero. Its data region shows the mask
@@ -82,7 +82,7 @@ describe('a symbol of nothing but zero codewords', () => {
 
   it('reads as nothing under every mask, undamaged and with every block damaged up to what it can correct', () => {
     for (const [version, ecc] of CASES) {
-      const fixable = Math.floor(blocksFor(version, ecc)[0] / 2)
+      const fixable = correctable(version, ecc)
       for (let mask = 0; mask < 8; mask++) {
         const { modules, size } = zero(version, ecc, mask)
         for (let n = 0; n <= fixable; n++) {
@@ -95,7 +95,7 @@ describe('a symbol of nothing but zero codewords', () => {
 
   it('reads as nothing as modules, straight and mirrored', () => {
     for (const [version, ecc] of CASES) {
-      const fixable = Math.floor(blocksFor(version, ecc)[0] / 2)
+      const fixable = correctable(version, ecc)
       for (let mask = 0; mask < 8; mask++) {
         const { modules, size } = zero(version, ecc, mask)
         for (const n of [0, fixable]) {
@@ -111,7 +111,7 @@ describe('a symbol of nothing but zero codewords', () => {
   it('reads as nothing in a picture, dark on light and light on dark, straight and mirrored', () => {
     let turn = 0
     for (const [version, ecc] of [[1, 'H'], [2, 'L'], [5, 'Q']] as const) {
-      const fixable = Math.floor(blocksFor(version, ecc)[0] / 2)
+      const fixable = correctable(version, ecc)
       for (let mask = 0; mask < 8; mask++) {
         const { modules, size } = zero(version, ecc, mask)
         for (const invert of [false, true]) {

@@ -104,6 +104,17 @@ export function readVersion(read: ModuleReader, size: number): number | undefine
 }
 
 /**
+ * The errors a block of this symbol may have had corrected: half of its check
+ * codewords once the p of Table 9 is withheld to catch a misdecode. Only
+ * versions 1 to 3 withhold any; Reed-Solomon alone would correct one more at
+ * 1-L, 1-M and 2-L.
+ */
+export function correctable(version: number, ecc: ErrorCorrection): number {
+  const p = version === 1 ? (ecc === 'L' ? 3 : ecc === 'M' ? 2 : 1) : version === 2 && ecc === 'L' ? 2 : version === 3 && ecc === 'L' ? 1 : 0
+  return (blocksFor(version, ecc)[0] - p) >> 1
+}
+
+/**
  * Decodes a symbol from its modules. `size` must be 17 + 4v. From version 7
  * a version block that decodes decides, and a size that disagrees fails;
  * if neither decodes, the size decides. Returns undefined when the symbol
@@ -157,9 +168,10 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
   }
   const data = new Uint8Array(g1 * d1 + g2 * (d1 + 1))
   let corrected = 0
+  const limit = correctable(version, format.ecc)
   for (let b = 0, offset = 0; b < blockCount; b++) {
     const fixed = correct(blocks[b]!, ecPerBlock)
-    if (fixed < 0) return undefined
+    if (fixed < 0 || fixed > limit) return undefined
     corrected += fixed
     const length = b < g1 ? d1 : d1 + 1
     data.set(blocks[b]!.subarray(0, length), offset)

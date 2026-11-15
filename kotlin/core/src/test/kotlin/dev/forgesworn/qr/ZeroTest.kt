@@ -77,7 +77,7 @@ class ZeroTest {
     @Test
     fun readsAsNothingUnderEveryMaskUndamagedAndDamagedUpToWhatEachBlockCanCorrect() {
         for (c in cases) {
-            val fixable = blocksFor(c.version, c.ecc)[0] / 2
+            val fixable = correctable(c.version, c.ecc)
             for (mask in 0 until 8) {
                 val z = zero(c.version, c.ecc, mask)
                 for (n in 0..fixable) {
@@ -91,7 +91,7 @@ class ZeroTest {
     @Test
     fun readsAsNothingAsModulesStraightAndMirrored() {
         for (c in cases) {
-            val fixable = blocksFor(c.version, c.ecc)[0] / 2
+            val fixable = correctable(c.version, c.ecc)
             for (mask in 0 until 8) {
                 val z = zero(c.version, c.ecc, mask)
                 for (n in listOf(0, fixable)) {
@@ -108,7 +108,7 @@ class ZeroTest {
     fun readsAsNothingInAPictureInBothPolaritiesStraightAndMirrored() {
         var turn = 0
         for (c in listOf(Case(1, ErrorCorrection.H), Case(2, ErrorCorrection.L), Case(5, ErrorCorrection.Q))) {
-            val fixable = blocksFor(c.version, c.ecc)[0] / 2
+            val fixable = correctable(c.version, c.ecc)
             for (mask in 0 until 8) {
                 val z = zero(c.version, c.ecc, mask)
                 for (invert in listOf(false, true)) {

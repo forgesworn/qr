@@ -2,7 +2,6 @@ package dev.forgesworn.qr
 
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -69,19 +68,44 @@ class SymbolTest {
         return m
     }
 
+    private class Capacity(val version: Int, val ecc: ErrorCorrection, val check: Int, val p: Int, val fixable: Int)
+
+    // Table 9: the check codewords of a block, its p, and the errors it corrects.
+    // Reed-Solomon alone would correct 3, 5 and 5 at 1-L, 1-M and 2-L.
+    private val capacity = listOf(
+        Capacity(1, ErrorCorrection.L, 7, 3, 2), Capacity(1, ErrorCorrection.M, 10, 2, 4),
+        Capacity(1, ErrorCorrection.Q, 13, 1, 6), Capacity(1, ErrorCorrection.H, 17, 1, 8),
+        Capacity(2, ErrorCorrection.L, 10, 2, 4), Capacity(2, ErrorCorrection.M, 16, 0, 8),
+        Capacity(3, ErrorCorrection.L, 15, 1, 7), Capacity(3, ErrorCorrection.M, 26, 0, 13),
+        Capacity(5, ErrorCorrection.Q, 18, 0, 9), Capacity(12, ErrorCorrection.H, 28, 0, 14),
+        Capacity(40, ErrorCorrection.M, 28, 0, 14),
+    )
+
     @Test
-    fun correctsUpToHalfTheCheckCodewordsInEveryBlockAndNoMore() {
-        for ((version, ecc) in listOf(1 to ErrorCorrection.L, 5 to ErrorCorrection.Q, 12 to ErrorCorrection.H, 40 to ErrorCorrection.M)) {
-            val text = "x".repeat(maxOf(1, version * 4))
-            val qr = encode(text, EncodeOptions(version = version, ecc = ecc))
-            val b = blocksFor(version, ecc)
-            val fixable = b[0] / 2
-            val got = readSymbol(reader(flipped(qr, fixable), qr.size), qr.size)
-            assertNotNull("$version$ecc", got)
-            assertEquals("$version$ecc", text, got!!.text)
-            assertEquals("$version$ecc", fixable * (b[1] + b[3]), got.corrected)
-            val over = readSymbol(reader(flipped(qr, fixable + 1), qr.size), qr.size)
-            assertNotEquals("$version$ecc over", text, over?.text)
+    fun correctsWhatTable9AllowsInEveryBlockAndNoMore() {
+        for (c in capacity) {
+            val name = "${c.version}${c.ecc}"
+            val text = "x".repeat(maxOf(1, c.version * 4))
+            val qr = encode(text, EncodeOptions(version = c.version, ecc = c.ecc))
+            val b = blocksFor(c.version, c.ecc)
+            assertEquals("$name check codewords", c.check, b[0])
+            assertEquals("$name table", c.fixable, (c.check - c.p) / 2)
+            assertEquals("$name capacity", c.fixable, correctable(c.version, c.ecc))
+            val got = readSymbol(reader(flipped(qr, c.fixable), qr.size), qr.size)
+            assertNotNull(name, got)
+            assertEquals(name, text, got!!.text)
+            assertEquals(name, c.fixable * (b[1] + b[3]), got.corrected)
+            assertNull("$name over", readSymbol(reader(flipped(qr, c.fixable + 1), qr.size), qr.size))
+        }
+    }
+
+    @Test
+    fun withholdsCheckCodewordsOnlyWhereTable9Does() {
+        for (version in 1..40) {
+            for (ecc in ErrorCorrection.values()) {
+                val p = capacity.firstOrNull { it.version == version && it.ecc == ecc }?.p ?: 0
+                assertEquals("$version$ecc", (blocksFor(version, ecc)[0] - p) / 2, correctable(version, ecc))
+            }
         }
     }
 
