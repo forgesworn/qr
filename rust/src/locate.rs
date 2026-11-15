@@ -1,4 +1,4 @@
-//! Row edges and the finder scan (decoder step 2).
+//! Row edges and the finder scan (SPEC.md decoder step 3).
 
 use crate::binarise::BitImage;
 

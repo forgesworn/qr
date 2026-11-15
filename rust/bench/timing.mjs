@@ -101,6 +101,9 @@ if (realDir) {
 const median = (xs) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
 const { front } = await loadFront(wasmPath)
 
+const uptime = () => execFileSync('uptime', { encoding: 'utf8' }).trim()
+const uptimeBefore = uptime()
+
 // Native timing, from frame files in the build folder (not the repository's tracked files).
 const native = new Map()
 if (nativePath) {
@@ -114,16 +117,18 @@ if (nativePath) {
     head.writeUInt32BE(f.channels, 8)
     writeFileSync(join(dir, `${String(i).padStart(2, '0')}-${f.name}.frame`), Buffer.concat([head, f.data]))
   })
-  const out = execFileSync(nativePath, [dir, String(rounds)], { encoding: 'utf8' })
-  for (const line of out.trim().split('\n')) {
-    const [name, ms, count] = line.split('\t')
-    native.set(name.slice(3), { ms: Number(ms), count: Number(count) })
+  try {
+    const out = execFileSync(nativePath, [dir, String(rounds)], { encoding: 'utf8' })
+    for (const line of out.trim().split('\n')) {
+      const [name, ms, count] = line.split('\t')
+      native.set(name.slice(3), { ms: Number(ms), count: Number(count) })
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
   }
-  rmSync(dir, { recursive: true, force: true })
 }
 
-const uptime = () => execFileSync('uptime', { encoding: 'utf8' }).trim()
-console.log(`uptime before: ${uptime()}`)
+console.log(`uptime before: ${uptimeBefore}`)
 console.log(`node ${process.version} ${process.arch}; ${rounds} rounds, median, interleaved\n`)
 console.log(['frame', 'size', 'candidates', 'TypeScript ms', 'WebAssembly ms', 'wasm/TS', 'native ms'].join('\t'))
 

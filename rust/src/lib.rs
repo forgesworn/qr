@@ -1,6 +1,6 @@
 //! The front end of the QR decoder, ported from the TypeScript reference:
 //! greyscale, binarisation, reduction and the finder scan (SPEC.md, decoder
-//! steps 1, 2 and 9). It stops at the finder candidates.
+//! steps 1, 2, 3 and 9). It stops at the finder candidates.
 
 pub mod binarise;
 pub mod locate;

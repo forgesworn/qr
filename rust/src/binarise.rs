@@ -1,4 +1,4 @@
-//! Greyscale, binarisation, inversion and reduction (decoder steps 1 and 9).
+//! Greyscale, binarisation, inversion and reduction (SPEC.md decoder steps 1, 2 and 9).
 
 /// A picture of one byte a pixel, row by row.
 #[derive(Clone, Debug, PartialEq, Eq)]
