@@ -21,6 +21,20 @@ export interface Location {
   readonly project: (x: number, y: number) => Point
 }
 
+/**
+ * Work the search does, counted for tests that bound it: pixels stepped in
+ * cross-checks, stored candidates compared while merging, pixels in the
+ * windows searched for alignment patterns, and maps sampled.
+ */
+export interface Work {
+  steps: number
+  compared: number
+  scanned: number
+  maps: number
+}
+
+const NONE: readonly number[] = []
+
 const dark = (image: BitImage, x: number, y: number): boolean => image.data[y * image.width + x] === 1
 
 function distance(a: Point, b: Point): number {
@@ -29,20 +43,22 @@ function distance(a: Point, b: Point): number {
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
 function finderRatio(counts: readonly number[], tolerance = 0.5): boolean {
-  let total = 0
-  for (const c of counts) {
-    if (c === 0) return false
-    total += c
-  }
+  const c0 = counts[0]!
+  const c1 = counts[1]!
+  const c2 = counts[2]!
+  const c3 = counts[3]!
+  const c4 = counts[4]!
+  if (c0 === 0 || c1 === 0 || c2 === 0 || c3 === 0 || c4 === 0) return false
+  const total = c0 + c1 + c2 + c3 + c4
   if (total < 7) return false
   const module = total / 7
   const slack = module * tolerance
   return (
-    Math.abs(module - counts[0]!) < slack &&
-    Math.abs(module - counts[1]!) < slack &&
-    Math.abs(3 * module - counts[2]!) < 3 * slack &&
-    Math.abs(module - counts[3]!) < slack &&
-    Math.abs(module - counts[4]!) < slack
+    Math.abs(module - c0) < slack &&
+    Math.abs(module - c1) < slack &&
+    Math.abs(3 * module - c2) < 3 * slack &&
+    Math.abs(module - c3) < slack &&
+    Math.abs(module - c4) < slack
   )
 }
 
@@ -62,14 +78,40 @@ function crossCheck(
   maxCount: number,
   originalTotal: number,
   tolerance = 0.5,
+  work?: Work,
+): number {
+  const counts = [0, 0, 0, 0, 0]
+  try {
+    return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+  } finally {
+    if (work) work.steps += counts[0]! + counts[1]! + counts[2]! + counts[3]! + counts[4]!
+  }
+}
+
+function runs(
+  image: BitImage,
+  x: number,
+  y: number,
+  dx: number,
+  dy: number,
+  maxCount: number,
+  originalTotal: number,
+  tolerance: number,
+  counts: number[],
 ): number {
   const { width, height } = image
   const inside = (px: number, py: number) => px >= 0 && py >= 0 && px < width && py < height
-  const counts = [0, 0, 0, 0, 0]
+  // A centre run past these lengths could not pass the checks below, so
+  // stopping there loses nothing and keeps a long dark stripe from costing its
+  // length. Back along the row or down the column, the total would be more
+  // than twice the row's. On the diagonal, whose four outer runs stop at
+  // maxCount, a centre in proportion is under 29 times maxCount (at the
+  // loosest tolerance, 1.05).
+  const longest = dx && dy ? 32 * (maxCount + 1) : 2 * originalTotal
   let px = x
   let py = y
   while (inside(px, py) && dark(image, px, py)) {
-    counts[2]!++
+    if (++counts[2]! > longest) return NaN
     px -= dx
     py -= dy
   }
@@ -88,7 +130,7 @@ function crossCheck(
   px = x + dx
   py = y + dy
   while (inside(px, py) && dark(image, px, py)) {
-    counts[2]!++
+    if (++counts[2]! > longest) return NaN
     px += dx
     py += dy
   }
@@ -121,47 +163,80 @@ function crossCheck(
  * is how far a run may stray from its share, in modules; a blurred light
  * ring needs more than the default half module.
  */
-export function findFinders(image: BitImage, tolerance = 0.5): Finder[] {
+export function findFinders(image: BitImage, tolerance = 0.5, work?: Work): Finder[] {
   const { width, height } = image
   const found: { x: number; y: number; moduleSize: number; count: number }[] = []
-  const consider = (counts: readonly number[], row: number, end: number) => {
+  // Candidates filed by 16-pixel cell, so merging compares only nearby ones
+  // and a picture full of finder-like patterns costs in proportion to its size.
+  const CELL = 16
+  const columns = Math.floor(width / CELL) + 1
+  const across = (x: number) => Math.min(columns - 1, Math.floor(Math.max(0, x) / CELL))
+  const down = (y: number) => Math.floor(Math.max(0, y) / CELL)
+  const cells = new Map<number, number[]>()
+  const file = (i: number) => {
+    const key = down(found[i]!.y) * columns + across(found[i]!.x)
+    const cell = cells.get(key)
+    if (cell) cell.push(i)
+    else cells.set(key, [i])
+    return key
+  }
+  const consider = (counts: readonly number[], y: number, end: number) => {
     const total = counts.reduce((a, b) => a + b, 0)
     let cx = centreFromEnd(counts, end)
     const maxCount = counts[2]!
-    const dy = crossCheck(image, Math.floor(cx), row, 0, 1, maxCount, total, tolerance)
+    const dy = crossCheck(image, Math.floor(cx), y, 0, 1, maxCount, total, tolerance, work)
     if (Number.isNaN(dy)) return false
-    const cy = row + dy
-    const dx = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 0, maxCount, total, tolerance)
+    const cy = y + dy
+    const dx = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 0, maxCount, total, tolerance, work)
     if (Number.isNaN(dx)) return false
     cx = Math.floor(cx) + dx
-    const diagonal = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 1, maxCount * 2, total, tolerance + 0.25)
+    const diagonal = crossCheck(image, Math.floor(cx), Math.floor(cy), 1, 1, maxCount * 2, total, tolerance + 0.25, work)
     if (Number.isNaN(diagonal)) return false
     const moduleSize = total / 7
-    for (const f of found) {
-      if (
-        Math.abs(cy - f.y) <= moduleSize &&
-        Math.abs(cx - f.x) <= moduleSize &&
-        (Math.abs(moduleSize - f.moduleSize) <= 1 || Math.abs(moduleSize - f.moduleSize) <= f.moduleSize * 0.25)
-      ) {
-        const n = f.count + 1
-        f.x = (f.x * f.count + cx) / n
-        f.y = (f.y * f.count + cy) / n
-        f.moduleSize = (f.moduleSize * f.count + moduleSize) / n
-        f.count = n
-        return true
+    // The earliest stored candidate within a module, of a like module size, takes this sighting.
+    let match = -1
+    for (let r = down(cy - moduleSize); r <= down(cy + moduleSize); r++) {
+      for (let c = across(cx - moduleSize); c <= across(cx + moduleSize); c++) {
+        for (const i of cells.get(r * columns + c) ?? NONE) {
+          if (work) work.compared++
+          const f = found[i]!
+          if (
+            (match < 0 || i < match) &&
+            Math.abs(cy - f.y) <= moduleSize &&
+            Math.abs(cx - f.x) <= moduleSize &&
+            (Math.abs(moduleSize - f.moduleSize) <= 1 || Math.abs(moduleSize - f.moduleSize) <= f.moduleSize * 0.25)
+          ) match = i
+        }
       }
     }
+    if (match >= 0) {
+      const f = found[match]!
+      const before = down(f.y) * columns + across(f.x)
+      const n = f.count + 1
+      f.x = (f.x * f.count + cx) / n
+      f.y = (f.y * f.count + cy) / n
+      f.moduleSize = (f.moduleSize * f.count + moduleSize) / n
+      f.count = n
+      if (down(f.y) * columns + across(f.x) !== before) {
+        const cell = cells.get(before)!
+        cell.splice(cell.indexOf(match), 1)
+        file(match)
+      }
+      return true
+    }
     found.push({ x: cx, y: cy, moduleSize, count: 1 })
+    file(found.length - 1)
     return true
   }
 
+  const data = image.data
   const skip = Math.max(1, Math.min(3, Math.floor(height / 200)))
   for (let y = skip - 1; y < height; y += skip) {
     const counts = [0, 0, 0, 0, 0]
     let state = 0
     const row = y * width
     for (let x = 0; x < width; x++) {
-      if (image.data[row + x] === 1) {
+      if (data[row + x] === 1) {
         if (state & 1) state++
         counts[state]!++
       } else if (state & 1) {
@@ -171,7 +246,9 @@ export function findFinders(image: BitImage, tolerance = 0.5): Finder[] {
           counts.fill(0)
           state = 0
         } else {
-          counts.copyWithin(0, 2)
+          counts[0] = counts[2]!
+          counts[1] = counts[3]!
+          counts[2] = counts[4]!
           counts[3] = 1
           counts[4] = 0
           state = 3
@@ -305,7 +382,7 @@ function blackWhiteBlack(image: BitImage, from: Point, to: Point): number {
  * `wide` pixels along a row and `tall` down a column. Candidates seen on two
  * or more rows come first, then nearest the estimate.
  */
-function findAlignments(image: BitImage, estimate: Point, wide: number, tall: number, reach: number): Point[] {
+function findAlignments(image: BitImage, estimate: Point, wide: number, tall: number, reach: number, work?: Work): Point[] {
   const moduleSize = Math.max(wide, tall)
   const radius = Math.ceil(reach * moduleSize)
   const left = Math.max(0, Math.floor(estimate.x - radius))
@@ -313,6 +390,7 @@ function findAlignments(image: BitImage, estimate: Point, wide: number, tall: nu
   const top = Math.max(0, Math.floor(estimate.y - radius))
   const bottom = Math.min(image.height - 1, Math.ceil(estimate.y + radius))
   if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return []
+  if (work) work.scanned += (right - left + 1) * (bottom - top + 1)
   const fits = (n: number) => Math.abs(n - wide) < wide * 0.6
   const fitsDown = (n: number) => Math.abs(n - tall) < tall * 0.6
   const vertical = (x: number, y: number): number => {
@@ -442,7 +520,7 @@ function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): num
  * pattern (when the version has one), then one through the fourth corner.
  * `sizeHint` overrides the estimated module count.
  */
-export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number): Location[] {
+export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, work?: Work): Location[] {
   const [topLeft, topRight, bottomLeft] = triple
   const acrossSize = runModuleSize(image, topLeft, topRight)
   const downSize = runModuleSize(image, topLeft, bottomLeft)
@@ -510,7 +588,7 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
     const scored: { p: Point; score: number; away: number }[] = []
     for (const reach of [4, 8, 16]) {
       for (const estimate of estimates) {
-        for (const p of findAlignments(image, estimate, wide, tall, reach)) {
+        for (const p of findAlignments(image, estimate, wide, tall, reach, work)) {
           if (scored.some((a) => distance(a.p, p) <= moduleSize / 2)) continue
           const score = Math.max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
           scored.push({ p, score, away: near(p) })

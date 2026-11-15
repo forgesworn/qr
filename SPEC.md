@@ -246,6 +246,35 @@ read. The TypeScript pipeline, for reference:
    that is not valid UTF-8 is Shift_JIS, not Latin-1, when it passes the
    test under "Shift_JIS without an ECI" below.
 
+### Bounded work
+
+The search's work grows about in step with the picture's pixels, whatever
+the picture shows, under these caps. None of them can lose a read that the
+uncapped search would make.
+
+- Finder candidates are filed by 16-pixel cell, so merging a sighting
+  compares it only with candidates stored in the cells within a module of
+  it. The earliest such match takes the sighting, as with a full scan.
+- A cross-check stops once the dark centre run is longer than any that
+  could pass: twice the row's whole pattern back along the row or down the
+  column, and 32 times one more than the run limit on the diagonal.
+- The 12 finders seen most often form triples, and the best 6 triples are
+  located, in each of four passes (strict and looser tolerance, on the
+  picture and on its inverse).
+- Each triple is tried at 5 sizes, each giving at most 4 alignment maps and
+  2 corner maps: at most 720 maps for the whole search, each sampling at
+  most size x size modules, straight and transposed.
+- Each size searches for the alignment pattern in square windows reaching
+  4, 8 and then 16 modules around at most two estimates, clipped to the
+  picture, stopping after the first reach that finds a near-perfect match.
+
+Both ports count this work for their tests (pixels stepped in
+cross-checks, stored candidates compared, pixels in alignment windows,
+maps sampled) without exposing the counter: a picture of finder patterns
+on a 10-pixel pitch, or of 1:1:3:1:1 stripes, costs under 1.5 counted
+steps a pixel at 800x800 and at 1600x1600, and noise stays within the map
+cap.
+
 ### Version information
 
 Below version 7 the size alone gives the version. From version 7 the two

@@ -25,16 +25,16 @@ export function toLuminance(
   rowStride = width,
 ): Luminance {
   const out = new Uint8Array(width * height)
+  if (channels === 1) {
+    for (let y = 0; y < height; y++) out.set(data.subarray(y * rowStride, y * rowStride + width), y * width)
+    return { data: out, width, height }
+  }
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const i = (y * rowStride + x) * channels
-      if (channels === 1) {
-        out[y * width + x] = data[i]!
-      } else {
-        const a = data[i + 3]!
-        const grey = (data[i]! * 77 + data[i + 1]! * 150 + data[i + 2]! * 29) >> 8
-        out[y * width + x] = (grey * a + 255 * (255 - a)) / 255
-      }
+      const i = (y * rowStride + x) * 4
+      const a = data[i + 3]!
+      const grey = (data[i]! * 77 + data[i + 1]! * 150 + data[i + 2]! * 29) >> 8
+      out[y * width + x] = (grey * a + 255 * (255 - a)) / 255
     }
   }
   return { data: out, width, height }
