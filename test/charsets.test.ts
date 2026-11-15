@@ -87,8 +87,19 @@ describe('character sets', () => {
 
   it('reads single-byte and multi-byte ECIs the way the fixture records', () => {
     const got = build()
-    expect(got.single).toEqual(fixture.single)
+    for (const [eci, text] of Object.entries(fixture.single)) {
+      // A platform may lack a set, and then the ECI falls back: Node 22's ICU has no ISO 8859-16.
+      if (eci === '18' && got.single[eci] === undefined) continue
+      expect(got.single[eci], `ECI ${eci}`).toBe(text)
+    }
+    expect(Object.keys(got.single).filter((eci) => !(eci in fixture.single))).toEqual([])
     expect(got.samples).toEqual(fixture.samples)
+  })
+
+  it('reads Windows 1252 by hand, whatever the platform makes of it', () => {
+    // The euro sign, a curly quote, a byte the code page leaves undefined, and Latin-1 either side.
+    expect(fromEci(23, Uint8Array.of(0x41, 0x80, 0x92, 0x81, 0x9f, 0xa0, 0xe9))).toBe('A\u20ac\u2019\ufffd\u0178\u00a0\u00e9')
+    expect(read([...seg.eci(23), ...seg.bytes(Uint8Array.of(0x80, 0x31), 8)])!.text).toBe('\u20ac1')
   })
 
   it('decodes the standard example kanji and keeps bytes as Shift_JIS', () => {

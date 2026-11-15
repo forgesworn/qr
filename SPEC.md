@@ -466,7 +466,8 @@ Both fields are absent, not null, for an ordinary symbol.
 `bytes` never depends on a character set: it holds the symbol's data bytes
 (kanji as Shift_JIS pairs, hanzi as GB2312 pairs, see step 7). Only `text` does, and `text` is
 produced with the platform's own decoders (`TextDecoder` in JavaScript,
-`java.nio.charset.Charset` on the JVM). No port bundles tables.
+`java.nio.charset.Charset` on the JVM). No port bundles tables, apart from
+the 32 bytes of Windows 1252 below.
 
 Every port must agree on these:
 
@@ -494,10 +495,17 @@ Every port must agree on these:
   stays in force after a hanzi character.
 - ECI 4 to 18 except 14 (ISO 8859-2 to -16 less -12, which does not exist;
   so ECI 13 is ISO 8859-11, 15 is -13, 16 is -14, 17 is -15, 18 is -16),
-  with bytes 0x80 to 0x9F always the C1 control of the same value. ECI 21, 22
-  and 23 (Windows 1250, 1251, 1252) with the bytes the code page leaves
-  undefined (1250: 81 83 88 90 98; 1251: 98; 1252: 81 8D 8F 90 9D) as U+FFFD.
-  ECI 20 is Shift_JIS, 24 Windows 1256, 25 UTF-16BE, 28 Big5, 29, 31 and 32
+  with bytes 0x80 to 0x9F always the C1 control of the same value, and in
+  ECI 13 the bytes the set leaves undefined (DB to DE and FC to FF) as
+  U+FFFD. ECI 21 and 22 (Windows 1250 and 1251) with the bytes the code page
+  leaves undefined (1250: 81 83 88 90 98; 1251: 98) as U+FFFD.
+- ECI 23 is Windows 1252, read by hand, since platforms have differed on it:
+  a byte outside 0x80 to 0x9F is the Latin-1 character of the same value,
+  and bytes 80 to 9F are U+20AC, undefined, 201A, 0192, 201E, 2026, 2020,
+  2021, 02C6, 2030, 0160, 2039, 0152, undefined, 017D, undefined, undefined,
+  2018, 2019, 201C, 201D, 2022, 2013, 2014, 02DC, 2122, 0161, 203A, 0153,
+  undefined, 017E, 0178, with each undefined byte as U+FFFD.
+- ECI 20 is Shift_JIS, 24 Windows 1256, 25 UTF-16BE, 28 Big5, 29, 31 and 32
   GB 18030 (a superset of GB 2312 and GBK), 30 EUC-KR, 33 UTF-16LE. Ill-formed
   input becomes U+FFFD, and a leading byte order mark is kept.
 - An ECI with no entry above, and any ECI whose character set the platform
@@ -505,7 +513,8 @@ Every port must agree on these:
   Latin-1. This is the one thing left to the platform, with the exact
   mapping tables of the sets above; a platform's tables may differ from
   another's for rare code points (the JVM lacks ISO 8859-10 and -14 on a
-  standard JDK, for instance, and so falls back for those two).
+  standard JDK, for instance, and Node 22 lacks ISO 8859-16, and so each
+  falls back for those).
 
 `test/charsets.json` records the JavaScript platform's text for every
 13-bit kanji value and every 13-bit hanzi value (U+0000 where it makes the

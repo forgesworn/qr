@@ -76,6 +76,13 @@ class CharsetsTest {
     }
 
     @Test
+    fun readsWindows1252ByHandWhateverTheRuntimeMakesOfIt() {
+        // The euro sign, a curly quote, a byte the code page leaves undefined, and Latin-1 either side.
+        assertEquals("A\u20ac\u2019\ufffd\u0178\u00a0\u00e9", fromEci(23, intArrayOf(0x41, 0x80, 0x92, 0x81, 0x9f, 0xa0, 0xe9)))
+        assertEquals("\u20ac1", read(Seg.eci(23) + Seg.bytes(b(0x80, 0x31), 8))!!.text)
+    }
+
+    @Test
     fun anAbsentCharsetFallsBackToLatin1() {
         for (eci in absentOnJvm) {
             if (fromEci(eci.toInt(), b(0xe9)) != null) continue

@@ -62,7 +62,7 @@ private val CANDIDATES: Map<Int, List<String>> = mapOf(
     17 to listOf("ISO-8859-15"),
     18 to listOf("ISO-8859-16", "x-ISO-8859-16"),
     20 to listOf("windows-31j", "Shift_JIS"),
-    21 to listOf("windows-1250"), 22 to listOf("windows-1251"), 23 to listOf("windows-1252"),
+    21 to listOf("windows-1250"), 22 to listOf("windows-1251"),
     24 to listOf("windows-1256"),
     25 to listOf("UTF-16BE"),
     28 to listOf("x-windows-950", "Big5-HKSCS", "Big5"),
@@ -71,11 +71,21 @@ private val CANDIDATES: Map<Int, List<String>> = mapOf(
     33 to listOf("UTF-16LE"),
 )
 
-/** Bytes the Windows code pages leave undefined; platforms disagree on them, so they are U+FFFD. */
+/** Bytes a set leaves undefined; platforms disagree on them, so they are U+FFFD. */
 private val UNDEFINED: Map<Int, Set<Int>> = mapOf(
+    13 to setOf(0xdb, 0xdc, 0xdd, 0xde, 0xfc, 0xfd, 0xfe, 0xff),
     21 to setOf(0x81, 0x83, 0x88, 0x90, 0x98),
     22 to setOf(0x98),
-    23 to setOf(0x81, 0x8d, 0x8f, 0x90, 0x9d),
+)
+
+/**
+ * Windows 1252 at bytes 0x80 to 0x9F, 0 where the code page leaves the byte
+ * undefined. Every other byte is the Latin-1 character of the same value.
+ * Read by hand in every port, since platforms have differed on this set.
+ */
+private val WINDOWS_1252 = intArrayOf(
+    0x20ac, 0, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021, 0x02c6, 0x2030, 0x0160, 0x2039, 0x0152, 0, 0x017d, 0,
+    0, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014, 0x02dc, 0x2122, 0x0161, 0x203a, 0x0153, 0, 0x017e, 0x0178,
 )
 
 private val charsets = java.util.concurrent.ConcurrentHashMap<Int, java.util.Optional<java.nio.charset.Charset>>()
@@ -111,6 +121,11 @@ internal fun fromEci(eci: Int, bytes: IntArray): String? {
     if (eci == 27 || eci == 170) {
         val s = StringBuilder()
         for (b in bytes) s.append(if (b < 0x80) b.toChar() else '�')
+        return s.toString()
+    }
+    if (eci == 23) {
+        val s = StringBuilder()
+        for (b in bytes) s.append(if (b < 0x80 || b > 0x9f) b.toChar() else (WINDOWS_1252[b - 0x80].takeIf { it != 0 } ?: 0xfffd).toChar())
         return s.toString()
     }
     val charset = charsetFor(eci) ?: return null

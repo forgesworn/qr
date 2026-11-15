@@ -8,7 +8,8 @@
   mode already covers are unchanged.
 - The decoder reports `structuredAppend` and `fnc1`, reads kanji segments
   and the other ECI character sets as text, and reads Shift_JIS byte data
-  that carries no ECI.
+  that carries no ECI. Windows 1252 (ECI 23) is read by hand, because one
+  supported Node release reads that set as Latin-1.
 - A test set of 184 real photographs, fetched by hash at test time and not
   committed, with a floor on how many are read and a rule that none may
   decode to the wrong text.

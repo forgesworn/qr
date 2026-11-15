@@ -48,21 +48,32 @@ interface Decoder {
   decode(input: Uint8Array): string
 }
 
-/** ECI assignment numbers to platform charset labels. 1, 3, 26 and 27 are handled by hand. */
+/** ECI assignment numbers to platform charset labels. 1, 3, 23, 26 and 27 are handled by hand. */
 const LABELS: Readonly<Record<number, string>> = {
   4: 'iso-8859-2', 5: 'iso-8859-3', 6: 'iso-8859-4', 7: 'iso-8859-5', 8: 'iso-8859-6', 9: 'iso-8859-7',
   10: 'iso-8859-8', 11: 'iso-8859-9', 12: 'iso-8859-10', 13: 'iso-8859-11', 15: 'iso-8859-13',
   16: 'iso-8859-14', 17: 'iso-8859-15', 18: 'iso-8859-16', 20: 'shift_jis', 21: 'windows-1250',
-  22: 'windows-1251', 23: 'windows-1252', 24: 'windows-1256', 25: 'utf-16be', 28: 'big5',
+  22: 'windows-1251', 24: 'windows-1256', 25: 'utf-16be', 28: 'big5',
   29: 'gb18030', 30: 'euc-kr', 31: 'gb18030', 32: 'gb18030', 33: 'utf-16le',
 }
 
-/** Bytes the Windows code pages leave undefined; platforms disagree on them, so they are U+FFFD. */
+/** Bytes a set leaves undefined; platforms disagree on them, so they are U+FFFD. */
 const UNDEFINED: Readonly<Record<number, readonly number[]>> = {
+  13: [0xdb, 0xdc, 0xdd, 0xde, 0xfc, 0xfd, 0xfe, 0xff],
   21: [0x81, 0x83, 0x88, 0x90, 0x98],
   22: [0x98],
-  23: [0x81, 0x8d, 0x8f, 0x90, 0x9d],
 }
+
+/**
+ * Windows 1252 at bytes 0x80 to 0x9F, 0 where the code page leaves the byte
+ * undefined. Every other byte is the Latin-1 character of the same value.
+ * Read by hand: one platform release in the supported range reads this set
+ * as Latin-1, so the euro sign and curly quotes came out as controls.
+ */
+const WINDOWS_1252: readonly number[] = [
+  0x20ac, 0, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021, 0x02c6, 0x2030, 0x0160, 0x2039, 0x0152, 0, 0x017d, 0,
+  0, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014, 0x02dc, 0x2122, 0x0161, 0x203a, 0x0153, 0, 0x017e, 0x0178,
+]
 
 const decoders = new Map<string, Decoder | undefined>()
 
@@ -90,6 +101,11 @@ export function fromEci(eci: number, bytes: Uint8Array): string | undefined {
     // US-ASCII and the ISO 646 invariant set: platforms disagree on high bytes, so none is a character.
     let s = ''
     for (const b of bytes) s += b < 0x80 ? String.fromCharCode(b) : '\ufffd'
+    return s
+  }
+  if (eci === 23) {
+    let s = ''
+    for (const b of bytes) s += b < 0x80 || b > 0x9f ? String.fromCharCode(b) : String.fromCharCode(WINDOWS_1252[b - 0x80]! || 0xfffd)
     return s
   }
   const label = LABELS[eci]
