@@ -26,6 +26,8 @@ export interface Shot {
   invert?: boolean
   /** Draw the grid transposed. */
   mirror?: boolean
+  /** Quarter turns of the grid, clockwise, so the narrowed edge is another side of the symbol. */
+  turn?: number
   seed?: number
 }
 
@@ -89,7 +91,14 @@ export function photograph(modules: Uint8Array, size: number, shot: Shot): Grey 
     const mx = Math.floor(u * side) - margin
     const my = Math.floor(v * side) - margin
     if (mx < 0 || my < 0 || mx >= size || my >= size) return false
-    return modules[shot.mirror ? mx * size + my : my * size + mx] === 1
+    let x = shot.mirror ? my : mx
+    let y = shot.mirror ? mx : my
+    for (let t = 0; t < (shot.turn ?? 0) % 4; t++) {
+      const was = x
+      x = y
+      y = size - 1 - was
+    }
+    return modules[y * size + x] === 1
   }
   const light = shot.invert ? 30 : 225
   const ink = shot.invert ? 225 : 30

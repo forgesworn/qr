@@ -115,8 +115,11 @@ private fun crossCheck(
     }
     if (counts[4] >= maxCount) return Double.NaN
     val total = counts.sum()
-    // A diagonal crosses the pattern at a longer stretch, so only straight lines compare totals.
-    if (!(dx != 0 && dy != 0) && 5 * abs(total - originalTotal) >= 2 * originalTotal) return Double.NaN
+    // A diagonal crosses the pattern at a longer stretch, so only straight lines
+    // compare totals. Back along the row the stretch must match; down the column,
+    // perspective can make the pattern up to twice as tall as wide, or half.
+    if (dx != 0 && dy == 0 && 5 * abs(total - originalTotal) >= 2 * originalTotal) return Double.NaN
+    if (dy != 0 && dx == 0 && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return Double.NaN
     if (!finderRatio(counts, tolerance)) return Double.NaN
     // Position along the line, measured in steps from the start point.
     val end = if (dx != 0) px - x else py - y
@@ -198,11 +201,18 @@ internal fun findFinders(image: BitImage, tolerance: Double = 0.5): List<Finder>
 }
 
 /**
- * Every plausible top-left, top-right, bottom-left triple, best first: the
- * three should form a right-angled isosceles triangle of like-sized finders.
+ * Every plausible top-left, top-right, bottom-left triple, best first. The
+ * two sides meeting at the top-left should be the same number of modules
+ * long, counted along each side, and meet near a right angle. Perspective
+ * shrinks modules towards the far edge, so lengths in pixels can differ
+ * widely; lengths in modules do not.
  */
-internal fun finderTriples(finders: List<Finder>): List<Array<Finder>> {
+internal fun finderTriples(image: BitImage, finders: List<Finder>): List<Array<Finder>> {
     val pool = finders.take(12)
+    val legs = HashMap<Int, Double>()
+    fun modulesBetween(i: Int, j: Int): Double = legs.getOrPut(min(i, j) * 12 + max(i, j)) {
+        distance(pool[i], pool[j]) / runModuleSize(image, pool[i].point(), pool[j].point())
+    }
     class Scored(val score: Double, val triple: Array<Finder>)
     val triples = ArrayList<Scored>()
     for (i in pool.indices) {
@@ -213,32 +223,38 @@ internal fun finderTriples(finders: List<Finder>): List<Array<Finder>> {
                 val c = pool[k]
                 val smallest = min(a.moduleSize, min(b.moduleSize, c.moduleSize))
                 val largest = max(a.moduleSize, max(b.moduleSize, c.moduleSize))
-                if (largest > 2 * smallest) continue
-                val ab = distance(a, b).let { it * it }
-                val bc = distance(b, c).let { it * it }
-                val ca = distance(c, a).let { it * it }
+                if (largest > 3 * smallest) continue
+                val ab = distance(a, b)
+                val bc = distance(b, c)
+                val ca = distance(c, a)
                 // The corner opposite the longest side is the top-left.
-                var topLeft = c
-                var p = a
-                var q = b
-                var hyp = ab
-                var s1 = bc
-                var s2 = ca
+                var t = k
+                var m = i
+                var n = j
                 if (bc >= ab && bc >= ca) {
-                    topLeft = a; p = b; q = c; hyp = bc; s1 = ab; s2 = ca
+                    t = i; m = j; n = k
                 } else if (ca >= ab) {
-                    topLeft = b; p = c; q = a; hyp = ca; s1 = ab; s2 = bc
+                    t = j; m = k; n = i
                 }
-                val side = sqrt((s1 + s2) / 2)
-                if (side < 10 * smallest) continue
-                val score = (abs(hyp - s1 - s2) + abs(s1 - s2)) / hyp
-                if (score > 0.5) continue
+                val one = modulesBetween(t, m)
+                val other = modulesBetween(t, n)
+                // The nearest finders in any symbol are 14 modules apart.
+                if (!(min(one, other) >= 10)) continue
+                val topLeft = pool[t]
+                var p = pool[m]
+                var q = pool[n]
+                val ux = p.x - topLeft.x
+                val uy = p.y - topLeft.y
+                val vx = q.x - topLeft.x
+                val vy = q.y - topLeft.y
+                val cos = abs(ux * vx + uy * vy) / hypot(ux, uy) / hypot(vx, vy)
+                val mismatch = abs(one - other) / max(one, other)
+                if (cos > 0.5 || mismatch > 0.25) continue
                 // In picture coordinates (y down) top-right x bottom-left is positive.
-                val cross = (p.x - topLeft.x) * (q.y - topLeft.y) - (p.y - topLeft.y) * (q.x - topLeft.x)
-                if (cross < 0) {
-                    val t = p; p = q; q = t
+                if (ux * vy - uy * vx < 0) {
+                    val swap = p; p = q; q = swap
                 }
-                triples.add(Scored(score - 0.01 * min(a.count + b.count + c.count, 15), arrayOf(topLeft, p, q)))
+                triples.add(Scored(cos + mismatch - 0.01 * min(a.count + b.count + c.count, 15), arrayOf(topLeft, p, q)))
             }
         }
     }
@@ -314,17 +330,20 @@ private fun blackWhiteBlack(image: BitImage, from: Point, to: Point): Double {
 private class Candidate(var x: Double, var y: Double, var count: Int)
 
 /**
- * Searches near [estimate] for alignment pattern centres. Candidates seen on
- * two or more rows come first, then nearest the estimate.
+ * Searches near [estimate] for alignment pattern centres, whose modules span
+ * [wide] pixels along a row and [tall] down a column. Candidates seen on two
+ * or more rows come first, then nearest the estimate.
  */
-private fun findAlignments(image: BitImage, estimate: Point, moduleSize: Double, reach: Int): List<Point> {
+private fun findAlignments(image: BitImage, estimate: Point, wide: Double, tall: Double, reach: Int): List<Point> {
+    val moduleSize = max(wide, tall)
     val radius = ceil(reach * moduleSize).toInt()
     val left = max(0, floor(estimate.x - radius).toInt())
     val right = min(image.width - 1, ceil(estimate.x + radius).toInt())
     val top = max(0, floor(estimate.y - radius).toInt())
     val bottom = min(image.height - 1, ceil(estimate.y + radius).toInt())
     if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return emptyList()
-    fun fits(n: Double) = abs(n - moduleSize) < moduleSize * 0.6
+    fun fits(n: Double) = abs(n - wide) < wide * 0.6
+    fun fitsDown(n: Double) = abs(n - tall) < tall * 0.6
     fun vertical(x: Int, y: Int): Double {
         // Light, dark, light runs through (x, y) going up and down from the dark centre.
         var up = y
@@ -332,7 +351,7 @@ private fun findAlignments(image: BitImage, estimate: Point, moduleSize: Double,
         var down = y
         while (down <= bottom && dark(image, x, down)) down++
         val middle = down - up - 1
-        if (!fits(middle.toDouble())) return Double.NaN
+        if (!fitsDown(middle.toDouble())) return Double.NaN
         var above = 0
         var yy = up
         while (yy >= top && !dark(image, x, yy)) {
@@ -345,7 +364,7 @@ private fun findAlignments(image: BitImage, estimate: Point, moduleSize: Double,
             below++
             yy++
         }
-        if (!fits(above.toDouble()) || !fits(below.toDouble())) return Double.NaN
+        if (!fitsDown(above.toDouble()) || !fitsDown(below.toDouble())) return Double.NaN
         return (up + 1 + down) / 2.0
     }
     val found = ArrayList<Candidate>()
@@ -466,23 +485,23 @@ private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): 
 
 /**
  * Turns three finders into sampling maps: one through each likely alignment
- * pattern (when the version has one), then one through the parallelogram's
- * fourth corner. [sizeHint] overrides the estimated module count.
+ * pattern (when the version has one), then one through the fourth corner.
+ * [sizeHint] overrides the estimated module count.
  */
 internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null): List<Placement> {
-    val topLeftF = triple[0]
-    val topRightF = triple[1]
-    val bottomLeftF = triple[2]
-    val topLeft = topLeftF.point()
-    val topRight = topRightF.point()
-    val bottomLeft = bottomLeftF.point()
-    val moduleSize = (runModuleSize(image, topLeft, topRight) + runModuleSize(image, topLeft, bottomLeft)) / 2
+    val topLeft = triple[0].point()
+    val topRight = triple[1].point()
+    val bottomLeft = triple[2].point()
+    val acrossSize = runModuleSize(image, topLeft, topRight)
+    val downSize = runModuleSize(image, topLeft, bottomLeft)
+    val moduleSize = (acrossSize + downSize) / 2
     if (!(moduleSize >= 1)) return emptyList()
     var size: Int
     if (sizeHint != null) {
         size = sizeHint
     } else {
-        size = floor((distance(topLeft, topRight) + distance(topLeft, bottomLeft)) / 2 / moduleSize + 0.5).toInt() + 7
+        // Each side counted in its own modules, which perspective can make differ.
+        size = floor((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2 + 0.5).toInt() + 7
         when (size and 3) {
             0 -> size++
             2 -> size--
@@ -490,32 +509,53 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
         }
     }
     if (size < 21 || size > 177) return emptyList()
-    val corner = Point(topRight.x - topLeft.x + bottomLeft.x, topRight.y - topLeft.y + bottomLeft.y)
+    // A plane seen in perspective: along a side whose far end is w times as far
+    // from the camera, modules shrink by w squared. The finders' module sizes so
+    // give the weights of a projective map through the three centres, which
+    // places the rest of the symbol. Equal sizes give the parallelogram.
+    fun weight(from: Point, to: Point): Double {
+        val w = sqrt(blackWhiteBlack(image, from, to) / blackWhiteBlack(image, to, from))
+        return if (w >= 0.5 && w <= 2) w else 1.0
+    }
+    val wr = weight(topLeft, topRight)
+    val wd = weight(topLeft, bottomLeft)
+    val steps = size - 7
+    // Picture point of module-space point (x, y), measured from the top-left finder centre.
+    fun perspective(x: Double, y: Double): Point {
+        val a = x / steps
+        val b = y / steps
+        val w = 1 + a * (wr - 1) + b * (wd - 1)
+        return Point(
+            (topLeft.x + a * (wr * topRight.x - topLeft.x) + b * (wd * bottomLeft.x - topLeft.x)) / w,
+            (topLeft.y + a * (wr * topRight.y - topLeft.y) + b * (wd * bottomLeft.y - topLeft.y)) / w,
+        )
+    }
+    val parallelogram = Point(topRight.x - topLeft.x + bottomLeft.x, topRight.y - topLeft.y + bottomLeft.y)
+    val corner = perspective(steps.toDouble(), steps.toDouble())
+    val corners = if (distance(corner, parallelogram) > moduleSize) listOf(corner, parallelogram) else listOf(corner)
     var alignments: List<Point> = emptyList()
     if (size > 21) {
-        // Two guesses at the fourth corner: the parallelogram's, and one that
-        // follows perspective, where modules grow towards the nearer edge.
-        val tl = topLeftF.moduleSize
-        val down = bottomLeftF.moduleSize / tl
-        val right = topRightF.moduleSize / tl
-        val scaled = Point(
-            (bottomLeft.x + (topRight.x - topLeft.x) * down + topRight.x + (bottomLeft.x - topLeft.x) * right) / 2,
-            (bottomLeft.y + (topRight.y - topLeft.y) * down + topRight.y + (bottomLeft.y - topLeft.y) * right) / 2,
-        )
-        val correction = 1 - 3.0 / (size - 7)
-        val estimates = listOf(corner, scaled).map { c ->
-            Point(topLeft.x + correction * (c.x - topLeft.x), topLeft.y + correction * (c.y - topLeft.y))
-        }
+        // Guesses at the alignment centre, three modules in from the fourth
+        // corner: through the projective map, and on the parallelogram.
+        val s3 = (steps - 3).toDouble()
+        val guess = perspective(s3, s3)
+        val k = 1 - 3.0 / steps
+        val flat = Point(topLeft.x + k * (parallelogram.x - topLeft.x), topLeft.y + k * (parallelogram.y - topLeft.y))
+        val estimates = if (distance(guess, flat) > moduleSize) listOf(guess, flat) else listOf(guess)
+        // One module's steps across and down there, by the map and on the parallelogram.
+        val across = perspective(s3 + 1, s3)
+        val down = perspective(s3, s3 + 1)
+        val u = Point(across.x - guess.x, across.y - guess.y)
+        val v = Point(down.x - guess.x, down.y - guess.y)
+        val u0 = Point((topRight.x - topLeft.x) / steps, (topRight.y - topLeft.y) / steps)
+        val v0 = Point((bottomLeft.x - topLeft.x) / steps, (bottomLeft.y - topLeft.y) / steps)
         // A row or column crosses a turned module on the slant: at 45 degrees a
         // module's run is the diagonal, root 2 times its side.
-        val across = distance(topLeft, topRight)
-        val slant = max(abs(topRight.x - topLeft.x), abs(topRight.y - topLeft.y)) / across
-        val runSize = moduleSize / slant
+        val det = abs(u.x * v.y - u.y * v.x)
+        val wide = det / max(abs(u.y), abs(v.y))
+        val tall = det / max(abs(u.x), abs(v.x))
         // Rank candidates by how well the 5x5 pattern around them matches, read
         // along the code's own axes, then by nearness to a guess.
-        val steps = size - 7
-        val u = Point((topRight.x - topLeft.x) / steps, (topRight.y - topLeft.y) / steps)
-        val v = Point((bottomLeft.x - topLeft.x) / steps, (bottomLeft.y - topLeft.y) / steps)
         fun near(p: Point): Double {
             var best = Double.POSITIVE_INFINITY
             for (e in estimates) {
@@ -529,9 +569,10 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
         val scored = ArrayList<Scored>()
         for (reach in intArrayOf(4, 8, 16)) {
             for (estimate in estimates) {
-                for (p in findAlignments(image, estimate, runSize, reach)) {
+                for (p in findAlignments(image, estimate, wide, tall, reach)) {
                     if (scored.any { distance(it.p, p) <= moduleSize / 2 }) continue
-                    scored.add(Scored(p, alignmentScore(image, p, u, v), near(p)))
+                    val score = max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
+                    scored.add(Scored(p, score, near(p)))
                 }
             }
             if (scored.any { it.score >= 23 }) break
@@ -547,7 +588,7 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
     }
     val far = size - 3.5
     val finalSize = size
-    fun map(alignment: Point?): Placement {
+    fun map(alignment: Point?, fourth: Point): Placement {
         val project = quadToQuad(
             listOf(
                 Point(3.5, 3.5),
@@ -555,9 +596,9 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
                 if (alignment != null) Point(finalSize - 6.5, finalSize - 6.5) else Point(far, far),
                 Point(3.5, far),
             ),
-            listOf(topLeft, topRight, alignment ?: corner, bottomLeft),
+            listOf(topLeft, topRight, alignment ?: fourth, bottomLeft),
         )
         return Placement(topLeft, topRight, bottomLeft, alignment, finalSize) { x, y -> project(x + 0.5, y + 0.5) }
     }
-    return alignments.map { map(it) } + map(null)
+    return alignments.map { map(it, corner) } + corners.map { map(null, it) }
 }

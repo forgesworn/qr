@@ -106,15 +106,29 @@ read. The TypeScript pipeline, for reference:
    use one global threshold.
 3. Finders: row scans for 1:1:3:1:1 runs, each checked down the column,
    back across the row and along a diagonal, with a strict and then a looser
-   ratio tolerance. Centres within a module of each other merge.
-4. Triples: three finders of similar module size forming a near right
-   isosceles triangle; the cross product puts the top-right finder on the
-   right.
-5. Size and alignment: size from finder distances over module size,
-   rounded to `1 (mod 4)`. From version 2, alignment candidates are found
-   near the corner the finders imply, and ranked by how well the 5x5 pattern
-   around each matches along the code's axes; the parallelogram corner is
-   the last resort. Sizes four and eight modules either side are retried.
+   ratio tolerance. Back across the row the total must be within 40% of the
+   row's; down the column it may be up to twice or half the row's, since
+   perspective stretches a finder more one way than the other. Centres
+   within a module of each other merge.
+4. Triples: three finders whose module sizes are within a factor of three.
+   The top-left is the corner opposite the longest side. Each side from it
+   is measured in modules: its length over the module size along it, from
+   the dark-light-dark runs at both ends. The two sides must be at least 10
+   modules, differ by at most 25% of the longer, and meet at an angle whose
+   cosine is at most 0.5. Triples rank by that cosine plus that difference,
+   less 0.01 for each sighting of the three finders (up to 15); the cross
+   product puts the top-right finder on the right.
+5. Size and alignment: size is the mean of the two sides in modules, plus
+   7, rounded to `1 (mod 4)`. A projective map through the three centres
+   weights each side by the square root of the ratio of its end module
+   sizes (taken as 1 outside 0.5 to 2), so it follows perspective; equal
+   sizes give the parallelogram. From version 2, alignment candidates are
+   found near where that map, and the parallelogram, put the pattern, with
+   runs sized from the map there; they are ranked by how well the 5x5
+   pattern around each matches along the map's local axes or the
+   parallelogram's, whichever matches better. The map's fourth corner, then
+   the parallelogram's when they are more than a module apart, are the last
+   resort. Sizes four and eight modules either side are retried.
 6. Sampling: a perspective map from module centres to the picture, then
    format and version information, unmasking and Reed-Solomon correction
    (section 7.5 and annex B). A failed read is retried transposed, for
@@ -127,10 +141,13 @@ read. The TypeScript pipeline, for reference:
 
 ## Decode fixtures
 
-`vectors/decode-frames/` holds 36 synthetic frames as 8-bit greyscale PNG,
+`vectors/decode-frames/` holds 48 synthetic frames as 8-bit greyscale PNG,
 and `vectors/decode-frames.json` gives each one's exact text, the drawing
-parameters, and whether this decoder and jsQR read it when the frames were
-made. A port must read every frame marked `"typescript": true`. The frames
-are drawn by `test/fixtures.test.ts` (`QR_WRITE_FIXTURES=1` regenerates
-them); every payload in them is made up. Real photographs will join them as
-a separate set.
+parameters, and whether this decoder and an independent decoder read it
+when the frames were made. The last 12 are at steep perspective, the far
+edge 50 to 70% of the near one, with the narrowed edge on each side of the
+symbol in turn (`turn`, quarter turns of the grid). A port must read every
+frame marked `"typescript": true`. The frames are drawn by
+`test/fixtures.test.ts` (`QR_WRITE_FIXTURES=1` regenerates them); every
+payload in them is made up. Real photographs will join them as a separate
+set.

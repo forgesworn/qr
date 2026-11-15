@@ -105,8 +105,11 @@ function crossCheck(
   }
   if (counts[4]! >= maxCount) return NaN
   const total = counts.reduce((a, b) => a + b, 0)
-  // A diagonal crosses the pattern at a longer stretch, so only straight lines compare totals.
-  if (!(dx && dy) && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
+  // A diagonal crosses the pattern at a longer stretch, so only straight lines
+  // compare totals. Back along the row the stretch must match; down the column,
+  // perspective can make the pattern up to twice as tall as wide, or half.
+  if (dx && !dy && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
+  if (dy && !dx && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return NaN
   if (!finderRatio(counts, tolerance)) return NaN
   // Position along the line, measured in steps from the start point.
   const end = dx !== 0 ? px - x : py - y
@@ -184,11 +187,24 @@ export function findFinders(image: BitImage, tolerance = 0.5): Finder[] {
 }
 
 /**
- * Every plausible top-left, top-right, bottom-left triple, best first: the
- * three should form a right-angled isosceles triangle of like-sized finders.
+ * Every plausible top-left, top-right, bottom-left triple, best first. The
+ * two sides meeting at the top-left should be the same number of modules
+ * long, counted along each side, and meet near a right angle. Perspective
+ * shrinks modules towards the far edge, so lengths in pixels can differ
+ * widely; lengths in modules do not.
  */
-export function finderTriples(finders: readonly Finder[]): [Finder, Finder, Finder][] {
+export function finderTriples(image: BitImage, finders: readonly Finder[]): [Finder, Finder, Finder][] {
   const pool = finders.slice(0, 12)
+  const legs = new Map<number, number>()
+  const modulesBetween = (i: number, j: number): number => {
+    const key = Math.min(i, j) * 12 + Math.max(i, j)
+    let n = legs.get(key)
+    if (n === undefined) {
+      n = distance(pool[i]!, pool[j]!) / runModuleSize(image, pool[i]!, pool[j]!)
+      legs.set(key, n)
+    }
+    return n
+  }
   const triples: { score: number; triple: [Finder, Finder, Finder] }[] = []
   for (let i = 0; i < pool.length; i++) {
     for (let j = i + 1; j < pool.length; j++) {
@@ -197,27 +213,31 @@ export function finderTriples(finders: readonly Finder[]): [Finder, Finder, Find
         const b = pool[j]!
         const c = pool[k]!
         const sizes = [a.moduleSize, b.moduleSize, c.moduleSize]
-        if (Math.max(...sizes) > 2 * Math.min(...sizes)) continue
-        const ab = distance(a, b) ** 2
-        const bc = distance(b, c) ** 2
-        const ca = distance(c, a) ** 2
+        if (Math.max(...sizes) > 3 * Math.min(...sizes)) continue
+        const ab = distance(a, b)
+        const bc = distance(b, c)
+        const ca = distance(c, a)
         // The corner opposite the longest side is the top-left.
-        let topLeft = c
-        let p = a
-        let q = b
-        let hyp = ab
-        let s1 = bc
-        let s2 = ca
-        if (bc >= ab && bc >= ca) [topLeft, p, q, hyp, s1, s2] = [a, b, c, bc, ab, ca]
-        else if (ca >= ab) [topLeft, p, q, hyp, s1, s2] = [b, c, a, ca, ab, bc]
-        const side = Math.sqrt((s1 + s2) / 2)
-        if (side < 10 * Math.min(...sizes)) continue
-        const score = (Math.abs(hyp - s1 - s2) + Math.abs(s1 - s2)) / hyp
-        if (score > 0.5) continue
+        let [t, m, n] = [k, i, j]
+        if (bc >= ab && bc >= ca) [t, m, n] = [i, j, k]
+        else if (ca >= ab) [t, m, n] = [j, k, i]
+        const one = modulesBetween(t, m)
+        const other = modulesBetween(t, n)
+        // The nearest finders in any symbol are 14 modules apart.
+        if (!(Math.min(one, other) >= 10)) continue
+        const topLeft = pool[t]!
+        let p = pool[m]!
+        let q = pool[n]!
+        const ux = p.x - topLeft.x
+        const uy = p.y - topLeft.y
+        const vx = q.x - topLeft.x
+        const vy = q.y - topLeft.y
+        const cos = Math.abs(ux * vx + uy * vy) / Math.hypot(ux, uy) / Math.hypot(vx, vy)
+        const mismatch = Math.abs(one - other) / Math.max(one, other)
+        if (cos > 0.5 || mismatch > 0.25) continue
         // In picture coordinates (y down) top-right x bottom-left is positive.
-        const cross = (p.x - topLeft.x) * (q.y - topLeft.y) - (p.y - topLeft.y) * (q.x - topLeft.x)
-        if (cross < 0) [p, q] = [q, p]
-        triples.push({ score: score - 0.01 * Math.min(a.count + b.count + c.count, 15), triple: [topLeft, p, q] })
+        if (ux * vy - uy * vx < 0) [p, q] = [q, p]
+        triples.push({ score: cos + mismatch - 0.01 * Math.min(a.count + b.count + c.count, 15), triple: [topLeft, p, q] })
       }
     }
   }
@@ -281,17 +301,20 @@ function blackWhiteBlack(image: BitImage, from: Point, to: Point): number {
 }
 
 /**
- * Searches near `estimate` for alignment pattern centres. Candidates seen on
- * two or more rows come first, then nearest the estimate.
+ * Searches near `estimate` for alignment pattern centres, whose modules span
+ * `wide` pixels along a row and `tall` down a column. Candidates seen on two
+ * or more rows come first, then nearest the estimate.
  */
-function findAlignments(image: BitImage, estimate: Point, moduleSize: number, reach: number): Point[] {
+function findAlignments(image: BitImage, estimate: Point, wide: number, tall: number, reach: number): Point[] {
+  const moduleSize = Math.max(wide, tall)
   const radius = Math.ceil(reach * moduleSize)
   const left = Math.max(0, Math.floor(estimate.x - radius))
   const right = Math.min(image.width - 1, Math.ceil(estimate.x + radius))
   const top = Math.max(0, Math.floor(estimate.y - radius))
   const bottom = Math.min(image.height - 1, Math.ceil(estimate.y + radius))
   if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return []
-  const fits = (n: number) => Math.abs(n - moduleSize) < moduleSize * 0.6
+  const fits = (n: number) => Math.abs(n - wide) < wide * 0.6
+  const fitsDown = (n: number) => Math.abs(n - tall) < tall * 0.6
   const vertical = (x: number, y: number): number => {
     // Light, dark, light runs through (x, y) going up and down from the dark centre.
     let up = y
@@ -299,12 +322,12 @@ function findAlignments(image: BitImage, estimate: Point, moduleSize: number, re
     let down = y
     while (down <= bottom && dark(image, x, down)) down++
     const middle = down - up - 1
-    if (!fits(middle)) return NaN
+    if (!fitsDown(middle)) return NaN
     let above = 0
     for (let yy = up; yy >= top && !dark(image, x, yy); yy--) above++
     let below = 0
     for (let yy = down; yy <= bottom && !dark(image, x, yy); yy++) below++
-    if (!fits(above) || !fits(below)) return NaN
+    if (!fitsDown(above) || !fitsDown(below)) return NaN
     return (up + 1 + down) / 2
   }
   const found: { x: number; y: number; count: number }[] = []
@@ -416,16 +439,19 @@ function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): num
 
 /**
  * Turns three finders into sampling maps: one through each likely alignment
- * pattern (when the version has one), then one through the parallelogram's
- * fourth corner. `sizeHint` overrides the estimated module count.
+ * pattern (when the version has one), then one through the fourth corner.
+ * `sizeHint` overrides the estimated module count.
  */
 export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number): Location[] {
   const [topLeft, topRight, bottomLeft] = triple
-  const moduleSize = (runModuleSize(image, topLeft, topRight) + runModuleSize(image, topLeft, bottomLeft)) / 2
+  const acrossSize = runModuleSize(image, topLeft, topRight)
+  const downSize = runModuleSize(image, topLeft, bottomLeft)
+  const moduleSize = (acrossSize + downSize) / 2
   if (!(moduleSize >= 1)) return []
   let size = sizeHint
   if (size === undefined) {
-    size = Math.round((distance(topLeft, topRight) + distance(topLeft, bottomLeft)) / 2 / moduleSize) + 7
+    // Each side counted in its own modules, which perspective can make differ.
+    size = Math.round((distance(topLeft, topRight) / acrossSize + distance(topLeft, bottomLeft) / downSize) / 2) + 7
     switch (size & 3) {
       case 0: size++; break
       case 2: size--; break
@@ -433,40 +459,58 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
     }
   }
   if (size < 21 || size > 177) return []
-  const corner = { x: topRight.x - topLeft.x + bottomLeft.x, y: topRight.y - topLeft.y + bottomLeft.y }
+  // A plane seen in perspective: along a side whose far end is w times as far
+  // from the camera, modules shrink by w squared. The finders' module sizes so
+  // give the weights of a projective map through the three centres, which
+  // places the rest of the symbol. Equal sizes give the parallelogram.
+  const weight = (from: Point, to: Point): number => {
+    const w = Math.sqrt(blackWhiteBlack(image, from, to) / blackWhiteBlack(image, to, from))
+    return w >= 0.5 && w <= 2 ? w : 1
+  }
+  const wr = weight(topLeft, topRight)
+  const wd = weight(topLeft, bottomLeft)
+  const steps = size - 7
+  /** Picture point of module-space point (x, y), measured from the top-left finder centre. */
+  const perspective = (x: number, y: number): Point => {
+    const a = x / steps
+    const b = y / steps
+    const w = 1 + a * (wr - 1) + b * (wd - 1)
+    return {
+      x: (topLeft.x + a * (wr * topRight.x - topLeft.x) + b * (wd * bottomLeft.x - topLeft.x)) / w,
+      y: (topLeft.y + a * (wr * topRight.y - topLeft.y) + b * (wd * bottomLeft.y - topLeft.y)) / w,
+    }
+  }
+  const parallelogram = { x: topRight.x - topLeft.x + bottomLeft.x, y: topRight.y - topLeft.y + bottomLeft.y }
+  const corner = perspective(steps, steps)
+  const corners = distance(corner, parallelogram) > moduleSize ? [corner, parallelogram] : [corner]
   let alignments: Point[] = []
   if (size > 21) {
-    // Two guesses at the fourth corner: the parallelogram's, and one that
-    // follows perspective, where modules grow towards the nearer edge.
-    const tl = topLeft.moduleSize
-    const down = bottomLeft.moduleSize / tl
-    const right = topRight.moduleSize / tl
-    const scaled = {
-      x: (bottomLeft.x + (topRight.x - topLeft.x) * down + topRight.x + (bottomLeft.x - topLeft.x) * right) / 2,
-      y: (bottomLeft.y + (topRight.y - topLeft.y) * down + topRight.y + (bottomLeft.y - topLeft.y) * right) / 2,
-    }
-    const correction = 1 - 3 / (size - 7)
-    const estimates = [corner, scaled].map((c) => ({
-      x: topLeft.x + correction * (c.x - topLeft.x),
-      y: topLeft.y + correction * (c.y - topLeft.y),
-    }))
+    // Guesses at the alignment centre, three modules in from the fourth
+    // corner: through the projective map, and on the parallelogram.
+    const guess = perspective(steps - 3, steps - 3)
+    const k = 1 - 3 / steps
+    const flat = { x: topLeft.x + k * (parallelogram.x - topLeft.x), y: topLeft.y + k * (parallelogram.y - topLeft.y) }
+    const estimates = distance(guess, flat) > moduleSize ? [guess, flat] : [guess]
+    // One module's steps across and down there, by the map and on the parallelogram.
+    const u = { x: perspective(steps - 2, steps - 3).x - guess.x, y: perspective(steps - 2, steps - 3).y - guess.y }
+    const v = { x: perspective(steps - 3, steps - 2).x - guess.x, y: perspective(steps - 3, steps - 2).y - guess.y }
+    const u0 = { x: (topRight.x - topLeft.x) / steps, y: (topRight.y - topLeft.y) / steps }
+    const v0 = { x: (bottomLeft.x - topLeft.x) / steps, y: (bottomLeft.y - topLeft.y) / steps }
     // A row or column crosses a turned module on the slant: at 45 degrees a
     // module's run is the diagonal, root 2 times its side.
-    const across = distance(topLeft, topRight)
-    const slant = Math.max(Math.abs(topRight.x - topLeft.x), Math.abs(topRight.y - topLeft.y)) / across
-    const runSize = moduleSize / slant
+    const det = Math.abs(u.x * v.y - u.y * v.x)
+    const wide = det / Math.max(Math.abs(u.y), Math.abs(v.y))
+    const tall = det / Math.max(Math.abs(u.x), Math.abs(v.x))
     // Rank candidates by how well the 5x5 pattern around them matches, read
     // along the code's own axes, then by nearness to a guess.
-    const steps = size - 7
-    const u = { x: (topRight.x - topLeft.x) / steps, y: (topRight.y - topLeft.y) / steps }
-    const v = { x: (bottomLeft.x - topLeft.x) / steps, y: (bottomLeft.y - topLeft.y) / steps }
     const near = (p: Point) => Math.min(...estimates.map((e) => distance(p, e)))
     const scored: { p: Point; score: number; away: number }[] = []
     for (const reach of [4, 8, 16]) {
       for (const estimate of estimates) {
-        for (const p of findAlignments(image, estimate, runSize, reach)) {
+        for (const p of findAlignments(image, estimate, wide, tall, reach)) {
           if (scored.some((a) => distance(a.p, p) <= moduleSize / 2)) continue
-          scored.push({ p, score: alignmentScore(image, p, u, v), away: near(p) })
+          const score = Math.max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
+          scored.push({ p, score, away: near(p) })
         }
       }
       if (scored.some((c) => c.score >= 23)) break
@@ -478,12 +522,12 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
       .map((c) => c.p)
   }
   const far = size - 3.5
-  const map = (alignment: Point | undefined): Location => {
+  const map = (alignment: Point | undefined, corner: Point): Location => {
     const project = quadToQuad(
       [{ x: 3.5, y: 3.5 }, { x: far, y: 3.5 }, alignment ? { x: size - 6.5, y: size - 6.5 } : { x: far, y: far }, { x: 3.5, y: far }],
       [topLeft, topRight, alignment ?? corner, bottomLeft],
     )
     return { topLeft, topRight, bottomLeft, alignment, size, project: (x, y) => project(x + 0.5, y + 0.5) }
   }
-  return [...alignments.map(map), map(undefined)]
+  return [...alignments.map((a) => map(a, corner)), ...corners.map((c) => map(undefined, c))]
 }
