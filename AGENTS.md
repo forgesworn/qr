@@ -49,10 +49,12 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 - `vectors/generator/` - the Java generator; `.cache/` holds the
   hash-checked jar and is not committed.
 - `test/` - Vitest suites.
-- `rust/` - a Rust port in progress, with no dependencies: the decoder up
-  to an ordinary read (no second look, no reduced sizes yet) and no encoder.
-  It bundles no character tables, so kanji, hanzi and most ECI text is as
-  SPEC.md gives for a platform without them. Its tests read
+- `rust/` - a Rust port in progress, with no dependencies: the whole
+  decoder (ordinary search, second look and reduced sizes) and no encoder.
+  It bundles no character tables, so kanji and most ECI text is as
+  SPEC.md gives for a platform without them, and it refuses hanzi symbols.
+  `rust/examples/dump.rs` and `rust/bench/dump.mjs` print the same line
+  for each reading, to be compared with `cmp`. Its tests read
   `vectors/conformance.json`; `rust/bench/` times its WebAssembly build
   against the TypeScript.
 - `kotlin/core/src/main/kotlin/dev/forgesworn/qr/` - the Kotlin port; it is

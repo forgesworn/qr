@@ -3,7 +3,7 @@
 //! reduced pictures by SHA-256 and the finder candidates exactly.
 
 use forgesworn_qr::binarise::{binarise, invert, shrink, thresholds, to_luminance, Image, Reductions};
-use forgesworn_qr::decode::decode_ordinary;
+use forgesworn_qr::decode::{decode, Inversion};
 use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
 use forgesworn_qr::place::{estimate_size, finder_triples, locate};
 use forgesworn_qr::symbol::decode_modules;
@@ -328,30 +328,35 @@ fn point(v: &Value) -> [f64; 2] {
     [a[0].as_f64().unwrap(), a[1].as_f64().unwrap()]
 }
 
-/// The ordinary search, against every frame it can be compared on: those the
-/// TypeScript read without a second look or a reduced pass (result, exact
-/// location and all eight work counters), and those it did not read at all or
-/// read only by one of the two (which the ordinary search must not read).
+/// The whole decoder, against every frame of the pack: the result (or none),
+/// the exact location and all eight work counters. Nothing is skipped.
 #[test]
-fn ordinary_search() {
+fn decoder() {
     let pack = pack();
     let frames = pack["frames"].as_array().unwrap();
-    let (mut compared, mut unread, mut beyond) = (0, 0, 0);
+    let (mut read, mut unread, mut second, mut meshed, mut reduced) = (0, 0, 0, 0, 0);
     for entry in frames {
         let file = entry["file"].as_str().unwrap();
         let grey = load_grey(file);
         let mut work = Work::default();
-        let got = decode_ordinary(&grey.data, grey.width, grey.height, 1, Some(&mut work));
+        let got = decode(&grey.data, grey.width, grey.height, 1, grey.width, Inversion::Both, Some(&mut work));
         let w = &entry["work"];
         let want = &entry["result"];
+        let counted = [work.steps, work.compared, work.scanned, work.maps, work.second, work.meshes, work.probed, work.reduced];
+        let recorded = ["steps", "compared", "scanned", "maps", "second", "meshes", "probed", "reduced"].map(|k| w[k].as_u64().unwrap());
+        assert_eq!(counted, recorded, "{file}: work counters (steps, compared, scanned, maps, second, meshes, probed, reduced)");
+        if work.second > 0 {
+            second += 1;
+        }
+        if work.meshes > 0 {
+            meshed += 1;
+        }
+        if work.reduced > 0 {
+            reduced += 1;
+        }
         if want.is_null() {
             assert!(got.is_none(), "{file}: the pack reads nothing here");
             unread += 1;
-            continue;
-        }
-        if w["second"].as_u64() != Some(0) || w["reduced"].as_u64() != Some(0) {
-            assert!(got.is_none(), "{file}: the pack needed a second look or a reduced pass, so the ordinary search must read nothing");
-            beyond += 1;
             continue;
         }
         let got = got.unwrap_or_else(|| panic!("{file}: should read"));
@@ -376,13 +381,56 @@ fn ordinary_search() {
             (Some(a), false) => assert_eq!(at(a), point(&loc["alignment"]), "{file}: alignment"),
             (g, _) => panic!("{file}: alignment {g:?} against {}", loc["alignment"]),
         }
-        let counted = [work.steps, work.compared, work.scanned, work.maps, work.second, work.meshes, work.probed, work.reduced];
-        let recorded = ["steps", "compared", "scanned", "maps", "second", "meshes", "probed", "reduced"].map(|k| w[k].as_u64().unwrap());
-        assert_eq!(counted, recorded, "{file}: work counters (steps, compared, scanned, maps, second, meshes, probed, reduced)");
-        compared += 1;
+        read += 1;
     }
+    assert_eq!(read + unread, frames.len());
+    assert!(second > 0 && meshed > 0 && reduced > 0, "the pack must exercise the second look, the mesh and the reduced pass");
     eprintln!(
-        "ordinary search: {compared} frames read and matched (result, exact location, all eight work counters); {unread} unread and {beyond} needing a second look or a reduced pass correctly not read here; {} frames in all",
+        "decoder: {} of {} frames matched (result, exact location, all eight work counters): {read} read, {unread} unread; {second} took a second look, {meshed} a mesh, {reduced} a reduced pass",
+        read + unread,
         frames.len()
     );
+}
+
+/// `inversion` limits the polarities: `Normal` is the first half of `Both`,
+/// and `Inverted` never gives a dark-on-light reading.
+#[test]
+fn inversion_option() {
+    let pack = pack();
+    let frames = pack["frames"].as_array().unwrap();
+    let mut checked = 0;
+    for entry in frames.iter().filter(|e| !e["result"].is_null() && e["result"]["inverted"] == false).take(12) {
+        let file = entry["file"].as_str().unwrap();
+        let grey = load_grey(file);
+        let (mut both_work, mut normal_work) = (Work::default(), Work::default());
+        let both = decode(&grey.data, grey.width, grey.height, 1, grey.width, Inversion::Both, Some(&mut both_work));
+        let normal = decode(&grey.data, grey.width, grey.height, 1, grey.width, Inversion::Normal, Some(&mut normal_work));
+        assert_eq!(both, normal, "{file}: normal gives what both gives on a dark-on-light frame");
+        let inverted = decode(&grey.data, grey.width, grey.height, 1, grey.width, Inversion::Inverted, None);
+        assert!(inverted.map_or(true, |r| r.inverted), "{file}: inverted reads only light on dark");
+        checked += 1;
+    }
+    assert!(checked > 0);
+    eprintln!("inversion: {checked} frames checked");
+}
+
+/// A frame with padded rows reads as the same frame without.
+#[test]
+fn row_stride_and_bad_arguments() {
+    let pack = pack();
+    let entry = pack["frames"].as_array().unwrap().iter().find(|e| !e["result"].is_null()).unwrap();
+    let grey = load_grey(entry["file"].as_str().unwrap());
+    let stride = grey.width + 13;
+    let mut padded = vec![77u8; stride * grey.height];
+    for y in 0..grey.height {
+        padded[y * stride..y * stride + grey.width].copy_from_slice(&grey.data[y * grey.width..(y + 1) * grey.width]);
+    }
+    let plain = decode(&grey.data, grey.width, grey.height, 1, grey.width, Inversion::Both, None);
+    assert!(plain.is_some());
+    assert_eq!(decode(&padded, grey.width, grey.height, 1, stride, Inversion::Both, None), plain);
+    // Where the TypeScript throws there is nothing to read.
+    assert!(decode(&grey.data, grey.width, grey.height, 3, grey.width, Inversion::Both, None).is_none());
+    assert!(decode(&grey.data, grey.width, grey.height, 1, grey.width - 1, Inversion::Both, None).is_none());
+    assert!(decode(&grey.data[..grey.data.len() - 1], grey.width, grey.height, 1, grey.width, Inversion::Both, None).is_none());
+    assert!(decode(&grey.data, 0, grey.height, 1, 0, Inversion::Both, None).is_none());
 }

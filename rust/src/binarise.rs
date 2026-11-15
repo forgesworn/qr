@@ -47,6 +47,18 @@ pub struct Thresholds {
     pub values: Vec<f64>,
 }
 
+/// The threshold `binarise` applied at pixel (`px`, `py`), which must be in
+/// the picture. The last block in a row or column covers the last 8 pixels, so
+/// it overlaps the one before it and wins where they overlap.
+pub fn threshold_at(t: &Thresholds, width: usize, height: usize, px: usize, py: usize) -> f64 {
+    if t.across == 1 && t.down == 1 {
+        return t.values[0];
+    }
+    let bx = if px + BLOCK >= width { t.across - 1 } else { px / BLOCK };
+    let by = if py + BLOCK >= height { t.down - 1 } else { py / BLOCK };
+    t.values[by * t.across + bx]
+}
+
 pub fn thresholds(image: &Luminance) -> Thresholds {
     let (data, width, height) = (&image.data, image.width, image.height);
     if width < 40 || height < 40 {

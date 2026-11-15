@@ -1,8 +1,8 @@
 // Loads the WebAssembly build of the decoder. No dependencies.
 //
-//   const { front, ordinary } = await loadFront('target/wasm32-unknown-unknown/release/forgesworn_qr.wasm')
-//   front(pixels, width, height, channels)    // the number of finder candidates
-//   ordinary(pixels, width, height, channels) // 0 if nothing reads, else payload bytes + 1
+//   const { front, decode } = await loadFront('target/wasm32-unknown-unknown/release/forgesworn_qr.wasm')
+//   front(pixels, width, height, channels)  // the number of finder candidates
+//   decode(pixels, width, height, channels) // 0 if nothing reads, else payload bytes + 1
 //
 // `pixels` is a Uint8Array of width * height * channels bytes, channels 1
 // (grey) or 4 (RGBA). It is copied into WebAssembly memory for each call.
@@ -24,5 +24,5 @@ export async function loadFront(path) {
       free(ptr, length)
     }
   }
-  return { front: call('front'), ordinary: call('ordinary') }
+  return { front: call('front'), decode: call('decode') }
 }

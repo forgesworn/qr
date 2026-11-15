@@ -1,14 +1,15 @@
 //! The QR decoder, ported from the TypeScript reference: greyscale,
 //! binarisation, reduction and the finder scan (SPEC.md, decoder steps 1, 2, 3
 //! and 9), finder triples, size estimates and sampling maps (steps 4 and 5),
-//! and reading a module grid (steps 6 and 7). `decode::decode_ordinary` is the
-//! ordinary search at full size. The second look and the reduced-size pass are
-//! not ported.
+//! reading a module grid (steps 6 and 7), the second look with its alignment
+//! mesh (step 8) and the reduced-size pass (step 9). `decode::decode` is the
+//! whole decoder. The encoder and the renderers are not ported.
 
 pub mod binarise;
 pub mod decode;
 pub mod locate;
 pub mod place;
+pub mod refine;
 pub mod symbol;
 pub mod tables;
 
@@ -87,17 +88,18 @@ mod exports {
         super::front(std::slice::from_raw_parts(ptr, len), width as usize, height as usize, channels as usize)
     }
 
-    /// Runs the ordinary search on `width` x `height` pixels at `ptr`,
-    /// `channels` bytes each (1 or 4). Returns 0 when nothing reads, else the
-    /// number of payload bytes read plus 1.
+    /// Runs the whole decoder on `width` x `height` pixels at `ptr`, `channels`
+    /// bytes each (1 or 4), rows `width` pixels apart, dark on light and then
+    /// light on dark. Returns 0 when nothing reads, else the number of payload
+    /// bytes read plus 1.
     ///
     /// # Safety
     /// `ptr` must address `width * height * channels` readable bytes.
     #[no_mangle]
-    pub unsafe extern "C" fn ordinary(ptr: *const u8, width: u32, height: u32, channels: u32) -> u32 {
+    pub unsafe extern "C" fn decode(ptr: *const u8, width: u32, height: u32, channels: u32) -> u32 {
         let len = width as usize * height as usize * channels as usize;
         let pixels = std::slice::from_raw_parts(ptr, len);
-        match super::decode::decode_ordinary(pixels, width as usize, height as usize, channels as usize, None) {
+        match super::decode::decode(pixels, width as usize, height as usize, channels as usize, width as usize, super::decode::Inversion::Both, None) {
             Some(reading) => reading.payload.bytes.len() as u32 + 1,
             None => 0,
         }
