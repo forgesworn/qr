@@ -52,6 +52,15 @@
   pictures the binarised image, the reduced sizes, the finder candidates,
   the triples, sizes and sampling maps, the result and the work counted.
   Both ports are held to it.
+- A Rust port in `rust/`, with no dependencies: the encoder, SVG and
+  terminal renderers and the whole decoder, held to the same vectors and
+  giving the same reads, locations and counted work as the TypeScript on
+  2,412 photographs. It builds to WebAssembly and decodes in about half the
+  TypeScript's time there. It bundles no character tables and refuses
+  hanzi symbols. Not published as a package yet.
+- SPEC.md states every stage of the decoder exactly, and the details of
+  the encoder that were left to the code; lengths are a square root of
+  squares so that ports agree to the last place.
 - The decoder reads hanzi segments (GB2312).
 - Decoding is faster with no change to what is read or to the work counted.
   The row scans for finder and alignment patterns walk each row's changes

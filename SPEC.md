@@ -196,6 +196,52 @@ What the oracle backs, and what it does not:
   the reference encoder's minimal mode, which need not break ties the
   same way.
 
+## Encoder details
+
+What the sections above leave open, as the Rust port's author found on
+writing it from them; `vectors/encode-vectors.json` fixes each.
+
+1. Arguments are checked in this order, and the first failure is the
+   error: the data's type, the level, the mask, the version, `minVersion`,
+   a version below `minVersion`, the mode against the data, and only then
+   whether the data fits.
+2. The empty string is one segment of no characters: of the named mode
+   when one is named, otherwise a byte segment.
+3. The terminator is four zero bits, or as many as the version's data
+   capacity leaves room for.
+4. Function patterns are laid down in this order: the three finder
+   patterns with their separators, the dark module, the alignment
+   patterns, the timing patterns, the format and version areas. An
+   alignment pattern is left out when its centre module is already taken,
+   which is so at (6, 6), (size - 7, 6) and (6, size - 7); the pairs of
+   centres are taken row by row. A timing module already taken by an
+   alignment pattern is left as that pattern has it; timing modules run
+   from 8 to size - 9, dark at even places.
+5. Data fills pairs of columns from the right: columns size - 1 and
+   size - 2, and so on down to 8 and 7, then 5 and 4, 3 and 2, 1 and 0.
+   In each row of a pair the right module is filled before the left.
+6. With x the column and y the row, a data module is turned over when its
+   mask pattern's condition holds; function modules are never masked:
+   - 0: `(x + y) mod 2 = 0`
+   - 1: `y mod 2 = 0`
+   - 2: `x mod 3 = 0`
+   - 3: `(x + y) mod 3 = 0`
+   - 4: `(floor(y / 2) + floor(x / 3)) mod 2 = 0`
+   - 5: `(x y) mod 2 + (x y) mod 3 = 0`
+   - 6: `((x y) mod 2 + (x y) mod 3) mod 2 = 0`
+   - 7: `((x + y) mod 2 + (x y) mod 3) mod 2 = 0`
+7. N3 is scored at every place where the seven modules `1011101` lie
+   wholly inside the symbol along a row or a column: 40 when the four
+   modules before them are inside the symbol and light, or the four after
+   are, and 40 only once when both are. Places that overlap are each
+   scored.
+8. The version information is the version in its top six bits and the
+   BCH remainder in the twelve below, with no mask pattern applied to it.
+
+The renderers are not specified to the character: an SVG or a terminal
+drawing may differ between ports as long as it shows the same modules.
+The Rust port matches the TypeScript's strings because it was easy to.
+
 ## Decoder
 
 The decoder is not bound by the vectors in the same way: ports may find

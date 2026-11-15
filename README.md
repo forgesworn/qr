@@ -25,9 +25,9 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
 - **Small and plain:** no runtime dependencies, ESM with types, tree
   shaking. Minified and gzipped: about 6 kB to encode and draw SVG, 14 kB
   to decode, 18 kB for everything.
-- **Portable:** a Kotlin port for the JVM and Android is in this repository,
-  and [SPEC.md](SPEC.md) with [test vectors](vectors/README.md) lets other
-  languages match it exactly.
+- **Portable:** Kotlin and Rust ports are in this repository, checked
+  against the same vectors, and [SPEC.md](SPEC.md) with
+  [test vectors](vectors/README.md) lets other languages match it exactly.
 
 ## Contents
 
@@ -40,6 +40,7 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
 - [How the decoder works](#how-the-decoder-works)
 - [How it is tested](#how-it-is-tested)
 - [Kotlin](#kotlin)
+- [Rust and WebAssembly](#rust-and-webassembly)
 - [Development](#development)
 
 ## Install
@@ -640,6 +641,31 @@ found?.text
 `decode(IntArray, ...)` overload for packed ARGB pixels and
 `decodeModules(modules, size)` for a module grid. Run the tests with
 `cd kotlin && ./gradlew test`.
+
+## Rust and WebAssembly
+
+A Rust port lives in `rust/`: the encoder, the SVG and terminal renderers
+and the whole decoder, with no dependencies. It is held to the same
+vectors, and on 2,412 test photographs its decoder gives the same payload,
+the same location to the last bit and the same counted work as the
+TypeScript. It is not published as a crate or a package yet.
+
+It builds for `wasm32-unknown-unknown` without a binding generator, to a
+module of about 200 kB before any size optimisation. On the machine the
+project is measured on that build decodes in roughly half the time the
+TypeScript takes. Two differences from the other ports, both on the safe
+side: it carries no character tables, so text in kanji mode or under most
+ECIs comes back as the specification gives for a platform without them
+(`bytes` is always exact), and it refuses hanzi-mode symbols.
+
+```bash
+cd rust
+cargo test                                               # the conformance pack and the encoder vectors
+cargo build --release --target wasm32-unknown-unknown    # the WebAssembly module
+```
+
+`rust/bench/loader.js` is a small loader for the module, and
+`rust/bench/` holds the scripts that time it against the TypeScript.
 
 ## Development
 
