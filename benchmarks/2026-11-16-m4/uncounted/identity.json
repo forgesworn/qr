@@ -1,0 +1,8 @@
+{
+  "baselineRevision": "d6bc8d26517f713f10d8adde7ef4bc34ef19154d",
+  "baselineWasmSha256": "1b03677a443be96a4ebd73510b675e86fb8cdd668303d1d0355639160970343f",
+  "baselineLibSha256": "f5d9f0c1b5220b5cd0e52f6ed2fdb5f0585e00f6eacfdbfb8c16c47319e6d49e",
+  "candidateLibSha256": "4dd3ca0346102ed1c0108aa9f003748fb477db8026fad6a006f38baaca03bd40",
+  "patchSha256": "be0c46b6e0a5654b0591bcea3f1c787b6ba847c07bab7c6eee3396db64e912b0",
+  "scope": "Disposable diagnostic only: raw Work exports intentionally become zero; not suitable for distribution."
+}

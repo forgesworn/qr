@@ -43,6 +43,10 @@ all 28 diagnostic comparisons passed, but charging the earlier multiplications
 increases modelled noise work by 3.9–4.9%. The
 [fixed-order diagnostic](benchmarks/2026-11-16-m4/ratio-order/README.md) is retained;
 no alternative permutation or production change is included.
+An [uncounted WASM diagnostic](benchmarks/2026-11-16-m4/uncounted/README.md)
+was also rejected: the main noise time is unchanged and other noise cases
+show only small mixed differences. The package keeps the existing counted
+entry point and raw Work ABI; no optional uncounted export is added.
 
 The Rust 1.96.0 compiler qualification used unchanged Rust source before the
 budget-guard change. Two paired M4 forks reduced clean-frame time by 10.5–11.0%,
