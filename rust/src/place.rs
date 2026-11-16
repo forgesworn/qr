@@ -338,25 +338,26 @@ fn find_alignments(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f
                 right + 1
             };
         }
-        // Runs alternate light, dark, light ...: the last two are kept, and the
-        // run that ends a light, dark, light three is checked with them.
+        // Each candidate is a light, dark, light triple. The first two
+        // runs must end inside the window; the final light run may be cut off.
         let mut start = x;
-        let mut count = 0u32;
-        let mut before = 0i64;
-        let mut last = 0i64;
+        if k >= n || changes[k] as i64 > right { continue; }
+        let mut light_end = changes[k] as i64;
+        k += 1;
+        if k >= n || changes[k] as i64 > right { continue; }
+        let mut dark_end = changes[k] as i64;
+        k += 1;
         loop {
-            x = if k < n && changes[k] as i64 <= right {
+            let x = if k < n && changes[k] as i64 <= right {
                 k += 1;
                 changes[k - 1] as i64
             } else {
                 right + 1
             };
-            let run = x - start;
-            start = x;
-            count += 1;
-            if count >= 3
-                && (count & 1) == 1
-                && ((before as f64 - wide).abs() < slack)
+            let before = light_end - start;
+            let last = dark_end - light_end;
+            let run = x - dark_end;
+            if ((before as f64 - wide).abs() < slack)
                 && ((last as f64 - wide).abs() < slack)
                 && ((run as f64 - wide).abs() < slack)
             {
@@ -373,11 +374,13 @@ fn find_alignments(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f
                     }
                 }
             }
-            if x > right {
-                break;
-            }
-            before = last;
-            last = run;
+            if x > right { break; }
+            // The trailing light run becomes the first of the next triple.
+            start = dark_end;
+            light_end = x;
+            if k >= n || changes[k] as i64 > right { break; }
+            dark_end = changes[k] as i64;
+            k += 1;
         }
     }
     // A candidate seen on one row only counts as three modules further away.
@@ -594,8 +597,168 @@ pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mu
 }
 
 #[cfg(test)]
+fn find_alignments_reference(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f64, tall: f64, reach: f64, work: Option<&mut Work>) -> Vec<Point> {
+    let module_size = jmax(wide, tall);
+    let radius = (reach * module_size).ceil();
+    let left = jmax(0.0, (estimate.x - radius).floor());
+    let right = jmin((image.width - 1) as f64, (estimate.x + radius).ceil());
+    let top = jmax(0.0, (estimate.y - radius).floor());
+    let bottom = jmin((image.height - 1) as f64, (estimate.y + radius).ceil());
+    // A NaN anywhere leaves the reference with a window that holds no row.
+    if left.is_nan() || right.is_nan() || top.is_nan() || bottom.is_nan() {
+        return Vec::new();
+    }
+    if right - left < module_size * 3.0 || bottom - top < module_size * 3.0 {
+        return Vec::new();
+    }
+    if let Some(w) = work {
+        w.scanned += ((right - left + 1.0) * (bottom - top + 1.0)) as u64;
+    }
+    let (left, right, top, bottom) = (left as i64, right as i64, top as i64, bottom as i64);
+    let data = &image.data;
+    let width = image.width as i64;
+    let slack = wide * 0.6;
+    let slack_down = tall * 0.6;
+    let vertical = |x: i64, y: i64| -> f64 {
+        // Light, dark, light runs through (x, y) going up and down from the dark centre.
+        let mut up = y;
+        while up >= top && data[(up * width + x) as usize] == 1 {
+            up -= 1;
+        }
+        let mut down = y;
+        while down <= bottom && data[(down * width + x) as usize] == 1 {
+            down += 1;
+        }
+        let middle = (down - up - 1) as f64;
+        if !((middle - tall).abs() < slack_down) {
+            return f64::NAN;
+        }
+        let mut above = 0i64;
+        let mut yy = up;
+        while yy >= top && data[(yy * width + x) as usize] != 1 {
+            above += 1;
+            yy -= 1;
+        }
+        if !((above as f64 - tall).abs() < slack_down) {
+            return f64::NAN;
+        }
+        let mut below = 0i64;
+        let mut yy = down;
+        while yy <= bottom && data[(yy * width + x) as usize] != 1 {
+            below += 1;
+            yy += 1;
+        }
+        if !((below as f64 - tall).abs() < slack_down) {
+            return f64::NAN;
+        }
+        (up + 1 + down) as f64 / 2.0
+    };
+    let mut found: Vec<Seen> = Vec::new();
+    for y in top..=bottom {
+        let changes = edges.row(y as usize);
+        let n = changes.len();
+        // The first change of colour past the window's left edge.
+        let mut k = 0usize;
+        let mut high = n;
+        while k < high {
+            let middle = (k + high) >> 1;
+            if changes[middle] as i64 <= left {
+                k = middle + 1;
+            } else {
+                high = middle;
+            }
+        }
+        let mut x = left;
+        if data[(y * width + left) as usize] == 1 {
+            // Skip a dark run cut by the window.
+            x = if k < n && changes[k] as i64 <= right {
+                k += 1;
+                changes[k - 1] as i64
+            } else {
+                right + 1
+            };
+        }
+        // Runs alternate light, dark, light ...: the last two are kept, and the
+        // run that ends a light, dark, light three is checked with them.
+        let mut start = x;
+        let mut count = 0u32;
+        let mut before = 0i64;
+        let mut last = 0i64;
+        loop {
+            x = if k < n && changes[k] as i64 <= right {
+                k += 1;
+                changes[k - 1] as i64
+            } else {
+                right + 1
+            };
+            let run = x - start;
+            start = x;
+            count += 1;
+            if count >= 3
+                && (count & 1) == 1
+                && ((before as f64 - wide).abs() < slack)
+                && ((last as f64 - wide).abs() < slack)
+                && ((run as f64 - wide).abs() < slack)
+            {
+                let cx = x as f64 - run as f64 - last as f64 / 2.0;
+                let cy = vertical(cx.floor() as i64, y);
+                if !cy.is_nan() {
+                    let same = found.iter_mut().find(|f| (f.x - cx).abs() <= module_size && (f.y - cy).abs() <= module_size);
+                    if let Some(same) = same {
+                        same.x = (same.x * same.count + cx) / (same.count + 1.0);
+                        same.y = (same.y * same.count + cy) / (same.count + 1.0);
+                        same.count += 1.0;
+                    } else {
+                        found.push(Seen { x: cx, y: cy, count: 1.0 });
+                    }
+                }
+            }
+            if x > right {
+                break;
+            }
+            before = last;
+            last = run;
+        }
+    }
+    // A candidate seen on one row only counts as three modules further away.
+    let mut scored: Vec<(f64, Point)> = found
+        .iter()
+        .map(|f| {
+            let p = Point { x: f.x, y: f.y };
+            (distance(p, estimate) / module_size + if f.count >= 2.0 { 0.0 } else { 3.0 }, p)
+        })
+        .collect();
+    scored.sort_by(|p, q| p.0.partial_cmp(&q.0).unwrap_or(std::cmp::Ordering::Equal));
+    scored.into_iter().map(|s| s.1).collect()
+}
+
+
+#[cfg(test)]
 mod alignment_tests {
     use super::*;
+
+
+    #[test]
+    fn alignment_windows_match_original_run_walk() {
+        let mut seed = 0x1cafeu32;
+        let mut next = || { seed = seed.wrapping_mul(1664525).wrapping_add(1013904223); seed };
+        for case in 0..1200 {
+            let width = 7 + (next() % 33) as usize;
+            let height = 7 + (next() % 33) as usize;
+            let data = (0..width * height).map(|_| (next() >> 31) as u8).collect();
+            let image = BitImage { data, width, height };
+            let estimate = Point { x: (next() % (width as u32 * 4 + 8)) as f64 / 4.0 - 1.0,
+                y: (next() % (height as u32 * 4 + 8)) as f64 / 4.0 - 1.0 };
+            let wide = 0.25 + (next() % 64) as f64 / 8.0;
+            let tall = 0.25 + (next() % 64) as f64 / 8.0;
+            let reach = [1.0, 4.0, 8.0, 16.0][case % 4];
+            let (mut a, mut b) = (Work::default(), Work::default());
+            let expected = find_alignments_reference(&image, &mut Edges::new(&image), estimate, wide, tall, reach, Some(&mut a));
+            let actual = find_alignments(&image, &mut Edges::new(&image), estimate, wide, tall, reach, Some(&mut b));
+            assert_eq!(actual, expected, "case {case}");
+            assert_eq!(a, b, "case {case} work");
+        }
+    }
 
     // Read every module at every scale, including samples outside the picture.
     fn reference(image: &BitImage, centre: Point, u: Point, v: Point) -> u32 {

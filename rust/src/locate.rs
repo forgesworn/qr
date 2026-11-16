@@ -59,13 +59,24 @@ impl<'a> Edges<'a> {
         if self.spans[y].0 == NOT_YET {
             let start = y * self.width;
             let begin = self.store.len();
-            let mut ink = self.data[start];
-            for x in 1..self.width {
-                let v = self.data[start + x];
-                if v != ink {
-                    self.store.push(x as i32);
-                    ink = v;
+            let row = &self.data[start..start + self.width];
+            let mut x = 1usize;
+            // Eight adjacent comparisons per word, with no new WASM feature.
+            // Clear the whole changed byte so arbitrary byte values still work.
+            while x + 8 <= row.len() {
+                let before = u64::from_le_bytes(row[x - 1..x + 7].try_into().unwrap());
+                let after = u64::from_le_bytes(row[x..x + 8].try_into().unwrap());
+                let mut changed = before ^ after;
+                while changed != 0 {
+                    let byte = changed.trailing_zeros() as usize / 8;
+                    self.store.push((x + byte) as i32);
+                    changed &= !(0xffu64 << (byte * 8));
                 }
+                x += 8;
+            }
+            while x < row.len() {
+                if row[x] != row[x - 1] { self.store.push(x as i32); }
+                x += 1;
             }
             self.spans[y] = (begin as u32, self.store.len() as u32);
         }
@@ -306,6 +317,26 @@ impl Scan<'_, '_> {
     }
 }
 
+/// Enumerates five complete alternating runs ending in dark, in row order.
+/// A successful pattern consumes its last dark run: the next possible
+/// candidate needs three new dark runs, as in the pixel-by-pixel scan.
+#[inline]
+fn scan_row<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, dark_first: bool, tolerance: f64, mut consider: F) {
+    let first_dark = if dark_first { 0 } else { 1 };
+    let mut k = first_dark + 4;
+    while k <= changes.len() {
+        let start = k - 4;
+        let a = if start == 0 { 0 } else { changes[start - 1] as usize };
+        let b = changes[start] as usize;
+        let c = changes[start + 1] as usize;
+        let d = changes[start + 2] as usize;
+        let e = changes[start + 3] as usize;
+        let end = if k < changes.len() { changes[k] as usize } else { width };
+        let counts = [(b - a) as i64, (c - b) as i64, (d - c) as i64, (e - d) as i64, (end - e) as i64];
+        k += if finder_ratio(&counts, tolerance) && consider(&counts, end) { 6 } else { 2 };
+    }
+}
+
 /// Finds finder pattern candidates, most often confirmed first. `tolerance` is
 /// how far a run may stray from its share, in modules.
 pub fn find_finders(image: &BitImage, tolerance: f64, work: Option<&mut Work>, edges: &mut Edges) -> Vec<Finder> {
@@ -316,49 +347,186 @@ pub fn find_finders(image: &BitImage, tolerance: f64, work: Option<&mut Work>, e
     let skip = (height / 200).clamp(1, 3);
     let mut y = skip - 1;
     while y < height {
-        // Run by run, as a walk along the row pixel by pixel would count them:
-        // dark runs into the even places, light runs into the odd ones.
-        let mut counts = [0i64; 5];
-        let mut state = 0usize;
         let changes = edges.row(y);
-        let mut ink = data[y * width] == 1;
-        let mut x = 0usize;
-        for k in 0..=changes.len() {
-            let end = if k < changes.len() { changes[k] as usize } else { width };
-            let length = (end - x) as i64;
-            if ink {
-                if state & 1 == 1 {
-                    state += 1;
-                }
-                counts[state] += length;
-            } else if state != 4 {
-                state += 1;
-                counts[state] += length;
-            } else if finder_ratio(&counts, tolerance) && scan.consider(&counts, y, x) {
-                // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
-                counts = [0; 5];
-                state = 0;
-                if length > 1 {
-                    state = 1;
-                    counts[1] = length - 1;
-                }
-            } else {
-                counts[0] = counts[2];
-                counts[1] = counts[3];
-                counts[2] = counts[4];
-                counts[3] = length;
-                counts[4] = 0;
-                state = 3;
-            }
-            x = end;
-            ink = !ink;
-        }
-        if state == 4 && finder_ratio(&counts, tolerance) {
-            scan.consider(&counts, y, width);
-        }
+        scan_row(changes, width, data[y * width] == 1, tolerance, |counts, end| scan.consider(counts, y, end));
         y += skip;
     }
     let mut found = scan.found;
     found.sort_by(|a, b| b.count.cmp(&a.count));
     found
+}
+
+#[cfg(test)]
+mod row_differential_tests {
+    use super::*;
+
+    fn reference_find_finders(image: &BitImage, tolerance: f64, work: Option<&mut Work>, edges: &mut Edges) -> Vec<Finder> {
+        let (width, height) = (image.width, image.height);
+        let columns = width / CELL + 1;
+        let mut scan = Scan { image, tolerance, work, found: Vec::new(), columns, cells: Vec::new() };
+        let data = &image.data;
+        let skip = (height / 200).clamp(1, 3);
+        let mut y = skip - 1;
+        while y < height {
+            // Run by run, as a walk along the row pixel by pixel would count them:
+            // dark runs into the even places, light runs into the odd ones.
+            let mut counts = [0i64; 5];
+            let mut state = 0usize;
+            let changes = edges.row(y);
+            let mut ink = data[y * width] == 1;
+            let mut x = 0usize;
+            for k in 0..=changes.len() {
+                let end = if k < changes.len() { changes[k] as usize } else { width };
+                let length = (end - x) as i64;
+                if ink {
+                    if state & 1 == 1 {
+                        state += 1;
+                    }
+                    counts[state] += length;
+                } else if state != 4 {
+                    state += 1;
+                    counts[state] += length;
+                } else if finder_ratio(&counts, tolerance) && scan.consider(&counts, y, x) {
+                    // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
+                    counts = [0; 5];
+                    state = 0;
+                    if length > 1 {
+                        state = 1;
+                        counts[1] = length - 1;
+                    }
+                } else {
+                    counts[0] = counts[2];
+                    counts[1] = counts[3];
+                    counts[2] = counts[4];
+                    counts[3] = length;
+                    counts[4] = 0;
+                    state = 3;
+                }
+                x = end;
+                ink = !ink;
+            }
+            if state == 4 && finder_ratio(&counts, tolerance) {
+                scan.consider(&counts, y, width);
+            }
+            y += skip;
+        }
+        let mut found = scan.found;
+        found.sort_by(|a, b| b.count.cmp(&a.count));
+        found
+    }
+
+    fn reference_row<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, dark_first: bool, tolerance: f64, mut consider: F) {
+        let mut counts = [0i64; 5];
+        let mut state = 0usize;
+        let mut ink = dark_first;
+        let mut x = 0usize;
+        for k in 0..=changes.len() {
+            let end = if k < changes.len() { changes[k] as usize } else { width };
+            let length = (end - x) as i64;
+            if ink {
+                if state & 1 == 1 { state += 1; }
+                counts[state] += length;
+            } else if state != 4 {
+                state += 1;
+                counts[state] += length;
+            } else if finder_ratio(&counts, tolerance) && consider(&counts, x) {
+                counts = [0; 5]; state = 0;
+                if length > 1 { state = 1; counts[1] = length - 1; }
+            } else {
+                counts = [counts[2], counts[3], counts[4], length, 0];
+                state = 3;
+            }
+            x = end;
+            ink = !ink;
+        }
+        if state == 4 && finder_ratio(&counts, tolerance) { consider(&counts, width); }
+    }
+
+    #[test]
+    fn row_calls_and_success_resets_match_exhaustively() {
+        for width in 1..=16usize {
+            for mask in 0..(1usize << width) {
+                let bit = |x: usize| (mask >> x) & 1 != 0;
+                let changes: Vec<i32> = (1..width).filter(|&x| bit(x) != bit(x - 1)).map(|x| x as i32).collect();
+                for tolerance in [0.5, 0.8] {
+                    for pattern in 0..5 {
+                        let mut old = Vec::new();
+                        let mut new = Vec::new();
+                        let accept = |counts: &[i64; 5], end: usize, n: usize| match pattern {
+                            0 => false,
+                            1 => true,
+                            2 => n % 2 == 0,
+                            3 => n % 3 == 1,
+                            _ => (counts.iter().enumerate().map(|(i, &c)| (i + 2) * c as usize).sum::<usize>() + end) % 3 == 0,
+                        };
+                        reference_row(&changes, width, bit(0), tolerance, |counts, end| { old.push((*counts, end)); accept(counts, end, old.len()) });
+                        scan_row(&changes, width, bit(0), tolerance, |counts, end| { new.push((*counts, end)); accept(counts, end, new.len()) });
+                        assert_eq!(new, old, "width {width}, mask {mask}, tolerance {tolerance}, pattern {pattern}");
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn complete_finders_and_work_match_reference() {
+        let mut seed = 0x18b2_3fa5u32;
+        for (width, height) in [(1, 1), (7, 9), (31, 29), (128, 76), (320, 220), (15, 450)] {
+            for case in 0..8 {
+                let mut data = vec![0u8; width * height];
+                for y in 0..height {
+                    for x in 0..width {
+                        seed = seed.wrapping_mul(1664525).wrapping_add(1013904223);
+                        data[y * width + x] = if case < 4 { (seed >> 31) as u8 } else {
+                            let px = x % 20; let py = y % 20;
+                            let (mx, my) = (px / 2, py / 2);
+                            (mx < 7 && my < 7 && (mx as i32 - 3).abs().max((my as i32 - 3).abs()) != 2) as u8
+                        };
+                    }
+                }
+                let image = BitImage { data, width, height };
+                for tolerance in [0.5, 0.8] {
+                    let mut old_work = Work::default();
+                    let mut new_work = Work::default();
+                    let old = reference_find_finders(&image, tolerance, Some(&mut old_work), &mut Edges::new(&image));
+                    let new = find_finders(&image, tolerance, Some(&mut new_work), &mut Edges::new(&image));
+                    assert_eq!(new, old, "{width}x{height}, case {case}, tolerance {tolerance}");
+                    assert_eq!(new_work, old_work);
+                }
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod edge_word_tests {
+    use super::*;
+
+    #[test]
+    fn word_edges_equal_adjacent_bytes_at_every_tail_length() {
+        let mut state = 0x681d_7432u32;
+        for width in 1..=257 {
+            for mode in 0..5 {
+                let height = 3;
+                let data: Vec<u8> = (0..width * height).map(|i| {
+                    state = state.wrapping_mul(1664525).wrapping_add(1013904223);
+                    match mode {
+                        0 => (state >> 31) as u8,
+                        1 => (state >> 24) as u8,
+                        2 => ((i / 3) % 2) as u8,
+                        3 => 1,
+                        _ => (i % width >= width / 2) as u8,
+                    }
+                }).collect();
+                let image = BitImage { width, height, data };
+                let mut edges = Edges::new(&image);
+                for y in (0..height).rev() {
+                    let row = &image.data[y * width..(y + 1) * width];
+                    let expected: Vec<i32> = (1..width).filter(|&x| row[x] != row[x - 1]).map(|x| x as i32).collect();
+                    assert_eq!(edges.row(y), expected, "width {width}, row {y}, mode {mode}");
+                    assert_eq!(edges.row(y), expected);
+                }
+            }
+        }
+    }
 }

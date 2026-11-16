@@ -288,42 +288,25 @@ export function findFinders(image: BitImage, tolerance = 0.5, work?: Work, edges
   const skip = Math.max(1, Math.min(3, Math.floor(height / 200)))
   const counts = [0, 0, 0, 0, 0]
   for (let y = skip - 1; y < height; y += skip) {
-    // Run by run, as a walk along the row pixel by pixel would count them:
-    // dark runs into the even places, light runs into the odd ones.
-    counts.fill(0)
-    let state = 0
     const changes = edges.row(y)
-    let ink = data[y * width] === 1
-    let x = 0
-    for (let k = 0; k <= changes.length; k++) {
+    // Each eligible window ends at a dark run. After a successful match,
+    // three new dark runs are needed before another candidate can end.
+    let k = (data[y * width] === 1 ? 0 : 1) + 4
+    while (k <= changes.length) {
+      const start = k - 4
+      const a = start === 0 ? 0 : changes[start - 1]!
+      const b = changes[start]!
+      const c = changes[start + 1]!
+      const d = changes[start + 2]!
+      const e = changes[start + 3]!
       const end = k < changes.length ? changes[k]! : width
-      const length = end - x
-      if (ink) {
-        if (state & 1) state++
-        counts[state]! += length
-      } else if (state !== 4) {
-        state++
-        counts[state]! += length
-      } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-        // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
-        counts.fill(0)
-        state = 0
-        if (length > 1) {
-          state = 1
-          counts[1] = length - 1
-        }
-      } else {
-        counts[0] = counts[2]!
-        counts[1] = counts[3]!
-        counts[2] = counts[4]!
-        counts[3] = length
-        counts[4] = 0
-        state = 3
-      }
-      x = end
-      ink = !ink
+      counts[0] = b - a
+      counts[1] = c - b
+      counts[2] = d - c
+      counts[3] = e - d
+      counts[4] = end - e
+      k += finderRatio(counts, tolerance) && consider(counts, y, end) ? 6 : 2
     }
-    if (state === 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
   }
   return found.sort((a, b) => b.count - a.count)
 }
@@ -489,19 +472,18 @@ function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: nu
     }
     let x = left
     if (data[y * width + left] === 1) x = k < n && changes[k]! <= right ? changes[k++]! : right + 1 // skip a dark run cut by the window
-    // Runs alternate light, dark, light ...: the last two are kept, and the
-    // run that ends a light, dark, light three is checked with them.
+    // Enumerate each light, dark, light window. The final light run may
+    // be clipped by the window's right edge.
     let start = x
-    let count = 0
-    let before = 0
-    let last = 0
-    for (;;) {
-      x = k < n && changes[k]! <= right ? changes[k++]! : right + 1
-      const run = x - start
-      start = x
-      count++
-      if (count >= 3 && (count & 1) === 1 && Math.abs(before - wide) < slack && Math.abs(last - wide) < slack && Math.abs(run - wide) < slack) {
-        const cx = x - run - last / 2
+    while (k + 1 < n && changes[k + 1]! <= right) {
+      const darkStart = changes[k]!
+      const darkEnd = changes[k + 1]!
+      const end = k + 2 < n && changes[k + 2]! <= right ? changes[k + 2]! : right + 1
+      const before = darkStart - start
+      const middle = darkEnd - darkStart
+      const after = end - darkEnd
+      if (Math.abs(before - wide) < slack && Math.abs(middle - wide) < slack && Math.abs(after - wide) < slack) {
+        const cx = end - after - middle / 2
         const cy = vertical(Math.floor(cx), y)
         if (!Number.isNaN(cy)) {
           const same = found.find((f) => Math.abs(f.x - cx) <= moduleSize && Math.abs(f.y - cy) <= moduleSize)
@@ -514,9 +496,8 @@ function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: nu
           }
         }
       }
-      if (x > right) break
-      before = last
-      last = run
+      start = darkEnd
+      k += 2
     }
   }
   // A candidate seen on one row only counts as three modules further away.

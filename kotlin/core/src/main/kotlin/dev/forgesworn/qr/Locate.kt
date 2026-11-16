@@ -287,42 +287,27 @@ internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? =
     val counts = intArrayOf(0, 0, 0, 0, 0)
     var y = skip - 1
     while (y < height) {
-        // Run by run, as a walk along the row pixel by pixel would count them:
-        // dark runs into the even places, light runs into the odd ones.
-        counts.fill(0)
-        var state = 0
+        // Enumerate five alternating runs ending in dark, in row order.
+        // A successful pattern consumes its last dark run, so the next
+        // candidate needs three new dark runs; otherwise slide by two runs.
         val changes = edges.row(y)
-        var ink = image.data[y * width].toInt() == 1
-        var x = 0
-        for (k in 0..changes.size) {
+        val firstDark = if (image.data[y * width].toInt() == 1) 0 else 1
+        var k = firstDark + 4
+        while (k <= changes.size) {
+            val start = k - 4
+            val a = if (start == 0) 0 else changes[start - 1]
+            val b = changes[start]
+            val c = changes[start + 1]
+            val d = changes[start + 2]
+            val e = changes[start + 3]
             val end = if (k < changes.size) changes[k] else width
-            val length = end - x
-            if (ink) {
-                if (state and 1 != 0) state++
-                counts[state] += length
-            } else if (state != 4) {
-                state++
-                counts[state] += length
-            } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-                // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
-                counts.fill(0)
-                state = 0
-                if (length > 1) {
-                    state = 1
-                    counts[1] = length - 1
-                }
-            } else {
-                counts[0] = counts[2]
-                counts[1] = counts[3]
-                counts[2] = counts[4]
-                counts[3] = length
-                counts[4] = 0
-                state = 3
-            }
-            x = end
-            ink = !ink
+            counts[0] = b - a
+            counts[1] = c - b
+            counts[2] = d - c
+            counts[3] = e - d
+            counts[4] = end - e
+            k += if (finderRatio(counts, tolerance) && consider(counts, y, end)) 6 else 2
         }
-        if (state == 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
         y += skip
     }
     return found.sortedWith { a, b -> b.count - a.count }
@@ -513,18 +498,19 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
         var x = left
         // Skip a dark run cut by the window.
         if (data[y * width + left].toInt() == 1) x = if (k < n && changes[k] <= right) changes[k++] else right + 1
-        // Runs alternate light, dark, light ...: the last two are kept, and the
-        // run that ends a light, dark, light three is checked with them.
+        // Each candidate is a light, dark, light triple. The first two
+        // runs must end inside the window; the final light run may be cut off.
         var start = x
-        var count = 0
-        var before = 0
-        var last = 0
+        if (k >= n || changes[k] > right) continue
+        var lightEnd = changes[k++]
+        if (k >= n || changes[k] > right) continue
+        var darkEnd = changes[k++]
         while (true) {
             x = if (k < n && changes[k] <= right) changes[k++] else right + 1
-            val run = x - start
-            start = x
-            count++
-            if (count >= 3 && count and 1 == 1 && abs(before - wide) < slack && abs(last - wide) < slack && abs(run - wide) < slack) {
+            val before = lightEnd - start
+            val last = darkEnd - lightEnd
+            val run = x - darkEnd
+            if (abs(before - wide) < slack && abs(last - wide) < slack && abs(run - wide) < slack) {
                 val cx = x - run - last / 2.0
                 val cy = vertical(floor(cx).toInt(), y)
                 if (!cy.isNaN()) {
@@ -539,8 +525,11 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
                 }
             }
             if (x > right) break
-            before = last
-            last = run
+            // The trailing light run becomes the first of the next triple.
+            start = darkEnd
+            lightEnd = x
+            if (k >= n || changes[k] > right) break
+            darkEnd = changes[k++]
         }
     }
     // A candidate seen on one row only counts as three modules further away.

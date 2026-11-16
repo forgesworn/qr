@@ -438,6 +438,15 @@ tolerance 0.5 and once with 0.8 in each polarity.
    first count. If they fail, the third, fourth and fifth counts become the
    first, second and third, and the light run the fourth. A row that ends
    with the fifth count in hand is tested with `end = width`.
+   Equivalently, complete dark/light/dark/light/dark windows can be read
+   directly from row boundaries. Their starting run advances by two after
+   rejection or six after acceptance; initial light runs cannot begin a
+   candidate, and a final dark run still ends at `width`.
+   Rust finds the same row boundaries eight adjacent byte comparisons at
+   a time, using two little-endian words and XOR. Each non-zero byte emits
+   one boundary in left-to-right order, then is cleared in full; remaining
+   pixels are compared individually. Row boundaries and work counts are
+   unchanged.
 3. Ratio test with a tolerance: all five counts non-zero and their total at
    least 7; with `module = total / 7` and `slack = module * tolerance`, each
    outer count is under `slack` from `module` and the centre count under
@@ -583,6 +592,9 @@ Step 5, as `vectors/conformance.json` checks it (`triples[].size` and
    with count 1. The candidates are returned in order of their distance
    from E in units of `m`, with 3 added for a count of 1, equal values in
    the order stored.
+   These overlapping triples may be read directly from row boundaries,
+   advancing by two runs each time and retaining the clipped first and
+   last light runs.
 8. The score of a centre along steps `u` and `v` is the most, over the
    scales 0.85, 1 and 1.15, of the 25 modules (i, j) from -2 to 2 each
    that match: the pixel at `floor(centre + (i u + j v) * scale)` is dark
