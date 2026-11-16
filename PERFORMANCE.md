@@ -13,23 +13,28 @@ ZXing-WASM 3.1.7 was still the registry's current version at baseline setup.
 The same pinned external rival packages and complete-result comparisons are
 used. Source/binary identities, workload hashes and load are retained in
 [the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
-experimental snapshots. The recovery/session candidate is committed and pushed as
-`e92caff`; [all five hosted checks passed](https://github.com/forgesworn/qr/actions/runs/43829376452),
-including the independent Linux WASM rebuild. Merge, publication and physical
-camera acceptance remain pending. The fourth candidate below adds the exact
-syndrome-table optimisation and its rebuilt-module measurements.
+experimental snapshots. The current implementation is `d21f0c2`, following
+`dc62837` for direct run enumeration and Rust word comparisons. The sixth
+candidate adds TypeScript word comparisons; the fifth and sixth use the same
+WASM bytes. Merge, publication and physical camera acceptance remain pending.
 
-The final fourth candidate measured (median latency, lower is better):
+The sixth candidate measured (median latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.951 | 2.151 |
-| Blank 1280×720 RGBA, median ms | 1.319 | 2.208 |
-| Random noise, median ms | 25.525 | 7.945 |
+| Clean 1280×720 RGBA, median ms | 1.815 | 2.230 |
+| Blank 1280×720 RGBA, median ms | 1.362 | 2.225 |
+| Random noise, median ms | 23.253 | 8.120 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
-| Fresh synthetic validation, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 8.486 | 19.970 |
+| Synthetic validation regression set, exact text and bytes | 172/192 | 169/192 |
+| Ten-frame moving/changing-payload sequence, median total ms | 8.208 | 20.823 |
+
+The current receipts are [`candidate6-libraries.json`](benchmarks/2026-11-16-m4/candidate6-libraries.json),
+[`candidate6-sessions.json`](benchmarks/2026-11-16-m4/candidate6-sessions.json)
+and [`candidate6-validation.json`](benchmarks/2026-11-16-m4/candidate6-validation.json).
+The complete negative-frame matrix and Chrome page/worker measurements are
+retained alongside them. Their hashes identify the exact build and workloads.
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed
@@ -116,11 +121,84 @@ Rust tests with all features, packed-package checks and Chrome page/worker
 checks. The earlier Kotlin results remain applicable: this refinement changes
 only the Rust arithmetic implementation and its WASM asset.
 
-The next performance work should target those loops while retaining all
-readable damage cases. Broader qualification needs independent camera footage,
-mobile/browser coverage, first-read and p95 latency, sustained memory/CPU use,
-and false-positive tests. A win on these finite suites is not evidence of
-superiority on every image or over every ZXing implementation.
+The fifth candidate (`dc62837`) reads complete finder and alignment run windows
+from cached row boundaries in all three ports. It preserves candidate order,
+successful-finder resets, clipped window ends, results and work counts. Rust
+also finds row boundaries using eight adjacent byte comparisons at a time,
+without SIMD, unsafe code or additional runtime features. The module is
+210,658 bytes, 423 bytes smaller than the fourth candidate.
+
+The paired M4 comparison against `44813f9` measured:
+
+| Workload | Before, median ms | Fifth candidate, median ms | Change |
+|---|---:|---:|---:|
+| Clean 720p | 1.875 | 1.730 | 7.7% less time |
+| Blank 720p | 1.278 | 1.288 | 0.8% more time |
+| Noise 720p | 25.057 | 22.203 | 11.4% less time |
+
+The binary hashes in [`candidate5-paired.json`](benchmarks/2026-11-16-m4/candidate5-paired.json)
+identify both builds; its runner revision is the fourth candidate. The separate
+incremental comparison isolates the word-comparison change on top of direct
+run enumeration. Across six other noise cases, the fifth candidate takes
+9–12% less time. All 192 synthetic outcomes remain identical to the fourth
+candidate: 172 correct reads, no wrong results and no lost successes.
+See [`candidate5-negative.json`](benchmarks/2026-11-16-m4/candidate5-negative.json)
+and [`candidate5-validation.json`](benchmarks/2026-11-16-m4/candidate5-validation.json).
+This previously unseen set is now regression data, not fresh validation again.
+
+Differential Rust tests compare the new loops with the original algorithms,
+including callback acceptance/reset schedules, ordered alignment candidates
+and work counts. Word-edge tests cover every width from 1 to 257, arbitrary
+byte values, row boundaries and repeated cached reads. Public TypeScript crop
+expectations were captured before the loop changes. No vectors changed.
+The fifth candidate passed 451 JavaScript tests locally (four photo-dependent
+tests skipped), 31 Rust tests with all features, the Kotlin suite, an exact
+packaged-WASM rebuild and packed-package checks. The M4 photographic run retained 179/184 exact text matches for both
+TypeScript and WASM against ZXing's 171/184. Chrome page/worker, host-character-set
+and session checks passed on that exact revision; the browser receipt also
+records latency samples.
+
+The sixth candidate (`d21f0c2`) also compares four adjacent bytes per word in
+TypeScript, using a DataView over the actual typed-array slice. Its independent
+edge test covers 3,084 inputs with arbitrary bytes, every width from 1 to 257,
+subarray offsets, tail lengths and cached row identity. Two paired M4 prototype
+runs showed around 3% less noisy-frame time and 5% less clean-frame time before
+integration. The final negative-frame comparison against `44813f9` includes
+both direct runs and word comparisons: TypeScript noise cases take 2–8% less
+time, and WASM cases take 9–13% less time. These are paired comparisons within
+a run; separate-run headline timings are not subtracted to claim gains.
+
+A Kotlin ByteBuffer word prototype was not adopted: kernel results varied
+substantially by workload and JVM warm-up, and did not establish a whole-decoder
+benefit. Kotlin retains the verified direct-run optimisation. The SIMD-only
+Rust compiler experiment was also kept out of the distributed asset; the
+accepted word comparisons require no additional WASM feature.
+
+The final source passes all 456 JavaScript tests on M4 with photographs
+required, the Kotlin suite with the same photographs, packed-package checks,
+and Chrome page/worker and tracked-session checks. The local Rust suite has
+31 passing tests with all features. The local JavaScript run passed 452 tests
+with the four photograph-dependent tests skipped; the required M4 run fills
+that coverage gap. All 192 synthetic outcomes and all 179
+previously readable photographs are preserved, with zero text mismatches from
+our TypeScript or packaged WASM decoders. The Rust module remains the exact
+rebuild already checked for `dc62837`.
+
+The next investigations should measure removable work before adding more
+caches or changing search policy:
+
+| Priority | Investigation | Evidence needed before adopting |
+|---|---|---|
+| 1 | Exact duplicate locator/maps across passes | Repeated identical geometry or matrices account for material time; reuse preserves candidate order, fallback retention and logical budgets. |
+| 2 | Repeated vertical walks in overlapping alignment windows | Reuse outweighs setup/storage; clipped-window candidates and work counts remain identical. |
+| 3 | Apply the existing mandatory strict-format condition before Reed–Solomon | Neither orientation can pass the existing condition; preserve mirrored precedence, second-look candidates and all outcomes. |
+| 4 | Kotlin versus ZXing Java | Same greyscale frames, warmed JVM, alternating order, complete-result checks and pinned versions. Existing test-only ZXing 3.5.3 can be reused. |
+| 5 | Independent physical camera evaluation | Android/iOS first-read and p95 latency, difficult lighting/movement, sustained memory/CPU use and false positives. |
+
+The first three are unproven hypotheses, not implemented speedups. The current
+M4 WASM results do not establish JVM or phone performance. A win on these finite
+suites is not evidence of superiority on every image or over every ZXing
+implementation.
 
 
 ## Earlier M1 phase (historical)
