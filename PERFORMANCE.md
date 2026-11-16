@@ -14,7 +14,8 @@ The same pinned external rival packages and complete-result comparisons are
 used. Source/binary identities, workload hashes and load are retained in
 [the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
 experimental snapshots. The current TypeScript/Rust implementation is `22f3428`,
-with the Kotlin byte-plane optimisation at `dbb830f`. The seventh candidate
+with Kotlin byte planes, local cross-check counters and reusable module storage
+at `7419507`. The seventh candidate
 applies the existing strict-format requirement before reading payload modules.
 Merge, publication and physical camera acceptance remain pending.
 
@@ -219,6 +220,45 @@ All 16 instrumented cases preserved full results and work counters. The
 [diagnostic summary](benchmarks/2026-11-16-m4/candidate6-duplicate-work.json)
 records the experiment; no cache was adopted.
 
+### Alignment-cache follow-up: rejected
+
+Instrumentation found substantial repeated observations across windows for the
+same image and exact finder triple. The main 720p noise fixture had 79,009
+vertical queries, of which 62,383 repeated; a simulation of a 4,096-slot cache
+estimated 51,829 hits after bypassing the first window. These are available-work
+estimates, not speedups. Instrumented full results and work counters matched
+the unchanged decoder on all cases. See the
+[observation summary](benchmarks/2026-11-16-m4/alignment-observations.json).
+
+A Rust prototype retained only complete observed bounds, reconstructed each
+window's clipping, and kept the original bounded walk on misses. It allocated
+no cache for the first window. Its 38 native tests passed, including exhaustive
+short-column windows, partial observations, collisions, ordered alignment
+results and work, and size retries. Nevertheless, paired M4 timings rejected it:
+
+| Prototype | Baseline noise median ms | Candidate noise median ms | Decision |
+|---|---:|---:|---|
+| 4,096 slots, first run | 19.940 | 20.274 | Slower |
+| 1,024 slots | 22.344 | 22.746 | Slower |
+| 4,096 slots, repeat | 22.366 | 22.647 | Slower |
+
+Clean and blank times were effectively unchanged. Cache lookup/setup cost
+outweighed the short pixel walks. The code was removed; the distributed WASM
+remains unchanged. The [prototype patch](benchmarks/2026-11-16-m4/rejected-alignment-cache.patch)
+applies to the Rust sources at `7d51494`; change VERTICAL_SLOTS from 4096 to
+1024 to reproduce the smaller trial. Exact binaries, raw samples and environment
+identities are in [first](benchmarks/2026-11-16-m4/alignment4096-paired.json),
+[smaller](benchmarks/2026-11-16-m4/alignment1024-paired.json) and
+[repeat](benchmarks/2026-11-16-m4/alignment4096-repeat.json) receipts. The runners'
+revision identifies unchanged harness/source state; candidate identity is the
+recorded binary hash plus this patch, built with pinned Rust 1.94.1.
+
+A separate exact rejection idea also had no measured headroom: when a run scale
+is at most one pixel and integer length one fails its tolerance, no positive
+integer run can pass. None of the main noise fixture's 393 windows met that
+condition, nor did the other diagnostic cases. The gate was not implemented.
+See [its diagnostic receipt](benchmarks/2026-11-16-m4/impossible-run-gate.json).
+
 ### Kotlin against ZXing Java
 
 The separate JVM comparison uses native aarch64 OpenJDK 21.0.11 on the same M4,
@@ -274,12 +314,96 @@ See [byte fork 1](benchmarks/2026-11-16-m4/jvm-byte-fork1.json) and
 [byte fork 2](benchmarks/2026-11-16-m4/jvm-byte-fork2.json), including p95 samples.
 
 Current local verification passes 458 JavaScript tests with required photographs,
-33 native Rust tests with all features, and 111 Kotlin tests with required
+33 native Rust tests with all features, and 112 Kotlin tests with required
 photographs. The Kotlin suite includes unsigned-byte, alpha, packed/padded/tail
 input, input-preservation and independent box-mean checks. The exact packaged
 WASM rebuild and packed-package consumer checks pass. Chrome page/worker,
 character-set and tracked-session checks pass for the unchanged TypeScript/WASM
 revision `22f3428`. Hosted checks for this phase are tracked on PR #4.
+
+A diagnostic JFR run on `e5ffc4f` identified the next allocation sites. Among
+samples with a QR frame in the printed five-frame stack, cross-check counter
+arrays accounted for about 23% of weighted allocation, row-edge arrays 11%,
+and per-map module arrays 10%. This includes warm-up and all seven cases; it
+is a sampled attribution, not per-frame allocation totals or a timing result.
+The [profile summary](benchmarks/2026-11-16-m4/candidate7-jvm-allocation-profile.json)
+records its stack-depth limitation and exact source/runtime identity.
+
+The first follow-up (`7d51494`) reused cross-check counters within finder scans
+and module storage within a picture-size search. Direct rival comparisons in
+[two](benchmarks/2026-11-16-m4/jvm-scratch-fork1.json)
+[forks](benchmarks/2026-11-16-m4/jvm-scratch-fork2.json) showed 720p noise
+allocation falling from about 17.88 MB to 12.32 MB. Rival timings also shifted
+between runs, so those separate runs do not establish a latency improvement.
+
+A new paired-revision runner loads explicit old/new library jars through
+separate class loaders, sharing Kotlin/JDK classes and applying the same
+reflection path to both. It verifies each decoder's jar identity, compares
+every result field and coordinate outside the timer, checks input hashes,
+and retains all timings and allocation samples. Reflection adds a small
+symmetric cost, so its absolute timings are not substituted for direct rival
+measurements. Each case still has at least 200 warm-up pairs and two seconds
+of warm-up, followed by 60 alternating pairs in a 512 MiB JVM. Both libraries
+share GC; the comparison does not separately attribute pauses.
+
+The [first](benchmarks/2026-11-16-m4/jvm-scratch-paired1.json) and
+[second](benchmarks/2026-11-16-m4/jvm-scratch-paired2.json) paired forks confirmed
+large allocation reductions but mostly unchanged 720p noise latency and
+2–4% slower stripes/checkerboards. That exposed counter-reset and array-access
+costs worth investigating before claiming the change as a latency win.
+
+The accepted refinement (`7419507`) keeps the five cross-check counters in
+local integers and retains the per-search module buffer. It preserves loop
+order, floating-point operations, early returns and work accounting. The new
+public regression alternates symbol sizes, polarity and damaged format reads
+to check that scratch storage cannot leak between reads. No vectors changed.
+
+Two paired JVM forks compare the complete change with `e5ffc4f`:
+
+| Workload | Median latency change, fork 1 / 2 | Allocation reduction |
+|---|---:|---:|
+| Clean 720p | 1.1% slower / 1.0% faster | 0.3% |
+| Blank 720p | Unchanged / 1.9% faster | Unchanged |
+| Noise 720p | 0.4% / 0.6% faster | 31.2% |
+| Noise 512×512 | 1.9% / 5.0% faster | 39.2% |
+| Noise 1080p | 0.7% / 2.1% faster | 26.9% |
+| Stripes 720p | 5.2% / 6.6% faster | 59.3% |
+| Checkerboard 720p | 3.9% / 4.3% faster | 59.0% |
+
+The repeatable benefit is lower allocation and faster pattern rejection;
+720p noise latency is essentially unchanged. See the final paired
+[first](benchmarks/2026-11-16-m4/jvm-final-paired1.json) and
+[second](benchmarks/2026-11-16-m4/jvm-final-paired2.json) forks,
+[intermediate scalar comparison](benchmarks/2026-11-16-m4/jvm-scalar-incremental.json)
+and [jar/source identities](benchmarks/2026-11-16-m4/jvm-build-identities.json).
+
+Fresh direct comparisons against ZXing Java on that revision give:
+
+| Workload | Kotlin median ms, fork 1 / 2 | ZXing Java median ms, fork 1 / 2 | Kotlin allocated bytes |
+|---|---:|---:|---:|
+| Clean 720p | 1.033 / 1.034 | 0.957 / 0.951 | 1,183,592 |
+| Blank 720p | 0.464 / 0.491 | 1.681 / 1.737 | 230,544 |
+| Noise 720p | 41.455 / 42.566 | 12.928 / 14.711 | 12,299,832–12,346,768 |
+| Noise 512×512 | 34.057 / 34.166 | 3.606 / 4.018 | 8,860,960 |
+| Noise 1080p | 48.618 / 48.849 | 28.992 / 32.839 | 16,257,888 |
+| Stripes 720p | 7.562 / 7.842 | 2.226 / 2.720 | 5,515,704 |
+| Checkerboard 720p | 6.306 / 6.333 | 1.902 / 2.215 | 5,266,968 |
+
+These [first](benchmarks/2026-11-16-m4/jvm-final-rival1.json) and
+[second](benchmarks/2026-11-16-m4/jvm-final-rival2.json) rival forks still show
+substantial noise/pattern gaps and higher allocations than ZXing. Differences
+between independent forks are not incremental speedups. The unchanged WASM
+results above remain the current browser comparison.
+
+To compare revisions, build `:core:jar` at each exact revision and preserve
+the jars outside the checkout. Run twice with separate outputs:
+
+```sh
+./gradlew :core:compareQrJars --console=plain --no-daemon --max-workers=2 \
+  -PqrBaselineJar=/external/path/baseline.jar \
+  -PqrCurrentJar=/external/path/current.jar \
+  -PqrBenchmarkOutput=/external/path/paired-fork1.json
+```
 
 To reproduce, obtain the pinned jar outside the repository, verify its SHA-256,
 and run from `kotlin/` twice, with separate output files:
@@ -290,11 +414,29 @@ and run from `kotlin/` twice, with separate output files:
   -PqrBenchmarkOutput=/external/path/jvm-fork1.json
 ```
 
+### Next algorithm experiments
+
+The next priority is rejecting unsupported geometry before expensive alignment
+search. A diagnostic should bound format-cell pixels over every allowed map,
+mark ambiguous cells unknown, and reject only when no assignment can satisfy
+the existing format rules. Unstable geometry falls back to the original search.
+Measure avoided windows and whole-frame latency before adopting this complexity;
+provisional corner-map failure alone must never reject a damaged valid symbol.
+
+If conservative bounds reject too little, investigate region-first finder
+proposals from connected runs and nested or partial rings, followed by existing
+precise cross-checks. This changes detection policy and must preserve broken and
+occluded finder recovery. Compare proposals against every previously successful
+finder triple before changing decode. Retain all known successful reads, zero
+wrong payloads, and then freeze before evaluating a new untouched stress set.
+The current 184 photos and 192 synthetic cases are regression evidence. Neither
+proposal is implemented or has an established speedup.
+
 ### Next acceptance targets
 
 | Priority | Work | Evidence required |
 |---|---|---|
-| 1 | Reduce finder/location work on unsuccessful images | Paired M4 median/p95 wins over ZXing across noise resolutions and patterns, with preserved valid reads, candidate ordering and bounded work. |
+| 1 | Reduce finder/location work on unsuccessful images | Paired M4 median/p95 wins over ZXing across noise resolutions and patterns, with preserved valid reads and bounded work. Exact optimisations retain ordering; a new detection policy needs an explicit SPEC/vector change and fresh validation. |
 | 2 | Continue reducing Kotlin allocations and search cost | Paired JVM comparisons with pinned ZXing Java, allocation counts and independent forks; then Android measurements. |
 | 3 | Turn tracked scanning into a measured phone advantage | Real Android/iOS first-read and reacquisition latency, moving payloads, difficult lighting, sustained memory/CPU and energy use. |
 | 4 | Broaden independent accuracy evidence | A separately collected, frozen camera corpus, exact text/bytes, false-positive controls and per-image outcomes. Existing development and regression sets are not fresh validation. |

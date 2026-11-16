@@ -1,0 +1,668 @@
+{
+  "revision": "e5ffc4f6fdede5e99b01b5525e1c7aefe375a214",
+  "dirty": false,
+  "kotlinSourceSha256": "27ba006bc63c648b7b475044a82489a6ac3ff4c39f5dfa6421f789bc46eea1ec",
+  "harnessSha256": "5f11e47bdf13f7a6030a327f57aa7aa5fbbe19220b41385dbf82e52b3af3f748",
+  "zxingVersion": "3.5.4",
+  "zxingJarSha256": "71de5d89341b5fcf5dd89da7f44e84d825d0e084cdf3ec77c9abe26b0f0ceb13",
+  "javaVersion": "21.0.11",
+  "arch": "aarch64",
+  "cpu": "Apple M4 Max",
+  "heapBytes": 536870912,
+  "jvmArguments": [
+    "-XX:StartFlightRecording=filename=<scratch>/kotlin-allocation.jfr,settings=profile,dumponexit=true",
+    "-Xms512m",
+    "-Xmx512m",
+    "-Dfile.encoding=UTF-8",
+    "-Duser.country=US",
+    "-Duser.language=en",
+    "-Duser.variant"
+  ],
+  "loadBefore": 3.12060546875,
+  "loadAfter": 2.70263671875,
+  "measurement": "JFR profile settings, jdk.ObjectAllocationSample weighted samples across seven benchmark cases including warm-up. Diagnostic only, not per-frame allocation totals or competitive timings. First QR-library stack frame attributes each sample; truncated stacks may omit deeper callers. jfr print used its default five-frame output depth; attribution percentages exclude samples with no QR frame in those five frames.",
+  "rawEventCount": 15380,
+  "rawEventsSha256": "1225612f62fb9b150f49d0f81a07e99f669964e4234699d9fd1ea417f40b148d",
+  "sampledWeightsByGroup": {
+    "other": 475407088,
+    "qr": 21987597360,
+    "zxing": 3586772960
+  },
+  "qrSites": [
+    {
+      "site": "LocateKt.crossCheck:140",
+      "sampledBytes": 5051087248,
+      "samples": 2708,
+      "percentQrSampledWeight": 22.972438349216706
+    },
+    {
+      "site": "BinariseKt.binarise:161",
+      "sampledBytes": 2767170280,
+      "samples": 1040,
+      "percentQrSampledWeight": 12.585141680982646
+    },
+    {
+      "site": "Edges.row:82",
+      "sampledBytes": 2476413864,
+      "samples": 2324,
+      "percentQrSampledWeight": 11.262776116253203
+    },
+    {
+      "site": "DecodeKt.read:259",
+      "sampledBytes": 2094271632,
+      "samples": 1864,
+      "percentQrSampledWeight": 9.524786167905342
+    },
+    {
+      "site": "BinariseKt.quads:218",
+      "sampledBytes": 1752836104,
+      "samples": 518,
+      "percentQrSampledWeight": 7.971931063231003
+    },
+    {
+      "site": "BinariseKt.invert:181",
+      "sampledBytes": 1735417712,
+      "samples": 632,
+      "percentQrSampledWeight": 7.892711893829222
+    },
+    {
+      "site": "SymbolKt.readSymbol:203",
+      "sampledBytes": 951942808,
+      "samples": 809,
+      "percentQrSampledWeight": 4.329453520609675
+    },
+    {
+      "site": "BinariseKt.thresholds:115",
+      "sampledBytes": 901215312,
+      "samples": 282,
+      "percentQrSampledWeight": 4.098743929336716
+    },
+    {
+      "site": "LocateKt.alignmentScore:600",
+      "sampledBytes": 485411520,
+      "samples": 400,
+      "percentQrSampledWeight": 2.2076605827022475
+    },
+    {
+      "site": "ReedSolomonKt.correct:51",
+      "sampledBytes": 421357136,
+      "samples": 443,
+      "percentQrSampledWeight": 1.9163400579934942
+    },
+    {
+      "site": "BinariseKt.thresholds:75",
+      "sampledBytes": 399734272,
+      "samples": 194,
+      "percentQrSampledWeight": 1.8179988720695766
+    },
+    {
+      "site": "ReedSolomonKt.correct:55",
+      "sampledBytes": 389325848,
+      "samples": 377,
+      "percentQrSampledWeight": 1.7706611669552603
+    },
+    {
+      "site": "LocateKt.findAlignments:537",
+      "sampledBytes": 338052552,
+      "samples": 321,
+      "percentQrSampledWeight": 1.5374692671741739
+    },
+    {
+      "site": "LocateKt.locate:725",
+      "sampledBytes": 274303864,
+      "samples": 154,
+      "percentQrSampledWeight": 1.2475390535348607
+    },
+    {
+      "site": "LocateKt.findAlignments:523",
+      "sampledBytes": 264681096,
+      "samples": 284,
+      "percentQrSampledWeight": 1.2037745264587654
+    },
+    {
+      "site": "BinariseKt.binarise:177",
+      "sampledBytes": 263192360,
+      "samples": 6,
+      "percentQrSampledWeight": 1.1970037275596173
+    },
+    {
+      "site": "Reductions.by:270",
+      "sampledBytes": 203688696,
+      "samples": 148,
+      "percentQrSampledWeight": 0.9263799616894567
+    },
+    {
+      "site": "BinariseKt.quads:235",
+      "sampledBytes": 181554176,
+      "samples": 67,
+      "percentQrSampledWeight": 0.8257117548017534
+    },
+    {
+      "site": "BinariseKt.invert:183",
+      "sampledBytes": 161884624,
+      "samples": 4,
+      "percentQrSampledWeight": 0.7362542680288557
+    },
+    {
+      "site": "SymbolKt.readSymbol:209",
+      "sampledBytes": 131351024,
+      "samples": 88,
+      "percentQrSampledWeight": 0.5973868897515595
+    },
+    {
+      "site": "LocateKt.findFinders$file:236",
+      "sampledBytes": 92451648,
+      "samples": 85,
+      "percentQrSampledWeight": 0.420471807293455
+    },
+    {
+      "site": "LocateKt.locate$near:708",
+      "sampledBytes": 92329880,
+      "samples": 102,
+      "percentQrSampledWeight": 0.4199180041743315
+    },
+    {
+      "site": "LocateKt.findAlignments:763",
+      "sampledBytes": 82715560,
+      "samples": 56,
+      "percentQrSampledWeight": 0.37619189875869186
+    },
+    {
+      "site": "LocateKt.findFinders$file:791",
+      "sampledBytes": 73781872,
+      "samples": 62,
+      "percentQrSampledWeight": 0.3355613202842459
+    },
+    {
+      "site": "ReedSolomonKt.correct:32",
+      "sampledBytes": 40636888,
+      "samples": 53,
+      "percentQrSampledWeight": 0.18481731921254355
+    },
+    {
+      "site": "LocateKt.finderTriples$modulesBetween:798",
+      "sampledBytes": 33892024,
+      "samples": 4,
+      "percentQrSampledWeight": 0.15414155282676142
+    },
+    {
+      "site": "LocateKt.squareToQuad:555",
+      "sampledBytes": 24424056,
+      "samples": 26,
+      "percentQrSampledWeight": 0.11108105901753697
+    },
+    {
+      "site": "Finder.point:14",
+      "sampledBytes": 24279824,
+      "samples": 23,
+      "percentQrSampledWeight": 0.11042508921038383
+    },
+    {
+      "site": "LocateKt.findFinders$consider:255",
+      "sampledBytes": 20988272,
+      "samples": 31,
+      "percentQrSampledWeight": 0.09545504975537718
+    },
+    {
+      "site": "LocateKt.squareToQuad:545",
+      "sampledBytes": 18313480,
+      "samples": 14,
+      "percentQrSampledWeight": 0.08329004620266522
+    },
+    {
+      "site": "Edges.<init>:66",
+      "sampledBytes": 16324760,
+      "samples": 24,
+      "percentQrSampledWeight": 0.07424531081189491
+    },
+    {
+      "site": "SymbolKt.readVersion:138",
+      "sampledBytes": 16238344,
+      "samples": 17,
+      "percentQrSampledWeight": 0.07385228924348468
+    },
+    {
+      "site": "LocateKt.locate$map:744",
+      "sampledBytes": 15261968,
+      "samples": 15,
+      "percentQrSampledWeight": 0.06941171311316026
+    },
+    {
+      "site": "LocateKt.locate:719",
+      "sampledBytes": 14641016,
+      "samples": 14,
+      "percentQrSampledWeight": 0.06658761191723041
+    },
+    {
+      "site": "LocateKt.locate:718",
+      "sampledBytes": 13187800,
+      "samples": 11,
+      "percentQrSampledWeight": 0.05997835863590691
+    },
+    {
+      "site": "LocateKt.locate$map:752",
+      "sampledBytes": 12584408,
+      "samples": 20,
+      "percentQrSampledWeight": 0.0572341206451854
+    },
+    {
+      "site": "LocateKt.projective:587",
+      "sampledBytes": 12226712,
+      "samples": 12,
+      "percentQrSampledWeight": 0.05560731261271377
+    },
+    {
+      "site": "LocateKt.locate:754",
+      "sampledBytes": 11504600,
+      "samples": 14,
+      "percentQrSampledWeight": 0.0523231338633172
+    },
+    {
+      "site": "LocateKt.locate:780",
+      "sampledBytes": 11332088,
+      "samples": 13,
+      "percentQrSampledWeight": 0.05153854609242308
+    },
+    {
+      "site": "LocateKt.findFinders$consider:281",
+      "sampledBytes": 10918392,
+      "samples": 13,
+      "percentQrSampledWeight": 0.04965704902284057
+    },
+    {
+      "site": "ReedSolomonKt.correct:39",
+      "sampledBytes": 9841936,
+      "samples": 13,
+      "percentQrSampledWeight": 0.04476130719905087
+    },
+    {
+      "site": "LocateKt.findAlignments:764",
+      "sampledBytes": 7398872,
+      "samples": 11,
+      "percentQrSampledWeight": 0.03365020688190372
+    },
+    {
+      "site": "LocateKt.locate$map:747",
+      "sampledBytes": 7267120,
+      "samples": 8,
+      "percentQrSampledWeight": 0.033050996345878145
+    },
+    {
+      "site": "ReedSolomonKt.correct:73",
+      "sampledBytes": 7045728,
+      "samples": 5,
+      "percentQrSampledWeight": 0.032044101429734385
+    },
+    {
+      "site": "DecodeKt.read:261",
+      "sampledBytes": 6790896,
+      "samples": 7,
+      "percentQrSampledWeight": 0.03088512077428727
+    },
+    {
+      "site": "LocateKt.finderTriples:370",
+      "sampledBytes": 5307960,
+      "samples": 13,
+      "percentQrSampledWeight": 0.02414070038255421
+    },
+    {
+      "site": "LocateKt.multiply:569",
+      "sampledBytes": 4940880,
+      "samples": 6,
+      "percentQrSampledWeight": 0.022471213744292434
+    },
+    {
+      "site": "LocateKt.locate$map:746",
+      "sampledBytes": 3644360,
+      "samples": 2,
+      "percentQrSampledWeight": 0.016574616772953313
+    },
+    {
+      "site": "SymbolKt.readSymbol:182",
+      "sampledBytes": 3528512,
+      "samples": 5,
+      "percentQrSampledWeight": 0.016047737923467233
+    },
+    {
+      "site": "LocateKt.locate:774",
+      "sampledBytes": 3393496,
+      "samples": 3,
+      "percentQrSampledWeight": 0.015433682654992915
+    },
+    {
+      "site": "LocateKt.finderTriples$modulesBetween:327",
+      "sampledBytes": 3158792,
+      "samples": 7,
+      "percentQrSampledWeight": 0.014366244516313083
+    },
+    {
+      "site": "LocateKt.locate:773",
+      "sampledBytes": 3126992,
+      "samples": 2,
+      "percentQrSampledWeight": 0.014221617527382263
+    },
+    {
+      "site": "LocateKt.finderTriples$modulesBetween:326",
+      "sampledBytes": 2956768,
+      "samples": 2,
+      "percentQrSampledWeight": 0.013447435622861523
+    },
+    {
+      "site": "RefineKt.agreement:33",
+      "sampledBytes": 2795992,
+      "samples": 4,
+      "percentQrSampledWeight": 0.012716223397316205
+    },
+    {
+      "site": "Reductions.by:272",
+      "sampledBytes": 2760312,
+      "samples": 2,
+      "percentQrSampledWeight": 0.012553950096528418
+    },
+    {
+      "site": "LocateKt.locate:768",
+      "sampledBytes": 2718632,
+      "samples": 4,
+      "percentQrSampledWeight": 0.01236438868462161
+    },
+    {
+      "site": "LocateKt.locate:771",
+      "sampledBytes": 2645680,
+      "samples": 1,
+      "percentQrSampledWeight": 0.01203260163756246
+    },
+    {
+      "site": "BinariseKt.thresholds:134",
+      "sampledBytes": 2604064,
+      "samples": 2,
+      "percentQrSampledWeight": 0.011843331298840921
+    },
+    {
+      "site": "LocateKt.locate:732",
+      "sampledBytes": 2586464,
+      "samples": 3,
+      "percentQrSampledWeight": 0.011763286172891789
+    },
+    {
+      "site": "LocateKt.locate:682",
+      "sampledBytes": 2000960,
+      "samples": 2,
+      "percentQrSampledWeight": 0.009100403137453124
+    },
+    {
+      "site": "DecodeKt.search:226",
+      "sampledBytes": 1574128,
+      "samples": 2,
+      "percentQrSampledWeight": 0.00715916329659404
+    },
+    {
+      "site": "LocateKt.locate:785",
+      "sampledBytes": 1569792,
+      "samples": 3,
+      "percentQrSampledWeight": 0.007139443088292026
+    },
+    {
+      "site": "DecodeKt.read:293",
+      "sampledBytes": 1569784,
+      "samples": 1,
+      "percentQrSampledWeight": 0.007139406704143867
+    },
+    {
+      "site": "LocateKt.finderTriples:374",
+      "sampledBytes": 1569632,
+      "samples": 3,
+      "percentQrSampledWeight": 0.007138715405328852
+    },
+    {
+      "site": "LocateKt.adjoint:565",
+      "sampledBytes": 1093896,
+      "samples": 3,
+      "percentQrSampledWeight": 0.004975059266775658
+    },
+    {
+      "site": "Grid.<init>:530",
+      "sampledBytes": 1061184,
+      "samples": 1,
+      "percentQrSampledWeight": 0.004826284484954749
+    },
+    {
+      "site": "LocateKt.locate:777",
+      "sampledBytes": 1060424,
+      "samples": 2,
+      "percentQrSampledWeight": 0.004822827990879673
+    },
+    {
+      "site": "LocateKt.findFinders$consider:256",
+      "sampledBytes": 1046528,
+      "samples": 2,
+      "percentQrSampledWeight": 0.004759628725528017
+    },
+    {
+      "site": "RefineKt.agreementRead:38",
+      "sampledBytes": 1046504,
+      "samples": 1,
+      "percentQrSampledWeight": 0.004759519573083541
+    },
+    {
+      "site": "LocateKt.findAlignments:761",
+      "sampledBytes": 1015160,
+      "samples": 2,
+      "percentQrSampledWeight": 0.004616966480597769
+    },
+    {
+      "site": "SymbolKt.nearest:114",
+      "sampledBytes": 940552,
+      "samples": 2,
+      "percentQrSampledWeight": 0.0042776479148697675
+    },
+    {
+      "site": "DecodeKt.search:219",
+      "sampledBytes": 523264,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0023798143627640086
+    },
+    {
+      "site": "LocateKt.locate:716",
+      "sampledBytes": 523264,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0023798143627640086
+    },
+    {
+      "site": "ReedSolomonKt.correct:38",
+      "sampledBytes": 523256,
+      "samples": 1,
+      "percentQrSampledWeight": 0.00237977797861585
+    },
+    {
+      "site": "LocateKt.finderTriples:757",
+      "sampledBytes": 523248,
+      "samples": 1,
+      "percentQrSampledWeight": 0.002379741594467691
+    },
+    {
+      "site": "EncodeKt.interleave:516",
+      "sampledBytes": 477976,
+      "samples": 1,
+      "percentQrSampledWeight": 0.002173843700037629
+    },
+    {
+      "site": "SymbolKt.parse:292",
+      "sampledBytes": 423584,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0019264678767066527
+    },
+    {
+      "site": "LocateKt.locate:695",
+      "sampledBytes": 423096,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0019242484436689722
+    },
+    {
+      "site": "LocateKt.findFinders:287",
+      "sampledBytes": 422984,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0019237390655947504
+    },
+    {
+      "site": "SymbolKt.decodeRun:402",
+      "sampledBytes": 407888,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0018550821780192904
+    },
+    {
+      "site": "LocateKt.locate:690",
+      "sampledBytes": 356256,
+      "samples": 1,
+      "percentQrSampledWeight": 0.0016202588858030644
+    },
+    {
+      "site": "LocateKt.locate$perspective:672",
+      "sampledBytes": 4824,
+      "samples": 1,
+      "percentQrSampledWeight": 2.1939641339693878e-05
+    }
+  ],
+  "qrClasses": [
+    {
+      "class": "[I",
+      "sampledBytes": 10583681840
+    },
+    {
+      "class": "[B",
+      "sampledBytes": 6801609504
+    },
+    {
+      "class": "[D",
+      "sampledBytes": 1835133416
+    },
+    {
+      "class": "[Ljava/lang/Object;",
+      "sampledBytes": 492669024
+    },
+    {
+      "class": "java/lang/Integer",
+      "sampledBytes": 470647856
+    },
+    {
+      "class": "dev/forgesworn/qr/BitImage",
+      "sampledBytes": 425076984
+    },
+    {
+      "class": "dev/forgesworn/qr/Point",
+      "sampledBytes": 347338216
+    },
+    {
+      "class": "dev/forgesworn/qr/LocateKt$locate$Scored",
+      "sampledBytes": 274303864
+    },
+    {
+      "class": "dev/forgesworn/qr/Candidate",
+      "sampledBytes": 236899904
+    },
+    {
+      "class": "java/util/ArrayList",
+      "sampledBytes": 196724912
+    },
+    {
+      "class": "java/util/Arrays$ArrayItr",
+      "sampledBytes": 113555048
+    },
+    {
+      "class": "[Ljava/util/HashMap$Node;",
+      "sampledBytes": 80427568
+    },
+    {
+      "class": "java/util/HashMap$Node",
+      "sampledBytes": 27246328
+    },
+    {
+      "class": "java/util/ArrayList$Itr",
+      "sampledBytes": 23605416
+    },
+    {
+      "class": "dev.forgesworn.qr.LocateKt$$Lambda/0x000000700108d668",
+      "sampledBytes": 12226712
+    },
+    {
+      "class": "dev/forgesworn/qr/Placement",
+      "sampledBytes": 11131504
+    },
+    {
+      "class": "dev/forgesworn/qr/Finder",
+      "sampledBytes": 10918392
+    },
+    {
+      "class": "dev.forgesworn.qr.LocateKt$$Lambda/0x000000700108c8d8",
+      "sampledBytes": 7507768
+    },
+    {
+      "class": "dev.forgesworn.qr.DecodeKt$$Lambda/0x000000700108dec8",
+      "sampledBytes": 6790896
+    },
+    {
+      "class": "[Ldev/forgesworn/qr/Finder;",
+      "sampledBytes": 4261488
+    },
+    {
+      "class": "java/lang/Double",
+      "sampledBytes": 3158792
+    },
+    {
+      "class": "dev.forgesworn.qr.RefineKt$$Lambda/0x000000700109e860",
+      "sampledBytes": 2795992
+    },
+    {
+      "class": "dev/forgesworn/qr/Luminance",
+      "sampledBytes": 2760312
+    },
+    {
+      "class": "dev/forgesworn/qr/Thresholds",
+      "sampledBytes": 2604064
+    },
+    {
+      "class": "dev.forgesworn.qr.LocateKt$$Lambda/0x000000700108d1d0",
+      "sampledBytes": 2586464
+    },
+    {
+      "class": "java/util/Arrays$ArrayList",
+      "sampledBytes": 2524216
+    },
+    {
+      "class": "[Ldev/forgesworn/qr/Point;",
+      "sampledBytes": 1630568
+    },
+    {
+      "class": "dev.forgesworn.qr.DecodeKt$$Lambda/0x000000700109e220",
+      "sampledBytes": 1569784
+    },
+    {
+      "class": "dev.forgesworn.qr.LocateKt$$Lambda/0x000000700108daa0",
+      "sampledBytes": 1452904
+    },
+    {
+      "class": "java/util/TimSort",
+      "sampledBytes": 1309720
+    },
+    {
+      "class": "[Z",
+      "sampledBytes": 1046504
+    },
+    {
+      "class": "java/util/Collections$1",
+      "sampledBytes": 931296
+    },
+    {
+      "class": "dev.forgesworn.qr.LocateKt$$Lambda/0x000000700108c430",
+      "sampledBytes": 523264
+    },
+    {
+      "class": "dev/forgesworn/qr/LocateKt$finderTriples$Scored",
+      "sampledBytes": 523256
+    },
+    {
+      "class": "java/lang/String",
+      "sampledBytes": 423584
+    }
+  ],
+  "printedStackDepth": 5
+}

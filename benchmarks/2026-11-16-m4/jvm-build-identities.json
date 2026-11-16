@@ -1,0 +1,23 @@
+{
+  "build": "Each jar was built on the M4 with :core:jar from a clean detached checkout of the named revision, then copied outside the checkout before changing revisions. Paired runner verifies class CodeSource and jar hashes. No production sources changed during measurements.",
+  "libraries": [
+    {
+      "revision": "e5ffc4f6fdede5e99b01b5525e1c7aefe375a214",
+      "kotlinSourceSha256": "27ba006bc63c648b7b475044a82489a6ac3ff4c39f5dfa6421f789bc46eea1ec",
+      "jar": "qr-e5ffc4f.jar",
+      "jarSha256": "516898855a2d5e6e3035babb52900d218952aeb62731c5c66888d75b481dc8cd"
+    },
+    {
+      "revision": "7d51494593691e2d77e1a97d418a82fb1c938676",
+      "kotlinSourceSha256": "1679fd96e16b3d0fd355809a3e7484aaf613a46ed10634484e56eb76cde04244",
+      "jar": "qr-7d51494.jar",
+      "jarSha256": "609d108d38dc23901a3c860ad1e98f57f13d496618504c35fc724179eab473db"
+    },
+    {
+      "revision": "74195073f33de959c7181ca8c3761dbe89eb7604",
+      "kotlinSourceSha256": "542cdbb5d79b5714ff80d0c890bd1103752d6f25113ea9554b5599cac062c76f",
+      "jar": "qr-scalar.jar",
+      "jarSha256": "01f21754fa824c5480b091911f3aa896557cb2b0238af5ecc5f655a6da967535"
+    }
+  ]
+}
