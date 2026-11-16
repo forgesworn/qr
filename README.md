@@ -33,6 +33,8 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
 Native Rust: [`forgesworn-qr`](https://crates.io/crates/forgesworn-qr) ·
 [Rust API docs](https://docs.rs/forgesworn-qr) · [Rust guide](rust/README.md)
 
+[JSR](https://jsr.io/@forgesworn/qr) · [Kotlin on Maven Central](https://central.sonatype.com/artifact/io.github.forgesworn/qr)
+
 ## Why use it?
 
 Generate and read codes with the same typed package, process frames locally,

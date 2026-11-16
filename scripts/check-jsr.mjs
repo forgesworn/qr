@@ -95,7 +95,9 @@ try {
   if (values.published) {
     const main = `jsr:${packageName}@${receipt.version}`
     writeFileSync(join(scratch, 'published.mjs'), consumer(main, main + '/wasm'))
-    run(deno, ['run', '--no-config', '--no-lock', '--check', '--allow-read', '--allow-net=jsr.io', join(scratch, 'published.mjs')], scratch)
+    // This checks our exact, just-published dependency-free version after registry
+    // hashes and provenance were checked. Do not apply a global age-policy change.
+    run(deno, ['run', '--no-config', '--no-lock', '--min-dep-age=0', '--check', '--allow-read', '--allow-net=jsr.io', join(scratch, 'published.mjs')], scratch)
     publishedConsumer = true
   }
   if (values['compat-archive']) {

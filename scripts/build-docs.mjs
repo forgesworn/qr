@@ -67,7 +67,7 @@ for (const [source, target, title] of pages) {
   const body = marked.parse(read(source), { renderer })
   const canonical = origin + (target === 'index.html' ? '' : target)
   const description = source === 'docs/index.md' ? pkg.description : `${title}. Documentation for @forgesworn/qr ${pkg.version}.`
-  const schema = { '@context': 'https://schema.org', '@type': 'SoftwareSourceCode', name: '@forgesworn/qr', description: pkg.description, codeRepository: 'https://github.com/forgesworn/qr', url: origin, license: 'https://opensource.org/license/mit', programmingLanguage: ['TypeScript', 'Rust', 'Kotlin'], version: pkg.version, runtimePlatform: 'Browsers, Web Workers, Node.js 22.13+', author: { '@type': 'Organization', name: 'ForgeSworn', url: 'https://github.com/forgesworn' } }
+  const schema = { '@context': 'https://schema.org', '@type': 'SoftwareSourceCode', name: '@forgesworn/qr', description: pkg.description, codeRepository: 'https://github.com/forgesworn/qr', url: origin, license: 'https://opensource.org/license/mit', programmingLanguage: ['TypeScript', 'Rust', 'Kotlin'], version: pkg.version, runtimePlatform: ['Browsers', 'Web Workers', 'Node.js 22.13+', 'Deno', 'JVM 17+', 'Native Rust'], sameAs: ['https://www.npmjs.com/package/@forgesworn/qr', 'https://jsr.io/@forgesworn/qr', 'https://crates.io/crates/forgesworn-qr', 'https://central.sonatype.com/artifact/io.github.forgesworn/qr'], author: { '@type': 'Organization', name: 'ForgeSworn', url: 'https://github.com/forgesworn' } }
   const html = `<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} | ForgeSworn QR</title><meta name="description" content="${esc(description)}">

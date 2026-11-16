@@ -12,6 +12,11 @@ on:
         type: boolean
         default: true
 
+      verify_only:
+        description: Verify the existing public package without uploading
+        type: boolean
+        default: false
+
 permissions:
   contents: read
 
@@ -58,11 +63,11 @@ jobs:
       - name: Verify actual publisher archive on loopback
         run: python3 scripts/check-jsr-upload.py --stage "$RUNNER_TEMP/qr-jsr"
       - name: Publish with GitHub OIDC and provenance
-        if: ${{ !inputs.dry_run }}
+        if: ${{ !inputs.dry_run && !inputs.verify_only }}
         working-directory: ${{ runner.temp }}/qr-jsr
         run: deno publish --sloppy-imports
       - name: Verify public Deno and npm compatibility consumers
-        if: ${{ !inputs.dry_run }}
+        if: ${{ !inputs.dry_run || inputs.verify_only }}
         run: node scripts/verify-jsr-publication.mjs --stage "$RUNNER_TEMP/qr-jsr"
       - name: Retain package identity
         if: always()
