@@ -1,0 +1,25 @@
+{
+  "comparedWith": "../fresh256-qualification/fresh256-results.json",
+  "pixelsUnchanged": true,
+  "outcomeChanges": {
+    "typescript": [
+      {
+        "id": "blur-noise-25",
+        "before": "positiveMiss",
+        "after": "positiveCorrect"
+      }
+    ],
+    "wasm": [
+      {
+        "id": "blur-noise-25",
+        "before": "positiveMiss",
+        "after": "positiveCorrect"
+      }
+    ],
+    "zxing": []
+  },
+  "fullTypeScriptWasmAgreement": {
+    "matching": 256,
+    "different": []
+  }
+}

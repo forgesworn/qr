@@ -24,6 +24,7 @@ jobs:
       - run: npm run check
       - run: npm run build
       - run: npm run check:package
+      - run: npm run check:docs
 
   kotlin:
     runs-on: ubuntu-latest
@@ -78,7 +79,14 @@ jobs:
       # Match the frozen module's compiler and verify the distributed bytes on Linux.
       - run: rustup toolchain install 1.96.0 --profile minimal --target wasm32-unknown-unknown
       - run: rustup override set 1.96.0
-      - run: cargo test --locked
+      - run: cargo test --locked --all-features
+      - name: Verify the published Rust crate and API documentation
+        run: |
+          cargo package --locked
+          version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')
+          cargo test --locked --lib --manifest-path "target/package/forgesworn-qr-$version/Cargo.toml" --target-dir "$PWD/target"
+          cargo test --locked --doc --manifest-path "target/package/forgesworn-qr-$version/Cargo.toml" --target-dir "$PWD/target"
+          RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps
       - id: wasm-rebuild
         run: npm run check:wasm
         working-directory: .

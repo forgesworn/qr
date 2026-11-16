@@ -1,7 +1,7 @@
 {
   "name": "@forgesworn/qr",
-  "version": "0.2.0",
-  "description": "QR code encoder and decoder with no dependencies: versions 1-40, all error correction levels, SVG output, camera-frame reading, checked against independent test vectors.",
+  "version": "0.3.0",
+  "description": "Dependency-free QR code encoder and decoder for TypeScript, browsers, workers and Node, with optional WebAssembly and tracked camera scanning.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -23,7 +23,14 @@
     "README.md",
     "SPEC.md",
     "llms.txt",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "llms-full.txt",
+    "PERFORMANCE.md",
+    "SECURITY.md",
+    "docs/CHOOSING.md",
+    "THIRD_PARTY_NOTICES.md",
+    "licenses",
+    "docs/DISTRIBUTION.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-wasm.mjs",
@@ -38,7 +45,9 @@
     "prepublishOnly": "npm run check",
     "build:wasm": "node scripts/build-wasm.mjs --write",
     "check:wasm": "node scripts/build-wasm.mjs --check",
-    "check:package": "node scripts/check-package.mjs"
+    "check:package": "node scripts/check-package.mjs",
+    "build:docs": "node scripts/build-docs.mjs",
+    "check:docs": "node scripts/build-docs.mjs --check"
   },
   "keywords": [
     "qr",
@@ -49,7 +58,13 @@
     "reader",
     "scanner",
     "svg",
-    "zero-dependency"
+    "zero-dependency",
+    "wasm",
+    "webassembly",
+    "camera",
+    "barcode",
+    "typescript",
+    "worker"
   ],
   "author": "forgesworn",
   "funding": {
@@ -65,13 +80,14 @@
     "@types/node": "^22",
     "jsqr": "1.4.0",
     "typescript": "^5.6.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "marked": "18.2.0"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
-  "homepage": "https://github.com/forgesworn/qr#readme",
+  "homepage": "https://forgesworn.github.io/qr/",
   "bugs": {
     "url": "https://github.com/forgesworn/qr/issues"
   },

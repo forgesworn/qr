@@ -115,8 +115,11 @@ private const val MIN_REDUCED = 21
 /** Maps each reduced size may take, out of what the frame has left. */
 private const val REDUCED_MAPS = 30
 
+private class VersionHint(val triple: Array<Finder>, val size: Int, val inverted: Boolean)
 /** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
-private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false)
+private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
+    val hints = ArrayList<VersionHint>(4)
+}
 
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
     val budget = Budget(MAX_MAPS, SECOND_LOOKS, MAX_MAPS)
@@ -153,7 +156,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
             )
         }
     }
-    return null
+    return recoverVersions(luminance, budget, work)
 }
 
 /**
@@ -235,7 +238,8 @@ private fun search(
                         work.maps++
                         if (f > 1) work.reduced++
                     }
-                    val result = read(image, location, inverted, candidates, strict, f, scratch)
+                    val result = read(image, location, inverted, candidates, strict, f, scratch,
+                        if (f == 1 && !strict) triple else null, budget)
                     if (result != null) return result
                     if (budget.maps == 0 || budget.here == 0) return null
                 }
@@ -263,6 +267,8 @@ private fun read(
     strict: Boolean,
     f: Int,
     scratch: ReadScratch,
+    triple: Array<Finder>? = null,
+    budget: Budget? = null,
 ): DecodeResult? {
     val size = location.size
     val length = size * size
@@ -318,7 +324,51 @@ private fun read(
         sample.read(sx, sy); sample.read(sy, sx)
     }
     val agreed = agreement(modules, size)
-    if (agreed != null && sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
+    if (agreed != null) {
+        // Preserve the existing candidate decision before sampling additional version modules.
+        if (sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
+        if (triple != null && budget != null && budget.hints.size < 4) {
+            val reader = if (agreed.mirrored) mirroredRead else straightRead
+            val version = agreedVersion(reader, size)
+            val target = if (version == null) size else 17 + 4 * version
+            if (target != size && budget.hints.none { hint ->
+                hint.size == target && hint.inverted == inverted &&
+                    (0..2).all { hint.triple[it].x == triple[it].x && hint.triple[it].y == triple[it].y }
+            }) budget.hints.add(VersionHint(triple, target, inverted))
+        }
+    }
+    return null
+}
+
+/** Revisit only full-size triples supported by both version copies, after all ordinary paths. */
+private fun recoverVersions(luminance: Luminance, budget: Budget, work: Work?): DecodeResult? {
+    if (budget.hints.isEmpty() || budget.maps == 0) return null
+    val levels = thresholds(luminance)
+    val bits = binarise(luminance, levels)
+    val edges = Edges(bits)
+    val inverse = if (budget.hints.any { it.inverted }) invert(bits) else bits
+    val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
+    val scratch = ReadScratch()
+    budget.here = REDUCED_MAPS
+    for (hint in budget.hints) {
+        if (budget.maps == 0 || budget.here == 0) break
+        val image = if (hint.inverted) inverse else bits
+        for (location in locate(image, hint.triple, hint.size, work, edges)) {
+            if (budget.maps == 0 || budget.here == 0) break
+            budget.maps--
+            budget.here--
+            if (work != null) work.maps++
+            val found = read(image, location, hint.inverted, candidates, true, 1, scratch)
+            if (found != null) return found
+        }
+    }
+    for (candidate in candidates) {
+        if (budget.second == 0) break
+        budget.second--
+        if (work != null) work.second++
+        val payload = secondLook(luminance, levels, candidate, work, true) ?: continue
+        return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
+    }
     return null
 }
 

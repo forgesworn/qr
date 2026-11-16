@@ -155,6 +155,14 @@ module `i` at `round(i * width / side)`); a terminal renderer packs two
 module rows per line with U+2580 (upper half), U+2584 (lower half), U+2588
 (full) and space, inking light modules by default.
 
+The native Rust SVG and terminal renderers require an unmodified code from
+the encoder. They check `2 * margin + size` before rendering and panic with
+an explicit dimension-overflow error if it cannot be represented by `usize`;
+neither multiplication nor addition may wrap. This does not impose a new
+margin cap or alter representable renderings. Terminal output grows
+quadratically with the side, so callers must bound untrusted margins and
+account for normal allocation limits.
+
 ## Vectors
 
 `vectors/encode-vectors.json` holds 148 symbols produced with an
@@ -678,6 +686,11 @@ Steps 3 to 6 as one loop, which fixes `result` and `work`.
 What `decodeModules` does to a grid, and step 6 to each sampled one;
 `vectors/conformance.json` checks it (`symbols`).
 
+The native Rust `decode_modules` entry returns `None` for an illegal grid
+size or a buffer shorter than the grid. It checks the legal size range and
+step before multiplying the size, including for values near `usize::MAX`;
+invalid dimensions must not overflow or panic.
+
 1. The size is 21 to 177 and 1 (mod 4). The version is as "Version
    information" says. Its two blocks are read most significant bit first:
    for k from 17 down to 0, with `i = floor(k / 3)` and `j = k mod 3`, the
@@ -958,6 +971,31 @@ the sampled orientation, and `inverted` is true. Earlier successful results
 take priority and remain unchanged. `reduced` counts maps sampled at reduced
 size in this fallback too.
 
+### Version-directed recovery
+
+Step 11 runs only after every earlier search and second look has failed.
+During the original full-resolution binary search, a failed map may provide
+a size hint when both format copies agree under the existing agreement rule,
+and, in that orientation, both version blocks independently decode within
+three bit errors to the same version, different from the map's size. Neither
+reduced pictures nor the inverted-luminance fallback supply hints.
+
+Keep at most four hints in first-seen order. Hints with the same three ordered
+finder centres, target size and polarity are duplicates. After the earlier
+passes fail, rebuild the original full-resolution binary picture and locate
+each saved triple at exactly `17 + 4 * version`, without neighbouring size
+retries. Both normal and inverted binary hints retain their original polarity.
+Each map read requires the strict format agreement used at reduced sizes.
+Failed eligible maps enter the existing second-look queue, with its normal
+distance ordering; second looks also require strict format agreement.
+
+This pass uses at most 30 maps from the frame's remaining allowance and only
+its remaining second looks. A queued second look remains eligible after the
+map allowance is exhausted. It collects no further hints and increases
+neither frame cap. Earlier successful results therefore keep priority. Grid
+decoding and symbol parsing still reject a mismatching version; this pass
+creates new picture maps rather than resizing a sampled grid.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1003,15 +1041,18 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 and 10 as without them,
+The caps on maps and second looks are the same with steps 9 to 11 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying
 for step 10 may additionally search its inverse luminance and up to three
 reductions; the uniform/near-uniform and no-flat-block gates avoid that work
 when the polarity-sensitive flat-block rule cannot help.
+Step 11 only rebuilds the original binary picture when a retained version
+hint and remaining map allowance exist; its additional location work is
+counted like ordinary location work, and its maps are full-resolution maps.
 
-Both ports count this work for their tests (pixels stepped in
+All three ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,
 maps sampled, maps read again by the second look, those read through a
 mesh, points the mesh probed, maps sampled at reduced size) without exposing the
@@ -1027,8 +1068,10 @@ Below version 7 the size alone gives the version. From version 7 the two
 within three bit errors, trying both copies and taking the closer (on a
 tie the bottom-left copy, tried first, wins). When a
 copy decodes, its version is the symbol's, and it must agree with the size
-(`17 + 4 * version`); a disagreement makes the symbol unreadable, never a
-resize. When neither copy decodes, the version is the one the size implies.
+(`17 + 4 * version`); a disagreement makes that sampled grid unreadable,
+never an in-place resize. Step 11 may separately locate a new picture map
+from stronger, agreeing two-copy evidence. When neither copy decodes, the
+version is the one the size implies.
 Reed-Solomon, format information and the data's own structure still have to
 pass, so a grid of the wrong size does not yield text this way.
 
@@ -1208,7 +1251,7 @@ correct; each must read as nothing as modules and in a picture, straight
 and mirrored, dark on light and light on dark, while an empty payload and
 payloads of zero bytes that leave whole blocks zero must read back.
 
-The reduced-size pass has tests of its own in both ports, from seeds of
+The reduced-size pass has dedicated TypeScript and Kotlin tests, from seeds of
 their own. 200 symbols of versions 1 to 4, one block one to three
 codewords past what Table 9 lets it correct, and 100 with 4 to 16% of modules flipped anywhere, drawn at
 16, 24 or 32 pixels a module with noise, some mirrored or inverted: each

@@ -1,6 +1,41 @@
 # Performance and verification
 
-## M4 improvement programme — active
+## 0.3.0 release qualification
+
+Accuracy is the primary objective. Version-directed recovery now reads the
+previously missed blurred version-40 stress image: it uses agreeing format
+and version copies, runs only after previous searches fail, and stays within
+the existing map and second-look caps. All previous successes are retained.
+The official conformance pack adds that image as its 62nd frame; TypeScript,
+Kotlin and Rust agree on its result and work counts.
+
+| Measured workload | QR | ZXing-WASM 3.1.7 |
+|---|---:|---:|
+| Photographs, correct text | 179/184 | 171/184 |
+| Synthetic regression, correct text and bytes | 172/192 | 169/192 |
+| Stress positives, correct text and bytes | 171/224 | 150/224 |
+| Stress negative controls, false reads | 0/32 | 0/32 |
+| Clean 720p RGBA, WASM median ms | 1.590 | 2.137 |
+| Blank 720p RGBA, WASM median ms | 1.205 | 2.238 |
+| Random noise, WASM median ms | 20.569 | 7.941 |
+| Ten-frame tracked sequence, median total ms | 7.074 | 19.737 |
+
+These are Apple M4 Max/native arm64 Node 24.21.0 results on the recorded inputs,
+not phone latency or a universal ranking. TypeScript alone measured 4.661 ms
+clean and 55.485 ms noise in that same direct comparison. QR returned no wrong
+payloads in these accuracy sets. Both readers still miss all 28 finder-occlusion
+stress cases; ZXing alone reads one remaining version-40 perspective case.
+All evaluated corpora are now regression data, not unseen validation.
+
+Two paired old/new WASM runs show main-noise median costs of 0.16–0.47% and
+512-square noise costs of 0.59–1.67%. Other changes are small and mixed; clean
+medians change by 0.21% and 3.63%. This is an accuracy improvement, not a claimed
+speed improvement. The full distributions and exact binary identities remain
+in the [release receipts](benchmarks/2026-11-16-m4/release-0.3.0/README.md).
+The [failure diagnosis](benchmarks/2026-11-16-m4/version-hint/README.md) explains
+why a size retry alone did not work and why strict second-look recovery does.
+
+## M4 improvement programme — earlier qualification
 
 This phase starts from `a4f78ff`, with Astra coordinating technical decisions
 and review, Terra workers handling bounded decoder experiments, and the primary
@@ -18,7 +53,9 @@ adds the exact alignment merge frontier qualified below. Kotlin byte planes,
 local cross-check counters and reusable module storage are at `7419507`; the
 TypeScript scalar-counter refinement is at `8fd581b`. The seventh candidate
 applies the existing strict-format requirement before reading payload modules.
-Merge, publication and physical camera acceptance remain pending.
+The following paragraphs retain the earlier experimental checkpoints. The
+0.3.0 release qualification above supersedes their current-build descriptions.
+Physical camera acceptance is separate from these automated measurements.
 
 The Kotlin alignment merge frontier is also qualified on M4 with Java
 21.0.11. Two independent paired JVM runs reduce 720p noise time by 1.3–4.6%,
@@ -97,7 +134,7 @@ noise by 4.6–4.8% across two JVM forks. Checkerboard costs 0.053–0.065 ms mo
 rises 0.105–0.441 ms. These small pattern costs are retained alongside the
 larger noise gains; this is not an across-the-board Kotlin speedup.
 
-The latest matched run uses the guarded Rust 1.96.0 WASM (median latency, lower is better):
+The earlier matched run uses the guarded Rust 1.96.0 WASM (median latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM 3.1.7 |
 |---|---:|---:|
@@ -149,8 +186,9 @@ perspective/blur cases; neither reads 52. The largest wins are rotation (28/28
 versus 21/28) and finder erosion (18/28 versus 3/28). Both miss all 28 occluded
 finder cases. TypeScript/WASM payload outcomes agree on all 256. This is
 synthetic evidence from an independent encoder and the existing photograph
-renderer, not physical-camera acceptance. No tuning followed the results;
-the corpus is now regression data and cannot be reused as unseen validation.
+renderer, not physical-camera acceptance. No tuning preceded that recorded
+evaluation. The later version-directed recovery above uses it as regression
+data; it cannot be reused as unseen validation.
 
 The third candidate's paired negative-frame run shows the exact uniform-image
 shortcut taking 1.26–1.29 ms across three blank levels, against ZXing's

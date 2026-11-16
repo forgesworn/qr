@@ -1,0 +1,470 @@
+{
+  "revision": "3c06d8047287994a6e071e87425de1b04cc66d10",
+  "privilegedSelection": "normal full-resolution tolerance 0.8, ranked triple index 1; forced size 177",
+  "meta": {
+    "id": "blur-noise-25",
+    "group": "blur-noise",
+    "seed": 903788571,
+    "ecc": "M",
+    "version": 40,
+    "size": 177,
+    "shot": {
+      "scale": 4,
+      "angle": 29,
+      "perspective": 0.2,
+      "blur": 1,
+      "noise": 16,
+      "seed": 903788571
+    },
+    "damage": null,
+    "damagedFinder": null,
+    "width": 1056,
+    "height": 1056,
+    "expectedText": "S7PEY3BQ3",
+    "expectedUtf8Hex": "533750455933425133",
+    "greySha256": "9b18e346679ebc57a20696443f5e55b8034e8f08b9d7fe25223102b08096de0f"
+  },
+  "greyHash": "9b18e346679ebc57a20696443f5e55b8034e8f08b9d7fe25223102b08096de0f",
+  "truth": [
+    {
+      "x": 455.80779721785797,
+      "y": 92.60701031429956
+    },
+    {
+      "x": 935.4902349644998,
+      "y": 358.4993273801925
+    },
+    {
+      "x": 72.23134170693402,
+      "y": 655.9587266554939
+    }
+  ],
+  "triple": [
+    {
+      "x": 456,
+      "y": 92.33333333333333,
+      "moduleSize": 4.095238095238095,
+      "count": 3
+    },
+    {
+      "x": 935.6666666666666,
+      "y": 358.6666666666667,
+      "moduleSize": 3.6666666666666665,
+      "count": 3
+    },
+    {
+      "x": 71.75,
+      "y": 656.125,
+      "moduleSize": 4.928571428571428,
+      "count": 4
+    }
+  ],
+  "tripleDistances": [
+    [
+      0.3344263736219491,
+      548.4115442013086,
+      681.8738644981345
+    ],
+    [
+      548.6823081957614,
+      0.2431678069300765,
+      913.1829659606664
+    ],
+    [
+      681.9478838615503,
+      913.5799004459993,
+      0.5092510814199482
+    ]
+  ],
+  "finders": 365,
+  "triples": 14,
+  "maps": [
+    {
+      "size": 165,
+      "index": 0,
+      "alignment": {
+        "x": 559.875,
+        "y": 910
+      },
+      "versions": [
+        {
+          "bits": 69136,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 72808,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 165,
+      "index": 1,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 67088,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 72808,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 165,
+      "index": 2,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        },
+        {
+          "bits": 167033,
+          "version": 40,
+          "distance": 1
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 161,
+      "index": 0,
+      "alignment": {
+        "x": 559.875,
+        "y": 910
+      },
+      "versions": [
+        {
+          "bits": 200248,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 72808,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 161,
+      "index": 1,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 69136,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 71752,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 161,
+      "index": 2,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 199785,
+          "version": 40,
+          "distance": 2
+        },
+        {
+          "bits": 171129,
+          "version": 40,
+          "distance": 2
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 169,
+      "index": 0,
+      "alignment": {
+        "x": 559.8333333333334,
+        "y": 910
+      },
+      "versions": [
+        {
+          "bits": 67088,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 203880,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 169,
+      "index": 1,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 67090,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 204136,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 169,
+      "index": 2,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        },
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 157,
+      "index": 0,
+      "alignment": {
+        "x": 559.875,
+        "y": 910
+      },
+      "versions": [
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        },
+        {
+          "bits": 71848,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 157,
+      "index": 1,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 200249,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 79912,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 157,
+      "index": 2,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 67834,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 71930,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 173,
+      "index": 0,
+      "alignment": {
+        "x": 559.8333333333334,
+        "y": 910
+      },
+      "versions": [
+        {
+          "bits": 67090,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 232552,
+          "version": 40,
+          "distance": 2
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 173,
+      "index": 1,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 67088,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 199784,
+          "version": 40,
+          "distance": 3
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 173,
+      "index": 2,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        },
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 177,
+      "index": 0,
+      "alignment": {
+        "x": 559.8333333333334,
+        "y": 910
+      },
+      "versions": [
+        {
+          "bits": 67090,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 171128,
+          "version": 40,
+          "distance": 3
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 177,
+      "index": 1,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 67090,
+          "version": null,
+          "distance": null
+        },
+        {
+          "bits": 171096,
+          "version": null,
+          "distance": null
+        }
+      ],
+      "result": null,
+      "correct": false
+    },
+    {
+      "size": 177,
+      "index": 2,
+      "alignment": null,
+      "versions": [
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        },
+        {
+          "bits": 167017,
+          "version": 40,
+          "distance": 0
+        }
+      ],
+      "result": null,
+      "correct": false
+    }
+  ],
+  "forcedCorrect": false,
+  "work": {
+    "steps": 149711,
+    "compared": 47,
+    "scanned": 26552,
+    "maps": 0,
+    "second": 0,
+    "meshes": 0,
+    "probed": 0,
+    "reduced": 0
+  },
+  "fixtureHashes": {
+    "generate.mjs": "18f9a09f86df2c790f60143830bbff8587f5ac82c1c89ea734ef69aa306bde6d",
+    "manifest.json": "ccaa10cce97579506cbeca720fc2752009c5a13fef267a22e59a84d020c0fff9",
+    "photo.ts": "d34ab6f88bce5e26342c07a3868577fd73b080379c605e1fd2e8516f85db7bf4",
+    "photo.mjs": "06c665a630e8bb6b5bf0196d422154cf855c2fc3fd7299195ec1223865ffa1b4"
+  },
+  "qrcodeMainSha256": "c1f2fa38779ae32562a32a1392f7f747649d3ec839eebb934950cee25fb1c2b4",
+  "rivalLockSha256": "d6e21adcd75706590fccca3640a5e3abe8f7952981b4cc382ab334ed7f123c69",
+  "sourceSha256": {
+    "decode.ts": "1f3c017da9fba32e448ac5ab21df137e650adce00a4398fe76bf215bcb8f5ebf",
+    "locate.ts": "a33c41f2b04532e7c36d87617b9855dcff52a2687912dbc8625297560fdd6d6a",
+    "symbol.ts": "b13078d8ba3b19f65759ef24d1c9364071e2c6121c4cf6208c53c6b83cf9d0d6"
+  },
+  "generatedReaderSha256": "99766298309f0878331ca56622dd1d2fd92321ac8a625810a5047d57b840dc6d",
+  "builderSha256": "7ae465d512e6e8326c7316d7d94b6f6fb79ef4750c063f7f4735b07f6c6ce75a",
+  "runnerSha256": "f6dddc1fdfa481aa62ac8fbc9cfc75a3ce6c8c423e0e750593d20b57a0a830a2"
+}

@@ -28,6 +28,25 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
   against the same vectors, and [SPEC.md](SPEC.md) with
   [test vectors](vectors/README.md) lets other languages match it exactly.
 
+[Documentation](https://forgesworn.github.io/qr/) · [npm](https://www.npmjs.com/package/@forgesworn/qr) · [Releases](https://github.com/forgesworn/qr/releases) · [Choosing QR](docs/CHOOSING.md)
+
+Native Rust: [`forgesworn-qr`](https://crates.io/crates/forgesworn-qr) ·
+[Rust API docs](https://docs.rs/forgesworn-qr) · [Rust guide](rust/README.md)
+
+## Why use it?
+
+Generate and read codes with the same typed package, process frames locally,
+and choose your own camera UI. The optional WASM backend and tracked sessions
+help with repeated frames; the plain TypeScript entry needs no WASM setup.
+Accuracy takes priority: speed changes must preserve successful regression
+reads and must not introduce incorrect payloads.
+
+The recorded WASM comparison reads **179/184 photographs versus ZXing-WASM's
+171/184**, and **171/224 positive stress frames versus 150/224**. Those finite
+sets do not prove superiority on every image. ZXing is faster on random noise
+and reads one stress frame we miss. See [choosing a library](docs/CHOOSING.md)
+for use cases, trade-offs and [reproducible evidence](PERFORMANCE.md).
+
 ## Contents
 
 - [Install](#install)
@@ -54,7 +73,8 @@ the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Recipes: making codes
 
-Every recipe is complete: copy it, change the text, and it runs.
+The recipes show the imports and operations needed for each integration.
+Browser examples assume the named elements exist in your page.
 `encode` is synchronous and returns a plain object; the renderers turn
 that object into something to show.
 
@@ -93,6 +113,7 @@ canvas.toBlob((png) => {
   link.href = URL.createObjectURL(png)
   link.download = 'code.png'
   link.click()
+  setTimeout(() => URL.revokeObjectURL(link.href), 0)
 })
 ```
 
@@ -206,7 +227,13 @@ async function scan(video: HTMLVideoElement, onRead: (text: string) => void): Pr
   const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
   video.srcObject = stream
   video.playsInline = true
-  await video.play()
+  try {
+    await video.play()
+  } catch (error) {
+    for (const track of stream.getTracks()) track.stop()
+    video.srcObject = null
+    throw error
+  }
 
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d', { willReadFrequently: true })!
@@ -216,6 +243,7 @@ async function scan(video: HTMLVideoElement, onRead: (text: string) => void): Pr
   const stop = () => {
     running = false
     for (const track of stream.getTracks()) track.stop()
+    if (video.srcObject === stream) video.srcObject = null
   }
   const tick = (now: number) => {
     if (!running) return
@@ -241,7 +269,9 @@ const stop = await scan(document.querySelector('video')!, (text) => console.log(
 ```
 
 Cameras need a secure page (HTTPS or localhost) and the user's permission.
-A 1280x720 frame is enough for most codes; a larger one only costs time.
+Start with a bounded frame size such as 1280×720 and measure on your devices.
+Small or distant codes may need more resolution; larger frames cost more time
+and memory. Use a worker for decoding when page responsiveness matters.
 
 ### Read an uploaded picture or a screenshot
 
@@ -250,10 +280,14 @@ import { decode } from '@forgesworn/qr'
 
 async function readFile(file: Blob): Promise<string | undefined> {
   const bitmap = await createImageBitmap(file)
-  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
-  const ctx = canvas.getContext('2d')!
-  ctx.drawImage(bitmap, 0, 0)
-  return decode(ctx.getImageData(0, 0, bitmap.width, bitmap.height))?.text
+  try {
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(bitmap, 0, 0)
+    return decode(ctx.getImageData(0, 0, bitmap.width, bitmap.height))?.text
+  } finally {
+    bitmap.close()
+  }
 }
 
 document.querySelector('input[type=file]')!.addEventListener('change', async (event) => {
@@ -382,7 +416,8 @@ import { decode, type ImageLike } from '@forgesworn/qr'
 const readNormal = (frame: ImageLike) => decode(frame, { inversion: 'normal' })   // 'inverted' | 'both' (default)
 ```
 
-Naming the polarity halves the work on frames with no code.
+Naming the polarity avoids searching the other polarity. The saving depends
+on the image and which search budgets are reached.
 
 ### Check a code you just made
 
@@ -488,11 +523,12 @@ than the standard allows, and holds its later, harder searches of a frame
 to a stricter check than the first. The tests require damaged symbols to
 read as nothing or as exactly what was written.
 
-**Speed.** On the machine the project is measured on, a 1280x720 RGBA
-frame takes about 4 ms with a clean code in it and 5 to 7 ms with none. A
-frame of pure noise is the worst case at over 100 ms, so scan a few times a
-second, not every frame. Phones are slower; a worker keeps the page
-smooth either way.
+**Speed.** The recorded M4 Max/native Node 24.21.0 run measures clean 720p
+RGBA decoding at 4.661 ms for TypeScript and 1.590 ms for optional WASM.
+Random noise takes 55.485 ms and 20.569 ms respectively. These are workload-
+and hardware-specific medians, not a latency guarantee or phone measurement.
+[PERFORMANCE.md](PERFORMANCE.md) records the inputs, warm-up, competing readers,
+medians, tails and limitations. Use a worker and keep only one frame in flight.
 
 ## Common mistakes
 
@@ -515,7 +551,8 @@ smooth either way.
 
 The shapes are close to what most QR libraries use, so a switch is mostly
 renaming. Three differences apply whatever you come from: this package is
-ESM only, every call is synchronous, and a failed read is `undefined`.
+ESM only, encoding and decoding are synchronous, and a failed read is
+`undefined`. Optional WASM initialisation with `loadWasm` is asynchronous.
 
 ### From `qrcode` (generating)
 
@@ -619,6 +656,9 @@ For each frame, in order, stopping at the first read:
 7. **Reduced size.** If still nothing, the picture is searched again shrunk
    by 8, 4 and 2, for close-ups and codes shown on screens, with a
    stricter check on what counts as a read.
+8. **Evidence-directed recovery.** Eligible inverted images get a separate
+   luminance pass. Finally, independently agreeing version copies can correct
+   a failed size estimate and trigger a strict retry within the same budgets.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
@@ -680,10 +720,12 @@ and the whole decoder, with no dependencies. It is held to the same
 vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
-on all 2,412. It is not published as a standalone Rust crate yet.
+on all 2,412 in that earlier qualification. Install the native crate with
+`cargo add forgesworn-qr@0.3.0`; see the [Rust guide](rust/README.md) and
+[API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
-from the TypeScript entry. The module is about 203 kB before compression.
+from the TypeScript entry. The bundled module is about 210 kB (205 KiB) before compression.
 Fetch and instantiate it once, then reuse it for frames:
 
 ```ts
@@ -706,7 +748,9 @@ In Node, replace the fetch with `readFile(new URL(wasmUrl))` from
 `node:fs/promises`. `loadWasm` performs no network or filesystem access. With a
 bundler, ensure it copies `new URL('./qr.wasm', import.meta.url)` as an asset,
 or supply bytes from your own deployed copy of `@forgesworn/qr/qr.wasm`.
-Serve the module from your own origin; no CDN or runtime dependencies are used.
+Self-host the module for control over asset delivery. The library chooses no
+CDN and adds no runtime dependencies. Your page policy must permit WebAssembly
+compilation when using this backend; use the TypeScript entry when it cannot.
 
 The backend exposes `encode`, `decode`, `decodeModules`, `createDecoder`, `reset`, `dispose`
 and `memoryBytes`. It copies outputs before freeing native result handles,

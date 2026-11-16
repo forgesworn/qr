@@ -138,6 +138,22 @@ internal fun readVersion(read: ModuleReader, size: Int): Int? {
     return nearest(VERSIONS, { it.bits }, intArrayOf(bottomLeft, topRight))?.version
 }
 
+/** Both version copies must independently decode to the same version. */
+internal fun agreedVersion(read: ModuleReader, size: Int): Int? {
+    if (size < 45) return null
+    var bottomLeft = 0
+    var topRight = 0
+    for (k in 17 downTo 0) {
+        val i = k / 3
+        val j = k % 3
+        bottomLeft = (bottomLeft shl 1) or (if (read.read(i, size - 11 + j)) 1 else 0)
+        topRight = (topRight shl 1) or (if (read.read(size - 11 + j, i)) 1 else 0)
+    }
+    val first = nearest(VERSIONS, { it.bits }, intArrayOf(bottomLeft))?.version ?: return null
+    val second = nearest(VERSIONS, { it.bits }, intArrayOf(topRight))?.version ?: return null
+    return if (first == second) first else null
+}
+
 /**
  * The errors a block of this symbol may have had corrected: half of its check
  * codewords once the p of Table 9 is withheld to catch a misdecode. Only

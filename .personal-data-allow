@@ -1,0 +1,7 @@
+# Public upstream copyright/author notices retained with the bundled Rust code.
+# Sources and pinned compiler identity: THIRD_PARTY_NOTICES.md and licenses/.
+^alex@alexcrichton[.]com$
+^orsonpeters@gmail[.]com$
+^amanieu@gmail[.]com$
+# Existing public project funding address in README.md and package.json.
+^profusemeat89@walletofsatoshi[.]com$

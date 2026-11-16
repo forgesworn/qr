@@ -5,7 +5,7 @@ use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminan
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, Location, Point};
 use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
-use crate::symbol::{read_symbol, Payload, FORMAT_COORDS};
+use crate::symbol::{agreed_version, read_symbol, Payload, FORMAT_COORDS};
 use std::cell::Cell;
 use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 
@@ -51,6 +51,9 @@ pub struct Reading {
     pub location: Place,
 }
 
+#[derive(Clone, Copy)]
+struct Hint { triple: [Finder; 3], size: usize, inverted: bool }
+
 /// What is left of a frame's maps and second looks, shared by every size, and
 /// of the maps this size may take.
 struct Budget {
@@ -76,7 +79,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
     let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
-    if let Some(found) = look(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false) {
+    let mut hints = Vec::new();
+    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints)) {
         return Some(found);
     }
     if budget.uniform { return None; }
@@ -115,14 +119,18 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
             }
         }
     }
-    None
+    recover(&luminance, &hints, &mut budget, work.as_deref_mut())
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
 /// shrunk by `f` (1 for the picture itself). At reduced size a read counts
 /// only if its format copies agree on its level and mask, and locations are
 /// given in full-picture coordinates.
-fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
+fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
+    look_with_hints(luminance, inversion, f, budget, work, strict_override, None)
+}
+
+fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>) -> Option<Reading> {
     let levels = thresholds(luminance);
     if f == 1 && !strict_override {
         budget.inverted_fallback = levels.inverted_fallback;
@@ -136,13 +144,13 @@ fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budg
     let mut edges = Edges::new(&bits);
     let mut modules: Vec<u8> = Vec::new();
     if inversion != Inversion::Inverted {
-        if let Some(found) = search(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut()) {
             return Some(found);
         }
     }
     if inversion != Inversion::Normal {
         let inverse = invert(&bits);
-        if let Some(found) = search(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut()) {
             return Some(found);
         }
     }
@@ -226,6 +234,7 @@ fn over(image: &BitImage, triple: &[Finder; 3]) -> Option<i64> {
     estimate_size(image, triple).filter(|&size| size > 177 && size <= 177 + 8)
 }
 
+#[cfg(test)]
 #[allow(clippy::too_many_arguments)]
 fn search(
     image: &BitImage,
@@ -236,7 +245,23 @@ fn search(
     strict: bool,
     f: usize,
     modules: &mut Vec<u8>,
+    work: Option<&mut Work>,
+) -> Option<Reading> {
+    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn search_with_hints(
+    image: &BitImage,
+    edges: &mut Edges,
+    inverted: bool,
+    candidates: &mut Vec<Candidate>,
+    budget: &mut Budget,
+    strict: bool,
+    f: usize,
+    modules: &mut Vec<u8>,
     mut work: Option<&mut Work>,
+    mut hints: Option<&mut Vec<Hint>>,
 ) -> Option<Reading> {
     // No map can be read, but the caller still owns the second-look queue.
     if budget.maps == 0 || budget.here == 0 { return None; }
@@ -279,6 +304,9 @@ fn search(
                     }
                     if let Some(result) = read(image, location, inverted, candidates, strict, f, modules) {
                         return Some(result);
+                    }
+                    if let Some(hints) = hints.as_deref_mut() {
+                        collect_hint(image, location, modules, &triple, inverted, hints);
                     }
                     if budget.maps == 0 || budget.here == 0 { return None; }
                 }
@@ -349,6 +377,65 @@ fn search_reference(
 }
 
 
+/// Record a conflicting version only after both format copies agree. The
+/// ordinary reader has already populated the format cells in `modules`.
+fn collect_hint(image: &BitImage, location: &Location, modules: &[u8], triple: &[Finder; 3], inverted: bool, hints: &mut Vec<Hint>) {
+    if hints.len() >= 4 || location.size < 45 { return; }
+    let Some(format) = agreement(modules, location.size) else { return; };
+    let [m0, m1, m2, m3, m4, m5, m6, m7, m8] = location.matrix;
+    let sample = |x: usize, y: usize| {
+        let (x, y) = if format.mirrored { (y, x) } else { (x, y) };
+        let u = x as f64 + 0.5;
+        let v = y as f64 + 0.5;
+        let w = m6 * u + m7 * v + m8;
+        let px = ((m0 * u + m1 * v + m2) / w).floor();
+        let py = ((m3 * u + m4 * v + m5) / w).floor();
+        px >= 0.0 && py >= 0.0 && px < image.width as f64 && py < image.height as f64
+            && image.data[py as usize * image.width + px as usize] == 1
+    };
+    let Some(version) = agreed_version(&sample, location.size) else { return; };
+    let size = 17 + 4 * version;
+    if size == location.size { return; }
+    if hints.iter().any(|h| h.size == size && h.inverted == inverted &&
+        h.triple.iter().zip(triple).all(|(a, b)| a.x == b.x && a.y == b.y)) { return; }
+    hints.push(Hint { triple: *triple, size, inverted });
+}
+
+/// Retry only saved version hints, after every existing search has failed.
+fn recover(luminance: &Luminance, hints: &[Hint], budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    if hints.is_empty() || budget.maps == 0 { return None; }
+    let levels = thresholds(luminance);
+    if levels.uniform { return None; }
+    let normal = binarise(luminance, &levels);
+    let inverse = if hints.iter().any(|h| h.inverted) { Some(invert(&normal)) } else { None };
+    let mut edges = Edges::new(&normal);
+    let mut modules = Vec::new();
+    let mut candidates = Vec::new();
+    let mut remaining = 30u32;
+    for hint in hints {
+        if budget.maps == 0 || remaining == 0 { break; }
+        let image = if hint.inverted { inverse.as_ref().unwrap() } else { &normal };
+        for location in locate(image, &hint.triple, Some(hint.size as i64), work.as_deref_mut(), &mut edges) {
+            if budget.maps == 0 || remaining == 0 { break; }
+            budget.maps -= 1;
+            remaining -= 1;
+            if let Some(w) = work.as_deref_mut() { w.maps += 1; }
+            if let Some(result) = read(image, &location, hint.inverted, &mut candidates, true, 1, &mut modules) {
+                return Some(result);
+            }
+        }
+    }
+    for candidate in &candidates {
+        if budget.second == 0 { break; }
+        budget.second -= 1;
+        if let Some(w) = work.as_deref_mut() { w.second += 1; }
+        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), true) {
+            return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
+        }
+    }
+    None
+}
+
 /// Samples the module grid through the map and reads it, straight then
 /// mirrored. A map that reads neither way, whose format copies agree, is kept
 /// as a candidate for the second look.
@@ -411,6 +498,22 @@ mod strict_format_tests {
     use super::*;
     use crate::encode::{encode, Options};
     use crate::symbol::Ecc;
+
+    #[test]
+    fn recovery_without_maps_or_hints_preserves_budget_and_work() {
+        let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
+        let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
+        let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
+        let mut budget = Budget { maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut work = Work::default();
+        assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
+        assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
+        assert_eq!(work, Work::default());
+        budget.maps = 7;
+        assert!(recover(&luminance, &[], &mut budget, Some(&mut work)).is_none());
+        assert_eq!((budget.maps, budget.here, budget.second), (7, 9, 3));
+        assert_eq!(work, Work::default());
+    }
 
     #[test]
     fn decodes_thin_finder_centres_at_both_quiet_margins() {
@@ -589,7 +692,7 @@ mod exhausted_budget_tests {
 
     fn bent_version_12() -> Image {
         let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../vectors/conformance/bent-version-12.png");
+            .join("test-data/bent-version-12.png");
         let file = std::fs::File::open(path).expect("bent version 12 fixture");
         let mut reader = png::Decoder::new(std::io::BufReader::new(file)).read_info().unwrap();
         assert_eq!(reader.info().color_type, png::ColorType::Grayscale);

@@ -1,10 +1,4 @@
-//! The QR decoder, ported from the TypeScript reference: greyscale,
-//! binarisation, reduction and the finder scan (SPEC.md, decoder steps 1, 2, 3
-//! and 9), finder triples, size estimates and sampling maps (steps 4 and 5),
-//! reading a module grid (steps 6 and 7), the second look with its alignment
-//! mesh (step 8) and the reduced-size pass (step 9). `decode::decode` is the
-//! whole decoder. `encode::encode` is the encoder and `render` holds the SVG
-//! and terminal renderers; there is no canvas renderer.
+#![doc = include_str!("../README.md")]
 
 pub mod binarise;
 pub mod decode;

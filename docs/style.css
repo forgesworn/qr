@@ -1,0 +1,28 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #18342d; background: #f6f8f5; line-height: 1.65; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: #115d48; text-underline-offset: .18em; }
+a:hover { color: #072e24; }
+a:focus-visible { outline: 3px solid #b05d12; outline-offset: 4px; }
+header { max-width: 1160px; margin: auto; padding: 1.4rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid #cddbd1; }
+.brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; font-size: 1.2rem; }
+nav { display: flex; flex-wrap: wrap; gap: 1.2rem; }
+nav a { text-decoration: none; font-weight: 600; }
+main { max-width: 960px; margin: auto; padding: 3.5rem 2rem; overflow-wrap: anywhere; }
+h1, h2, h3 { line-height: 1.2; letter-spacing: -.025em; scroll-margin-top: 1rem; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); max-width: 850px; margin: .7rem 0 1.5rem; }
+h2 { margin-top: 2.6rem; font-size: 1.7rem; border-top: 1px solid #cddbd1; padding-top: 1.4rem; }
+h3 { margin-top: 2rem; font-size: 1.2rem; }
+.eyebrow { color: #426354; font-size: .85rem; font-weight: 650; letter-spacing: .03em; }
+pre { overflow: auto; background: #142d26; color: #e5f5df; border-radius: .7rem; padding: 1.25rem; line-height: 1.55; }
+code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
+:not(pre) > code { background: #e5ede5; padding: .12rem .3rem; border-radius: .25rem; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1.5rem 0; font-size: .93rem; }
+th, td { padding: .7rem .85rem; border-bottom: 1px solid #cddbd1; text-align: left; vertical-align: top; }
+th { background: #e5ede5; }
+li { margin: .5rem 0; }
+blockquote { margin-left: 0; padding-left: 1.25rem; border-left: 4px solid #76a18b; }
+footer { max-width: 1160px; margin: auto; border-top: 1px solid #cddbd1; padding: 1.5rem 2rem; color: #426354; font-size: .85rem; }
+.skip { position: absolute; top: -100px; left: 1rem; padding: .5rem; background: white; }
+.skip:focus { top: 1rem; }
+@media (max-width: 600px) { header { padding: 1rem; } main { padding: 2rem 1rem; } nav { gap: .85rem; font-size: .9rem; } th, td { padding: .5rem; } }

@@ -20,6 +20,33 @@ class VersionInfoTest {
     }
 
     @Test
+    fun versionHintRequiresBothCopiesToAgreeIndependently() {
+        for (version in listOf(7, 12, 40)) {
+            val size = 17 + 4 * version
+            val (bottom, top) = versionModules(size)
+            val modules = ByteArray(size * size)
+            fun write(indices: IntArray, word: Int) {
+                for (k in indices.indices) modules[indices[k]] = ((word shr k) and 1).toByte()
+            }
+            fun reader(mirrored: Boolean) = ModuleReader { x, y ->
+                modules[if (mirrored) x * size + y else y * size + x].toInt() == 1
+            }
+            write(bottom, versionBits(version))
+            write(top, versionBits(version))
+            for (k in 0..2) { flip(modules, bottom[k]); flip(modules, top[k + 5]) }
+            assertEquals(version, agreedVersion(reader(false), size))
+            assertEquals(version, agreedVersion(reader(true), size))
+            flip(modules, bottom[3])
+            assertNull(agreedVersion(reader(false), size))
+            write(bottom, versionBits(version))
+            write(top, versionBits(if (version == 40) 39 else version + 1))
+            assertNull(agreedVersion(reader(false), size))
+            assertNull(agreedVersion(reader(true), size))
+        }
+        assertNull(agreedVersion(ModuleReader { _, _ -> error("must not sample") }, 41))
+    }
+
+    @Test
     fun readsWhenFourBitsOfEachCopyAreFlipped() {
         for (version in listOf(7, 10, 40)) {
             val text = "v$version-" + "HELLO 0123 ".repeat(version)

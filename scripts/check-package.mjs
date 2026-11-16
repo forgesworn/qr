@@ -11,7 +11,12 @@ const scratch = mkdtempSync(join(tmpdir(), 'qr-package-'))
 try {
   const packed = JSON.parse(execFileSync('npm', ['pack', '--json', '--pack-destination', scratch], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'] }))
   const archive = join(scratch, packed[0].filename)
-  assert(packed[0].files.some(f => f.path === 'dist/qr.wasm'))
+  for (const path of ['dist/qr.wasm', 'dist/index.d.ts', 'dist/wasm.d.ts',
+    'LICENSE', 'README.md', 'SPEC.md', 'llms.txt', 'llms-full.txt',
+    'SECURITY.md', 'THIRD_PARTY_NOTICES.md', 'licenses/RUST-MIT.txt',
+    'licenses/COMPILER-BUILTINS.txt', 'licenses/UNICODE-3.0.txt']) {
+    assert(packed[0].files.some(f => f.path === path), `Missing package file: ${path}`)
+  }
   writeFileSync(join(scratch, 'package.json'), JSON.stringify({ private: true, type: 'module' }))
   execFileSync('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', archive], { cwd: scratch, stdio: 'inherit' })
   writeFileSync(join(scratch, 'check.mjs'), `

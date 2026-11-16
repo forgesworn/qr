@@ -3,7 +3,7 @@ export type { ImageLike, DecodeOptions } from './image.js'
 import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
-import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
+import { agreedVersion, readSymbol, type ModuleReader, type Payload } from './symbol.js'
 import { FORMAT_COORDS } from './encode.js'
 
 /** A symbol found in a picture. */
@@ -45,7 +45,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     storage = workspace.luminance.subarray(0, width * height)
   }
   const luminance = toLuminance(image.data, width, height, channels, stride, storage)
-  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false }
+  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false, hints: [] }
   const found = look(luminance, inversion, 1, budget, work)
   if (found) return found
   if (budget.uniform) return undefined
@@ -73,7 +73,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
       if (reduced) return { ...reduced, inverted: true }
     }
   }
-  return undefined
+  return recoverVersion(luminance, budget, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -92,6 +92,13 @@ interface Budget {
   here: number
   invertedFallback: boolean
   uniform: boolean
+  hints: VersionHint[]
+}
+
+interface VersionHint {
+  readonly triple: readonly [Finder, Finder, Finder]
+  readonly size: number
+  readonly inverted: boolean
 }
 
 /**
@@ -113,11 +120,11 @@ function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f
   // The inverse changes colour where the picture does, so one set of edges serves both.
   const edges = edgesOf(bits)
   if (inversion !== 'inverted') {
-    const found = search(bits, edges, false, candidates, budget, strict, f, work)
+    const found = search(bits, edges, false, candidates, budget, strict, f, work, f === 1 && !strictOverride)
     if (found) return found
   }
   if (inversion !== 'normal') {
-    const found = search(invert(bits), edges, true, candidates, budget, strict, f, work)
+    const found = search(invert(bits), edges, true, candidates, budget, strict, f, work, f === 1 && !strictOverride)
     if (found) return found
   }
   // Nothing read: look again at the few maps whose format copies agreed.
@@ -163,6 +170,7 @@ function search(
   strict: boolean,
   f: number,
   work?: Work,
+  collectHints = false,
 ): DecodeResult | undefined {
   if (budget.maps === 0 || budget.here === 0) return undefined
   // A strict pass first; a looser one for blurred or small codes.
@@ -184,7 +192,7 @@ function search(
             work.maps++
             if (f > 1) work.reduced = (work.reduced ?? 0) + 1
           }
-          const result = read(image, location, inverted, candidates, strict, f)
+          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple)
           if (result) return result
           if (budget.maps === 0 || budget.here === 0) return undefined
         }
@@ -207,6 +215,8 @@ function read(
   candidates: Candidate[],
   strict: boolean,
   f: number,
+  hints?: VersionHint[],
+  triple?: readonly [Finder, Finder, Finder],
 ): DecodeResult | undefined {
   const { size, project, matrix } = location
   const modules = new Uint8Array(size * size)
@@ -265,6 +275,47 @@ function read(
   }
   const agreed = agreement(modules, size)
   if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
+  if (agreed && hints && triple && hints.length < SECOND_LOOKS) {
+    const version = agreedVersion(agreed.mirrored ? mirroredRead : straightRead, size)
+    if (version !== undefined && 17 + 4 * version !== size) {
+      const target = 17 + 4 * version
+      const duplicate = hints.some(h => h.size === target && h.inverted === inverted &&
+        h.triple.every((p, i) => p.x === triple[i]!.x && p.y === triple[i]!.y))
+      if (!duplicate) hints.push({ triple, size: target, inverted })
+    }
+  }
+  return undefined
+}
+
+/** Evidence-directed retries run only after every existing search and second look has failed. */
+function recoverVersion(luminance: Luminance, budget: Budget, work?: Work): DecodeResult | undefined {
+  if (budget.hints.length === 0 || budget.maps === 0) return undefined
+  const levels = thresholds(luminance)
+  const bits = binarise(luminance, levels)
+  const edges = edgesOf(bits)
+  let inverse: BitImage | undefined
+  const candidates: Candidate[] = []
+  let remaining = REDUCED_MAPS
+  for (const hint of budget.hints) {
+    if (budget.maps === 0 || remaining === 0) break
+    const image = hint.inverted ? (inverse ??= invert(bits)) : bits
+    for (const location of locate(image, hint.triple, hint.size, work, edges)) {
+      if (budget.maps === 0 || remaining === 0) break
+      budget.maps--
+      remaining--
+      if (work) work.maps++
+      const result = read(image, location, hint.inverted, candidates, true, 1)
+      if (result) return result
+    }
+  }
+  // A queued map can still recover after the ordinary map allowance runs out.
+  for (const candidate of candidates) {
+    if (budget.second === 0) break
+    budget.second--
+    if (work) work.second++
+    const result = secondLook(luminance, levels, candidate, work, true)
+    if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
+  }
   return undefined
 }
 

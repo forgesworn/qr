@@ -135,6 +135,22 @@ export function readVersion(read: ModuleReader, size: number): number | undefine
   return nearest(VERSIONS, [bottomLeft, topRight])?.version
 }
 
+/** A version hint only when both BCH copies independently decode to the same version. */
+export function agreedVersion(read: ModuleReader, size: number): number | undefined {
+  if (size < 45) return undefined
+  let bottomLeft = 0
+  let topRight = 0
+  for (let k = 17; k >= 0; k--) {
+    const i = Math.floor(k / 3)
+    const j = k % 3
+    bottomLeft = (bottomLeft << 1) | (read(i, size - 11 + j) ? 1 : 0)
+    topRight = (topRight << 1) | (read(size - 11 + j, i) ? 1 : 0)
+  }
+  const first = nearest(VERSIONS, [bottomLeft])?.version
+  const second = nearest(VERSIONS, [topRight])?.version
+  return first !== undefined && first === second ? first : undefined
+}
+
 /**
  * The errors a block of this symbol may have had corrected: half of its check
  * codewords once the p of Table 9 is withheld to catch a misdecode. Only

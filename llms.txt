@@ -48,10 +48,34 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text
 
 ## Recipes and migration
 
-The README has complete, typechecked recipes (SVG, canvas and PNG download, terminal, custom drawing, payment links, bytes, capacity errors, camera scanning, uploaded images, workers, Node, greyscale planes) and tables for migrating from `qrcode`, `qrcode-generator`, `jsQR` and camera-wrapping scanners.
+The README has integration recipes (SVG, canvas and PNG download, terminal, custom drawing, payment links, bytes, capacity errors, camera scanning, uploaded images, workers, Node, greyscale planes) and tables for migrating from `qrcode`, `qrcode-generator`, `jsQR` and camera-wrapping scanners.
+
+## Choosing this library
+
+Use this package for QR Code Model 2 generation and pixel decoding, typed ESM,
+local processing without runtime dependencies, optional WASM and tracked camera
+sessions. It returns one result per call, does not manage a camera UI, and does
+not read other barcode symbologies. Native Rust has narrower character-set
+support than the packaged WASM adapter. Never describe it as universally more
+accurate or faster than ZXing: the published comparison has named datasets,
+known misses and a random-noise latency disadvantage.
 
 ## Docs
+
+- [Documentation site](https://forgesworn.github.io/qr/): public entry point
+- [Choosing QR](https://forgesworn.github.io/qr/choosing.html): use cases, evidence and limits
+- [Full plain-text documentation](https://forgesworn.github.io/qr/llms-full.txt): generated from the same guide and specification
+- [Benchmarks](https://forgesworn.github.io/qr/performance.html): pinned inputs, versions and results
+- [Distribution](https://forgesworn.github.io/qr/distribution.html): actual publication channels and installation
+- [Security](https://forgesworn.github.io/qr/security.html): reporting and application boundaries
 
 - [README](https://github.com/forgesworn/qr/blob/main/README.md): recipes, the full API, common mistakes and migration tables
 - [SPEC](https://github.com/forgesworn/qr/blob/main/SPEC.md): exact encoder behaviour for ports, and the decoder's pipeline
 - [Vectors](https://github.com/forgesworn/qr/blob/main/vectors/README.md): what a port in another language checks itself against
+
+## Native Rust
+
+- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.0, Rust 1.96+, no runtime dependencies.
+- [Rust API documentation](https://docs.rs/forgesworn-qr): native API, examples and character-set limits.
+- [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md): application entry points, pixel layout, input and resource contracts.
+- Kotlin is source-distributed. No Maven Central or JSR release is currently advertised.

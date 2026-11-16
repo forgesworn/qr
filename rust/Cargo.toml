@@ -1,10 +1,20 @@
 [package]
 name = "forgesworn-qr"
-version = "0.0.0"
+version = "0.3.0"
 edition = "2021"
-publish = false
+rust-version = "1.96"
 license = "MIT"
-description = "The QR decoder (greyscale, binarisation, finders, sampling maps, module reading, the second look, the reduced-size pass) and the encoder with its SVG and terminal renderers."
+description = "QR code encoder and image decoder with no runtime dependencies, plus SVG and terminal rendering."
+readme = "README.md"
+repository = "https://github.com/forgesworn/qr"
+homepage = "https://forgesworn.github.io/qr/"
+documentation = "https://docs.rs/forgesworn-qr"
+keywords = ["qr", "qrcode", "barcode", "encoder", "decoder"]
+categories = ["encoding", "multimedia::images"]
+include = ["Cargo.toml", "Cargo.lock", "src/**", "README.md", "LICENSE", "test-data/**"]
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
 crate-type = ["rlib", "cdylib"]

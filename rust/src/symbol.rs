@@ -485,6 +485,23 @@ pub fn read_version<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Optio
     nearest(&VERSIONS, &[bottom_left, top_right]).map(|i| i + 7)
 }
 
+/// A version independently supported by both version-information copies.
+/// Unlike `read_version`, this does not accept a single readable copy.
+pub(crate) fn agreed_version<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<usize> {
+    if size < 45 { return None; }
+    let mut bottom_left = 0u32;
+    let mut top_right = 0u32;
+    for k in (0..=17).rev() {
+        let i = k / 3;
+        let j = k % 3;
+        bottom_left = (bottom_left << 1) | read(i, size - 11 + j) as u32;
+        top_right = (top_right << 1) | read(size - 11 + j, i) as u32;
+    }
+    let a = nearest(&VERSIONS, &[bottom_left])?;
+    let b = nearest(&VERSIONS, &[top_right])?;
+    (a == b).then_some(a + 7)
+}
+
 /// The errors a block of this symbol may have had corrected: half of its check
 /// codewords once the p of Table 9 is withheld to catch a misdecode. Only
 /// versions 1 to 3 withhold any.
@@ -1030,6 +1047,10 @@ pub struct Decoded {
 /// symbol cannot be read, or when `modules` holds fewer than `size * size`
 /// (the TypeScript throws a RangeError there).
 pub fn decode_modules(modules: &[u8], size: usize) -> Option<Decoded> {
+    // Bound the product before checking the caller's module buffer.
+    if !(21..=177).contains(&size) || (size - 17) % 4 != 0 {
+        return None;
+    }
     if modules.len() < size * size {
         return None;
     }
@@ -1042,6 +1063,22 @@ pub fn decode_modules(modules: &[u8], size: usize) -> Option<Decoded> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn module_grid_sizes_are_bounded_before_buffer_arithmetic() {
+        for size in [0, 20, 22, 176, 178, usize::MAX / 2 + 1, usize::MAX] {
+            assert!(decode_modules(&[], size).is_none(), "size {size}");
+        }
+        for version in [1, 40] {
+            let qr = crate::encode::encode("A", &crate::encode::Options {
+                version: Some(version), mask: Some(0), ..Default::default()
+            }).unwrap();
+            assert!(decode_modules(&qr.modules[..qr.modules.len() - 1], qr.size).is_none());
+            let decoded = decode_modules(&qr.modules, qr.size).unwrap();
+            assert_eq!(decoded.payload.bytes, b"A");
+            assert_eq!(decoded.payload.version, version);
+        }
+    }
 
     #[test]
     fn syndrome_table_matches_field_multiplication() {
@@ -1120,5 +1157,36 @@ mod tests {
         assert_eq!(from_utf8(&[0x41, 0xe2, 0x82, 0x41]), "A\u{fffd}\u{fffd}A");
         assert_eq!(from_utf8("\u{20ac}".as_bytes()), "\u{20ac}");
         assert!(!is_utf8(&[0xc0, 0x80]));
+    }
+}
+
+#[cfg(test)]
+mod agreed_version_tests {
+    use super::{agreed_version, read_version, version_bits_of};
+
+    fn read_copies(size: usize, a: u32, b: u32) -> impl Fn(usize, usize) -> bool {
+        move |x, y| {
+            if x < 6 && (size - 11..size - 8).contains(&y) {
+                (a >> (x * 3 + y - (size - 11))) & 1 != 0
+            } else if y < 6 && (size - 11..size - 8).contains(&x) {
+                (b >> (y * 3 + x - (size - 11))) & 1 != 0
+            } else { false }
+        }
+    }
+
+    #[test]
+    fn copies_must_independently_decode_to_the_same_version() {
+        let forty = version_bits_of(40);
+        let thirty_nine = version_bits_of(39);
+        let matching = read_copies(165, forty ^ 0b111, forty ^ 0b111000);
+        assert_eq!(agreed_version(&matching, 165), Some(40));
+        assert_eq!(read_version(&matching, 165), Some(40));
+        let disagree = read_copies(165, forty, thirty_nine);
+        assert_eq!(agreed_version(&disagree, 165), None);
+        assert_eq!(read_version(&disagree, 165), Some(40));
+        let unreadable = read_copies(165, forty, forty ^ 0b1111);
+        assert_eq!(agreed_version(&unreadable, 165), None);
+        assert_eq!(read_version(&unreadable, 165), Some(40));
+        assert_eq!(agreed_version(&matching, 41), None);
     }
 }

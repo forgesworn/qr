@@ -4,10 +4,10 @@ Instructions in this file apply to the entire repository.
 
 ## Project Summary
 
-`@forgesworn/qr`: a QR code encoder with no runtime dependencies, for
+`@forgesworn/qr`: a QR code encoder and decoder with no runtime dependencies, for
 browsers, workers and Node. ESM only, Node.js `>=22.13`. SPEC.md defines
 the encoder exactly. The decoder is in `src/` too. A pure-JVM Kotlin port of
-both is in `kotlin/`; a Rust port is in progress to the same spec and the same
+both is in `kotlin/`; the `forgesworn-qr` Rust crate follows the same spec and
 vectors.
 
 ## Commands
@@ -20,7 +20,7 @@ npm run typecheck         # src and test, no emit
 npm run check             # typecheck + test
 npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK needed)
 (cd kotlin && ./gradlew test)   # the Kotlin port against the same vectors and frames
-(cd rust && cargo test)         # the Rust port, as far as it goes, against the conformance pack
+(cd rust && cargo test)         # the Rust port against the conformance pack
 ```
 
 ## Rules
@@ -49,7 +49,7 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 - `vectors/generator/` - the Java generator; `.cache/` holds the
   hash-checked jar and is not committed.
 - `test/` - Vitest suites.
-- `rust/` - a Rust port in progress, with no dependencies: the whole
+- `rust/` - the native Rust crate, with no runtime dependencies: the whole
   decoder (ordinary search, second look and reduced sizes), the encoder
   (`encode`, optimal segmentation) and the SVG and terminal renderers; no
   canvas renderer.
@@ -76,3 +76,5 @@ npm run generate-vectors  # rebuild vectors/encode-vectors.json with ZXing (JDK 
 
 Releases publish through the anvil reusable workflow (`release.yml`) with
 npm trusted publishing. Do not publish by hand.
+The Rust crate uses `release-rust.yml` against an existing release tag;
+`docs/DISTRIBUTION.md` documents its initial publication and trusted publisher.

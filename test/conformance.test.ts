@@ -16,6 +16,7 @@ import { estimateSize, findFinders, finderTriples, locate, type Work } from '../
 import { seg, symbol } from './builder.js'
 import { bent, photograph, prng } from './photo.js'
 import { readPng, writePng } from './png.js'
+import { versionHintPicture } from './version-hint-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -284,6 +285,9 @@ function build(write: boolean): Pack {
     image.data = Uint8Array.from(image.data, (v) => Math.round(90 + v / 3))
     own(name, image)
   }
+  // New recovery coverage: both BCH version copies identify 40 although the
+  // original module-size estimate is 165; the hinted map needs a second look.
+  own('version-hint-blur-40', versionHintPicture())
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +
