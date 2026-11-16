@@ -1,0 +1,145 @@
+{
+  "revision": "dae49138c0fe25ba2272c94ca565baf533c61d9e",
+  "dirty": true,
+  "currentSha256": "36ae22acdff56795d71e93e0421c8a2b2df850b2d72f28d7f74cd22323cacf11",
+  "baselineSha256": "03136b587f23b3a08301ea7d6715dca2f1246ec94617a08ca135c8440e677d48",
+  "cpu": "Apple M1",
+  "platform": "darwin",
+  "node": "v24.21.0",
+  "rounds": 25,
+  "suite": "all",
+  "warmupRounds": 5,
+  "loadBefore": [
+    11.447265625,
+    13.4140625,
+    20.0869140625
+  ],
+  "loadAfter": [
+    11.115234375,
+    13.18505859375,
+    19.81005859375
+  ],
+  "consumed": 41760,
+  "rows": [
+    {
+      "name": "encode/url",
+      "current": {
+        "medianMs": 0.13385829999999715,
+        "p95Ms": 0.22938749999999572
+      },
+      "baseline": {
+        "medianMs": 0.182000000000005,
+        "p95Ms": 0.253449999999998
+      },
+      "speedup": 1.3596467309087958
+    },
+    {
+      "name": "encode/mixed",
+      "current": {
+        "medianMs": 0.6273750000000063,
+        "p95Ms": 0.8031040999999959
+      },
+      "baseline": {
+        "medianMs": 0.8192833000000064,
+        "p95Ms": 0.9844165999999973
+      },
+      "speedup": 1.305890894600515
+    },
+    {
+      "name": "encode/numeric",
+      "current": {
+        "medianMs": 1.285345899999993,
+        "p95Ms": 1.3556082999999943
+      },
+      "baseline": {
+        "medianMs": 1.6804000000000088,
+        "p95Ms": 1.9128958000000011
+      },
+      "speedup": 1.3073523632821469
+    },
+    {
+      "name": "encode/bytes-v40",
+      "current": {
+        "medianMs": 4.6782709000000064,
+        "p95Ms": 5.200929199999973
+      },
+      "baseline": {
+        "medianMs": 6.752275000000009,
+        "p95Ms": 7.442420800000036
+      },
+      "speedup": 1.4433270634242237
+    },
+    {
+      "name": "decode/clean/grey",
+      "current": {
+        "medianMs": 4.165750000000116,
+        "p95Ms": 5.307167000000845
+      },
+      "baseline": {
+        "medianMs": 4.51891599999999,
+        "p95Ms": 6.064707999999882
+      },
+      "speedup": 1.0847784912680463
+    },
+    {
+      "name": "decode/clean/rgba",
+      "current": {
+        "medianMs": 7.737375000000611,
+        "p95Ms": 9.857124999999542
+      },
+      "baseline": {
+        "medianMs": 7.897624999999607,
+        "p95Ms": 11.242833000000246
+      },
+      "speedup": 1.020711158500006
+    },
+    {
+      "name": "decode/blank/grey",
+      "current": {
+        "medianMs": 6.8017919999992955,
+        "p95Ms": 9.939875000000029
+      },
+      "baseline": {
+        "medianMs": 7.001291999999921,
+        "p95Ms": 13.705332999999882
+      },
+      "speedup": 1.0293305058432611
+    },
+    {
+      "name": "decode/blank/rgba",
+      "current": {
+        "medianMs": 11.193999999999505,
+        "p95Ms": 16.237874999999804
+      },
+      "baseline": {
+        "medianMs": 10.47754200000054,
+        "p95Ms": 15.51720800000021
+      },
+      "speedup": 0.9359962479900842
+    },
+    {
+      "name": "decode/noise/grey",
+      "current": {
+        "medianMs": 122.148541999999,
+        "p95Ms": 149.940125000001
+      },
+      "baseline": {
+        "medianMs": 201.19083299999875,
+        "p95Ms": 290.28241700000035
+      },
+      "speedup": 1.647099750073156
+    },
+    {
+      "name": "decode/noise/rgba",
+      "current": {
+        "medianMs": 116.851584,
+        "p95Ms": 133.50212499999907
+      },
+      "baseline": {
+        "medianMs": 191.86679200000071,
+        "p95Ms": 208.8441669999993
+      },
+      "speedup": 1.6419699710703168
+    }
+  ]
+}

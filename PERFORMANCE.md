@@ -1,139 +1,224 @@
-# Performance work
+# Performance and verification
 
-Work started from `91dd037` on `perf/overnight-20261115`. The goal is a
-measurably faster encoder and scanner without sacrificing correct reads,
-port conformance, small downloads or the dependency-free core. No claim of
-universal superiority is established by a desktop microbenchmark.
+Work on `perf/overnight-20261115` started at `91dd037`. The core changes and
+WASM package are at `dae4913`; final benchmark tooling and results accompany
+this report. The encoder is faster, failed decoder candidates are cheaper,
+and repeated camera frames can reuse storage and search the previous region.
+The measurements show useful wins, **not superiority over every QR library**.
+ZXing remains substantially faster on random noise and reads more of the new
+synthetic stress set.
 
-## Delivery and acceptance
+## Delivery
 
-- [ ] Reproducible before/after benchmarks: exact source identity, warm-up,
-  interleaved timings, typical and slow cases, full decoded results.
-- [x] Faster mask selection, with identical matrices and tie-breaking.
-- [x] Cheaper failed decoder candidates, preserving recovered reads and work bounds.
-- [x] Optional reusable camera decoder session, tested for changed frames,
-  movement, polarity, independent sessions and stale-result rejection.
-- [x] Usable optional browser WASM backend, full-result timing and memory
-  lifecycle checks. SIMD evaluation recorded below when complete.
-- [ ] Per-photograph accuracy regression gate and independent evaluation.
-- [ ] TypeScript, Kotlin, Rust and WASM conformance; package/API documentation.
-- [ ] Review final changes, commit, prepare a PR and run hosted checks.
+- [x] Reproducible before/after benchmarks with build identities, warm-up,
+  interleaved samples, medians/p95 and full-result validation.
+- [x] Faster mask selection with identical matrices and tie-breaking in
+  TypeScript, Kotlin and Rust; independent reference-scorer tests.
+- [x] Incremental block extraction rejects failed candidates sooner in all
+  three ports. A targeted regression dropped from 29,714 module reads to
+  fewer than 1,024. No conformance vectors changed.
+- [x] Optional `createDecoder()` camera session: independent storage, current
+  pixels, tracked-region search, same-call full-frame fallback and reset.
+- [x] Optional `@forgesworn/qr/wasm` entry: bundled asset, full results,
+  reusable input allocation, copied outputs, reset, disposal and provenance.
+- [x] Per-photograph regression gate and independently encoded synthetic
+  evaluation; comparisons with jsQR, ZXing-WASM, node-qrcode and native Chrome.
+- [x] Local TypeScript, Kotlin, Rust, WASM, browser and packed-package checks.
+- [ ] Final revision reviewed, PR ready and hosted checks passed.
+- [ ] Task-owned scratch and build output cleaned up after evidence is retained.
 
-Competitor evaluation must remain outside the package's dependencies. Compare
-jsQR, ZXing-C++/WASM, browser-native scanning and relevant encoders with equal
-inputs/options. Record unavailable browser/device evidence explicitly. Real
-phone timings and a fresh camera corpus cannot be inferred from Node results.
+This library change adds no hosted service, telemetry, camera access or automatic
+network request. No runtime dependency was added. Rival packages were installed
+only in disposable external scratch. Publication remains through the existing
+release workflow; no version has been published by this task.
 
-## Execution constraints
+## Method and reproducibility
 
-Use the existing checkout and Rust target directory; at most two test workers.
-No paid services, real payment payloads or maintainer messages. Bound individual
-experiments and retain only measured improvements; investigate a failed approach
-before repeating it. Keep API changes explicit in SPEC.md. Publication uses the
-repository release workflow, never manual npm publishing.
+Measurements are on Apple M1 with Node 24.21.0 and headless Chrome 157 on macOS.
+The host was busy: one-minute load around 10–17 during the final runs. Each
+latency comparison uses five warm-up rounds followed by 25 rounds with the
+implementation order alternated or rotated. Encoding batches ten operations;
+decoding times a complete returned result. I/O, image conversion, module
+compilation and loading happen outside steady-state timing. These are paired
+desktop measurements, not phone, thermal, camera-pipeline or sustained-load claims.
 
-## Current evidence and continuation
-
-- Initial profiling: version-40 mask scoring took about 80% of sampled CPU;
-  noisy decoding concentrated in symbol extraction and candidate sampling.
-- Initial timing was on a heavily loaded Apple M1, Node 24.21.0. It is diagnostic,
-  not release performance evidence.
-- Baseline compiled modules are temporarily retained at
-  `/tmp/qr-performance-Eoi9WV/baseline`; remove task scratch after recording results.
-- Core checks: TypeScript typecheck and 412 tests passed, with the photograph
-  cache required (no skipped suites). Native Rust: 24 tests passed. Kotlin:
-  full suite passed including 179/184 photographs and no lost baseline reads.
-- WASM: all 148 encoder vectors, 58 frames with 464 work counters, and 419
-  option comparisons passed unchanged. Memory remained 1,376,256 bytes after
-  warm-up through 5,000 rounds; the deliberately leaking control grew.
-- Decoder block extraction: the new work regression failed on the baseline
-  (29,714 module reads), then passed after incremental extraction. Implemented
-  in TypeScript, Rust and Kotlin. No conformance vectors were changed.
-- Full-result WASM timing now checks every returned field, including text.
-  Character-set differences must be evaluated separately rather than silently
-  accepted as equal results.
-- Camera session implemented: `createDecoder()`, per-instance luminance
-  storage, bounded cropped search, same-call full-frame fallback, reset.
-  Tests cover changed payloads, blank replacements, movement, dimensions,
-  current polarity options, padded grey/RGBA, independent sessions and invalid
-  whole frames. Repeated reads of all 184 photographs preserve all first reads
-  without wrong text. Typecheck and all 418 TypeScript tests passed.
-- Core commits: `f47f80b` (scoring, block extraction and benchmark infrastructure),
-  `621586b` (compare public points in full-result WASM timing; TypeScript's
-  internal finder count/moduleSize properties are not public Point fields).
-- Corrected full-result WASM timing passed on all three synthetic fixtures:
-  blank TS/WASM 11.97/5.21 ms, clean 7.96/3.30 ms, noise 118.21/57.92 ms.
-- Camera benchmark (`--suite session`), against the current stateless decoder:
-  repeated clean grey 3.545/0.832 ms (4.26x), RGBA 7.284/1.316 ms (5.53x).
-  Blank/noise medians stayed within 3%. These repeated-frame measurements
-  describe tracking after warm-up, not initial acquisition or moving-camera
-  performance. Host one-minute load was about 17.
-- Current step: distributable browser WASM interface, independent comparative
-  evaluation and final package/hosted checks. No physical device results or
-  independent competitor ranking have been established.
-
-### Optional WASM package
-
-`@forgesworn/qr/wasm` exports `loadWasm(bytes)` and `wasmUrl`. Each instance
-provides full encoder/decoder results, reusable input allocation, independent
-copied outputs, reset, disposal and memory accounting. Shared validation and
-capacity errors live in small modules so importing the WASM entry does not
-import the TypeScript core. Rust's character-set limitations remain explicit.
-The module performs no fetching, telemetry or access to cameras itself.
-
-The 195,192-byte module is checked in with compiler/source/binary hashes.
-`npm run build` verifies and copies it without needing Rust. `check:wasm`
-rebuilds with Rust 1.94.1 and compares bytes; this also runs on Linux CI.
-The anvil release workflow builds two independent npm tarballs, so both build
-paths now include the same verified asset. Release publication remains through
-the existing workflow, never manual npm publication.
-
-Verified locally: real packed-package installation and exports, complete encoder
-vectors and conformance frames, metadata, modes and error paths, independent
-instances, output ownership after memory growth/disposal, and bounded memory
-through 1,200 rounds. All 424 tests passed with required photos before one extra
-mode/options test was added; that focused suite now passes all seven tests.
-Chrome 157 successfully loaded the asset over localhost, read full frames on
-the page and in a worker, and imported only image/error helpers with the WASM
-entry. Browser-native QR detection is available on this Mac. This is desktop
-browser evidence, not physical-phone acceptance.
-
-Current comparative evaluation uses jsQR 1.4.0, zxing-wasm 3.1.7 (QR-only,
-one symbol, tryHarder/rotate/invert/downscale, plain text) and qrcode 1.5.4.
-Rivals are installed only in temporary external scratch. The new 96-frame
-corpus uses qrcode-generated symbols with a fixed seed, rotation, shear,
-contrast, noise, occasional blur and inversion; it was fixed before inspecting
-results and has not been tuned against failures. It is synthetic, not fresh
-camera evidence. Existing photographs are regression evidence, not held-out data.
-
-Task-owned scratch: `/tmp/qr-performance-Eoi9WV`, photograph cache, and Rust
-and Kotlin build output created by this task. Preserve pre-existing Gradle
-caches and the neighbouring `qr-release` worktree. Browser profiles and
-local servers are removed by their runners. Final report/CI/cleanup remain.
-
-## Initial before/after measurements
-
-`node scripts/performance.mjs --baseline /tmp/qr-performance-Eoi9WV/baseline`
-compares full results before timing, then alternates implementations for 25
-rounds after five warm-up rounds. Encoding rounds batch ten operations; decoder
-rounds time one complete result. Timings below are medians in milliseconds on
-Apple M1, Node 24.21.0. Host load was high (one-minute average 25–28); these are
-preliminary paired measurements, not device acceptance or advertising claims.
-
-| Workload | Baseline | Optimised | Speedup |
-|---|---:|---:|---:|
-| Encode URL | 0.211 | 0.163 | 1.29x |
-| Encode mixed text | 0.957 | 0.714 | 1.34x |
-| Encode 1,000 digits | 1.929 | 1.497 | 1.29x |
-| Encode bytes, version 40 | 6.756 | 4.524 | 1.49x |
-| Decode clean RGBA | 8.431 | 8.197 | 1.03x |
-| Decode blank RGBA | 10.539 | 10.394 | 1.01x |
-| Decode noise RGBA | 186.347 | 114.418 | 1.63x |
-
-Baseline compiled-JavaScript SHA-256:
+[Machine-readable results](benchmarks/2026-11-16/) include medians, p95, runtime,
+source/build identities and workload hashes. The benchmark files intentionally
+retain their original `dirty` and revision fields: the tooling was uncommitted
+when measured. The compiled JavaScript was subsequently verified identical to
+`dae4913`, SHA-256
+`36ae22acdff56795d71e93e0421c8a2b2df850b2d72f28d7f74cd22323cacf11`.
+Baseline compiled JavaScript from `91dd037`:
 `03136b587f23b3a08301ea7d6715dca2f1246ec94617a08ca135c8440e677d48`.
-Encoder-only optimised build SHA-256:
-`db414e0f3735a3daa44c8feeeb07ba4ca42dad24cfdbfff8ffa24445938ba981`.
-The benchmark prints build hashes, revision, dirty state, host load and p95
-batch timings. Results are scoped to these fixtures; full conformance and
-photograph preservation are separate gates.
+The packaged module's source/compiler/binary hashes are in
+[wasm/manifest.json](wasm/manifest.json).
+
+```bash
+npm run build
+node scripts/performance.mjs --baseline /path/to/baseline/dist
+node scripts/performance.mjs --suite session
+
+# External evaluation only; do not add these packages to this repository.
+npm install --prefix /tmp/qr-rivals --ignore-scripts --no-audit --no-fund --save-exact zxing-wasm@3.1.7 qrcode@1.5.4
+npm run fetch-photos
+node scripts/compare-libraries.mjs /tmp/qr-rivals > libraries.json
+CHROME=/path/to/chrome node scripts/check-browser.mjs > browser.json
+```
+
+The comparison runner needs Node 24 for its test-only PNG reader's TypeScript
+import. Default browser/Node package support remains Node 22.13+ / ES2022.
+Remove the disposable rival directory after recording results. The browser
+runner removes its own profile and stops its browser/server, including on failure.
+
+Before/after comparisons check all public result fields. Rival decoders return
+different metadata and point conventions, so timing comparisons check the common
+payload text and bytes while still obtaining each library's complete result.
+Native BarcodeDetector exposes text and corner points, not equivalent byte/ECI
+metadata, and is compared on text only. Native timings include creating its
+ImageData wrapper. Encoder comparisons check decoded bytes and symbol sizes;
+all four workloads chose the same version, dimensions and mask across encoders.
+
+## Before and after
+
+Median milliseconds; baseline is the original TypeScript at `91dd037`.
+
+| Workload | Baseline | Current | Ratio |
+|---|---:|---:|---:|
+| Encode URL | 0.182 | 0.134 | 1.36x |
+| Encode mixed text | 0.819 | 0.627 | 1.31x |
+| Encode 1,000 digits | 1.680 | 1.285 | 1.31x |
+| Encode bytes, version 40 | 6.752 | 4.678 | 1.44x |
+| Decode clean RGBA | 7.898 | 7.737 | 1.02x |
+| Decode blank RGBA | 10.478 | 11.194 | 0.94x |
+| Decode noise RGBA | 191.867 | 116.852 | 1.64x |
+
+The blank frame was about 0.7 ms slower in this run; this is not a claim of an
+improvement for every input. The encoder and noisy-frame gains were consistent
+with the earlier paired run. Clean decoding is largely unchanged.
+
+The separate session comparison uses the current stateless decoder as baseline:
+
+| Repeated frame | Stateless | Session | Ratio |
+|---|---:|---:|---:|
+| Clean grey | 3.841 | 1.040 | 3.69x |
+| Clean RGBA | 8.112 | 1.449 | 5.60x |
+| Blank RGBA | 11.035 | 11.181 | 0.99x |
+| Noise RGBA | 114.874 | 117.025 | 0.98x |
+
+This measures repeated static frames after acquisition. Movement, changed text,
+blank replacement, dimension changes, polarity, padded planes and independent
+sessions have correctness tests, but these figures do not measure a moving
+camera. Cropping can change location estimates and which of several codes is
+selected. A miss adds a crop search before the normal full-frame search.
+
+## Other libraries
+
+Pinned rivals: jsQR 1.4.0, zxing-wasm 3.1.7 and qrcode 1.5.4.
+ZXing uses QR-only format selection, one symbol, `tryHarder`, rotation, inversion
+and downscaling, and plain-text output. jsQR attempts both polarities. These
+settings and default search strategies are documented by the
+[ZXing-WASM project](https://github.com/Sec-ant/zxing-wasm) and
+[node-qrcode project](https://github.com/soldair/node-qrcode).
+
+Full-result Node decoding, median milliseconds, identical 1280x720 RGBA:
+
+| Frame | Our TypeScript | Our WASM | jsQR | ZXing-WASM |
+|---|---:|---:|---:|---:|
+| Clean code | 8.367 | 3.370 | 20.858 | 3.811 |
+| Blank | 12.043 | 4.825 | 30.332 | 3.997 |
+| Random noise | 133.317 | 58.731 | 1894.684 | 13.853 |
+
+Encoding, median milliseconds, automatic mask and level M:
+
+| Payload | Our TypeScript | Our WASM | node-qrcode |
+|---|---:|---:|---:|
+| URL | 0.147 | 0.094 | 0.300 |
+| Mixed text | 0.635 | 0.394 | 1.109 |
+| 1,000 digits | 1.302 | 0.839 | 2.047 |
+| Bytes, version 40 | 4.456 | 2.945 | 8.784 |
+
+Chrome desktop, median milliseconds, same frames:
+
+| Frame | Our TypeScript | Our WASM | Native BarcodeDetector |
+|---|---:|---:|---:|
+| Clean code | 5.8 | 3.1 | 14.0 |
+| Blank | 8.9 | 4.5 | 9.4 |
+| Random noise | 111.2 | 53.4 | 9.9 |
+
+Our module is 195,192 bytes, 68,444 with gzip level 9. ZXing's reader module is
+946,598 bytes, 412,504 gzipped. This is not feature equivalence: ZXing supports
+many barcode formats and more character sets. Neither number includes its JS
+wrapper or HTTP headers. The default TypeScript entry does not fetch WASM.
+
+## Accuracy, including the limits
+
+Exact expected-text matches, with mismatches reported separately from misses:
+
+| Corpus | Our TypeScript | Our WASM | jsQR | ZXing-WASM |
+|---|---:|---:|---:|---:|
+| Existing 184 photographs | 179 | 166 | 155 | 171 |
+| New 96 synthetic frames | 84 | 84 | 80 | 89 |
+
+On the photographs, TypeScript has no text mismatch and preserves all 179
+previously read photos. WASM has 12 text mismatches and six misses. All 12
+mismatches were separately verified to have identical raw bytes and ECI to the
+TypeScript result: they expose the documented Rust character-set fallback,
+not equivalent rendered text. Hanzi is refused; kanji and unsupported ECI text
+are not fully supported. jsQR has 11 text mismatches and 18 misses; ZXing has
+one text mismatch and 12 misses. A text mismatch alone does not establish a
+wrong raw payload. IDs are retained in `libraries.json`; its `wrong` field
+means an exact expected-text mismatch.
+
+The 184 photographs are the existing hash-pinned regression set, **not held-out
+camera data**. The 96 new frames use symbols from node-qrcode, seed `0x783fa126`,
+rotation, shear, varying scale/contrast, grain, some blur and inversion. Some
+rotated symbols extend beyond the frame. Their generator was fixed before the
+results were inspected; no decoder tuning followed those results. None of the
+four implementations returned incorrect text on that set. It is independently
+encoded synthetic evidence, not a new photographic corpus or a universal ranking.
+
+## SIMD experiment
+
+A separate candidate used the same Rust 1.94.1 sources with
+`-C target-feature=+simd128`, remapped source paths and stripped symbols, reusing
+the worktree's Rust target directory. The normal asset was restored and verified
+after the experiment. `scripts/compare-wasm.mjs /path/to/candidate.wasm` compares
+full results before alternating timings; hashes and results are in `simd.json`.
+The candidate improved the three medians by roughly 4–12% in the final run,
+with a slightly worse clean-frame p95. It was not included: the modest desktop
+gain does not yet justify a second asset, compatibility fallback and another
+supported configuration. No SIMD phone-performance claim is made.
+
+## Verification and next evidence
+
+- TypeScript: typecheck and 425 tests passed, including the required 184-photo
+  suite, per-photo preservation and repeated session reads with fresh pixels.
+- Rust: 24 tests passed. Kotlin: the full suite passed earlier against the same
+  Kotlin source; the final Gradle run found it up to date.
+- WASM: 148 encoder vectors, 58 frames / 464 work counters and 419 option
+  comparisons match. The public adapter additionally checks complete results,
+  headers, modes, errors, independent instances and ownership after disposal.
+- Memory: 5,000 legacy-adapter rounds stayed at 1,376,256 bytes after warm-up;
+  the deliberately leaking control grew. The packaged adapter's mixed reset,
+  read and failure loop also stayed flat after warm-up.
+- Distribution: a real npm tarball was installed into an isolated consumer;
+  main/WASM exports, binary bytes, full results and disposal passed. Chrome
+  page and worker reads passed using the served asset. The WASM entry alone
+  loaded only its image/error helpers, not the TypeScript encoder or decoder.
+- The pinned Rust asset rebuild matches locally. Linux byte-for-byte verification
+  and the final hosted suite remain the delivery gate below.
+
+The next useful investigations are bounded noisy-frame work without losing hard
+reads, better recovery on unseen camera frames, and full character-set support
+for the optional WASM backend. Phone measurements need actual Android/iOS devices
+and a fresh, consented camera corpus. Those are explicitly outstanding evidence,
+not results established by these desktop tests.
+
+## Delivery state
+
+[PR #4](https://github.com/forgesworn/qr/pull/4) is currently a draft while hosted
+checks run. No merge or npm publication has occurred. Task scratch is temporarily
+retained at `/tmp/qr-performance-Eoi9WV` until the evidence and CI are complete.
+Task-created photo, Rust and Kotlin build output can then be removed; preserve
+pre-existing caches and the neighbouring `qr-release` worktree. No task-created
+browser, local server, emulator or fixture is intentionally left running.

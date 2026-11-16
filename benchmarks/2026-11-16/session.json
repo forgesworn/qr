@@ -1,0 +1,96 @@
+{
+  "revision": "dae49138c0fe25ba2272c94ca565baf533c61d9e",
+  "dirty": true,
+  "currentSha256": "36ae22acdff56795d71e93e0421c8a2b2df850b2d72f28d7f74cd22323cacf11",
+  "cpu": "Apple M1",
+  "platform": "darwin",
+  "node": "v24.21.0",
+  "rounds": 25,
+  "suite": "session",
+  "warmupRounds": 5,
+  "loadBefore": [
+    11.115234375,
+    13.18505859375,
+    19.81005859375
+  ],
+  "loadAfter": [
+    10.2431640625,
+    12.86181640625,
+    19.5400390625
+  ],
+  "consumed": 360,
+  "rows": [
+    {
+      "name": "decode/clean/grey",
+      "current": {
+        "medianMs": 1.039625000000001,
+        "p95Ms": 1.3186249999999973
+      },
+      "baseline": {
+        "medianMs": 3.841083000000026,
+        "p95Ms": 4.5031249999999545
+      },
+      "speedup": 3.694681255260332
+    },
+    {
+      "name": "decode/clean/rgba",
+      "current": {
+        "medianMs": 1.449124999999981,
+        "p95Ms": 1.652417000000014
+      },
+      "baseline": {
+        "medianMs": 8.112291000000027,
+        "p95Ms": 8.90970799999991
+      },
+      "speedup": 5.59806158888994
+    },
+    {
+      "name": "decode/blank/grey",
+      "current": {
+        "medianMs": 6.644750000000158,
+        "p95Ms": 7.264582999999902
+      },
+      "baseline": {
+        "medianMs": 6.685083000000077,
+        "p95Ms": 8.051042000000052
+      },
+      "speedup": 1.0060699048120574
+    },
+    {
+      "name": "decode/blank/rgba",
+      "current": {
+        "medianMs": 11.180999999999813,
+        "p95Ms": 14.772500000000036
+      },
+      "baseline": {
+        "medianMs": 11.034625000000005,
+        "p95Ms": 14.290958000000046
+      },
+      "speedup": 0.986908594937858
+    },
+    {
+      "name": "decode/noise/grey",
+      "current": {
+        "medianMs": 114.40987500000028,
+        "p95Ms": 122.77854200000002
+      },
+      "baseline": {
+        "medianMs": 115.41116599999987,
+        "p95Ms": 127.98645800000031
+      },
+      "speedup": 1.00875178825254
+    },
+    {
+      "name": "decode/noise/rgba",
+      "current": {
+        "medianMs": 117.02508300000045,
+        "p95Ms": 129.61166700000103
+      },
+      "baseline": {
+        "medianMs": 114.87420799999927,
+        "p95Ms": 130.86720799999966
+      },
+      "speedup": 0.9816203932963571
+    }
+  ]
+}
