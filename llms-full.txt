@@ -1442,6 +1442,10 @@ pipeline:
     requested polarity includes light modules on dark, re-threshold the
     luminance inverse when flat local blocks may have hidden the code.
     See "Inverted luminance fallback" below.
+11. Version-directed recovery: after all earlier attempts fail, relocalise
+    saved full-resolution triples whose agreeing format and version copies
+    identify a different size. Strict reads use only the remaining budgets.
+    See "Version-directed recovery" below.
 
 ### Reusable camera decoder
 
@@ -2130,7 +2134,8 @@ among them.
   2 corner maps: at most 720 maps for the whole search, each sampling at
   most size x size modules, straight and transposed. The reduced sizes of
   step 9 take theirs from the same 720, at most 30 each; step 10 takes at most
-  30 more from what remains, shared by its sizes. Only sizes from 21 to
+  30 more from what remains, shared by its sizes. Step 11 takes at most
+  30 remaining maps across all saved version hints. Only sizes from 21 to
   177 give maps. An estimate of 181 or 185, past 177 by no more than the
   retries reach, still has its retries tried, and those of 177 or less
   give maps; any other estimate outside 21 to 177 gives none.
