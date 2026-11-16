@@ -26,7 +26,8 @@ synthetic stress set.
 - [x] Local TypeScript, Kotlin, Rust, WASM, browser and packed-package checks.
 - [x] Implementation reviewed and hosted checks passed, including an exact
   Linux WASM rebuild. The PR tracks the final documentation/tooling revision.
-- [ ] Task-owned scratch and build output cleaned up after evidence is retained.
+- [x] Task-created build/cache output removed; reproducible results retained
+  in the repository. Temporary runner logs are removed at final close-out.
 
 This library change adds no hosted service, telemetry, camera access or automatic
 network request. No runtime dependency was added. Rival packages were installed
@@ -225,8 +226,10 @@ its final documentation/tooling revision. No merge or npm publication is part of
 this handover. No physical-device or fresh camera-corpus result is claimed.
 
 All comparative results needed for review are committed under `benchmarks/`;
-`wasm/` retains the distributed binary and provenance. After the final checks,
-remove task scratch `/tmp/qr-performance-Eoi9WV`, the task-created photograph
-cache, `rust/target`, and `kotlin/core/build`. Preserve pre-existing caches, the
-main checkout/branch and the neighbouring `qr-release` worktree. Browser runners
-stop their browser/server and remove profiles; no emulator or fixture was started.
+`wasm/` retains the distributed binary and provenance. The task-created photograph
+cache, `rust/target`, `kotlin/core/build` and local Kotlin caches were removed
+after verification. Pre-existing `dist`, `node_modules`, shared caches, the main
+checkout/branch and neighbouring `qr-release` worktree were preserved. Temporary
+runner logs under `/tmp/qr-performance-Eoi9WV` are removed when the final CI wait
+ends; the PR handover records close-out. Browser runners stopped their own
+browser/server and removed profiles; no emulator or fixture was started.
