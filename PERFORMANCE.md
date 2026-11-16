@@ -2,7 +2,7 @@
 
 ## M4 improvement programme — active
 
-The next phase starts from `a4f78ff`, with Astra coordinating technical decisions
+This phase starts from `a4f78ff`, with Astra coordinating technical decisions
 and review, Terra workers handling bounded decoder experiments, and the primary
 agent integrating and running M4 measurements. The goal remains better QR
 scanning than ZXing; a universal superiority claim is not established.
@@ -13,19 +13,23 @@ ZXing-WASM 3.1.7 was still the registry's current version at baseline setup.
 The same pinned external rival packages and complete-result comparisons are
 used. Source/binary identities, workload hashes and load are retained in
 [the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
-experimental snapshots; final acceptance and delivery are still pending.
+experimental snapshots. The recovery/session candidate is committed and pushed as
+`e92caff`; [all five hosted checks passed](https://github.com/forgesworn/qr/actions/runs/43829376452),
+including the independent Linux WASM rebuild. Merge, publication and physical
+camera acceptance remain pending. The fourth candidate below adds the exact
+syndrome-table optimisation and its rebuilt-module measurements.
 
-The frozen third candidate measured (median latency, lower is better):
+The final fourth candidate measured (median latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.774 | 1.924 |
-| Blank 1280×720 RGBA, median ms | 1.199 | 2.019 |
-| Random noise, median ms | 24.986 | 7.385 |
+| Clean 1280×720 RGBA, median ms | 1.951 | 2.151 |
+| Blank 1280×720 RGBA, median ms | 1.319 | 2.208 |
+| Random noise, median ms | 25.525 | 7.945 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
 | Fresh synthetic validation, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 8.783 | 21.527 |
+| Ten-frame moving/changing-payload sequence, median total ms | 8.486 | 19.970 |
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed
@@ -38,6 +42,8 @@ successes. TypeScript and packaged WASM agree on every outcome. It uses fresh
 pixels and payloads from the same transformation family, so it is not a new
 independent photographic corpus. The receipt is
 [`candidate3-validation.json`](benchmarks/2026-11-16-m4/candidate3-validation.json).
+The fourth candidate retained every outcome in
+[`candidate4-validation.json`](benchmarks/2026-11-16-m4/candidate4-validation.json).
 Single-pass accuracy-loop timings are diagnostic, not latency comparisons.
 
 The third candidate's paired negative-frame run shows the exact uniform-image
@@ -54,7 +60,7 @@ Implemented work in this phase includes lazy module sampling, bounded alignment
 scoring, exact binarisation optimisations, an inverse-luminance recovery pass,
 tracked WASM sessions and host character-set support during segment parsing.
 The latter closes the packaged backend's text gap: all 179 previously readable
-photographs now have the expected text and bytes. The standalone Rust/default
+photographs now have the expected text, with raw bytes matching TypeScript. The standalone Rust/default
 WASM contract remains separate from the packaged host-text ABI 2 module.
 
 Geometry-based early rejection was investigated and rejected: deterministic
@@ -72,9 +78,10 @@ grew. Chrome page and worker checks cover host character sets and session use.
 The final M4 Rust (25 tests), Kotlin and packed-package reruns passed, as did
 standalone WASM frame, option, encoder, module-grid and rendering parity, and
 the repeated-read memory check. Chrome page/worker checks passed on the frozen
-candidate. The local M1 rerun was stopped
-when unrelated host load exceeded 400; verification moved to the M4 after its
-benchmarks. Further source changes require fresh verification before delivery.
+candidate. The local M1 rerun was stopped while unrelated work overloaded it;
+verification moved to the M4 after its benchmarks. The required local pre-push
+check also passed after the load subsided. Further source changes require fresh
+verification before delivery.
 
 A diagnostic build retaining WASM function names attributes about 39% of the
 noise-frame profile to finder discovery (including cross-checks and row edges),
@@ -82,6 +89,32 @@ noise-frame profile to finder discovery (including cross-checks and row edges),
 sampled profiling with instrumentation overhead, not a latency result.
 [The profile summary](benchmarks/2026-11-16-m4/candidate3-wasm-profile.json)
 records its distinct binary hash; the distributed asset remains stripped.
+
+An exact alignment-offset cache was measured and rejected: 60 paired rounds
+gave essentially unchanged noise time (26.440 vs 26.435 ms), with clean frames
+1.846 vs 1.856 ms. Across six other noise cases its improvement was only
+0–1.5%, insufficient to justify the additional setup/storage. Finder-ratio
+lookup and integer-arithmetic prototypes were also rejected after equivalence
+checks because whole-frame timings did not improve.
+
+A compact Reed–Solomon syndrome table did improve the paired prototype: the
+original noise frame fell from 26.473 to 25.086 ms (5.2% less), with six other
+noise cases improving by 2–8% and clean-frame time unchanged. The integrated
+version uses a production helper tested against the original field operations
+at all 512 exponent indices. All 7,680 table entries match field multiplication;
+a temporary differential harness also checked correction outcomes and mutated
+bytes against the original full algorithm. The packaged binary grows from
+202,895 to 211,081 bytes (8,186 bytes, 4.0%, including code). Its final timing
+and validation receipts follow the rebuilt helper rather than assuming that
+the scratch prototype represents the shipped code. The final paired run
+measured 27.109 to 25.609 ms for noise (5.5% less), with clean and blank frames
+slightly faster in the same run. These paired results, not timings subtracted
+across separate runs with differing host load, establish the improvement.
+See [`candidate4-paired.json`](benchmarks/2026-11-16-m4/candidate4-paired.json).
+The final module passed all 452 JavaScript tests with photographs, 27 native
+Rust tests with all features, packed-package checks and Chrome page/worker
+checks. The earlier Kotlin results remain applicable: this refinement changes
+only the Rust arithmetic implementation and its WASM asset.
 
 The next performance work should target those loops while retaining all
 readable damage cases. Broader qualification needs independent camera footage,

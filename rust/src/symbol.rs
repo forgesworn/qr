@@ -114,6 +114,24 @@ const fn log_table() -> [u8; 256] {
 pub(crate) const EXP: [u8; 512] = exp_table();
 const LOG: [u8; 256] = log_table();
 
+// QR's error-correction blocks use at most 30 syndrome roots. Each row
+// multiplies every byte by EXP[j], so the syndrome loop needs one lookup.
+const fn syndrome_table() -> [[u8; 256]; 30] {
+    let mut table = [[0u8; 256]; 30];
+    let mut j = 0;
+    while j < 30 {
+        let mut value = 1;
+        while value < 256 {
+            table[j][value] = EXP[LOG[value] as usize + j];
+            value += 1;
+        }
+        j += 1;
+    }
+    table
+}
+
+static SYNDROME_MUL: [[u8; 256]; 30] = syndrome_table();
+
 pub(crate) fn gf_mul(a: u8, b: u8) -> u8 {
     if a == 0 || b == 0 {
         0
@@ -141,6 +159,22 @@ fn evaluate(poly: &[u8], x: u8) -> u8 {
     y
 }
 
+/// Evaluates one syndrome, with the generic field operation beyond QR's roots.
+#[inline]
+fn syndrome(block: &[u8], j: usize) -> u8 {
+    let mut s = 0u8;
+    let x = EXP[j];
+    if j == 0 {
+        for &b in block { s ^= b; }
+    } else if j < SYNDROME_MUL.len() {
+        let row = &SYNDROME_MUL[j];
+        for &b in block { s = row[s as usize] ^ b; }
+    } else {
+        for &b in block { s = gf_mul(s, x) ^ b; }
+    }
+    s
+}
+
 /// Corrects `block` (data codewords then `ec_count` check codewords) in
 /// place. Returns the number of codewords corrected, or `None` when the block
 /// has more errors than the code can correct.
@@ -149,11 +183,7 @@ pub fn correct(block: &mut [u8], ec_count: usize) -> Option<usize> {
     let mut syndromes: Vec<u8> = Vec::with_capacity(ec_count);
     let mut clean = true;
     for j in 0..ec_count {
-        let mut s = 0u8;
-        let x = EXP[j];
-        for &b in block.iter() {
-            s = gf_mul(s, x) ^ b;
-        }
+        let s = syndrome(block, j);
         syndromes.push(s);
         if s != 0 {
             clean = false;
@@ -1012,6 +1042,31 @@ pub fn decode_modules(modules: &[u8], size: usize) -> Option<Decoded> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn syndrome_table_matches_field_multiplication() {
+        for j in 0..SYNDROME_MUL.len() {
+            for value in 0..=u8::MAX {
+                assert_eq!(SYNDROME_MUL[j][value as usize], gf_mul(value, EXP[j]));
+            }
+        }
+    }
+
+    #[test]
+    fn syndrome_folds_match_the_reference_for_qr_and_larger_blocks() {
+        let mut seed = 0x6841_ba53u32;
+        for len in [0, 1, 2, 7, 31, 255] {
+            let block: Vec<u8> = (0..len).map(|_| {
+                seed = seed.wrapping_mul(1664525).wrapping_add(1013904223);
+                (seed >> 24) as u8
+            }).collect();
+            for j in 0..EXP.len() {
+                let expected = block.iter().fold(0, |s, &b| gf_mul(s, EXP[j]) ^ b);
+                let actual = syndrome(&block, j);
+                assert_eq!(actual, expected, "length {len}, syndrome {j}");
+            }
+        }
+    }
 
     /// Builds data codewords from (value, bit count) pairs, zero padded to a whole byte.
     fn words(fields: &[(u32, usize)]) -> Vec<u8> {

@@ -1,5 +1,6 @@
-// Compare an experimental module without changing the packaged asset.
-// node scripts/compare-wasm.mjs /path/to/candidate.wasm > wasm-comparison.json
+// Paired complete-result checks and timings for two modules with the current ABI.
+// Build first, then: node scripts/compare-wasm.mjs before.wasm after.wasm
+// With one argument, compares the packaged module against that candidate.
 import { strict as assert } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
@@ -8,31 +9,33 @@ import { execFileSync } from 'node:child_process'
 import { loadWasm, wasmUrl } from '../dist/wasm.js'
 import { encode } from '../dist/index.js'
 import { timingFrames, summary } from './comparison-fixtures.mjs'
-
-if (!process.argv[2]) throw new Error('Supply a candidate .wasm file')
-const binaries = [readFileSync(new URL(wasmUrl)), readFileSync(process.argv[2])]
-const modules = await Promise.all(binaries.map(loadWasm))
+if (!process.argv[2]) throw new Error('Supply a candidate, or a before and after .wasm file')
+const binaries = {
+  before: readFileSync(process.argv[3] ? process.argv[2] : new URL(wasmUrl)),
+  after: readFileSync(process.argv[3] ?? process.argv[2]),
+}
+const modules = Object.fromEntries(await Promise.all(Object.entries(binaries).map(async ([name, bytes]) => [name, await loadWasm(bytes)])))
 const result = {
   revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  node: process.version, cpu: cpus()[0]?.model, loadBefore: loadavg(),
-  binaries: binaries.map(b => ({ bytes: b.length, sha256: createHash('sha256').update(b).digest('hex') })),
-  warmup: 5, rounds: 25, rows: [],
+  node: process.version, arch: process.arch, cpu: cpus()[0]?.model, loadBefore: loadavg(),
+  hashes: Object.fromEntries(Object.entries(binaries).map(([name, bytes]) => [name, createHash('sha256').update(bytes).digest('hex')])),
+  bytes: Object.fromEntries(Object.entries(binaries).map(([name, bytes]) => [name, bytes.length])),
+  warmup: 10, rounds: 60, rows: [],
 }
 try {
   for (const frame of timingFrames(encode)) {
-    assert.deepEqual(modules[0].decode(frame), modules[1].decode(frame))
-    const samples = [[], []]
-    for (let round = -5; round < 25; round++) {
-      for (const index of round % 2 ? [0, 1] : [1, 0]) {
-        const start = performance.now()
-        const value = modules[index].decode(frame)
-        const elapsed = performance.now() - start
-        assert.equal(value?.text, frame.expected)
-        if (round >= 0) samples[index].push(elapsed)
+    const expected = modules.before.decode(frame)
+    assert.equal(expected?.text, frame.expected)
+    const samples = { before: [], after: [] }
+    for (let round = -10; round < 60; round++) {
+      for (const name of round % 2 === 0 ? ['before', 'after'] : ['after', 'before']) {
+        const start = performance.now(), got = modules[name].decode(frame), elapsed = performance.now() - start
+        assert.deepEqual(got, expected)
+        if (round >= 0) samples[name].push(elapsed)
       }
     }
-    result.rows.push({ name: frame.name, packaged: summary(samples[0]), candidate: summary(samples[1]) })
+    result.rows.push({ name: frame.name, ...Object.fromEntries(Object.entries(samples).map(([name, values]) => [name, { ...summary(values), samplesMs: values }])) })
   }
   result.loadAfter = loadavg()
   console.log(JSON.stringify(result, null, 2))
-} finally { for (const module of modules) module.dispose() }
+} finally { for (const module of Object.values(modules)) module.dispose() }

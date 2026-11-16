@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Faster Rust/WASM error-correction syndrome evaluation using a small static
+  multiplication table, preserving correction results and generic fallbacks.
+- Lazy module sampling, exact locator optimisations and a uniform-image shortcut
+  across all three ports; bounded inverse-luminance recovery reads more inverted
+  symbols while preserving earlier successful results.
+
 - WASM camera sessions with independent tracked regions, same-call recovery,
   compact crop copying and explicit parent reset/disposal behaviour.
 
