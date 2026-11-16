@@ -610,7 +610,7 @@ Step 5, as `vectors/conformance.json` checks it (`triples[].size` and
    These overlapping triples may be read directly from row boundaries,
    advancing by two runs each time and retaining the clipped first and
    last light runs.
-   Rust may omit a stored candidate from later merge lookup when, at the
+   Rust and Kotlin may omit a stored candidate from later merge lookup when, at the
    first accepted observation on row `y`, `lower = y - ceil(tall)`, its
    centre `f.y` is below `lower`, and `abs(f.y - lower) > m`. Accepted
    centres on that row and later rows cannot match it, so it cannot move

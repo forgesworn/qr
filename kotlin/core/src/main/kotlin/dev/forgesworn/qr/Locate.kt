@@ -432,6 +432,26 @@ private fun blackWhiteBlack(image: BitImage, from: Point, to: Point): Double {
 
 private class Candidate(var x: Double, var y: Double, var count: Int)
 
+// Keep the complete history; the active IDs retain insertion order. A retired
+// centre cannot match a later observation, and so cannot move back into range.
+private fun retireAlignmentCandidates(found: List<Candidate>, active: IntArray, activeCount: Int, lower: Double, moduleSize: Double): Int {
+    var kept = 0
+    for (i in 0 until activeCount) {
+        val id = active[i]
+        val candidate = found[id]
+        if (!(candidate.y < lower && abs(candidate.y - lower) > moduleSize)) active[kept++] = id
+    }
+    return kept
+}
+
+private fun findAlignmentCandidate(found: List<Candidate>, active: IntArray, activeCount: Int, cx: Double, cy: Double, moduleSize: Double): Candidate? {
+    for (i in 0 until activeCount) {
+        val candidate = found[active[i]]
+        if (abs(candidate.x - cx) <= moduleSize && abs(candidate.y - cy) <= moduleSize) return candidate
+    }
+    return null
+}
+
 /**
  * Searches near [estimate] for alignment pattern centres, whose modules span
  * [wide] pixels along a row and [tall] down a column. Candidates seen on two
@@ -475,7 +495,10 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
         return (up + 1 + down) / 2.0
     }
     val found = ArrayList<Candidate>()
+    var active = IntArray(16)
+    var activeCount = 0
     for (y in top..bottom) {
+        var retiredForRow = false
         val changes = edges.row(y)
         val n = changes.size
         // The first change of colour past the window's left edge.
@@ -504,12 +527,21 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
                 val cx = x - run - last / 2.0
                 val cy = vertical(floor(cx).toInt(), y)
                 if (!cy.isNaN()) {
-                    val same = found.firstOrNull { abs(it.x - cx) <= moduleSize && abs(it.y - cy) <= moduleSize }
+                    if (!retiredForRow) {
+                        // A passing middle run is shorter than 2 * ceil(tall), so
+                        // this and every later accepted centre has cy >= lower.
+                        val lower = y.toDouble() - ceil(tall)
+                        activeCount = retireAlignmentCandidates(found, active, activeCount, lower, moduleSize)
+                        retiredForRow = true
+                    }
+                    val same = findAlignmentCandidate(found, active, activeCount, cx, cy, moduleSize)
                     if (same != null) {
                         same.x = (same.x * same.count + cx) / (same.count + 1)
                         same.y = (same.y * same.count + cy) / (same.count + 1)
                         same.count++
                     } else {
+                        if (activeCount == active.size) active = active.copyOf(active.size * 2)
+                        active[activeCount++] = found.size
                         found.add(Candidate(cx, cy, 1))
                     }
                 }

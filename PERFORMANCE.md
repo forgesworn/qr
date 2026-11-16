@@ -20,6 +20,17 @@ TypeScript scalar-counter refinement is at `8fd581b`. The seventh candidate
 applies the existing strict-format requirement before reading payload modules.
 Merge, publication and physical camera acceptance remain pending.
 
+The Kotlin alignment merge frontier is also qualified on M4 with Java
+21.0.11. Two independent paired JVM runs reduce 720p noise time by 1.3–4.6%,
+512×512 noise by 5.3–6.4% and 1080p noise by 0.7–1.1%. Clean, blank and
+checkerboard medians are effectively unchanged. This adds 80 allocated bytes
+per clean decode and 19–39 KB (0.12–0.44%) per noisy decode. One striped-frame
+p95 rises from 7.783 to 8.172 ms despite a neutral median; the other fork's
+stripe median and p95 improve. All 118 Kotlin tests pass with photographs
+required, retaining 179/184 correct reads and no wrong text. These are paired
+old/new Kotlin measurements, not a fresh ZXing comparison. See the
+[Kotlin receipts and reproduction steps](benchmarks/2026-11-16-m4/kotlin-frontier/README.md).
+
 The latest matched run uses the accepted alignment-frontier WASM (median
 latency, lower is better):
 
