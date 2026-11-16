@@ -462,12 +462,14 @@ function mesh(location: Location, probe: Probe, work?: Work, late = false): Loca
  * format copies agreed on. With `strict`, the format copies of the modules
  * read again must also agree on them, as every read at reduced size must.
  * `late` enables the deferred recovery's extra alignment pass.
+ * After failure, `collectMesh` may retain the unrefined mesh for step 14.
  */
-export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false): Payload | undefined {
+export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false, collectMesh?: (modules: Uint8Array) => void): Payload | undefined {
   const { inverted, mirrored } = candidate
   const probe = probeFor(image, t, inverted)
   // 0. From version 7, the map bent onto the alignment patterns it can find.
-  const location = mesh(candidate.location, probe, work, late) ?? candidate.location
+  const meshed = mesh(candidate.location, probe, work, late)
+  const location = meshed ?? candidate.location
   const { size, project } = location
   // 1. The timing patterns: shift whole columns and rows by what they show.
   const cols = walk(size, (k) => project(k, 6), (k) => project(k + 1, 6), probe)
@@ -510,7 +512,17 @@ export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate
   }
   const read: ModuleReader = mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1
   const result = readSymbol(read, size)
-  if (result === undefined || result.ecc !== candidate.ecc || result.mask !== candidate.mask) return undefined
-  if (strict && !formatAgrees(read, size, result.ecc, result.mask)) return undefined
-  return result
+  if (result !== undefined && result.ecc === candidate.ecc && result.mask === candidate.mask &&
+      (!strict || formatAgrees(read, size, result.ecc, result.mask))) return result
+  // Keep this intermediate only after the final-stage read failed.
+  // The caller defers validation until every earlier recovery path has failed.
+  if (meshed && collectMesh) {
+    const modules = new Uint8Array(size * size)
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+      const p = meshed.project(x, y)
+      modules[y * size + x] = probe(p.x, p.y) > 0 ? 1 : 0
+    }
+    collectMesh(modules)
+  }
+  return undefined
 }

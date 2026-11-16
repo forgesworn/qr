@@ -19,6 +19,7 @@ import { readPng, writePng } from './png.js'
 import { versionHintPicture } from './version-hint-fixture.js'
 import { overflowPicture } from './overflow-fixture.js'
 import { meshBoundaryPicture } from './mesh-boundary-fixture.js'
+import { meshReadingPicture } from './mesh-reading-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -294,6 +295,8 @@ function build(write: boolean): Pack {
   own('overflow-perspective-40', overflowPicture())
   // Boundary continuation recovers these sheets without extra mesh searches.
   for (const scale of [2, 3] as const) own(`mesh-boundary-${scale}`, meshBoundaryPicture(scale).image)
+  // The saved mesh reads only after all earlier paths fail, including at reduced size.
+  for (const index of [16, 87] as const) own(`mesh-reading-${index}`, meshReadingPicture(index).image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

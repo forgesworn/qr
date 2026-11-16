@@ -1,0 +1,4449 @@
+{
+  "passed": true,
+  "identity": {
+    "revision": "b74fa2ff397369a247d70976cfd8ad5b7619588e",
+    "compiler": "5.9.3",
+    "sources": {
+      "base": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "4bebef665b0255cf6b365a125c49292660247329b03c4b608c4d8a67e7512e15",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "e1886aa288410a658b4bd3d4eca2c4fb9aa1068a76dbb09be364992588a1e80b",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "18288c0bccc74a6e4ff82293051d70835420e8aa6233bb34c6d567ba047a68d1",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "public": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "b5a509d0e0676b09de867666b0c95ab69f0c8a0bee365954268c27d37447a955",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "3fc547bce07c4487cb5f42f216231c00499ffcfb44f112b3520355705621cc96",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "18288c0bccc74a6e4ff82293051d70835420e8aa6233bb34c6d567ba047a68d1",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      }
+    },
+    "generated": {
+      "base": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "e139627fcca7ada061bd21879b233608c4ed0a3b1c8299a1b9e7f479fd922cd4",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "98ee1ffc10343f49ccccf1b47268eed595c321e62833ed461f916c86b764580b",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e32f193c6b60b935c8819e1b906ed513f71f3e361f5c35b74ca3a0f0f7232626",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      },
+      "public": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "7324506d3590e13df567889abd31126544c4ff87c306a4a0988770000558b86b",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "3ba7c635a6b9b5f8968fbc750cd17176fc1774c5a894f4c9f90fbfe4c0cf4208",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e32f193c6b60b935c8819e1b906ed513f71f3e361f5c35b74ca3a0f0f7232626",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      }
+    },
+    "builderSha256": "6cb5cc242aadbc1528c0cc5d9a24d563b7f595d3b2e223aed57a19f1d033193a"
+  },
+  "wasmSha256": "b5a1cc98846027deba1f42e6889db98a1d22d34e270d847363a369c0432bb36e",
+  "fullWasmParity": true,
+  "manifestSha256": "6bc79b43d34a2a38a27bced8c5113e2575b738e407a05031b5767fecc0a6ee1d",
+  "runnerSha256": "1a64ec4290758f62069adc9d886ce82d2d25bda150877a60df4434f852cf2c78",
+  "totals": {
+    "base": {
+      "correct": 30,
+      "wrong": 0,
+      "miss": 66
+    },
+    "candidate": {
+      "correct": 37,
+      "wrong": 0,
+      "miss": 59
+    },
+    "zxing": {
+      "correct": 42,
+      "wrong": 0,
+      "miss": 54
+    }
+  },
+  "losses": [],
+  "gains": [
+    "boundary-unseen-3",
+    "boundary-unseen-9",
+    "boundary-unseen-16",
+    "boundary-unseen-18",
+    "boundary-unseen-19",
+    "boundary-unseen-87",
+    "boundary-unseen-93"
+  ],
+  "rows": [
+    {
+      "id": "boundary-unseen-0",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "84187f93cd55ab63695bca97c2effcd79620de6783eb6ab2697a9f1a42b5e3d2",
+      "textSha256": "7d93cb76cae399e896e40e03f71c4259cbcb7b64a1f2f3511d0af5c26f21bbac",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 21237,
+            "compared": 47,
+            "scanned": 144628,
+            "maps": 106,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 21237,
+            "compared": 47,
+            "scanned": 144628,
+            "maps": 106,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-1",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "f67c89909f8b10e33baa682ea0b804b0eec824a7182a28caeef78135a6b6eb33",
+      "textSha256": "dc444f4ae61ea125c48292b5b9321f1576b01693b8e16a0d4b91a7ea63a9edd3",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 22186,
+            "compared": 43,
+            "scanned": 166959,
+            "maps": 130,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 22186,
+            "compared": 43,
+            "scanned": 166959,
+            "maps": 130,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-2",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "87c05079d3eaca12d28a3ff157442e8836a30a6843bcc1dda4a13637ad0c6bcb",
+      "textSha256": "575ef25a54be8ee3c36b21b98fe5689453a39f17f2a275cfef6d71634e33671c",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 20841,
+            "compared": 39,
+            "scanned": 35019,
+            "maps": 59,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 25
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 20841,
+            "compared": 39,
+            "scanned": 35019,
+            "maps": 59,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 25
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-3",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "58bfc98daaff8e775eeb61e52de740e467d0280fc6d90a751be3326afd257163",
+      "textSha256": "6bf60043ea1aea3cb4c874fcafb93fff8994b25bc800565e744d398c745e0552",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 20510,
+            "compared": 49,
+            "scanned": 21446,
+            "maps": 45,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 25
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 20510,
+            "compared": 49,
+            "scanned": 21446,
+            "maps": 45,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 25
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-4",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "5b82cdaba180c9e04c74dfbc590ca155e33b538b0892b49a0f862c70512faa6a",
+      "textSha256": "b8710ae692ac8d04abe76d1993b48450940ef02cf0e3df04f185adcf7ad12bdb",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 21587,
+            "compared": 65,
+            "scanned": 230528,
+            "maps": 112,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 16
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 21587,
+            "compared": 65,
+            "scanned": 230528,
+            "maps": 112,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 16
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-5",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "cbfda01df3baf68ef74637c9a123ac4fa68b8462ea1be89829fa37cecd6dc99c",
+      "textSha256": "6fb7d1c3a9d8a0ff508ba98e20a9c43d7c6aaad4b559e14b1ba456c6cc82f7b7",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 20786,
+            "compared": 58,
+            "scanned": 304349,
+            "maps": 131,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 20786,
+            "compared": 58,
+            "scanned": 304349,
+            "maps": 131,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-6",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "0d65c305a1f2c1f85f57b4600398f8294fc6c8d1dd54f790101f22c952a6a321",
+      "textSha256": "7b242e85337fed145c5a436277c39afe7c461a2db58eb4a2eae9fe018a675327",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 23583,
+            "compared": 79,
+            "scanned": 407885,
+            "maps": 193,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 23583,
+            "compared": 79,
+            "scanned": 407885,
+            "maps": 193,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-7",
+      "version": 10,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "09ed0218f5f8ed5fdec77b5c68199115a271f2aba6d48433cc87613f6626d83f",
+      "textSha256": "631e9c6199c4860c10b732b65d689e260195b4be76a6950f33e507135831e297",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 22483,
+            "compared": 67,
+            "scanned": 294337,
+            "maps": 163,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 22483,
+            "compared": 67,
+            "scanned": 294337,
+            "maps": 163,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-8",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "d96d20c829c4f79618a04d81f1f2c4872d9cc2e4cd3153ed95e8f2431cfc1506",
+      "textSha256": "d5873b34344a4ab40665211e048ed9c855b180c0ebcda80759ada4f6028c0db9",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 46104,
+            "compared": 88,
+            "scanned": 845388,
+            "maps": 124,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 46104,
+            "compared": 88,
+            "scanned": 845388,
+            "maps": 124,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-9",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "e489ab371cccaee513c63dd390572cd068aa1a79eb70af75a9e2c0dc4d54ba8d",
+      "textSha256": "624d3f85910d0b19de080ee4e1585b05e3ffd51e1a13c7a19fbb77fd9407eed7",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 51072,
+            "compared": 93,
+            "scanned": 611911,
+            "maps": 144,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 51072,
+            "compared": 93,
+            "scanned": 611911,
+            "maps": 144,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-10",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "00e66ca7d45b4c414d13cef3ccfae0e5629a77a162d24385dc35fb9783efd32b",
+      "textSha256": "ca5cf987d5d1e59bfbcea640dc726f5741a51b6b6ffe309cf0090fb558eda164",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 41827,
+            "compared": 103,
+            "scanned": 658950,
+            "maps": 142,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 41827,
+            "compared": 103,
+            "scanned": 658950,
+            "maps": 142,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-11",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "7e6be526f32244253193969b7f637e1801768f279e1517b7dc282b2d3e029ad9",
+      "textSha256": "a59a929393c2f58b5ec1e9a8f48a88fe6f78f8e903685d80a1253d8e12474fb5",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 48178,
+            "compared": 120,
+            "scanned": 1338568,
+            "maps": 262,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 48178,
+            "compared": 120,
+            "scanned": 1338568,
+            "maps": 262,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-12",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "e75eccf73ed72eae68e1f590444931c30f5c6f291056f797235f018ae05b14e6",
+      "textSha256": "b6afa6bf0cbe40053ed780145ef5fc28cc77c96d4c4e6b93dafb9123df455906",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 48303,
+            "compared": 134,
+            "scanned": 355027,
+            "maps": 167,
+            "second": 4,
+            "meshes": 4,
+            "probed": 468750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 48303,
+            "compared": 134,
+            "scanned": 355027,
+            "maps": 167,
+            "second": 4,
+            "meshes": 4,
+            "probed": 468750,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-13",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "542a196edf675229fe86115629f956afc5ea17ed14c5f82d7d6e2286e614e6c2",
+      "textSha256": "7cbb3ac05077bcf5828b301c36afd449f185a2dda52f7eb76b26e870f573c543",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 57257,
+            "compared": 139,
+            "scanned": 1148614,
+            "maps": 280,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 20
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 57257,
+            "compared": 139,
+            "scanned": 1148614,
+            "maps": 280,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 20
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-14",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "b1a065e1e78cee8398de672d5abe263c3e35db7f4322a0ec2e4b5f2ee48dadd6",
+      "textSha256": "2bb1ceb4c2d030c25f6c6acc410971ba055627aed1a634d71b891cadbfef5330",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 53603,
+            "compared": 132,
+            "scanned": 1408407,
+            "maps": 271,
+            "second": 4,
+            "meshes": 4,
+            "probed": 421875,
+            "reduced": 20
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 53603,
+            "compared": 132,
+            "scanned": 1408407,
+            "maps": 271,
+            "second": 4,
+            "meshes": 4,
+            "probed": 421875,
+            "reduced": 20
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-15",
+      "version": 10,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "4905ced6a647cb6bf35df68ba69d3935dc5999ad05dd5fad69e479697455a15d",
+      "textSha256": "2882530f3140160231b56b641a2504fec9aed2bb1afe713239a3fe2137b0a995",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 46508,
+            "compared": 118,
+            "scanned": 456796,
+            "maps": 191,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 46508,
+            "compared": 118,
+            "scanned": 456796,
+            "maps": 191,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-16",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "2c3904d97590ee6c8afd09955c2a23683951389490ded85c1ece18da2b967a6a",
+      "textSha256": "8532742165dfb2af74aa4d0de26c273842fa4e234fcb1525a0a3a018bfbc004e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 144091,
+            "compared": 197,
+            "scanned": 5142515,
+            "maps": 219,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 144091,
+            "compared": 197,
+            "scanned": 5142515,
+            "maps": 219,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-17",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "c99a54c19192db20ed0312d7cc345720532eb2071e179c246ebe4e4992d9f242",
+      "textSha256": "932d360096ef6c010888c19407d0ec487204e8bdc46ae3b05cabac29a26ab61d",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 176093,
+            "compared": 244,
+            "scanned": 5754335,
+            "maps": 308,
+            "second": 4,
+            "meshes": 3,
+            "probed": 375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 176093,
+            "compared": 244,
+            "scanned": 5754335,
+            "maps": 308,
+            "second": 4,
+            "meshes": 3,
+            "probed": 375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-18",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "45cf66b99834207cdf49273e1b7a4d6740ab08dd4fa8a937474fdf24e9c89889",
+      "textSha256": "18fe74113b3d85f3923e97dc3f49c77783f064e598e01594f430b363ebcd9dcd",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 139752,
+            "compared": 184,
+            "scanned": 475029,
+            "maps": 128,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 139752,
+            "compared": 184,
+            "scanned": 475029,
+            "maps": 128,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-19",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "44b719b7e756d41b0e02e8e5ac1beb69c6dce248b92c5cbaed18a1cf3393c30b",
+      "textSha256": "29359719cf9439d950bafde340da5f07349b76b7f46c4de62e192c821dfa4d0c",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 138279,
+            "compared": 194,
+            "scanned": 299494,
+            "maps": 95,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 138279,
+            "compared": 194,
+            "scanned": 299494,
+            "maps": 95,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-20",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "60a578124b08bf6458d33dd4606addc42eb7bb1bf8f32e3cf81a1d06c82d22f2",
+      "textSha256": "60d8d7ff39306399863530cee4b964812febe65118f499982d39358cda6c4f8e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 143025,
+            "compared": 241,
+            "scanned": 4378972,
+            "maps": 251,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 143025,
+            "compared": 241,
+            "scanned": 4378972,
+            "maps": 251,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-21",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "754a0578cf98a9cd9b20dc3038d572b2cbfcefc3df283545fa85f282fc0b5988",
+      "textSha256": "0edda22a9507569f0045c40e29ec3dae8c2c33096cf0494e38441e2682879b7e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 150656,
+            "compared": 227,
+            "scanned": 1546655,
+            "maps": 202,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 150656,
+            "compared": 227,
+            "scanned": 1546655,
+            "maps": 202,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-22",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "ce4d91b1bdba440443221c5f359516a41ee6d8449aa37cadaee9a64c24c69f58",
+      "textSha256": "76ca4eddbc9adb7fde69b6fc54bdd62f278ada359fb008f2af88fe2b4b4dd55b",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 150363,
+            "compared": 263,
+            "scanned": 3800406,
+            "maps": 332,
+            "second": 4,
+            "meshes": 3,
+            "probed": 281250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 150363,
+            "compared": 263,
+            "scanned": 3800406,
+            "maps": 332,
+            "second": 4,
+            "meshes": 3,
+            "probed": 281250,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-23",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "cdc4f6a97de7ea678f0f80096f835854349dc03ec8583ad6769f6566ad6fb844",
+      "textSha256": "604495ffb03af6963132e59dba3185ae5296879672a48b312b6c8d3e4570168f",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 119069,
+            "compared": 216,
+            "scanned": 1212132,
+            "maps": 167,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 119069,
+            "compared": 216,
+            "scanned": 1212132,
+            "maps": 167,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-24",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "397712a50b8effadd216d509b8a1852ac685cc3b6563a6137638c169d8101584",
+      "textSha256": "b580a6beb742d4c446af79cbd305ebf9dbdf8b4241203ecf8e562269c7d2ffb2",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 51604,
+            "compared": 115,
+            "scanned": 1314487,
+            "maps": 299,
+            "second": 3,
+            "meshes": 3,
+            "probed": 609375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 51604,
+            "compared": 115,
+            "scanned": 1314487,
+            "maps": 299,
+            "second": 3,
+            "meshes": 3,
+            "probed": 609375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-25",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "3eb9cdb9c764e78f2e1fc2df3c765bf08dc1f6f86610a5b07fe67456f9a0e6aa",
+      "textSha256": "8f8beeaa5b8b9a479e09b22d2fb46493797cf30597a608a5893c2b0ee129e0c6",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 30913,
+            "compared": 34,
+            "scanned": 200911,
+            "maps": 123,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 30913,
+            "compared": 34,
+            "scanned": 200911,
+            "maps": 123,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-26",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "b5eeaa2d8170a0e685b94eed46972d13a04ab9a5eee24ddd0ab493a76a8c8a71",
+      "textSha256": "0e1d048469bed4c78c052e0c06cd134324518cdb6acea7a118fda5ef1612b4a6",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 46990,
+            "compared": 77,
+            "scanned": 1066999,
+            "maps": 341,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 46990,
+            "compared": 77,
+            "scanned": 1066999,
+            "maps": 341,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-27",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "5d7efce3838636573b092f63781f4c19d7fca2ad93d8ef7be802e05fe7c7e03b",
+      "textSha256": "0307eb006a8b1067d01491bbb2583d7aee50607e750028c3c58438cf01c4d9d3",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 36781,
+            "compared": 49,
+            "scanned": 430389,
+            "maps": 123,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 36781,
+            "compared": 49,
+            "scanned": 430389,
+            "maps": 123,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-28",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "31bbc4501d7c2c87ffa53606b632d78b0d30a5cc35b6928cd0690a0083851b8e",
+      "textSha256": "7eccdba976929c9e14462bd89b77c261fbdaa2998e4733f45032b7e04058ff4a",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 50224,
+            "compared": 88,
+            "scanned": 890614,
+            "maps": 314,
+            "second": 1,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 50224,
+            "compared": 88,
+            "scanned": 890614,
+            "maps": 314,
+            "second": 1,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-29",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "1bfbbb34de12550adea1fef1d09746ff91a3d65fc6c6e11d8fe017cb5e48b977",
+      "textSha256": "d1b9ba2a8b34bfe59b673099ec224997775abf5513c58bee5d4bb071b0faa8e0",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 54438,
+            "compared": 81,
+            "scanned": 822148,
+            "maps": 268,
+            "second": 2,
+            "meshes": 2,
+            "probed": 531250,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 54438,
+            "compared": 81,
+            "scanned": 822148,
+            "maps": 268,
+            "second": 2,
+            "meshes": 2,
+            "probed": 531250,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-30",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "714d1dbe2753f03fac66f5658d1193854f6f94a7c58a3af8959b1a5e350fdaca",
+      "textSha256": "4e68c7bcfad9bb81190e2d072db3eca1c7986d911300bff3e3fde5d99af415ee",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 53331,
+            "compared": 101,
+            "scanned": 1278917,
+            "maps": 317,
+            "second": 2,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 53331,
+            "compared": 101,
+            "scanned": 1278917,
+            "maps": 317,
+            "second": 2,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-31",
+      "version": 18,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "ced694648aa59154e8f0d3c7c573909f15a851308372061f6fe722b48e3fd618",
+      "textSha256": "b1675d1ca67a885664b96b97bf1524d9f533a229bca719094e449cb438a5701d",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 66606,
+            "compared": 111,
+            "scanned": 1436964,
+            "maps": 334,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 66606,
+            "compared": 111,
+            "scanned": 1436964,
+            "maps": 334,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-32",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "85cc1bbb628c1c0a1ccaaf6258f2c2d919e8a1c2918bf7fc8baaedfedb0d2bb3",
+      "textSha256": "b3cdf166c2d5ef01302aa6e553d979c0290d59ea85f689d2a1f6d790b2880eb1",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 123255,
+            "compared": 173,
+            "scanned": 3137211,
+            "maps": 393,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 56
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 123255,
+            "compared": 173,
+            "scanned": 3137211,
+            "maps": 393,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 56
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-33",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "fd013850c97241e13130a3292b874a4e162ca7bc4ff2f76bd208b925ff875241",
+      "textSha256": "05fff028f04eaa27c24683b984dacac65a4b0c46a9211be245c3e85b0067b486",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 114812,
+            "compared": 130,
+            "scanned": 3862441,
+            "maps": 310,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 114812,
+            "compared": 130,
+            "scanned": 3862441,
+            "maps": 310,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-34",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "6db724647d3271ebc8266a38d745eff20bafdc49a541bb18b4b1156cf85fc741",
+      "textSha256": "bb5a8a37d9ed87756cae516e3c136ddf82110f44eff8cbc29b01435021268c49",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 117155,
+            "compared": 227,
+            "scanned": 3693884,
+            "maps": 346,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 50
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 117155,
+            "compared": 227,
+            "scanned": 3693884,
+            "maps": 346,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 50
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-35",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "6bad88f361c829ef6302be2141164457a4ca90242bf478a2cd7efec7d709fd58",
+      "textSha256": "d171f53893e708e2e7414d3aed09151535502f5f25c553f47a77829716b6764c",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 71791,
+            "compared": 108,
+            "scanned": 1307783,
+            "maps": 232,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 71791,
+            "compared": 108,
+            "scanned": 1307783,
+            "maps": 232,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-36",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "f82d80c0cb9302d0287ae2c63046b0b878b90431ba41df39c1f6e19b00b75c7c",
+      "textSha256": "0cf6359b540eac67747362f81b190b4f35a4785f4e5e8f352429ffe045547d96",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 132433,
+            "compared": 292,
+            "scanned": 1238358,
+            "maps": 274,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 132433,
+            "compared": 292,
+            "scanned": 1238358,
+            "maps": 274,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-37",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "2efcafad6623f396b7b6db833e3c5ce9d3df34760cd4549b6058c84cdb5e7b5e",
+      "textSha256": "311f810046a0427d04149ee7274a6c835fc0fc549b138edc11fab4e80697892c",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 142197,
+            "compared": 162,
+            "scanned": 2141391,
+            "maps": 317,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 36
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 142197,
+            "compared": 162,
+            "scanned": 2141391,
+            "maps": 317,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 36
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-38",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "372c2a2ed8c6434c037110b53348ea3c8ac611bb6f891ce11ed85e713bade4ef",
+      "textSha256": "d8f3741095bfffa3c4c83cc4cd03b4494b148875088cf30d62945dd35d0bc518",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 87258,
+            "compared": 148,
+            "scanned": 2143271,
+            "maps": 312,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 87258,
+            "compared": 148,
+            "scanned": 2143271,
+            "maps": 312,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-39",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "39a85181167680a7a5ed44ca497ec6be6352743c3bf96756fddb5c55ea61add2",
+      "textSha256": "bd4590d1aace479e5411dd4af1028ca94ad8ed866c483f033f091ef6f3b6f8e2",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 133171,
+            "compared": 130,
+            "scanned": 2368760,
+            "maps": 357,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 133171,
+            "compared": 130,
+            "scanned": 2368760,
+            "maps": 357,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-40",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "a2d1c59dd209b851ec7e905fa4f4a4ff2e422dddf0ed33a1040ecf32fa54d959",
+      "textSha256": "6c56ec1a048e4b6ea4d21ea5f3fe0c0d4b87f074fa5d7797557db351a57b2067",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 186228,
+            "compared": 170,
+            "scanned": 6270121,
+            "maps": 357,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 186228,
+            "compared": 170,
+            "scanned": 6270121,
+            "maps": 357,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-41",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "c495a363542c5ece660822a16bce88877372728d5e830a14c71f43a02cd4abf0",
+      "textSha256": "73dbf03a77e9d6c09045f97c7eb0247721bfd17b43abd15a62a72f1aa3084ef7",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 230798,
+            "compared": 199,
+            "scanned": 7627926,
+            "maps": 405,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 230798,
+            "compared": 199,
+            "scanned": 7627926,
+            "maps": 405,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-42",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "f8067a7ff784776d3480410795ce3fd86a5814720a6042561f50350011569f14",
+      "textSha256": "77fc242e28122bdedaf46a96e76e246d9b0b0292f84efe32ecc2aa7df996b615",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 112369,
+            "compared": 89,
+            "scanned": 7406996,
+            "maps": 209,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 112369,
+            "compared": 89,
+            "scanned": 7406996,
+            "maps": 209,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-43",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "3d94cb2f5f11c9364916f4ef2a483976f1ad4c8c904ff5b285fce17d2631e4a3",
+      "textSha256": "ec36cd792118ead32e342d24f281c2fcc17c97d51a4b7430cf49467c1dbf8881",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 124367,
+            "compared": 80,
+            "scanned": 5063698,
+            "maps": 223,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 124367,
+            "compared": 80,
+            "scanned": 5063698,
+            "maps": 223,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-44",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "7002f7e719e8f2527394a268ac23da3e71f38a6b696b293733c23be7d09270ee",
+      "textSha256": "a7faf08af9ae4ad87e0aa315dd0de9dd9733f231411de12f4b9c9a5becca0bbd",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 182907,
+            "compared": 165,
+            "scanned": 7694164,
+            "maps": 361,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 182907,
+            "compared": 165,
+            "scanned": 7694164,
+            "maps": 361,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-45",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "c72daf645b175f96db21fe4c23d5a8ddaec8f06e77fbd6fdcd97057d44019dbf",
+      "textSha256": "25f9ac8bbac295055f5ed004507b41855816dabc56b7d3fbcbe0349a0fbeff3d",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 244057,
+            "compared": 142,
+            "scanned": 5571152,
+            "maps": 344,
+            "second": 2,
+            "meshes": 2,
+            "probed": 406250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 244057,
+            "compared": 142,
+            "scanned": 5571152,
+            "maps": 344,
+            "second": 2,
+            "meshes": 2,
+            "probed": 406250,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-46",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "efc6c0e7fbc0aede8527394234631013af625e9e59baff613f1e57f58f33318a",
+      "textSha256": "9218323d9ec4ae52a17fd62cb187b0c528b715be28e6373756ed6158678f309d",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 190962,
+            "compared": 161,
+            "scanned": 5301388,
+            "maps": 345,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 190962,
+            "compared": 161,
+            "scanned": 5301388,
+            "maps": 345,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1062500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-47",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "85cb35e236831d2c481a094a5bd635dac31a825a0bc441e179761e38856af8c5",
+      "textSha256": "75bd3bf4de6d489327539749ec7538fc3435e67014475b9feccd2a4e4dff955d",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 176645,
+            "compared": 111,
+            "scanned": 6183369,
+            "maps": 379,
+            "second": 4,
+            "meshes": 3,
+            "probed": 796875,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 176645,
+            "compared": 111,
+            "scanned": 6183369,
+            "maps": 379,
+            "second": 4,
+            "meshes": 3,
+            "probed": 796875,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-48",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "82a3e22c79d9f581aaea757ff2e23a0ced41a10f36e1c0b2b54c52b4696f941d",
+      "textSha256": "62b66afeb171f23c1227c55692f1ea7c526f5fd40881b4a2e39faeb2deb9180d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 63279,
+            "compared": 80,
+            "scanned": 1138805,
+            "maps": 231,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 63279,
+            "compared": 80,
+            "scanned": 1138805,
+            "maps": 231,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-49",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "2458a49dc009b2ef52e42f46e5b559be1a0bd33f762b0d04fbb779b8a5308411",
+      "textSha256": "72b8b905fa60ebcfe8f26c11cdfe1e1c823dd6d8a7b6e0c6bffcb29bbca32a70",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 51247,
+            "compared": 63,
+            "scanned": 907396,
+            "maps": 219,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 51247,
+            "compared": 63,
+            "scanned": 907396,
+            "maps": 219,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-50",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "3487dadf7c5b920b888449016a509282ea922ea16a71ca14ce9db2b343beadc8",
+      "textSha256": "4d6a28d6e18b98b551367b89df7992d764fc52cd3d5cfb6859b3b994dd3292ab",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 97692,
+            "compared": 129,
+            "scanned": 1265055,
+            "maps": 327,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 97692,
+            "compared": 129,
+            "scanned": 1265055,
+            "maps": 327,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-51",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "d281518c9d61fbaccaccd5c85b8499b005a175c5e83657543147262091c295e5",
+      "textSha256": "835245385a9efeddbccdfb719dd3ca279cb2f5761331227e16510bfa8219bfda",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 52482,
+            "compared": 77,
+            "scanned": 1873929,
+            "maps": 185,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 52482,
+            "compared": 77,
+            "scanned": 1873929,
+            "maps": 185,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-52",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "fbf41d4547d42493ffcb0dae7ba94c3d363f25c5a929f9b501d8fe4b14389f49",
+      "textSha256": "cf52d21937a2b45f19904b66a1639e985024ef0cb049d7c024dc067f9714bf8e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 101606,
+            "compared": 156,
+            "scanned": 1726784,
+            "maps": 377,
+            "second": 2,
+            "meshes": 2,
+            "probed": 843750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 101606,
+            "compared": 156,
+            "scanned": 1726784,
+            "maps": 377,
+            "second": 2,
+            "meshes": 2,
+            "probed": 843750,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-53",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "8bc3a502fe566b37c294adb41f53a7cb08c658c52d9217d7eb8bbd79ed8853d3",
+      "textSha256": "d400f1cdf519128e881cfac4e7415c6cc07b36b0dbf4880c380de694806845a7",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 84581,
+            "compared": 89,
+            "scanned": 809387,
+            "maps": 308,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1687500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 84581,
+            "compared": 89,
+            "scanned": 809387,
+            "maps": 308,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1687500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-54",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "cab96e38160c16ac8cd00c0aaab63f329db482831c0de88e844ae784ce4e9149",
+      "textSha256": "2753e12dcb16e4e13350e6ef1df976b93830d07baae71552c826ca83ff63b6d0",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 103529,
+            "compared": 126,
+            "scanned": 1280963,
+            "maps": 317,
+            "second": 2,
+            "meshes": 2,
+            "probed": 843750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 103529,
+            "compared": 126,
+            "scanned": 1280963,
+            "maps": 317,
+            "second": 2,
+            "meshes": 2,
+            "probed": 843750,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-55",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "2349b2a9a3aa8b9e1f71f2528c082682143c3dd8050becb3e5c92e9da35c9848",
+      "textSha256": "1cb509c5934e508e0235cc6c61d8167a2e354598f7c7071d5e6cce3ebd7bf372",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 92170,
+            "compared": 94,
+            "scanned": 981324,
+            "maps": 320,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1687500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 92170,
+            "compared": 94,
+            "scanned": 981324,
+            "maps": 320,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1687500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-56",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "9ae7140775a2aaf2be73f6c1e7db7b9eb2c631be546479ac757f104c121b1457",
+      "textSha256": "c7ed005456ab50040bc38177911397ef412dba3f1d325b3c2dd8f89f9a6583b2",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 136163,
+            "compared": 212,
+            "scanned": 2860384,
+            "maps": 259,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 136163,
+            "compared": 212,
+            "scanned": 2860384,
+            "maps": 259,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-57",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "07493c42f293bdb181aa52338646bb04e9dc34a56762c6d020cbb0fdc586e5db",
+      "textSha256": "9592a6cce1469e524a40dc0239044f1519052d235d9cbfd5ef2f5cb2392a71ca",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 173399,
+            "compared": 105,
+            "scanned": 3635037,
+            "maps": 260,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 173399,
+            "compared": 105,
+            "scanned": 3635037,
+            "maps": 260,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-58",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "4d562ff91c8c662315e6d86628b21fe54cb71fdb40cd75586bf03f92c5f67ea5",
+      "textSha256": "4d021baa2703b8c74ed7d8f0eb779c7b405e98e13a7e0e9eb324677757637b1c",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 133414,
+            "compared": 231,
+            "scanned": 1835814,
+            "maps": 234,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 133414,
+            "compared": 231,
+            "scanned": 1835814,
+            "maps": 234,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-59",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "0e9c22500f31fd784c92cc025e0b90dd580238158aff91c044208bb225653f6a",
+      "textSha256": "b61c4eb2a63fc31c5efc5dcf36b564d70a9fdd20e1b85ddcdeab69c5fc32b95d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 124689,
+            "compared": 120,
+            "scanned": 1675316,
+            "maps": 213,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 124689,
+            "compared": 120,
+            "scanned": 1675316,
+            "maps": 213,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-60",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "03301dda9d5b6a2d98fa56a35ec2d4113f9bffe067504f53a2dcf50df2f0c211",
+      "textSha256": "95b0eab84b08b96b36b70c93465d308c413be2288a9162de3a93d631a5a63855",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 230912,
+            "compared": 306,
+            "scanned": 3165022,
+            "maps": 355,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1750000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 230912,
+            "compared": 306,
+            "scanned": 3165022,
+            "maps": 355,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1750000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-61",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "a101181d9cfe0ca2f685f29c0f8cc1cc066ff06efec58b322788510200349b0b",
+      "textSha256": "44ced6af9b760b6bab6f1864b1d64619c7fd1b3d00d440d7adac553e850efdb6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 159488,
+            "compared": 145,
+            "scanned": 6243267,
+            "maps": 394,
+            "second": 1,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 50
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 159488,
+            "compared": 145,
+            "scanned": 6243267,
+            "maps": 394,
+            "second": 1,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 50
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-62",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "e37b7e897aec726a3fe38942a43d5e332c0e861f5bbff3078afccc882a59351f",
+      "textSha256": "0485a2dfd3f146fa708ad289ff13f4aa6e5f823ff88dd6ee00158102161032b5",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 171493,
+            "compared": 250,
+            "scanned": 1708201,
+            "maps": 304,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1750000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 171493,
+            "compared": 250,
+            "scanned": 1708201,
+            "maps": 304,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1750000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-63",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "022135051b8c32c255af1334ca0d3ede4d2e420fcd4665dc3eada898aad52321",
+      "textSha256": "fde34296a405cabbb2036a2c2ce49ac14595bd8139aa823767a1a63a0a212a09",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 171561,
+            "compared": 167,
+            "scanned": 1931033,
+            "maps": 379,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1859375,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 171561,
+            "compared": 167,
+            "scanned": 1931033,
+            "maps": 379,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1859375,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-64",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "1c1b3273e544ecb3080222aff59e19f03f2169610f4ed8d7fe9ec95ad67ac241",
+      "textSha256": "24f27ecd1f022488ba6f1bf9ad230aef6632d7bc61037bf1001272ae647e2dc5",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 142269,
+            "compared": 85,
+            "scanned": 4088750,
+            "maps": 228,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 142269,
+            "compared": 85,
+            "scanned": 4088750,
+            "maps": 228,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-65",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "662e473d60ee14bf5f440de865bf16da666977db68b7b8cc566dd238f7769957",
+      "textSha256": "bbd669473f0dc8f8ca596aac48795606b00396f798e1105c81e135e6fa8b70d9",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 299216,
+            "compared": 131,
+            "scanned": 4675190,
+            "maps": 337,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 299216,
+            "compared": 131,
+            "scanned": 4675190,
+            "maps": 337,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-66",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "12110d52c3e613731b4afa9c0c9c2ec9428ed01cf98b4c281e84d146932e5c9c",
+      "textSha256": "14fc5ddf5b77b5b43b00d82f840d7e4ec06d7b8fe1b33d90d571dcbd6e3813e5",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 145589,
+            "compared": 63,
+            "scanned": 8397435,
+            "maps": 235,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 145589,
+            "compared": 63,
+            "scanned": 8397435,
+            "maps": 235,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-67",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "2e3c4494b8f981877854836257c4706c8bbec2da5c1ef37e25ee14eb58b6b423",
+      "textSha256": "b5a5445fe99b8180104b38b715cecc01d323edea680775803076e1dff20deb25",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 153148,
+            "compared": 44,
+            "scanned": 8287089,
+            "maps": 237,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 153148,
+            "compared": 44,
+            "scanned": 8287089,
+            "maps": 237,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-68",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "9ded53445f948410a2da5cec3e73385d5f39258376baa9413a791312c098a1b5",
+      "textSha256": "9a5d440511697a169f1d534d5770de8b5d0bf10dcba0bb0a87012d7fa33c5dad",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 261978,
+            "compared": 141,
+            "scanned": 6848590,
+            "maps": 402,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1687500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 261978,
+            "compared": 141,
+            "scanned": 6848590,
+            "maps": 402,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1687500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-69",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "3ddb58904d4eaba52cb215f7496d4087d03081d3a17aaa1847e504c225e0f5df",
+      "textSha256": "cd65cb70b8907e485f9abd9e4b96cbca1607be30aea1eb1bb628f10fe22f4156",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 208251,
+            "compared": 75,
+            "scanned": 4592226,
+            "maps": 427,
+            "second": 1,
+            "meshes": 1,
+            "probed": 437500,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 208251,
+            "compared": 75,
+            "scanned": 4592226,
+            "maps": 427,
+            "second": 1,
+            "meshes": 1,
+            "probed": 437500,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-70",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "a1a5c21668c67aa3cb5fc59ba5d92fde7e2ecc2fa668fe9e2799cf0871e2d641",
+      "textSha256": "d8937f448b67c8430d7175211354199c7dc78adcf81e0a9a31be415c55fdea87",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 265853,
+            "compared": 196,
+            "scanned": 5205921,
+            "maps": 336,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1750000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 265853,
+            "compared": 196,
+            "scanned": 5205921,
+            "maps": 336,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1750000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-71",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "1cb02e98c10ceb205f68bb90dcda84d5bd59efb332d656ee04434129df999d53",
+      "textSha256": "3259e7469f00bed80424bde6a1d9d770ccb49160ada283e2e5e6d98196a79d52",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 307204,
+            "compared": 97,
+            "scanned": 5152744,
+            "maps": 396,
+            "second": 2,
+            "meshes": 2,
+            "probed": 968750,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 307204,
+            "compared": 97,
+            "scanned": 5152744,
+            "maps": 396,
+            "second": 2,
+            "meshes": 2,
+            "probed": 968750,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-72",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "0de65bb862eb1f9d57b3812bc6f1ef4100f1b9e4419d3ac68a3f8e7bc2b8c294",
+      "textSha256": "e238c89110b11d94a5c174c18b2a2fbe52d3c271b59ea5b2461ccef35e525fa9",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 118089,
+            "compared": 202,
+            "scanned": 3217278,
+            "maps": 212,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 118089,
+            "compared": 202,
+            "scanned": 3217278,
+            "maps": 212,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-73",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "c4066aa96ad09cdb975204e3aaf552fa982f7ead5d8fb5390836d1bc8db46a5a",
+      "textSha256": "9a81825bd141ead6587b8e00c91dc638303faa4474eee6a67df04d1ddaa5de8b",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 138712,
+            "compared": 119,
+            "scanned": 1008535,
+            "maps": 192,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 138712,
+            "compared": 119,
+            "scanned": 1008535,
+            "maps": 192,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-74",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "7f461fd3e435facc837225440c3c7c840470941a0d24628feadc31a4f15deac2",
+      "textSha256": "b63446210de1dbe303a53ec95214b2a44de304bbe51c5d0bce8df49f68557e04",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 161093,
+            "compared": 122,
+            "scanned": 2688004,
+            "maps": 349,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2875000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 161093,
+            "compared": 122,
+            "scanned": 2688004,
+            "maps": 349,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2875000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-75",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "ee283c8a053ae6f79c59bd356bc494d745068dcb7ed407ee6c50e9b0e961a512",
+      "textSha256": "415e3e7a95c1e0e87ccae0c9112d5f185a14167162ab33c35a329f83f83da860",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 121500,
+            "compared": 111,
+            "scanned": 1539473,
+            "maps": 275,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 121500,
+            "compared": 111,
+            "scanned": 1539473,
+            "maps": 275,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-76",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "478afcc797f8de374ba00158ace63789e49fb9acd926f131b5b5a419c9f1f0a3",
+      "textSha256": "adf3e1c8f73b1ad4a3af842f585b0f2b624d9d710f95440583cf3485847c4f35",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 169789,
+            "compared": 173,
+            "scanned": 2126723,
+            "maps": 353,
+            "second": 2,
+            "meshes": 2,
+            "probed": 1812500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 169789,
+            "compared": 173,
+            "scanned": 2126723,
+            "maps": 353,
+            "second": 2,
+            "meshes": 2,
+            "probed": 1812500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-77",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "bda4ff9e377247168bab0ddbcae3e86ecfe5cd4d5640d073b01d3ea0ed4d4ade",
+      "textSha256": "756c0baf670491446fbb2ab6143f37c80b0ed370d95d293365e8bda7ddc439a6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 168870,
+            "compared": 110,
+            "scanned": 1447434,
+            "maps": 344,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 168870,
+            "compared": 110,
+            "scanned": 1447434,
+            "maps": 344,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-78",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "c9981993817caa50010e4300c23a0c45fed52c4e4c98129cab8759a7f55a4dfa",
+      "textSha256": "95dac05ab16b97fd7c0d3e88a5ab887a486e5d403ceb24d2b937be6f7bd3311a",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 188754,
+            "compared": 248,
+            "scanned": 1838957,
+            "maps": 356,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 48
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 188754,
+            "compared": 248,
+            "scanned": 1838957,
+            "maps": 356,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 48
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-79",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "46c7ddd43d42b3adc9e89cc1ecf3c2e1a36e736359817ace7253a9da81e7ddd0",
+      "textSha256": "1224f3cbc07bc5315b663046d9fd4c6819ae2d1dde20a8651aa84363268e9cd1",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 159879,
+            "compared": 115,
+            "scanned": 1325818,
+            "maps": 327,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 159879,
+            "compared": 115,
+            "scanned": 1325818,
+            "maps": 327,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-80",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "5f03d54c85cb683846fc37aff209d8b312b17bee0a27153f4334218d514abcc8",
+      "textSha256": "a5c51faa72f9ce87bff292a1f5f3e38c03365ee71681c61fe4003dfd75b9781b",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 114610,
+            "compared": 61,
+            "scanned": 3053542,
+            "maps": 233,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 114610,
+            "compared": 61,
+            "scanned": 3053542,
+            "maps": 233,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-81",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "33a8b96a2d521e77da60ac7bce58eb3bf7c3fbff8ab2e7e4b12fabfc9e4bf0a8",
+      "textSha256": "4c1c316e5623e1e4cd6542bfd3999f8b91380d570dd6a00d7cdbd1513f281d05",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 160442,
+            "compared": 68,
+            "scanned": 1657254,
+            "maps": 245,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 160442,
+            "compared": 68,
+            "scanned": 1657254,
+            "maps": 245,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-82",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "a9ca6b8e059ad7d47089cabe56e9a92cded7a04cd75d738d2f58b96f0f8d253c",
+      "textSha256": "07baff587a20b46824494b90d46e402c2401472bd402bb19268dbd6fd298f88f",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 116297,
+            "compared": 51,
+            "scanned": 2541567,
+            "maps": 240,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 116297,
+            "compared": 51,
+            "scanned": 2541567,
+            "maps": 240,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-83",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "cb7dda10cc474d33302c352bbf17837c750b847fa3097fea7e162e241d9b7462",
+      "textSha256": "c568963d0ae2de40b800ec589f69021bb272aa29c2f6ef69f644363b708be2bd",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 170504,
+            "compared": 61,
+            "scanned": 4363475,
+            "maps": 248,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 170504,
+            "compared": 61,
+            "scanned": 4363475,
+            "maps": 248,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-84",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "a8c8a61a7297e04395337553c78d639445bd2a4f6eafca3b7453bbf0137d22ad",
+      "textSha256": "0732a7ab1320118e27a795f8f44961b1d4a48f83ba02f3c04c386cef137bb244",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 183472,
+            "compared": 109,
+            "scanned": 3285595,
+            "maps": 388,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 183472,
+            "compared": 109,
+            "scanned": 3285595,
+            "maps": 388,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-85",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "f350ed0c64bdc2ab49ec520b4e2073740382e13de9375102273a723f045e8df7",
+      "textSha256": "6a9fef9a846974f19fe61e876bc3b67f7bef91e482d6be534319ebbd452183d6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 281413,
+            "compared": 102,
+            "scanned": 2869765,
+            "maps": 337,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 281413,
+            "compared": 102,
+            "scanned": 2869765,
+            "maps": 337,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-86",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "d740ee60f1beb8616f05cd3dfe8bf568a08185eed655db712ef263e49db3dff1",
+      "textSha256": "54f53ab4ca5e6c97c9a55fe992d6bb136a3538be96fdd3c868e8935fc7b2ea9b",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 206492,
+            "compared": 109,
+            "scanned": 3453990,
+            "maps": 381,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 206492,
+            "compared": 109,
+            "scanned": 3453990,
+            "maps": 381,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-87",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "54d3f6ca17b3d378d87c0cbb9254187b59678ff7e0e5d9b522b248f73251f198",
+      "textSha256": "2cee6bbb1c490c223afe1179b7f73760cc385200e389dcdf06e81d4c2a9a2cf6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 219582,
+            "compared": 101,
+            "scanned": 3298004,
+            "maps": 376,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 219582,
+            "compared": 101,
+            "scanned": 3298004,
+            "maps": 376,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-88",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "076cb2ba9a90e7b27c24b20d9a0a416918e628886389072613e0a9b309e51975",
+      "textSha256": "e55546f03f6a7dba822d555366c09f19ea703ba92ed3c1c6520fe0588551af76",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 240027,
+            "compared": 81,
+            "scanned": 6488504,
+            "maps": 222,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 240027,
+            "compared": 81,
+            "scanned": 6488504,
+            "maps": 222,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-89",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "f03e3167edcc87f994f8efffd5756fbc192c4b0c943128255c573193c705c78b",
+      "textSha256": "7ec6d168e3d40945f5eff6ddeccce1e81977a1ae830e6875c96d7f174cecfcb2",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 258213,
+            "compared": 74,
+            "scanned": 6780242,
+            "maps": 212,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 258213,
+            "compared": 74,
+            "scanned": 6780242,
+            "maps": 212,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-90",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "8c32833918734a721e5f8e8266806b99851e979512f72252a7eb4a6d4ab89469",
+      "textSha256": "a95881c022d02d90aefcc55fc1966a998deeae393aed6e7e1c8693d240a0db6a",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 279985,
+            "compared": 146,
+            "scanned": 8487236,
+            "maps": 284,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 279985,
+            "compared": 146,
+            "scanned": 8487236,
+            "maps": 284,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-91",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "pixelSha256": "ed608ff63d52c5c24327fc0930be365c04b3d5bce03d8a80c6090e2e49a8762f",
+      "textSha256": "ea5a79b627748baa5ccf0f036e1f3a968d65acaf0e87957a9a8c0d8ea1d6fc28",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 256666,
+            "compared": 70,
+            "scanned": 8080834,
+            "maps": 288,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 256666,
+            "compared": 70,
+            "scanned": 8080834,
+            "maps": 288,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-92",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "afebd24e3498b427b927cf524a55742f82dbac92bec6d5169900bda4899cf0ec",
+      "textSha256": "2f5d8e647cc9513889ac7fa30cb09c54c558decaf85c307af805494a73b864c6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 392657,
+            "compared": 105,
+            "scanned": 6107546,
+            "maps": 395,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 392657,
+            "compared": 105,
+            "scanned": 6107546,
+            "maps": 395,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-93",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "pixelSha256": "d4f309d91bd8d840fce259fecf07658692f32dff3d3a78819c985bfd95a664da",
+      "textSha256": "545b6c76534ee358dfa927874611115bd0d4ab950b0cfdfdf07b824334dc60aa",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 405507,
+            "compared": 124,
+            "scanned": 8098252,
+            "maps": 490,
+            "second": 4,
+            "meshes": 3,
+            "probed": 2718750,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 405507,
+            "compared": 124,
+            "scanned": 8098252,
+            "maps": 490,
+            "second": 4,
+            "meshes": 3,
+            "probed": 2718750,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-94",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "pixelSha256": "8d78e1af2a4286ed9238eb02ef6fe7e304614af496738c6e7751a3d7202a02ca",
+      "textSha256": "d8a39a0d2ef98719b4bf0601645e06c3d3e4b751f9cab52d4136359163c62a83",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 320666,
+            "compared": 97,
+            "scanned": 8604822,
+            "maps": 441,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 320666,
+            "compared": 97,
+            "scanned": 8604822,
+            "maps": 441,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3625000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "boundary-unseen-95",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "9cf76526a291438fc530526432b1790fdf6af5936857cba1208e7a3561a5e2bc",
+      "textSha256": "ed6fa0911dce55b7d0453b59b08a7599bbac2d0b306aae1ebd7784427d4316da",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 458692,
+            "compared": 132,
+            "scanned": 8579147,
+            "maps": 392,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3437500,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 458692,
+            "compared": 132,
+            "scanned": 8579147,
+            "maps": 392,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3437500,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    }
+  ]
+}

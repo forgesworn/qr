@@ -122,6 +122,33 @@ private class Budget(var maps: Int, var second: Int, var here: Int, var inverted
     val hints = ArrayList<VersionHint>(4)
     val overflow = ArrayList<Overflow>()
     val curvature = ArrayList<Retry>(SECOND_LOOKS + 1)
+    val meshGrids = ArrayList<MeshGrid>(SECOND_LOOKS)
+}
+
+private class MeshGrid(val modules: ByteArray, val size: Int, val ecc: ErrorCorrection, val mask: Int,
+    val mirrored: Boolean, val inverted: Boolean, val location: QrLocation)
+
+private fun meshCollector(budget: Budget, candidate: Retry, f: Int, publicInverse: Boolean = false): ((ByteArray) -> Unit)? {
+    if (budget.meshGrids.size >= SECOND_LOOKS) return null
+    return { modules ->
+        if (budget.meshGrids.size < SECOND_LOOKS) {
+            budget.meshGrids.add(MeshGrid(modules, candidate.location.size, candidate.agreed.ecc, candidate.agreed.mask,
+                candidate.agreed.mirrored, publicInverse || candidate.inverted, where(candidate.location, f)))
+        }
+    }
+}
+
+/** Validate already attempted maps only after every earlier return path fails. */
+private fun recoverMeshGrids(budget: Budget): DecodeResult? {
+    for (item in budget.meshGrids) {
+        val read = if (item.mirrored) ModuleReader { x, y -> item.modules[x * item.size + y].toInt() == 1 }
+            else ModuleReader { x, y -> item.modules[y * item.size + x].toInt() == 1 }
+        if (!formatAgrees(read, item.size, item.ecc, item.mask)) continue
+        val payload = readSymbol(read, item.size) ?: continue
+        if (payload.ecc == item.ecc && payload.mask == item.mask)
+            return result(payload, item.mirrored, item.inverted, item.location)
+    }
+    return null
 }
 
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
@@ -146,7 +173,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
         budget.here = REDUCED_MAPS
         inverse = invertLuminance(luminance)
         inverseCurvature = ArrayList(SECOND_LOOKS + 1)
-        val fallback = look(inverse, Inversion.NORMAL, 1, budget, work, true, inverseCurvature)
+        val fallback = look(inverse, Inversion.NORMAL, 1, budget, work, true, inverseCurvature, true)
         if (fallback != null) return DecodeResult(
             fallback.text, fallback.bytes, fallback.version, fallback.ecc, fallback.mask, fallback.eci,
             fallback.corrected, fallback.mirrored, true, fallback.location, fallback.structuredAppend, fallback.fnc1,
@@ -155,7 +182,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
         for (f in REDUCTIONS) {
             if (budget.maps == 0 || budget.here == 0) break
             if (luminance.width / f < MIN_REDUCED || luminance.height / f < MIN_REDUCED) continue
-            val reduced = look(inverseShrunk.by(f), Inversion.NORMAL, f, budget, work, true)
+            val reduced = look(inverseShrunk.by(f), Inversion.NORMAL, f, budget, work, true, null, true)
             if (reduced != null) return DecodeResult(
                 reduced.text, reduced.bytes, reduced.version, reduced.ecc, reduced.mask, reduced.eci,
                 reduced.corrected, reduced.mirrored, true, reduced.location, reduced.structuredAppend, reduced.fnc1,
@@ -169,14 +196,14 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     val curved = recoverCurvature(luminance, budget, work)
     if (curved != null) return curved
     if (inverse != null && inverseCurvature != null) {
-        val inverseRecovered = recoverCurvature(inverse, budget, work, inverseCurvature)
+        val inverseRecovered = recoverCurvature(inverse, budget, work, inverseCurvature, true)
         if (inverseRecovered != null) return DecodeResult(
             inverseRecovered.text, inverseRecovered.bytes, inverseRecovered.version, inverseRecovered.ecc,
             inverseRecovered.mask, inverseRecovered.eci, inverseRecovered.corrected, inverseRecovered.mirrored,
             true, inverseRecovered.location, inverseRecovered.structuredAppend, inverseRecovered.fnc1,
         )
     }
-    return null
+    return recoverMeshGrids(budget)
 }
 
 /**
@@ -185,7 +212,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false, inverseCurvature: MutableList<Retry>? = null): DecodeResult? {
+private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false, inverseCurvature: MutableList<Retry>? = null, publicInverse: Boolean = false): DecodeResult? {
     val levels = thresholds(luminance)
     if (f == 1 && !strictOverride) {
         budget.invertedFallback = levels.invertedFallback
@@ -212,7 +239,7 @@ private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Bud
         if (budget.second == 0) break
         budget.second--
         if (work != null) work.second++
-        val p = secondLook(luminance, levels, candidate, work, strict) ?: continue
+        val p = secondLook(luminance, levels, candidate, work, strict, false, meshCollector(budget, candidate, f, publicInverse)) ?: continue
         return result(p, mirrored = candidate.agreed.mirrored, inverted = candidate.inverted, location = where(candidate.location, f))
     }
     return null
@@ -387,14 +414,14 @@ private fun keepCurvature(candidates: MutableList<Retry>, location: Placement, i
 }
 
 /** A final bounded retry of original maps anchored by an exact version word. */
-private fun recoverCurvature(luminance: Luminance, budget: Budget, work: Work?, candidates: List<Retry> = budget.curvature): DecodeResult? {
+private fun recoverCurvature(luminance: Luminance, budget: Budget, work: Work?, candidates: List<Retry> = budget.curvature, publicInverse: Boolean = false): DecodeResult? {
     if (candidates.isEmpty() || budget.second == 0) return null
     val levels = thresholds(luminance)
     for (candidate in candidates) {
         if (budget.second == 0) break
         budget.second--
         if (work != null) work.second++
-        val payload = secondLook(luminance, levels, candidate, work, true, true) ?: continue
+        val payload = secondLook(luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse)) ?: continue
         return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
     }
     return null
@@ -426,7 +453,7 @@ private fun recoverVersions(luminance: Luminance, budget: Budget, work: Work?): 
         if (budget.second == 0) break
         budget.second--
         if (work != null) work.second++
-        val payload = secondLook(luminance, levels, candidate, work, true) ?: continue
+        val payload = secondLook(luminance, levels, candidate, work, true, false, meshCollector(budget, candidate, 1)) ?: continue
         return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
     }
     return null
@@ -490,7 +517,7 @@ private fun recoverOverflow(luminance: Luminance, budget: Budget, work: Work?): 
         if (budget.second == 0) break
         budget.second--
         if (work != null) work.second++
-        val payload = secondLook(luminance, levels, candidate, work, true) ?: continue
+        val payload = secondLook(luminance, levels, candidate, work, true, false, meshCollector(budget, candidate, 1)) ?: continue
         return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
     }
     return null

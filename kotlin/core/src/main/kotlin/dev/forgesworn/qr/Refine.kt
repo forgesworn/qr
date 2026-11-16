@@ -469,11 +469,12 @@ private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean):
  * by its header evidence. With [strict], the format copies of the modules
  * read again must also agree on them, as every read at reduced size must.
  */
-internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false): Payload? {
+internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false, collectMesh: ((ByteArray) -> Unit)? = null): Payload? {
     val mirrored = candidate.agreed.mirrored
     val probe = Probe(image, t, candidate.inverted)
     // 0. From version 7, the map bent onto the alignment patterns it can find.
-    val location = mesh(candidate.location, probe, work, late) ?: candidate.location
+    val meshed = mesh(candidate.location, probe, work, late)
+    val location = meshed ?: candidate.location
     val size = location.size
     // 1. The timing patterns: shift whole columns and rows by what they show.
     val cols = walk(size, { k -> location.project(k, 6) }, { k -> location.project(k + 1, 6) }, probe)
@@ -524,7 +525,16 @@ internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work:
         if (mirrored) ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
         else ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
     val result = readSymbol(read, size)
-    if (result == null || result.ecc != candidate.agreed.ecc || result.mask != candidate.agreed.mask) return null
-    if (strict && !formatAgrees(read, size, result.ecc, result.mask)) return null
-    return result
+    if (result != null && result.ecc == candidate.agreed.ecc && result.mask == candidate.agreed.mask &&
+        (!strict || formatAgrees(read, size, result.ecc, result.mask))) return result
+    // Retain the intermediate only after the existing final read fails.
+    if (meshed != null && collectMesh != null) {
+        val sampled = ByteArray(size * size)
+        for (y in 0 until size) for (x in 0 until size) {
+            val p = meshed.project(x, y)
+            sampled[y * size + x] = if (probe.at(p.x, p.y) > 0) 1 else 0
+        }
+        collectMesh(sampled)
+    }
+    return null
 }

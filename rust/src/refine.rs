@@ -567,6 +567,10 @@ pub fn second_look(image: &Luminance, t: &Thresholds, candidate: &Candidate, wor
 }
 
 pub(crate) fn second_look_with_late(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool) -> Option<Payload> {
+    second_look_collect(image, t, candidate, work, strict, late, None)
+}
+
+pub(crate) fn second_look_collect(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool, collect_mesh: Option<&mut Vec<u8>>) -> Option<Payload> {
     let (inverted, mirrored) = (candidate.inverted, candidate.mirrored);
     let probe = Probe { image, t, inverted };
     // 0. From version 7, the map bent onto the alignment patterns it can find.
@@ -629,11 +633,22 @@ pub(crate) fn second_look_with_late(image: &Luminance, t: &Thresholds, candidate
     }
     // 4. Read as in step 6, in the orientation the candidate's format copies agreed in only.
     let keeps = |r: &Payload| r.ecc == candidate.ecc && r.mask == candidate.mask;
-    if mirrored {
+    let result = if mirrored {
         let read = |x: usize, y: usize| modules[x * size + y] == 1;
         read_symbol(read, size).filter(keeps).filter(|r| !strict || format_agrees(&read, size, r.ecc, r.mask))
     } else {
         let read = |x: usize, y: usize| modules[y * size + x] == 1;
         read_symbol(read, size).filter(keeps).filter(|r| !strict || format_agrees(&read, size, r.ecc, r.mask))
+    };
+    if result.is_some() { return result; }
+    if let (Map::Bent { .. }, Some(collected)) = (&map, collect_mesh) {
+        collected.resize(size * size, 0);
+        for y in 0..size {
+            for x in 0..size {
+                let p = map.project(x as f64, y as f64);
+                collected[y * size + x] = (probe.at(p.x, p.y) > 0.0) as u8;
+            }
+        }
     }
+    None
 }

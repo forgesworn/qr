@@ -1,0 +1,6013 @@
+{
+  "passed": true,
+  "identity": {
+    "revision": "b74fa2ff397369a247d70976cfd8ad5b7619588e",
+    "compiler": "5.9.3",
+    "sources": {
+      "base": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "4bebef665b0255cf6b365a125c49292660247329b03c4b608c4d8a67e7512e15",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "e1886aa288410a658b4bd3d4eca2c4fb9aa1068a76dbb09be364992588a1e80b",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "18288c0bccc74a6e4ff82293051d70835420e8aa6233bb34c6d567ba047a68d1",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "public": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "b5a509d0e0676b09de867666b0c95ab69f0c8a0bee365954268c27d37447a955",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "3fc547bce07c4487cb5f42f216231c00499ffcfb44f112b3520355705621cc96",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "18288c0bccc74a6e4ff82293051d70835420e8aa6233bb34c6d567ba047a68d1",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      }
+    },
+    "generated": {
+      "base": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "e139627fcca7ada061bd21879b233608c4ed0a3b1c8299a1b9e7f479fd922cd4",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "98ee1ffc10343f49ccccf1b47268eed595c321e62833ed461f916c86b764580b",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e32f193c6b60b935c8819e1b906ed513f71f3e361f5c35b74ca3a0f0f7232626",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      },
+      "public": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "7324506d3590e13df567889abd31126544c4ff87c306a4a0988770000558b86b",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "3ba7c635a6b9b5f8968fbc750cd17176fc1774c5a894f4c9f90fbfe4c0cf4208",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e32f193c6b60b935c8819e1b906ed513f71f3e361f5c35b74ca3a0f0f7232626",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      }
+    },
+    "builderSha256": "6cb5cc242aadbc1528c0cc5d9a24d563b7f595d3b2e223aed57a19f1d033193a"
+  },
+  "fullWasmParity": true,
+  "wasmSha256": "b5a1cc98846027deba1f42e6889db98a1d22d34e270d847363a369c0432bb36e",
+  "manifestSha256": "08d12d617b3d5ba1dad96d7aed531cc6b372c9fe86c5f5e4e0c27bc17fa03214",
+  "runnerSha256": "b0c40f87e85786c8563221f2408a520c424f5b5281837148b9d7a8aeb6620716",
+  "totals": {
+    "base": {
+      "correct": 78,
+      "wrong": 0,
+      "miss": 50
+    },
+    "candidate": {
+      "correct": 81,
+      "wrong": 0,
+      "miss": 47
+    },
+    "zxing": {
+      "correct": 106,
+      "wrong": 0,
+      "miss": 22
+    }
+  },
+  "losses": [],
+  "gains": [
+    "mesh-retain-unseen-61",
+    "mesh-retain-unseen-62",
+    "mesh-retain-unseen-108"
+  ],
+  "rows": [
+    {
+      "id": "mesh-retain-unseen-0",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "a461680bd461e29f380ef181dc1e42021d6574368ba6366a98b36b725ad6ba64",
+      "textSha256": "fb25c121a8cf62ea6234c57a77b6e5d61988d7446fdde3ffdfad49a0b96d772f",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 15700,
+            "compared": 42,
+            "scanned": 188382,
+            "maps": 90,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 15700,
+            "compared": 42,
+            "scanned": 188382,
+            "maps": 90,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-1",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "3795a6bb5a86efaa23596b3855478a0f5d448b62f84054706e8aa7b48ef2d5a1",
+      "textSha256": "31606f47519d7bbe882da34835d3a94094ef5f2cb71a6431cf94a63d42be630c",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 19448,
+            "compared": 53,
+            "scanned": 210935,
+            "maps": 130,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 19448,
+            "compared": 53,
+            "scanned": 210935,
+            "maps": 130,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-2",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "d364d9b09aa5a9ff0131529a010547f68eb9d5bbe9e570b37da788e6975df603",
+      "textSha256": "34285e5abce3de490e9d8f6c873610f2bcde169f17554e5b2dbd73d64ea17135",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 10680,
+            "compared": 34,
+            "scanned": 26015,
+            "maps": 33,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 10680,
+            "compared": 34,
+            "scanned": 26015,
+            "maps": 33,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-3",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "301d4b29169479486b376af17542cf8a8591376c157353fe9e7ab87bfc0cd721",
+      "textSha256": "4eecc28162b671d099a779dd7476af850469cce40f3286f140eb16053035148c",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 15850,
+            "compared": 43,
+            "scanned": 389633,
+            "maps": 142,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 24
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 15850,
+            "compared": 43,
+            "scanned": 389633,
+            "maps": 142,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 24
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-4",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "8cca39f30c73d87f3cccae22d83eb07bae790cc19d891425553ae8fd1e1f3c77",
+      "textSha256": "d1bba37e11a68f6f86c41eaafc268063993814ca56c3fe05b597b9ae3dd756c3",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 17007,
+            "compared": 67,
+            "scanned": 47552,
+            "maps": 90,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 17007,
+            "compared": 67,
+            "scanned": 47552,
+            "maps": 90,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-5",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "445b133e0900b9a3d536be5681955a6cfdc6aa5aeefc53fabb3c4e0d8f5c4c38",
+      "textSha256": "6361d30837293f2bb45dcc1ece2a780a9b9d4ed2ae9bd778ecb9a2ba924459cc",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 9624,
+            "compared": 36,
+            "scanned": 3506,
+            "maps": 20,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 9624,
+            "compared": 36,
+            "scanned": 3506,
+            "maps": 20,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-6",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "0f058e22d3655075cb8208d5e8e012d6f05a5f543b13e3165ae8ddba6ae92723",
+      "textSha256": "aae64c5b2c197a6eae6ec03ff5b9f1848e06c91cd7a13f3ff52bb92d5b479ada",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 19970,
+            "compared": 69,
+            "scanned": 61600,
+            "maps": 93,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 24
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 19970,
+            "compared": 69,
+            "scanned": 61600,
+            "maps": 93,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 24
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-7",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "1ae5e38ba87c40cb6bff84d34899e625002dc10f9f385191fa248474d0685850",
+      "textSha256": "67041caba657c58b374ed5b44b28855e6e2bbbbde44fdfc3e1a10034cc8f7be8",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 7665,
+            "compared": 31,
+            "scanned": 42198,
+            "maps": 34,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 7665,
+            "compared": 31,
+            "scanned": 42198,
+            "maps": 34,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-8",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "ff0c35b010dcaa364c3db085c78e010441799386c3efa1ee1502667fb9828d0b",
+      "textSha256": "0a84a436d17e961c3277dae21d3a5e7995fc139fabaf128001eb41e979cd36cc",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 17693,
+            "compared": 44,
+            "scanned": 165850,
+            "maps": 60,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 14
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 17693,
+            "compared": 44,
+            "scanned": 165850,
+            "maps": 60,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 14
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-9",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "3075ecdd9439287912f32c727615b375c44edfd5d84fb2bca35120f05212f8ff",
+      "textSha256": "9d98aeb88ae0ea5a223eb709e234994fec9c8bf43ccf2adf4a37453beae0de0a",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 21371,
+            "compared": 35,
+            "scanned": 19244,
+            "maps": 16,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 21371,
+            "compared": 35,
+            "scanned": 19244,
+            "maps": 16,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-10",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "6921aa44add2d7ba340be0f584714586f460b79bc2e52a6bafda336e6eaf1517",
+      "textSha256": "4f465b70757156972651346ffb5934ef013611e6dbcfe84ed02d53431aece1de",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 18504,
+            "compared": 39,
+            "scanned": 146061,
+            "maps": 76,
+            "second": 3,
+            "meshes": 3,
+            "probed": 328125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 18504,
+            "compared": 39,
+            "scanned": 146061,
+            "maps": 76,
+            "second": 3,
+            "meshes": 3,
+            "probed": 328125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-11",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "923909cb88b458b345ee1cb163c89c70aaab92f544a138db080f80d7985702b3",
+      "textSha256": "1425bda60304f3e597aa977e447aa424f858a1d2ef9807472da94b50f9df4be1",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 14028,
+            "compared": 44,
+            "scanned": 392456,
+            "maps": 136,
+            "second": 4,
+            "meshes": 4,
+            "probed": 406250,
+            "reduced": 20
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 14028,
+            "compared": 44,
+            "scanned": 392456,
+            "maps": 136,
+            "second": 4,
+            "meshes": 4,
+            "probed": 406250,
+            "reduced": 20
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-12",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "c74518ef0b79b3383b23063f2e34668598a76e8b5afe4d3f1377ea7e3689ea8e",
+      "textSha256": "261bdd1620350a55df00fd2fc70818214657c8f16c27457a7b68cb28cd15c556",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 15934,
+            "compared": 66,
+            "scanned": 262378,
+            "maps": 125,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 15934,
+            "compared": 66,
+            "scanned": 262378,
+            "maps": 125,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-13",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "8a1f6f77511668e8b98990159667c2f87764c5a723c2cbb5ddf3cff0affbf40b",
+      "textSha256": "8b5b8db8bd6a983cc46065bc491188e75cd58d3a28e0fffbb088c991cbbf73ec",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 18992,
+            "compared": 64,
+            "scanned": 271843,
+            "maps": 121,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 18992,
+            "compared": 64,
+            "scanned": 271843,
+            "maps": 121,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-14",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "5259589cda09108d62bf4fde11d9ecb8de1a16e49d2dff0f9b6ce2d9bd0c239c",
+      "textSha256": "069ca8b58cefeb45ad38fa98c9c52fec4185bd8b629d4ddfa924939c27a9a044",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 17490,
+            "compared": 57,
+            "scanned": 130491,
+            "maps": 76,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 17490,
+            "compared": 57,
+            "scanned": 130491,
+            "maps": 76,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-15",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "cc000a3e5e6f9a91384aaecb92e33306b94041377450465f7f0b510210b497b5",
+      "textSha256": "d60582a6b5be0cf5763b2ff73401cba082de1026c53e7ca82c2cdf7ea6f2fc1e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 15820,
+            "compared": 62,
+            "scanned": 220759,
+            "maps": 118,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 15820,
+            "compared": 62,
+            "scanned": 220759,
+            "maps": 118,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-16",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "3abd683a172c04e415fa68af323c49a2987abaa85224b00de23ef801a7299d46",
+      "textSha256": "2a91046fd6b51ccd2136ef4d079ef9edded9bd542557795084d2a2d885e15705",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 71828,
+            "compared": 138,
+            "scanned": 71363,
+            "maps": 62,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 42
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 71828,
+            "compared": 138,
+            "scanned": 71363,
+            "maps": 62,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 42
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-17",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "ba5433de7fef99841b46e4730a17e8fe26bb4eb987f1242d93d40ea09ad53c0b",
+      "textSha256": "5fe36490dea6095d31f7e8d4b74e62e4e6e6abe7725cafd7f009c4de99822d92",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 81138,
+            "compared": 111,
+            "scanned": 64133,
+            "maps": 55,
+            "second": 3,
+            "meshes": 3,
+            "probed": 281250,
+            "reduced": 20
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 81138,
+            "compared": 111,
+            "scanned": 64133,
+            "maps": 55,
+            "second": 3,
+            "meshes": 3,
+            "probed": 281250,
+            "reduced": 20
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-18",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "32d41bef762c8adc9a54fa0144d7af2b412f61e928d05b2195fbff1bd0dd0012",
+      "textSha256": "6a21bec11176557f10a9f75511db76349da2f7a53c8468faa782b6320a0fb67d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 76333,
+            "compared": 118,
+            "scanned": 557861,
+            "maps": 107,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 76333,
+            "compared": 118,
+            "scanned": 557861,
+            "maps": 107,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-19",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "0ba28f20ee32c936acb10e9d72e0136153380572699697cc4d8f4fca5e89c8b9",
+      "textSha256": "f0e41ee954c99297e925f23bdd057349431170e4878f8a220f10b97ca457ee18",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 42508,
+            "compared": 78,
+            "scanned": 224982,
+            "maps": 59,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 42508,
+            "compared": 78,
+            "scanned": 224982,
+            "maps": 59,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-20",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "671120f49c7aa08faca5bc33a62fe6cc920a2911b2c211fa0509b4a94b85fd5e",
+      "textSha256": "97082df068b3a8248ea8c5173fadd3b29c2e79bfe0143fd2f630132879792729",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 78878,
+            "compared": 229,
+            "scanned": 1031259,
+            "maps": 209,
+            "second": 2,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 78878,
+            "compared": 229,
+            "scanned": 1031259,
+            "maps": 209,
+            "second": 2,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-21",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "e17351c853c72bc7f1fac96cde83ea0d648bb9f677d8f81962fbe5c19ed99f16",
+      "textSha256": "37f1cc4c28136227a112905ddae12196661b788185774dc39ed00841571b6ef7",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 44694,
+            "compared": 116,
+            "scanned": 31843,
+            "maps": 80,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 44694,
+            "compared": 116,
+            "scanned": 31843,
+            "maps": 80,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-22",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "8bd8016aea1e5ba7f9ba0c6613714a36a64d384889b646acf9011b5d592b2648",
+      "textSha256": "bf73a6bd0704a7ae0bdbab2dcd34aa1c5e4e6f04b2f1b3f2a2c5cedd93fe7f73",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 82870,
+            "compared": 184,
+            "scanned": 917436,
+            "maps": 188,
+            "second": 3,
+            "meshes": 3,
+            "probed": 281250,
+            "reduced": 51
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 82870,
+            "compared": 184,
+            "scanned": 917436,
+            "maps": 188,
+            "second": 3,
+            "meshes": 3,
+            "probed": 281250,
+            "reduced": 51
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-23",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "770cf43b542f714329791a042d466b4f14ccb8fd89f19fe32f2826cfa3f16fd6",
+      "textSha256": "2e97b6a4d75654196b45d26e22e850afbfbe6993851e80c09670729c845de124",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 38903,
+            "compared": 89,
+            "scanned": 138664,
+            "maps": 45,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 38903,
+            "compared": 89,
+            "scanned": 138664,
+            "maps": 45,
+            "second": 1,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-24",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "54764ecc226dd8f7f6eb6dce3f41ec02e5b9fd07ff4963d7b186556753cc4092",
+      "textSha256": "887a0e514990819faba25b3f52caf4abfed544bb21c274a1bd83d6d6c60d3338",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 67688,
+            "compared": 138,
+            "scanned": 867770,
+            "maps": 183,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 84
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 67688,
+            "compared": 138,
+            "scanned": 867770,
+            "maps": 183,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 84
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-25",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "74f9a641563b710c39d7de83a5f8d57fde026753020e5387e18ea46d16289635",
+      "textSha256": "33ba16b64469ee2d831381488702d73359abea02a942aa7864ee23c62851d5ca",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 72013,
+            "compared": 138,
+            "scanned": 2486743,
+            "maps": 296,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 72013,
+            "compared": 138,
+            "scanned": 2486743,
+            "maps": 296,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-26",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "6b73aa44b1fa4c50c67fb6cf322efdd3ccd065d0c0c7803330feda9865c7611a",
+      "textSha256": "a3b5aabadc3083a7f78f4d516ead09066a81d7e09d72ed68a1c8fd8fdcf2dc3d",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 71970,
+            "compared": 118,
+            "scanned": 3699441,
+            "maps": 331,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 46
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 71970,
+            "compared": 118,
+            "scanned": 3699441,
+            "maps": 331,
+            "second": 1,
+            "meshes": 1,
+            "probed": 109375,
+            "reduced": 46
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-27",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "a05f8013424b34d715dcfb17a28728b01db0c6a2e93527109047ffedd93bd760",
+      "textSha256": "c3db27c7f674b56a01832dc2bb3dc48475fca90f5dcf7ae5e3b2596cf4f33205",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 74433,
+            "compared": 132,
+            "scanned": 18556,
+            "maps": 50,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 74433,
+            "compared": 132,
+            "scanned": 18556,
+            "maps": 50,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-28",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "e1aefe733cdcb79e5a829498731c9cd7e66522c9c5677337366608414a97c6d3",
+      "textSha256": "70b8edc4351720b1bec0c12395a486abb51716021c2173b44060e8ab945549a7",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 72893,
+            "compared": 200,
+            "scanned": 1297544,
+            "maps": 211,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 72893,
+            "compared": 200,
+            "scanned": 1297544,
+            "maps": 211,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-29",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "294f6546494325698ef4c1c683230e90677eecfbcf55a638391a08fc3ce6fa02",
+      "textSha256": "c72ab42e3483d9efefe55faf83afd399adc49e9217f08b5bc876664276e80eb2",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 69276,
+            "compared": 171,
+            "scanned": 581424,
+            "maps": 162,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 69276,
+            "compared": 171,
+            "scanned": 581424,
+            "maps": 162,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-30",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "66aef7bd2ecf64eabc8e12731af80956e6ee7e7a45e1f886a6965db5cf4c76e4",
+      "textSha256": "51babc37eec4e3c5bdda9ac6d97592b95aed473ba6d6bf31112409f6cb43d722",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 71231,
+            "compared": 161,
+            "scanned": 1368705,
+            "maps": 145,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 12
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 71231,
+            "compared": 161,
+            "scanned": 1368705,
+            "maps": 145,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 12
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-31",
+      "version": 8,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "821ab500cd19942e053ec959ef692b926117d88954e8fd28eb529071bbf75ff9",
+      "textSha256": "dd95f61a6d44b852e1b010dbbcf035dd68cf7c41b26a9ee2b4c1918cc5fedaaa",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 72676,
+            "compared": 203,
+            "scanned": 1380972,
+            "maps": 172,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 72676,
+            "compared": 203,
+            "scanned": 1380972,
+            "maps": 172,
+            "second": 4,
+            "meshes": 4,
+            "probed": 437500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-32",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "419fe528e6ede19a784d21e890b364da9a4bfbf6428ae14c38bed6728a44e2a1",
+      "textSha256": "3f5979e5e54f51651204b945a2d4f2c00b0a49eedc9b9571a4070e9bbf2ac75c",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 38174,
+            "compared": 93,
+            "scanned": 863611,
+            "maps": 237,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 38174,
+            "compared": 93,
+            "scanned": 863611,
+            "maps": 237,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-33",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "6125a51af8936b67f95b0c8ebcb7ff670f1c3b013c80d5dfc219afbadc1d1542",
+      "textSha256": "fd8777fb820256848069013d3ec4efd95b6d3053a2da210eadebb3a16538f3d2",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 42749,
+            "compared": 62,
+            "scanned": 955740,
+            "maps": 316,
+            "second": 2,
+            "meshes": 2,
+            "probed": 296875,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 42749,
+            "compared": 62,
+            "scanned": 955740,
+            "maps": 316,
+            "second": 2,
+            "meshes": 2,
+            "probed": 296875,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-34",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "9b4ae333a700f9b5c34e5e9f327275be7451c501ff63035a9a376097680332ae",
+      "textSha256": "b9ba963afc512f932a3cd49a5c1e7ac3e19b5f060e700b22b317f95908a5eea9",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 26785,
+            "compared": 34,
+            "scanned": 262812,
+            "maps": 108,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 26785,
+            "compared": 34,
+            "scanned": 262812,
+            "maps": 108,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-35",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "d6f2585643f39eaf4c3ea0c070c9f2b83501b3c7755a1493f5dfa36483321378",
+      "textSha256": "e7507b1a182bcfacc9c5da225414aa1aaf5bc5c9bd410abb0261bd3c1c9e87a9",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 36853,
+            "compared": 60,
+            "scanned": 346436,
+            "maps": 133,
+            "second": 4,
+            "meshes": 3,
+            "probed": 609375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 36853,
+            "compared": 60,
+            "scanned": 346436,
+            "maps": 133,
+            "second": 4,
+            "meshes": 3,
+            "probed": 609375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-36",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "c648ca49eafeb492a002012857544e4171122559899c01322027607d8fbfe0d8",
+      "textSha256": "ff2f52d95f64a9013db2438e4e74e1d22d6ac59a68c14d1d1d3afb6ee46598ee",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 22535,
+            "compared": 46,
+            "scanned": 329312,
+            "maps": 119,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 22535,
+            "compared": 46,
+            "scanned": 329312,
+            "maps": 119,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-37",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "53b7064d89d3fb963c77a434edc6d1abe4594b0d8023796dfe2353c17ea17018",
+      "textSha256": "8e348375685ac2e2b64d8f04ba5fd61bd8fa377932cb79a52c4d1eb3f422632d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 27776,
+            "compared": 38,
+            "scanned": 245686,
+            "maps": 121,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 27776,
+            "compared": 38,
+            "scanned": 245686,
+            "maps": 121,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-38",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "84eafdcadbc26d5ee7da9dcd9bdc6b27656b600b5cc2730013a004e66dc355fa",
+      "textSha256": "3fd1d5a1b0dfb4c157e0f4eed568b270248655a19897b261a6e977c289602e0a",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 50648,
+            "compared": 99,
+            "scanned": 1007099,
+            "maps": 267,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 50648,
+            "compared": 99,
+            "scanned": 1007099,
+            "maps": 267,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-39",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "327360f36f2d7446dc0f5a31ad272c3467c0b5a98427e625996300fdac46573f",
+      "textSha256": "9e60fe48442eb9944d238c6ab17e8bb00e305f3b6bc6576ae8df0fe6b2247075",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 21867,
+            "compared": 51,
+            "scanned": 354036,
+            "maps": 103,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 21867,
+            "compared": 51,
+            "scanned": 354036,
+            "maps": 103,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-40",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "4596e4d17ecc9aff75bfbbd5e8a2e724949dfa383aed6ad0a0a2a72a6037885c",
+      "textSha256": "fe452fed38093556ae1967b4980f0792fe0b9b53a469dfa4f30b41d389cb08b7",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 36062,
+            "compared": 61,
+            "scanned": 1101555,
+            "maps": 324,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 36062,
+            "compared": 61,
+            "scanned": 1101555,
+            "maps": 324,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-41",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "0045ee30d5b492c568340e74c187cbfa4d4dae4173eba5d00ce29776ceadf8cf",
+      "textSha256": "bbe6b08c90752e1beb017916f3950ca964dc6ec17582f689d7e985c798adb1d4",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 49996,
+            "compared": 64,
+            "scanned": 1128658,
+            "maps": 322,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 49996,
+            "compared": 64,
+            "scanned": 1128658,
+            "maps": 322,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-42",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "2133ade3c70db0152aba09d17e01dfa6f4032d0a713bf8da2f37b51a820b92c0",
+      "textSha256": "236e907686cfb03d3404cefcb0c3c1d7cf72a7dfe6da47209bfb4959d32ef984",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 47580,
+            "compared": 63,
+            "scanned": 890310,
+            "maps": 321,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 22
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 47580,
+            "compared": 63,
+            "scanned": 890310,
+            "maps": 321,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 22
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-43",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "8093a8921940d5b218b2e29d92cb0b07031c83e8c81f6df3e879f20f53fc6ca0",
+      "textSha256": "12574c63b5f608f17f844e59f3a1ff47fbdd68994df671efa23fe75e1ebf2044",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 45876,
+            "compared": 53,
+            "scanned": 283152,
+            "maps": 126,
+            "second": 2,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 45876,
+            "compared": 53,
+            "scanned": 283152,
+            "maps": 126,
+            "second": 2,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-44",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "2907da7c8ef74f88e2371f2eb3a4c251ec666b6367c87f6257967c6cd521d340",
+      "textSha256": "180409b4df4f8e5bdc8ae45729445130dfd368b729ed0cb427bbcd3599d379c1",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 41394,
+            "compared": 82,
+            "scanned": 1219177,
+            "maps": 278,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 41394,
+            "compared": 82,
+            "scanned": 1219177,
+            "maps": 278,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-45",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "1efba649bc1e103cf5309713b42a8af0104a5f5bdcad40d69479eb5fdf8d6b7f",
+      "textSha256": "c16193f70451a20aaa31697b54b5a8719785b40ab249eadefe5134d2cfc89b1c",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 43567,
+            "compared": 79,
+            "scanned": 1889828,
+            "maps": 316,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 43567,
+            "compared": 79,
+            "scanned": 1889828,
+            "maps": 316,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-46",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "971e6550061f7fb8517243a4b10dedf149d3c81e8fb9d9c1fdd3575249873700",
+      "textSha256": "b2e2e3fd6a6ffbf6037e9203d6d3115c1ea6fd0030303c7aa7ab89292fed6414",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 43241,
+            "compared": 76,
+            "scanned": 755530,
+            "maps": 260,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 22
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 43241,
+            "compared": 76,
+            "scanned": 755530,
+            "maps": 260,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 22
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-47",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "ff7aee9ddf053c072a8a2401ca65d1435eaf5a6a252da8edaedb1a0130c345e9",
+      "textSha256": "b92e422d78f71430cda99b66d26141a51352c442b247d1de115a6fb5d7cf1657",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 35649,
+            "compared": 59,
+            "scanned": 325409,
+            "maps": 105,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 11
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 35649,
+            "compared": 59,
+            "scanned": 325409,
+            "maps": 105,
+            "second": 4,
+            "meshes": 4,
+            "probed": 812500,
+            "reduced": 11
+          }
+        },
+        "zxing": {
+          "status": "miss"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-48",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "f42f954d17fa57e11479758f678fa12a862c03895dc8924aa04e929dddc833e2",
+      "textSha256": "8d7dd9e3f25c30965ce74bed3070daff4fe33120ed0bf7f0ffc93b061c6871d1",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 165886,
+            "compared": 229,
+            "scanned": 4803883,
+            "maps": 305,
+            "second": 2,
+            "meshes": 2,
+            "probed": 406250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 165886,
+            "compared": 229,
+            "scanned": 4803883,
+            "maps": 305,
+            "second": 2,
+            "meshes": 2,
+            "probed": 406250,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-49",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "980050c639a7f9493b3d655bc7361afb8721b96cc3fde149e48108a6d2143c0b",
+      "textSha256": "f1af2e30fcc96b6a7816f2c78ab4387e93d4078e4b7c78861d3440cd55a3b68f",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 116298,
+            "compared": 117,
+            "scanned": 3618004,
+            "maps": 227,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 116298,
+            "compared": 117,
+            "scanned": 3618004,
+            "maps": 227,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-50",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "7835b6b8804fd2bbca3247aafdc4df7c2ab39408eba0a25c06bf0a71c1babde5",
+      "textSha256": "bb1c2f569cb70ca7ba9fa56d93c423123b65dbc3ba09c4088aebed8855a95c6e",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 116843,
+            "compared": 132,
+            "scanned": 4256926,
+            "maps": 254,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 116843,
+            "compared": 132,
+            "scanned": 4256926,
+            "maps": 254,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-51",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "e87bc0ad47c91489e5be2d5684b85a5ae0a9d469eff7fdc2737b4b886d7370c0",
+      "textSha256": "9ee9961b4b6bfd91dc43afd526531bef1f51d711eeadc0c8de1c5d51af34bbf4",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 180905,
+            "compared": 223,
+            "scanned": 3866711,
+            "maps": 297,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 180905,
+            "compared": 223,
+            "scanned": 3866711,
+            "maps": 297,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-52",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "97beab8e47d517b1c776fe74148103e7555425a3f836daa381c72b4489b8f511",
+      "textSha256": "d63802c66957833ad5f9513682987b1cc2e2f2895848fc6be5675bd1e5be48cc",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 103992,
+            "compared": 176,
+            "scanned": 521759,
+            "maps": 112,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 103992,
+            "compared": 176,
+            "scanned": 521759,
+            "maps": 112,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-53",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "aaca9102cf13b6d9ec2898c284bd1b1ee54dde84385f4e3ce4ef97829b3c0235",
+      "textSha256": "c5ce2b73e71247dc3d0bf4323bb4eb1537a4f10c52eb734e26f755c341166ea8",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 117530,
+            "compared": 120,
+            "scanned": 5582658,
+            "maps": 209,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 117530,
+            "compared": 120,
+            "scanned": 5582658,
+            "maps": 209,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-54",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "c98797ea010916613871891fa6e71a73d2fa01e30d9ef94251010fd4ae67aff7",
+      "textSha256": "a623eca30fe7bbca03488e7f8507e45c5e514db1efb5a7ae7c38bf00ef8a3994",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 186473,
+            "compared": 235,
+            "scanned": 4111621,
+            "maps": 362,
+            "second": 2,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 186473,
+            "compared": 235,
+            "scanned": 4111621,
+            "maps": 362,
+            "second": 2,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-55",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "f4b853aa0a9644b85581752d4adb47c70a56ace97042017352e8b0fbf98ea34a",
+      "textSha256": "f13c43ed2c4087f7f35274a72c6654430d4a15e261e4ea0f63ff62f36763b570",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 112537,
+            "compared": 103,
+            "scanned": 1714293,
+            "maps": 128,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 112537,
+            "compared": 103,
+            "scanned": 1714293,
+            "maps": 128,
+            "second": 1,
+            "meshes": 1,
+            "probed": 203125,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-56",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "baf344a98587bf7f83ef079d5634382a35a3d73308958af52a7a737deefc1e4c",
+      "textSha256": "5d82de3ddb4a70b56f6fde1224ebfd07e5328254eacefff56d2aeaba340ebd45",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 166961,
+            "compared": 221,
+            "scanned": 5469400,
+            "maps": 402,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 166961,
+            "compared": 221,
+            "scanned": 5469400,
+            "maps": 402,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-57",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "19c2be10256d9d8856108b87dae197495a0974a40a0328e0b4bc0abd6e3757c6",
+      "textSha256": "e40d4e682bd369883509d0774001298204b6b007e46f8ec08af1f0a423f09571",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 167396,
+            "compared": 143,
+            "scanned": 2411539,
+            "maps": 299,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 167396,
+            "compared": 143,
+            "scanned": 2411539,
+            "maps": 299,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-58",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "e44709dd1dd19279964323207a37a0b1b3684ac0758d7c43543be4fcf88ec20b",
+      "textSha256": "e9039580f180aac723fe3d483f20a499c7a4d72b58aac64cf14a620e5b19e011",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 188089,
+            "compared": 195,
+            "scanned": 3741245,
+            "maps": 371,
+            "second": 1,
+            "meshes": 1,
+            "probed": 281250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 188089,
+            "compared": 195,
+            "scanned": 3741245,
+            "maps": 371,
+            "second": 1,
+            "meshes": 1,
+            "probed": 281250,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-59",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "c5b51eee80abb271171be93e91737b7d440c8a77e90e9d94541f46ce0d64a51b",
+      "textSha256": "df03bdf36d49e7a268bb27a0c2f67be5c5edd2e19cc7f74ca9c279e976641348",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 203564,
+            "compared": 151,
+            "scanned": 1687144,
+            "maps": 246,
+            "second": 3,
+            "meshes": 3,
+            "probed": 671875,
+            "reduced": 54
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 203564,
+            "compared": 151,
+            "scanned": 1687144,
+            "maps": 246,
+            "second": 3,
+            "meshes": 3,
+            "probed": 671875,
+            "reduced": 54
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-60",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "63cf9f4725f5a45f2ed436eb2cf4dab06d7a62cd6098c2d4d7def91f0fdf00fa",
+      "textSha256": "813db90da3ad9690934fa5ac6852d3cabe8b550dea5f61023660b0c2b13bd494",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 110398,
+            "compared": 184,
+            "scanned": 5048186,
+            "maps": 464,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 110398,
+            "compared": 184,
+            "scanned": 5048186,
+            "maps": 464,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-61",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "b3430611a47281c871fc9d5567aeada1268d9e88528e9077cb9cbc97086f5dd5",
+      "textSha256": "23309286c99d9a94f69b440d8c651e30b99c56320707e7226ff93e8c794b9b0a",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 183696,
+            "compared": 166,
+            "scanned": 5589953,
+            "maps": 333,
+            "second": 4,
+            "meshes": 4,
+            "probed": 937500,
+            "reduced": 40
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 183696,
+            "compared": 166,
+            "scanned": 5589953,
+            "maps": 333,
+            "second": 4,
+            "meshes": 4,
+            "probed": 937500,
+            "reduced": 40
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-62",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "c35d15395bf0d0878ba62ec69d6acbde4a85ca4f5c6094d2465120fe83643a84",
+      "textSha256": "2dbe89aa0fe24e3969ec1589c76a277a5154ffb389567ccb00aabf88ab91a06e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 187853,
+            "compared": 207,
+            "scanned": 4613960,
+            "maps": 361,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 187853,
+            "compared": 207,
+            "scanned": 4613960,
+            "maps": 361,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-63",
+      "version": 15,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "efa3504c96e12a202141a094db5593cbb813f29eeb3ec07b9bc5cd3fddd38b3e",
+      "textSha256": "6420493e4b3f1e8a44f0a9d30018b023a30bd434ce1687bc8bfa0a7adb55c197",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 161376,
+            "compared": 223,
+            "scanned": 941070,
+            "maps": 215,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 161376,
+            "compared": 223,
+            "scanned": 941070,
+            "maps": 215,
+            "second": 1,
+            "meshes": 1,
+            "probed": 234375,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-64",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "92c5d90382d470afe1afdd830fcb204dc310befc9aa9fb6c817b247c8c39844b",
+      "textSha256": "1a721d76e809d93eff81040dc74fdf7d3350c7904b81d44e803adc1f0950e4f6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 86311,
+            "compared": 191,
+            "scanned": 967061,
+            "maps": 304,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 86311,
+            "compared": 191,
+            "scanned": 967061,
+            "maps": 304,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-65",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "37253ace2f737b8e34a975e7f133e24182d5841dae9b3529f1c27e60d7da1afe",
+      "textSha256": "da803e1e6a08578df0a95338b616e86a5cfda3267319dac8edc3a9796fc341c0",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 62771,
+            "compared": 44,
+            "scanned": 884002,
+            "maps": 296,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 62771,
+            "compared": 44,
+            "scanned": 884002,
+            "maps": 296,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-66",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "5b5557a75d6b435ec80339fe8afa3d5e3f40cf5a5712e17a9b0438801618f6a4",
+      "textSha256": "4aaa8e4606f4f17fcfe670383b82754aa80bebc3c6ac77d162ff0a798735166e",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 51461,
+            "compared": 57,
+            "scanned": 1526529,
+            "maps": 245,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 51461,
+            "compared": 57,
+            "scanned": 1526529,
+            "maps": 245,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-67",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "b9c882d4f149902a5b96021e2e6e3c61cbed79314fc01e89ffee581ccbc4768a",
+      "textSha256": "584852408450c17368a2f768e6d1b2d7369577a2fa01552fab7095d6c0bd11a7",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 118477,
+            "compared": 115,
+            "scanned": 1338726,
+            "maps": 262,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 118477,
+            "compared": 115,
+            "scanned": 1338726,
+            "maps": 262,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-68",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "c63e10881eb3d16d7b034c5a57cfb98ff77bd84f6f33bded096fd591d92b9ea7",
+      "textSha256": "6027591a642e5ce81ff3a6f64e2d8b7f33f0806c291db4b03178c23399affec2",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 51162,
+            "compared": 138,
+            "scanned": 977374,
+            "maps": 180,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 51162,
+            "compared": 138,
+            "scanned": 977374,
+            "maps": 180,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-69",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "23ad6c725f109bdd741944cef8d7a712f8db45b2246f6b9d6449eb300c7c88b9",
+      "textSha256": "5829a54e8cddf5415e5b87e6e7764eb0501afa0ea195a924040b8b245db57842",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 48505,
+            "compared": 48,
+            "scanned": 826687,
+            "maps": 194,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 48505,
+            "compared": 48,
+            "scanned": 826687,
+            "maps": 194,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-70",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "da4e6cff1ccc9b963bf86eeb71a186e3baa61b4678c10250eb60d889df21044c",
+      "textSha256": "28f281af47ffc026242129561f9c4c373226fbdc1ff2abf21b0307e3472d2b15",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 52680,
+            "compared": 74,
+            "scanned": 1015221,
+            "maps": 213,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 52680,
+            "compared": 74,
+            "scanned": 1015221,
+            "maps": 213,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-71",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "eb15d4f267a8ecd8a04ae61a9d8e878a4fca4b6336255cf4fd396648a945c749",
+      "textSha256": "94dbfa8ed6202151e70483dde9bfd95a8ea3648d5248de84041926bdae68a24f",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 46668,
+            "compared": 51,
+            "scanned": 632354,
+            "maps": 204,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 46668,
+            "compared": 51,
+            "scanned": 632354,
+            "maps": 204,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-72",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "4eb5da9879b1914b1f0fcf65af5401594cbf3c0b23f0c1687500d5542728803a",
+      "textSha256": "48471d47e46b00f400ff3a0e91b2c7e0c8d2d3c245472e8def713564ab128e70",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 69839,
+            "compared": 92,
+            "scanned": 1579150,
+            "maps": 290,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 69839,
+            "compared": 92,
+            "scanned": 1579150,
+            "maps": 290,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-73",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "5a9e9fb8f53bda7dc037f69b157b113563fe456c0ce3556b1e72465a4678d4e8",
+      "textSha256": "b1e9a04a3c7fc71dfe4a92c617ce70cf17ba18344ca9abca52dda20e23e7506e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 98408,
+            "compared": 53,
+            "scanned": 491769,
+            "maps": 198,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 98408,
+            "compared": 53,
+            "scanned": 491769,
+            "maps": 198,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-74",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "4617f3d0d126280695ba5a44392572518b9d984fdfadd318bbc682691c0aa1e3",
+      "textSha256": "6c0aedaeeaa7fed2f2a3cf63745bcec34f93dd2d8d90ec4b76224539f859bca8",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 102820,
+            "compared": 119,
+            "scanned": 3984380,
+            "maps": 297,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 102820,
+            "compared": 119,
+            "scanned": 3984380,
+            "maps": 297,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-75",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "fea3135602ab749edca1ba5d8bdbef718ddc97b27325398b6379018b6fceffb5",
+      "textSha256": "fe50cd1018c96a5c688db6150473088b0432ca60b861b78677ccfcf70447805a",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 78174,
+            "compared": 98,
+            "scanned": 1641263,
+            "maps": 307,
+            "second": 2,
+            "meshes": 2,
+            "probed": 781250,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 78174,
+            "compared": 98,
+            "scanned": 1641263,
+            "maps": 307,
+            "second": 2,
+            "meshes": 2,
+            "probed": 781250,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-76",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "1c5de4aacb680b4be246e7c4cd1c098059f06b186490673ae984d70d543b4b35",
+      "textSha256": "f65c9b29e7f08c9599f0dea87eb36ddaf391a2f5e51d45cbfbc334edd1a87001",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 83750,
+            "compared": 174,
+            "scanned": 1586755,
+            "maps": 322,
+            "second": 4,
+            "meshes": 3,
+            "probed": 1171875,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 83750,
+            "compared": 174,
+            "scanned": 1586755,
+            "maps": 322,
+            "second": 4,
+            "meshes": 3,
+            "probed": 1171875,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-77",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "b34b7acd2c812a592a6ed5e1dba619592f261da94111e4064f301a6ba3464ca6",
+      "textSha256": "7733e4ee439b2c76aa0c68269b5d227487a934cfd0bb9fa4a6962f1ee312c823",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 92503,
+            "compared": 76,
+            "scanned": 1304197,
+            "maps": 296,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 92503,
+            "compared": 76,
+            "scanned": 1304197,
+            "maps": 296,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-78",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "48a3532e3a15a773f9a65149f9be315986a5db67143476218edb4f611876bb89",
+      "textSha256": "51c9397ab2d7ff88eeb6bc74d85ed8c2dffcc2f30d1aa45adfbafe46b0cdaaff",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 87491,
+            "compared": 93,
+            "scanned": 1070638,
+            "maps": 338,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 87491,
+            "compared": 93,
+            "scanned": 1070638,
+            "maps": 338,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-79",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "2182af439687fbe2d963b375854be3ddb617ba93b1e648df1b06a03699c9732b",
+      "textSha256": "871c351517793a56684b3624f93c86beb3bd6d1889f24dbaad234d1b94484d27",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 126712,
+            "compared": 126,
+            "scanned": 1032198,
+            "maps": 302,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 126712,
+            "compared": 126,
+            "scanned": 1032198,
+            "maps": 302,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-80",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "93a2df4e2dde65fdc031d5a2926b5cf95d4fe87bbd6afd4e2ee6c100d039936b",
+      "textSha256": "bac7f386bf5f8a2fa39c584467380d7c6d0909c52bc2c02f274a7b7fb08f08b6",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 212867,
+            "compared": 393,
+            "scanned": 3525730,
+            "maps": 326,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 212867,
+            "compared": 393,
+            "scanned": 3525730,
+            "maps": 326,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-81",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "59b37835710974b1a4ee6062a8387b509b21e57cb1b3182a4a889114ceacd8b3",
+      "textSha256": "8deb6e4b5af8ebc45e4d1e27c150d2408cc80a9e2d02cebc327bd78d2f8445b7",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 95724,
+            "compared": 61,
+            "scanned": 3292227,
+            "maps": 204,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 95724,
+            "compared": 61,
+            "scanned": 3292227,
+            "maps": 204,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-82",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "781e7084dce71c88408c7ca498be84945fa6edf1650068485d59a0af4c1600fe",
+      "textSha256": "46ffa5a5d989da061e011718b7bf9ea0c3646872e22533f68330c1b102ce6517",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 110549,
+            "compared": 81,
+            "scanned": 4233484,
+            "maps": 242,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 110549,
+            "compared": 81,
+            "scanned": 4233484,
+            "maps": 242,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-83",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "111cbfc8517e8840c0dd3da8975992d6d975715bef761674aea94266535dcecc",
+      "textSha256": "52905f662a3d1424f8d2cca8911e39e9f9179e7a8ab92b5d0f10dbc833cc2b11",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 129265,
+            "compared": 69,
+            "scanned": 1911320,
+            "maps": 206,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 129265,
+            "compared": 69,
+            "scanned": 1911320,
+            "maps": 206,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-84",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "0f84746243e41c8a3f2ebea8c98e31d330c5efa125bb9a61395b0ce96f3805ee",
+      "textSha256": "bf55b365321fc5a81fca8a741da0b10513575b84e74f4e144ee75aab95773155",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 101002,
+            "compared": 69,
+            "scanned": 3989672,
+            "maps": 214,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 101002,
+            "compared": 69,
+            "scanned": 3989672,
+            "maps": 214,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-85",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "cdce46fd25c4817aa006570db2e74e07b0d5022da03c0b3dffc2c1eae42ff06b",
+      "textSha256": "aafff9d9fcd31b4f80b753698d3a4491a7b1444c319cc8674c4c3ceda66882da",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 116941,
+            "compared": 43,
+            "scanned": 3718150,
+            "maps": 216,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 116941,
+            "compared": 43,
+            "scanned": 3718150,
+            "maps": 216,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-86",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "25a8f30868f1cea2b8c3072c0fc076dc2002a89c92d66107e8d2cf05dbbc6dd5",
+      "textSha256": "32247eec9122e3bfc9ca62075cde943e27c0142c29e6a33f4f13411336127a79",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 114565,
+            "compared": 94,
+            "scanned": 2350280,
+            "maps": 233,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 114565,
+            "compared": 94,
+            "scanned": 2350280,
+            "maps": 233,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-87",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "30d34fbc0e398e0ee3f7a7e7027246d44f661ba6e947097b8fe06f0cc9acd046",
+      "textSha256": "8a4a2cf2f7e41b95310a1fe588a183a747fa5324cf2477c7a49e606a1bc6881c",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 132901,
+            "compared": 76,
+            "scanned": 4100514,
+            "maps": 245,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 132901,
+            "compared": 76,
+            "scanned": 4100514,
+            "maps": 245,
+            "second": 1,
+            "meshes": 1,
+            "probed": 343750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-88",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "3f44b66fe5f72d95cf2e0ff2f136f438fb7ee6296dc6db71dfc33f031248154f",
+      "textSha256": "f181b21f2740a17695bed28eac912ccd0375320087ce7d05bfaa3ebfa4d764b3",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 194443,
+            "compared": 177,
+            "scanned": 5672781,
+            "maps": 291,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 194443,
+            "compared": 177,
+            "scanned": 5672781,
+            "maps": 291,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-89",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "2b86765178f9462def99c793fb31ed36731d02b39a8bd6405cb7fb6c268ecee2",
+      "textSha256": "3759f1388f94499c045419d444b416c503b52329722ac79674c9d48fd5efc79b",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 257408,
+            "compared": 114,
+            "scanned": 6906724,
+            "maps": 357,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 257408,
+            "compared": 114,
+            "scanned": 6906724,
+            "maps": 357,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-90",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "b77fc54feae9cd9d5107654ea25ecb24eb9250eb3d02e2805d3b0e86b203da7b",
+      "textSha256": "8543bd1ff1301e88c882c462b61f715b35dd860e751e99fbec23357070100299",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 213398,
+            "compared": 120,
+            "scanned": 6134698,
+            "maps": 340,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 213398,
+            "compared": 120,
+            "scanned": 6134698,
+            "maps": 340,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1375000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-91",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "fdca3e6b27dde2bd32f9b68de56890989a6a5d524d7ce2912ab77cb15bc964af",
+      "textSha256": "b3fa66de9916a0fce4b0e807e66515c87d81755066e9a9b421bf6aa395adc901",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 228946,
+            "compared": 126,
+            "scanned": 4299594,
+            "maps": 377,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 228946,
+            "compared": 126,
+            "scanned": 4299594,
+            "maps": 377,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-92",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "be4fe5dc5cb578ad6dab9fa6388b7c7271fe7e2721d4513eaf2f63dff48a100e",
+      "textSha256": "75ffcca886bd9dc0e464615fae7cb61d32dcb8953e3dac8fbe1b38bf9adfcbda",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 176154,
+            "compared": 209,
+            "scanned": 5461374,
+            "maps": 361,
+            "second": 2,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 176154,
+            "compared": 209,
+            "scanned": 5461374,
+            "maps": 361,
+            "second": 2,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-93",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "3762db65255de6314dad8375e55859245fe31bda2e2d4d4f57ee392d8d3d1b70",
+      "textSha256": "27d0c90b914f32f7153085d734defa11e8737ae073a080d5bed03ffb369b2619",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 214634,
+            "compared": 90,
+            "scanned": 2413417,
+            "maps": 320,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1562500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 214634,
+            "compared": 90,
+            "scanned": 2413417,
+            "maps": 320,
+            "second": 4,
+            "meshes": 4,
+            "probed": 1562500,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-94",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "d0aa4b326c9d65e934dc16925223821c8f40890934a2f42c4e161941d3f0cd88",
+      "textSha256": "5bb82634bddeda11e36e25a4c021b4b70c3248ed3074b5ecce05a69c57f735e6",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 186931,
+            "compared": 92,
+            "scanned": 5275096,
+            "maps": 378,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 186931,
+            "compared": 92,
+            "scanned": 5275096,
+            "maps": 378,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-95",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "1db10e0adc071f2e8bed57a0bbb32c1e7895308858088a147564ea07d6d37b1d",
+      "textSha256": "1072e64606eb03f629e7e4994caf521805a0519d6ade9db54543fcaa4ac056ab",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 197222,
+            "compared": 84,
+            "scanned": 3806275,
+            "maps": 354,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 197222,
+            "compared": 84,
+            "scanned": 3806275,
+            "maps": 354,
+            "second": 1,
+            "meshes": 1,
+            "probed": 390625,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-96",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "6866a0ee81bd7d6593408607fd4df30768373a417ab5b5c382c83de7563bba19",
+      "textSha256": "dcfb6029753dda2ffd27ee8676a744b175b71dac41001ef0660b4540be2f055c",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 126725,
+            "compared": 182,
+            "scanned": 1557039,
+            "maps": 256,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 43
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 126725,
+            "compared": 182,
+            "scanned": 1557039,
+            "maps": 256,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 43
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-97",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "d511272a153d8813592b638db10b83c3b0474332041ae4d00129c0aa7e92a368",
+      "textSha256": "ac763721f9586dae634598b15d8d3663ac788a0b0ee8bf24f96c6ba31f2592ff",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 134957,
+            "compared": 76,
+            "scanned": 1437891,
+            "maps": 238,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 134957,
+            "compared": 76,
+            "scanned": 1437891,
+            "maps": 238,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-98",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "793ef266eab576a05710f48281fa9fca0f9d75ddac240dd40ac582ddcb78dbc4",
+      "textSha256": "573ba9d3aa23288d87375637f103a96d694bbb52d22e06af7cb9a4d3032a2d40",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 121620,
+            "compared": 154,
+            "scanned": 2529019,
+            "maps": 210,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 121620,
+            "compared": 154,
+            "scanned": 2529019,
+            "maps": 210,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-99",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "05e32864f637e38c76984b6d54acde2003417b2a43762c4d4128993c4a7f126e",
+      "textSha256": "6d0fdbe31095827cf8658fdf61a370f9faf57c8eb327ca22441d58a510c18302",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 109149,
+            "compared": 95,
+            "scanned": 2120272,
+            "maps": 244,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 109149,
+            "compared": 95,
+            "scanned": 2120272,
+            "maps": 244,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-100",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "77dd2c32b8ebdb4cbabd54727550e865298dbc8f18b146023609926590819c0c",
+      "textSha256": "fc105212e3a210143bc9d17d524296d0ffe4a123328fc60bd2d5c2285bf398b5",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 113722,
+            "compared": 234,
+            "scanned": 299888,
+            "maps": 137,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 113722,
+            "compared": 234,
+            "scanned": 299888,
+            "maps": 137,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-101",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "d20165ffc7ee33bde8f773f576aa7e501e80bfee8adf05b12cef1c13ac83183b",
+      "textSha256": "43a098330f7758658fb96bb6aa501c155b6b5ece757a85e43992906906aaaeef",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 136484,
+            "compared": 63,
+            "scanned": 1519382,
+            "maps": 235,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 136484,
+            "compared": 63,
+            "scanned": 1519382,
+            "maps": 235,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-102",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "3f2d59d787498b87243ce0d4852a1b595474115658b575ad39f79804a35dbf5f",
+      "textSha256": "8fa6cd16cfd95ca1a56ee9f4446fb589111498dcf96e168d0f6c850d14dc878c",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 114066,
+            "compared": 111,
+            "scanned": 936276,
+            "maps": 278,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 114066,
+            "compared": 111,
+            "scanned": 936276,
+            "maps": 278,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-103",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "34e77c08895a07129d652b7f0f10605f021e0837cb14a095ff638b29e017fd83",
+      "textSha256": "29cd0ae9e53b446295c54ac4827b50c81b328e364306ae85896a76f89a6d8ecb",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 98776,
+            "compared": 72,
+            "scanned": 1167223,
+            "maps": 207,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 98776,
+            "compared": 72,
+            "scanned": 1167223,
+            "maps": 207,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-104",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "4eec104567528b575d0c86611c42e1e6429935956a7dd9f7cbff938ee07e8fe2",
+      "textSha256": "30562ec6b292f41c83dd686b70a3868b593678a16ccdddbd3ba3724a34aa6238",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 176210,
+            "compared": 261,
+            "scanned": 1199391,
+            "maps": 260,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2750000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 176210,
+            "compared": 261,
+            "scanned": 1199391,
+            "maps": 260,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2750000,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-105",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "88765c484d300c301595d037f87bb0b5427d1dd9d2cbdb59a3a535872923f43c",
+      "textSha256": "686c1b847099f12c06952839e2b367699f7014a0d584137312e88418ccbe273d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 122396,
+            "compared": 60,
+            "scanned": 1366486,
+            "maps": 311,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 122396,
+            "compared": 60,
+            "scanned": 1366486,
+            "maps": 311,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-106",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "7f5ec4f7fd19ed2e1a93ecd944c1982e18ee33296a28ae7511f1da80e71cd3a1",
+      "textSha256": "690bf5e9b9f85bd0e158382319d274b57b6995acb1b4625a90d653af5e2ea7c9",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 202693,
+            "compared": 121,
+            "scanned": 2426053,
+            "maps": 305,
+            "second": 3,
+            "meshes": 3,
+            "probed": 2234375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 202693,
+            "compared": 121,
+            "scanned": 2426053,
+            "maps": 305,
+            "second": 3,
+            "meshes": 3,
+            "probed": 2234375,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-107",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "a4d750a6a739b391beb6835e2973a9abc2e340344a611810d4acd6526e77a2b6",
+      "textSha256": "0bf5beb4dde803ed510427da4b33ccaa6b55cf78574f690b6c9128730ffaefec",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 256531,
+            "compared": 198,
+            "scanned": 1777635,
+            "maps": 398,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 38
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 256531,
+            "compared": 198,
+            "scanned": 1777635,
+            "maps": 398,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 38
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-108",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "3a7ee5c98cc53d5204e86df4f633f404c3099a02f6e899b202f7e29cf93d55d2",
+      "textSha256": "722e0b97fc1d1948f8316c83732f1465d8e062e23f9115bf5e2e34236c19caec",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 164719,
+            "compared": 221,
+            "scanned": 633260,
+            "maps": 323,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2875000,
+            "reduced": 42
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 164719,
+            "compared": 221,
+            "scanned": 633260,
+            "maps": 323,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2875000,
+            "reduced": 42
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-109",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "488c04e5666f8772ed214f9a0d5e2890c47ed93760afe2269fdcf461873b643c",
+      "textSha256": "4ce6b7ce887e6bec724089acdc558752875599ba3bd224dc9ad213324a28d746",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 228417,
+            "compared": 143,
+            "scanned": 972022,
+            "maps": 318,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 52
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 228417,
+            "compared": 143,
+            "scanned": 972022,
+            "maps": 318,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 52
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-110",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "2c0a60cb124bc30aa76f43cba879d4b7b84687553541fb49b7aa4fbd50f0d2d0",
+      "textSha256": "9f6fb135958939b847ba1ea6f3fd05a5cc3320c59df4ed1b3ba908ce2eb5d866",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 165455,
+            "compared": 226,
+            "scanned": 1411955,
+            "maps": 367,
+            "second": 1,
+            "meshes": 1,
+            "probed": 796875,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 165455,
+            "compared": 226,
+            "scanned": 1411955,
+            "maps": 367,
+            "second": 1,
+            "meshes": 1,
+            "probed": 796875,
+            "reduced": 30
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-111",
+      "version": 35,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "4deb00bc213bfd623abb79426b55e37d906d4f368294386383e9b307819a2d4b",
+      "textSha256": "ff4892da04de1e28f1195c99c78c840ce9e4264cc0086817740e843921e58d5d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 103392,
+            "compared": 74,
+            "scanned": 2470466,
+            "maps": 323,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 103392,
+            "compared": 74,
+            "scanned": 2470466,
+            "maps": 323,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-112",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "5ffc4a629b8383f7cd50724f8d3eacc45c4a220316b43f9c59a6d648d6b7c935",
+      "textSha256": "e180e4fba1a45ddef5cec16fac2ac6f3884536822f984810405e2d7d47bf7072",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 172994,
+            "compared": 118,
+            "scanned": 6529525,
+            "maps": 253,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 172994,
+            "compared": 118,
+            "scanned": 6529525,
+            "maps": 253,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-113",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "d67625acd74f05a8769f06d56c590f49647156f15793a5b8c7ba7b3d7a43c290",
+      "textSha256": "6ce139c81b4cd97e48d6b4bb16e5191df7c07de5db1edcac15c939731d7fe80e",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 204251,
+            "compared": 28,
+            "scanned": 6389997,
+            "maps": 207,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 204251,
+            "compared": 28,
+            "scanned": 6389997,
+            "maps": 207,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-114",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "d953220fdf3d9667293ae87c0217e169b91e089c92b6d319fa7e9dceba0aff52",
+      "textSha256": "b42450f8ec18765b9ff9b08581055628b2c783298856e40636091418c06f07a6",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 154392,
+            "compared": 35,
+            "scanned": 3646341,
+            "maps": 316,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 154392,
+            "compared": 35,
+            "scanned": 3646341,
+            "maps": 316,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-115",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "82f37a721d83c53e193f5bc395ca34199a5805df30cf030e92fa299dfc727d8e",
+      "textSha256": "e16e7f19b4b51585d80ff4da15eec69aec8ea5115ed4494c900fb31e1950ebd3",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 183132,
+            "compared": 38,
+            "scanned": 6563109,
+            "maps": 232,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 183132,
+            "compared": 38,
+            "scanned": 6563109,
+            "maps": 232,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-116",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "b7d5119ef07d50f0849b70a6969da648feae8932e9ebe7c72a8fa0cea01f8231",
+      "textSha256": "080648d03e19b296b903802477f8e84ebf3f97fb97e6b064cf3cc16a47f7a0f6",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 157104,
+            "compared": 65,
+            "scanned": 4813027,
+            "maps": 215,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 157104,
+            "compared": 65,
+            "scanned": 4813027,
+            "maps": 215,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-117",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "e570ab9ea6022af9ebbc3733da638213bc026ae7f14424d9644f64674a64ac81",
+      "textSha256": "3b045df652d072f010e2db44ad76a997d905d893b192116dc9d78b714a78c6d4",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 169149,
+            "compared": 40,
+            "scanned": 2190609,
+            "maps": 250,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 169149,
+            "compared": 40,
+            "scanned": 2190609,
+            "maps": 250,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-118",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "c1778304ca97b5a0b194d2a3e6fe64d79528c1c0a32ed850abedd90807d87c0f",
+      "textSha256": "12fb22899f636cbed92e16accbed7548f838f5bdcc73569baae63a0dfec9b999",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 171711,
+            "compared": 71,
+            "scanned": 4778554,
+            "maps": 227,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 171711,
+            "compared": 71,
+            "scanned": 4778554,
+            "maps": 227,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-119",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "feae98aff4f81f1428f268023f58a8bddf4fd9a9504049e8571644e872fb7012",
+      "textSha256": "4f52b785619edc040c2b052986a2b7d8c9b81f6a947be2134254ead1ad5cd1f9",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 215093,
+            "compared": 60,
+            "scanned": 4325209,
+            "maps": 248,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 215093,
+            "compared": 60,
+            "scanned": 4325209,
+            "maps": 248,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-120",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "3cc8d81370a0f5bf8c2d04865b32a4cfe1195233dc93dd5dbef48b07da066410",
+      "textSha256": "da15d16f9648d24b2db6f20c70a0e67d0e788da23ae51cfd0fa818b20921d432",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 291399,
+            "compared": 172,
+            "scanned": 4024967,
+            "maps": 385,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2875000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 291399,
+            "compared": 172,
+            "scanned": 4024967,
+            "maps": 385,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2875000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-121",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "0fcc01568489a6968eea36e85cdb8ccbfec278e57329222f90110fc6b1a8a0b7",
+      "textSha256": "23a477fc705e26761084d354995008ef51bc3d0a1084bd759db1dea869a50af2",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 192879,
+            "compared": 26,
+            "scanned": 7345896,
+            "maps": 206,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 192879,
+            "compared": 26,
+            "scanned": 7345896,
+            "maps": 206,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-122",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "81edf99c4b2b46b5480ceb036d5c3f0cef140845b6ec7dca0a6d8d26f65c269a",
+      "textSha256": "3baaac1210cce491e27d37d6031d8f9295bcddbcf6b6bd1a2faac80a5045898e",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 303349,
+            "compared": 187,
+            "scanned": 4304112,
+            "maps": 380,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2250000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 303349,
+            "compared": 187,
+            "scanned": 4304112,
+            "maps": 380,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2250000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-123",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "33d38e111d13229114850322dae2a50aa57066ced4e5270c1541b1123e6365d6",
+      "textSha256": "4771ab9fc9ff8bc664805e572c0021765cf58b53b1f1d34bc2bb3bd3b635feac",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 169967,
+            "compared": 45,
+            "scanned": 3671558,
+            "maps": 309,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 169967,
+            "compared": 45,
+            "scanned": 3671558,
+            "maps": 309,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-124",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "85587e07d6a2843446dace8902e276d119ba470ca067dc8de099aa073ce766c1",
+      "textSha256": "f29207e0a1f8f069388882d7102aae89b92ca365d7e8082cf2ac72ce5743e578",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 250176,
+            "compared": 275,
+            "scanned": 4185712,
+            "maps": 375,
+            "second": 1,
+            "meshes": 1,
+            "probed": 750000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 250176,
+            "compared": 275,
+            "scanned": 4185712,
+            "maps": 375,
+            "second": 1,
+            "meshes": 1,
+            "probed": 750000,
+            "reduced": 60
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-125",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "32720f105530c6d1e0e075cfa44e5c2a3ef99c9e175b7e0eadfd20c18811e044",
+      "textSha256": "e9bd6fc6a4ac3c7015c108f54ef19685568ba8e1cb651a33b68804da5bdc91c9",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "work": {
+            "steps": 377345,
+            "compared": 84,
+            "scanned": 4452870,
+            "maps": 380,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2250000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "miss",
+          "work": {
+            "steps": 377345,
+            "compared": 84,
+            "scanned": 4452870,
+            "maps": 380,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2250000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-126",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "a255bd3541f8f362735266035082032163c0bfaebdc2165a40165cbf6623b142",
+      "textSha256": "bfb4b9f428367c3409ac2e6c0964e8ec9c2aa8b90af765f9fb58948716fea35d",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 308050,
+            "compared": 116,
+            "scanned": 5664646,
+            "maps": 396,
+            "second": 1,
+            "meshes": 1,
+            "probed": 750000,
+            "reduced": 90
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 308050,
+            "compared": 116,
+            "scanned": 5664646,
+            "maps": 396,
+            "second": 1,
+            "meshes": 1,
+            "probed": 750000,
+            "reduced": 90
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-127",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "9035e05c903f5dc0839d8b9212973fe9b9bb5f4dd3966f56fa4427f76b6cf3d3",
+      "textSha256": "67c0c2821fe2c4406f3c41ed3d8a2827df7dbafec7009d95b221dd3cc1a98275",
+      "readers": {
+        "base": {
+          "status": "correct",
+          "work": {
+            "steps": 157733,
+            "compared": 41,
+            "scanned": 3329334,
+            "maps": 246,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "status": "correct",
+          "work": {
+            "steps": 157733,
+            "compared": 41,
+            "scanned": 3329334,
+            "maps": 246,
+            "second": 1,
+            "meshes": 1,
+            "probed": 718750,
+            "reduced": 0
+          }
+        },
+        "zxing": {
+          "status": "correct"
+        }
+      }
+    }
+  ]
+}

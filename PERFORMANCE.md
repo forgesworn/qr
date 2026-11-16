@@ -1,5 +1,73 @@
 # Performance and verification
 
+## 0.3.6 deferred mesh reading
+
+Timing and edge corrections can displace an alignment mesh that already decodes.
+The decoder now retains up to four failed meshes and validates them only after
+all earlier paths fail. Two-copy format agreement, version, Reed-Solomon and
+segment checks remain mandatory. Earlier successful results, including every
+metadata field, keep priority.
+
+| Dataset | QR 0.3.5 | QR 0.3.6 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Evaluated distortion set | 30/96 | **37/96** | 42/96 |
+| Separate set frozen before evaluation | 78/128 | **81/128** | 106/128 |
+| Earlier curved sheets | 2/18 | **3/18** | — |
+| Original photographs | 180/184 | 180/184 | 171/184 |
+| All photo rotations, mirrors and polarities | 2,872/2,944 | 2,872/2,944 | — |
+
+No previously correct read is lost and no incorrect QR payload is found in
+these sets. The 888-case regression preserves all earlier complete results and
+rejects all 64 negative controls. Packaged WASM matches the full TypeScript
+results and input preservation across that regression, all 2,944 transformed
+photos and the three curved-image sets. Photo oracles independently supply text;
+synthetic cases also check bytes. Photo transformations are related observations.
+The separate 128-case set was frozen before decoder imports and evaluation; it
+is now regression data. ZXing still leads on both distortion sets.
+
+Two new shared conformance fixtures exercise reduced-image coordinates and
+inverted polarity. They fail on 0.3.5 and pass with this recovery. All 65 prior
+conformance entries remain identical; TypeScript, Rust and Kotlin pass the
+expanded 67-frame pack. Browser and worker consumers also pass.
+
+The queue adds at most 125,316 module bytes plus metadata, 125,316 grey probes
+(each interpolating four pixels) and four final strict grid reads. It retains
+owned grids, not image sampling closures. The existing 720-map, four-second-look
+and 5,750,000-alignment-probe limits remain unchanged. `Work.probed` counts
+alignment searches and does not include the new sampling work. Capturing a grid
+can add cost even when a later existing path succeeds.
+
+Two independent paired processes per backend ran sequentially on the Apple
+M4 Max with native Node 24.21.0, alternating execution order over 60 measured
+pairs after at least ten warm-up pairs and 500 ms. WASM clean medians change
+by +0.06% and -0.59%; blank by -0.09% and -1.19%; main 720p noise by +1.00%
+and -0.36%. TypeScript main noise changes by +0.71% and -0.37%, clean by
++1.92% and +0.95%, and blank by -4.33% and +0.14%. This variation does not
+establish a general speed improvement.
+
+| Case | WASM 0.3.5 median range | WASM 0.3.6 median range | Change in each paired run |
+|---|---:|---:|---:|
+| Newly recovered distortion 9 | 7.64–7.71 ms, miss | 7.94–8.01 ms, read | +3.83%, +3.94% |
+| Newly recovered distortion 16 | 11.32–11.37 ms, miss | 11.69–11.82 ms, read | +3.96%, +3.26% |
+| Newly recovered distortion 87 | 61.49–61.55 ms, miss | 64.04–64.27 ms, read | +4.42%, +4.14% |
+| Existing success after failed meshes | 16.09–16.12 ms | 16.33–16.50 ms | +2.59%, +1.29% |
+| Persistent curved miss | 64.39–64.46 ms | 66.36–66.86 ms | +3.84%, +2.96% |
+
+TypeScript costs for these new reads rise by 2.64–5.27%; the existing later
+success costs 1.96% and 2.94% more, and the persistent miss costs 2.89% and
+4.62% more. Accuracy trades some recovery time for additional reads. Full raw
+samples and p95 values are retained; these are desktop measurements, not phone
+latency or worst-case bounds.
+
+Both WASM versions finish the timing sequence at 14,483,456 bytes of linear
+memory capacity. A separate 1,000-round allocation check includes 63 reads of
+the new fixtures and stays at 3,866,624 bytes after warm-up; an intentional
+unfreed-handle control grows. Capacity is not a peak live allocation measurement.
+The packaged module grows by 5,390 bytes to 232,666 bytes, SHA-256
+`b5a1cc98846027deba1f42e6889db98a1d22d34e270d847363a369c0432bb36e`.
+
+See the [0.3.6 evidence and reproduction commands](benchmarks/2026-11-16-m4/deferred-mesh-reading/README.md).
+
 ## 0.3.5 mesh boundary continuation
 
 Alignment patterns stop short of a QR symbol's edges. Previously the mesh held

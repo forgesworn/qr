@@ -45,7 +45,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     storage = workspace.luminance.subarray(0, width * height)
   }
   const luminance = toLuminance(image.data, width, height, channels, stride, storage)
-  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false, hints: [], curvature: [] }
+  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false, hints: [], curvature: [], meshGrids: [] }
   const found = look(luminance, inversion, 1, budget, work)
   if (found) return found
   if (budget.uniform) return undefined
@@ -66,13 +66,13 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     budget.here = REDUCED_MAPS
     inverse = invertLuminance(luminance)
     inverseCurvature = []
-    const fallback = look(inverse, 'normal', 1, budget, work, true, inverseCurvature)
+    const fallback = look(inverse, 'normal', 1, budget, work, true, inverseCurvature, true)
     if (fallback) return { ...fallback, inverted: true }
     const inverseShrunk = reductions(inverse)
     for (const f of REDUCTIONS) {
       if (budget.maps === 0 || budget.here === 0) break
       if (Math.floor(width / f) < MIN_REDUCED || Math.floor(height / f) < MIN_REDUCED) continue
-      const reduced = look(inverseShrunk(f), 'normal', f, budget, work, true)
+      const reduced = look(inverseShrunk(f), 'normal', f, budget, work, true, undefined, true)
       if (reduced) return { ...reduced, inverted: true }
     }
   }
@@ -83,10 +83,10 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   const curved = recoverCurvature(luminance, budget, work)
   if (curved) return curved
   if (inverse && inverseCurvature) {
-    const recovered = recoverCurvature(inverse, budget, work, inverseCurvature)
+    const recovered = recoverCurvature(inverse, budget, work, inverseCurvature, true)
     if (recovered) return { ...recovered, inverted: true }
   }
-  return undefined
+  return recoverMeshGrids(budget)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -107,7 +107,40 @@ interface Budget {
   uniform: boolean
   hints: VersionHint[]
   curvature: Candidate[]
+  meshGrids: MeshGrid[]
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
+}
+
+interface MeshGrid {
+  modules: Uint8Array
+  size: number
+  ecc: Candidate['ecc']
+  mask: number
+  mirrored: boolean
+  inverted: boolean
+  location: DecodeResult['location']
+}
+
+function meshCollector(budget: Budget, candidate: Candidate, f: number, publicInverse = false): ((modules: Uint8Array) => void) | undefined {
+  if (budget.meshGrids.length >= SECOND_LOOKS) return undefined
+  return modules => {
+    if (budget.meshGrids.length >= SECOND_LOOKS) return
+    budget.meshGrids.push({ modules, size: candidate.location.size, ecc: candidate.ecc, mask: candidate.mask,
+      mirrored: candidate.mirrored, inverted: publicInverse || candidate.inverted,
+      location: where(candidate.location, f) })
+  }
+}
+
+/** Same attempted maps, validated only after all earlier return paths fail. */
+function recoverMeshGrids(budget: Budget): DecodeResult | undefined {
+  for (const item of budget.meshGrids) {
+    const { modules, size, mirrored, inverted, ecc, mask, location } = item
+    const read: ModuleReader = mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1
+    if (!formatAgrees(read, size, ecc, mask)) continue
+    const result = readSymbol(read, size)
+    if (result && result.ecc === ecc && result.mask === mask) return { ...result, mirrored, inverted, location }
+  }
+  return undefined
 }
 
 interface VersionHint {
@@ -122,7 +155,7 @@ interface VersionHint {
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false, inverseCurvature?: Candidate[]): DecodeResult | undefined {
+function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false, inverseCurvature?: Candidate[], publicInverse = false): DecodeResult | undefined {
   const levels = thresholds(luminance)
   if (f === 1 && !strictOverride) {
     budget.invertedFallback = levels.invertedFallback
@@ -148,7 +181,7 @@ function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
-    const result = secondLook(luminance, levels, candidate, work, strict)
+    const result = secondLook(luminance, levels, candidate, work, strict, false, meshCollector(budget, candidate, f, publicInverse))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, f) }
   }
   return undefined
@@ -351,7 +384,7 @@ function recoverVersion(luminance: Luminance, budget: Budget, work?: Work): Deco
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
-    const result = secondLook(luminance, levels, candidate, work, true)
+    const result = secondLook(luminance, levels, candidate, work, true, false, meshCollector(budget, candidate, 1))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
   return undefined
@@ -410,7 +443,7 @@ function recoverOverflow(luminance: Luminance, budget: Budget, work?: Work): Dec
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
-    const result = secondLook(luminance, levels, candidate, work, true)
+    const result = secondLook(luminance, levels, candidate, work, true, false, meshCollector(budget, candidate, 1))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
   return undefined
@@ -431,14 +464,14 @@ export function decodeModules(modules: ArrayLike<number | boolean>, size: number
 }
 
 /** A final bounded retry of original maps anchored by an exact version word. */
-function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, candidates = budget.curvature): DecodeResult | undefined {
+function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, candidates = budget.curvature, publicInverse = false): DecodeResult | undefined {
   if (candidates.length === 0 || budget.second === 0) return undefined
   const levels = thresholds(luminance)
   for (const candidate of candidates) {
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
-    const result = secondLook(luminance, levels, candidate, work, true, true)
+    const result = secondLook(luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
   return undefined

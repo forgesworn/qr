@@ -39,20 +39,17 @@ payload; the synthetic suites also check its bytes.
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. Version
-0.3.5 reads all 16 rotated, mirrored and inverted views of one dense curved
-photograph, versus 14/16 in 0.3.4. Across all 2,944 transformations of the
-184-photo set, correct reads rise from 2,870 to 2,872, without lost reads
-or wrong text; these are related transformations, not independent photographs.
-Trusted mesh continuation also recovers two of 18 evaluated curved sheets.
-On a separate 96-case distortion set frozen before evaluation, QR improves
-from 29 to 30 reads, while ZXing reads 42. Curvature remains a limitation,
-and these measurements do not establish general curvature coverage.
-Correction counts can change as sampling improves; the successful placement
-can also supply a different optional alignment location.
-The previously qualified 160-case set is now regression data: QR remains
-69/128 on positives, with all 32 negatives rejected. The additional curvature
-pass produces no gain on those cases.
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.6
+reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
+including all 16 views of one dense curved photo. These transformations are
+related views, not independent photographs.
+
+Deferred mesh reading improves the evaluated distortion set from 30 to 37/96;
+ZXing reads 42/96. On a separate 128-case set frozen before evaluation, QR
+improves from 78 to 81/128, while ZXing reads 106/128. Curvature remains a
+limitation. The new recovery retains all earlier successful results and metadata
+exactly in the checked sets, with no incorrect QR payloads. Earlier geometry
+changes can alter correction counts and optional alignment locations.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
@@ -75,6 +72,13 @@ Version 0.3.5 keeps main-noise WASM medians within 0.5% in two paired M4 runs.
 Its newly readable rotated photo succeeds in about 21.7 ms, compared with
 roughly 52.2 ms spent failing before. This is a specific recovery improvement,
 not a general speed claim.
+
+Version 0.3.6 recovers additional meshes at a bounded extra cost. The tested
+persistent curved miss costs 3.0–3.8% more in WASM, and an existing success
+after failed meshes costs 1.3–2.6% more. Clean and main-noise WASM medians
+vary within 1.0% across the two paired runs. At most four retained grids add
+125,316 module bytes plus metadata and extra sampling work. See the 0.3.6
+performance section for all timings and storage bounds.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful
