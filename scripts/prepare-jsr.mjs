@@ -29,6 +29,7 @@ export function verifyStage(directory) {
   const receipt = json(join(directory, '.stage-manifest.json'))
   assert.equal(receipt.name, packageName)
   assert(stableVersion(receipt.version), 'Staged version must be a stable major.minor.patch version')
+  assert(stableVersion(receipt.sourceVersion), 'Staged source version must identify the stable library release')
   const actual = filesUnder(directory).filter(name => name !== '.stage-manifest.json').sort()
   assert.deepEqual(actual, Object.keys(receipt.files).sort(), 'Staged file inventory changed')
   for (const name of actual) assert.equal(sha256(readFileSync(join(directory, name))), receipt.files[name], `Staged file changed: ${name}`)
@@ -41,7 +42,7 @@ export function verifyStage(directory) {
   assert.deepEqual(config.exports, { '.': './src/index.ts', './wasm': './src/wasm.ts' })
   assert.equal(pkg.type, 'module')
   const manifest = json(join(directory, 'src/wasm-manifest.json'))
-  const wasm = readFileSync(join(directory, 'src/qr.wasm'))
+  const wasm = readFileSync(join(directory, 'src/qr.bin'))
   assert.equal(manifest.abi, 2)
   assert.equal(wasm.length, manifest.bytes)
   assert.equal(sha256(wasm), manifest.sha256)
@@ -55,6 +56,9 @@ export async function prepare(root, destination) {
   assert.equal(pkg.name, packageName)
   assert(stableVersion(pkg.version), 'Source package must have a stable major.minor.patch version')
   assert.equal(Object.keys(pkg.dependencies ?? {}).length, 0, 'Runtime dependencies need explicit review')
+  const release = json(join(root, 'jsr-release.json'))
+  assert(stableVersion(release.version), 'JSR version must be stable')
+  assert.equal(release.sourceVersion, pkg.version, 'JSR packaging must name the current library version')
   const manifest = json(join(root, 'wasm/manifest.json'))
   const wasm = readFileSync(join(root, 'wasm/qr.wasm'))
   // Import the helper from the supplied checkout: its module-relative root binds
@@ -81,16 +85,22 @@ export async function prepare(root, destination) {
     mkdirSync(dirname(join(destination, name)), { recursive: true })
     copyFileSync(source, join(destination, name))
   }
-  copyFileSync(join(root, 'wasm/qr.wasm'), join(destination, 'src/qr.wasm'))
+  // Deno rewrites import names inside .wasm files during publication. Keep this
+  // caller-instantiated binary opaque and change only the staged asset URL.
+  copyFileSync(join(root, 'wasm/qr.wasm'), join(destination, 'src/qr.bin'))
+  const adapter = join(destination, 'src/wasm.ts')
+  const adapterSource = readFileSync(adapter, 'utf8')
+  assert.equal(adapterSource.split("new URL('./qr.wasm', import.meta.url)").length, 2)
+  writeFileSync(adapter, adapterSource.replace("new URL('./qr.wasm', import.meta.url)", "new URL('./qr.bin', import.meta.url)"))
   copyFileSync(join(root, 'wasm/manifest.json'), join(destination, 'src/wasm-manifest.json'))
   // Keep ESM metadata; publish with --sloppy-imports to resolve NodeNext .js
   // specifiers to .ts. No build hooks or development dependencies are copied.
-  writeFileSync(join(destination, 'package.json'), serialise({ name: pkg.name, version: pkg.version, type: 'module', license: pkg.license }))
-  writeFileSync(join(destination, 'jsr.json'), serialise({ name: pkg.name, version: pkg.version, license: pkg.license,
+  writeFileSync(join(destination, 'package.json'), serialise({ name: pkg.name, version: release.version, type: 'module', license: pkg.license }))
+  writeFileSync(join(destination, 'jsr.json'), serialise({ name: pkg.name, version: release.version, license: pkg.license,
     exports: { '.': './src/index.ts', './wasm': './src/wasm.ts' },
-    publish: { include: [...copied, 'src/qr.wasm', 'src/wasm-manifest.json', 'package.json', 'jsr.json'].sort() },
+    publish: { include: [...copied, 'src/qr.bin', 'src/wasm-manifest.json', 'package.json', 'jsr.json'].sort() },
   }))
-  const receipt = { name: pkg.name, version: pkg.version, wasmSha256: manifest.sha256,
+  const receipt = { name: pkg.name, version: release.version, sourceVersion: release.sourceVersion, wasmSha256: manifest.sha256,
     wasmSourceSha256: manifest.sourceSha256, files: Object.fromEntries(filesUnder(destination).map(name => [name, sha256(readFileSync(join(destination, name)))])) }
   writeFileSync(join(destination, '.stage-manifest.json'), serialise(receipt))
   verifyStage(destination)

@@ -2,8 +2,7 @@
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. They use the same version. The native Rust crate is `forgesworn-qr`. Kotlin is also available as source in this repository. The JSR and Maven Central
-publication workflows are configured; their first public releases are pending
-verification.
+publication workflows are configured; their public releases are pending final consumer verification.
 
 | Channel | What it provides |
 |---|---|
@@ -87,10 +86,17 @@ configuration and require unchanged library sources from the selected tag.
 Their GitHub environments permit deployment only from `main`.
 
 `release-jsr.yml` stages the TypeScript sources and verified WASM bytes, requires
-strict JSR declaration generation and tests a Deno consumer. Publication uses
+strict JSR declaration generation and tests a Deno consumer. A loopback registry
+fixture captures the actual publishing archive and requires unchanged WASM bytes
+before the real upload. Publication uses
 GitHub OIDC with provenance. Afterwards it checks native JSR imports and the
 registry-generated npm compatibility archive, including its types and WASM.
 The npmjs package remains the recommended npm installation route.
+`jsr-release.json` binds a JSR packaging version to the library source version.
+JSR 0.3.1 packages the 0.3.0 library. JSR 0.3.0 was yanked because Deno rewrote a
+WASM import during publication. The staged binary now uses the opaque `.bin`
+extension; only its staged URL changes, and its bytes must retain the release
+hash. The repository and npm WASM filenames remain unchanged.
 
 `release-maven.yml` tests and stages the JVM 17 library, sources, generated API
 documentation and Maven metadata. Its only runtime dependency is the Kotlin

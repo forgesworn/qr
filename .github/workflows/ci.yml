@@ -55,6 +55,8 @@ jobs:
           deno-version: v2.9.8
       - run: node scripts/prepare-jsr.mjs --out "$RUNNER_TEMP/qr-jsr"
       - run: node scripts/check-jsr.mjs --stage "$RUNNER_TEMP/qr-jsr"
+      - name: Verify actual publisher archive on loopback
+        run: python3 scripts/check-jsr-upload.py --stage "$RUNNER_TEMP/qr-jsr"
 
   photographs:
     runs-on: ubuntu-latest
