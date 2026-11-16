@@ -512,13 +512,11 @@ second correctness failure. The [portable prototype tools, per-case results,
 falsifiers and paired M4 receipt](benchmarks/2026-11-16-m4/region-neighbours/README.md)
 record both rejected versions. No detector policy or vectors changed.
 
-The next exact experiment is a lazy row index of interior light-dark-light
-triples, grouped by minimum and maximum run length. Measure query overlap,
-unique touched triples, whole-row setup and bucket/merge cost first. Clipped
-first/last triples must keep their existing scalar treatment; returned candidates
-must retain original order and exact comparisons. This targets repeated
-horizontal alignment work without requiring additional finder structure.
-No index implementation or speedup is established.
+An exact lazy row index of interior light-dark-light triples was investigated,
+grouped by minimum and maximum run length. Clipped first/last triples kept
+their scalar treatment; returned candidates retained original order and exact
+comparisons. This targeted repeated horizontal alignment work without requiring
+additional finder structure.
 
 The [row-index diagnostic](benchmarks/2026-11-16-m4/alignment-row-index/README.md)
 now preserves all 28 observed results and work counts, including four thin-finder
@@ -530,8 +528,26 @@ triples when reuse is scoped to each finder triple. Whole-row setup would inspec
 queries still perform 19,461 interior visits. These counts are cumulative, not
 peak storage or timing. Eligible patterns still need ordered processing and
 exact checks. The clean frame has no repeated row queries and needs no index.
-This justifies one bounded compact-mask prototype, subject to correctness and
-whole-frame measurements; it does not establish a speedup.
+This justified one bounded compact-mask prototype. It passed 37 Rust tests
+and [89 complete public-result comparisons](benchmarks/2026-11-16-m4/alignment-row-index/candidate-equivalence.json),
+including unchanged input bytes, but failed the performance gate:
+
+| Workload | Baseline median ms, two forks | Prototype median ms, two forks | Result |
+|---|---:|---:|---|
+| Clean 720p | 1.536 / 1.538 | 1.531 / 1.540 | Neutral |
+| Blank 720p | 1.154 / 1.170 | 1.153 / 1.169 | Neutral |
+| Main 720p noise | 19.580 / 20.106 | 20.339 / 20.889 | 3.9% slower in both |
+| Other noise, six seed/resolution cases | See receipts | See receipts | All slower, 0.8–3.9% |
+| Stripes, checkerboard, gradient | See receipts | See receipts | Within 0.5% |
+
+The [first](benchmarks/2026-11-16-m4/alignment-row-index/paired1.json) and
+[second](benchmarks/2026-11-16-m4/alignment-row-index/paired2.json) independent
+M4 processes retain every sample, median, p95, workload and build hash. These
+compare the same two WASM modules, not ZXing. Setup, storage and query overhead
+outweigh the avoided enumeration. The prototype is rejected and no production
+decoder changed. Its [patch](benchmarks/2026-11-16-m4/alignment-row-index/prototype.patch)
+and [reproduction details](benchmarks/2026-11-16-m4/alignment-row-index/prototype.md)
+are retained; there is no follow-up chunk-size tuning.
 
 `scripts/compare-wasm.mjs` now accepts `--negative` to compare two modules on
 the same 12 clean/blank/noise/pattern fixtures as the paired TypeScript runner.
@@ -540,6 +556,13 @@ rounds and one second, then measures 60 alternating pairs. Full-result and
 input-mutation checks remain outside timed intervals. A same-binary control
 completed all 12 cases, with fixture hashes matching the previous TypeScript
 receipts. This validates the runner, not a candidate's performance.
+
+The next diagnostic measures repeated five-run finder classification across
+strict/loose tolerances and polarity. A proposed compact event index must replay
+the existing successful-sighting skip schedule exactly. Count saved ratio work
+against joint classification of previously skipped windows, survivor
+reconstruction, storage and clean-frame setup before implementing it. This
+targets finder scanning; alignment indexing alone cannot close the noise gap.
 
 A [256-frame synthetic stress set](benchmarks/2026-11-16-m4/fresh-stress-unevaluated/README.md)
 is frozen but has never been decoded. Both rejected filters failed separate

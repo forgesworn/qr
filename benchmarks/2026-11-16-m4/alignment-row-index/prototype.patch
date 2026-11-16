@@ -1,0 +1,359 @@
+--- a/rust/src/place.rs
++++ b/rust/src/place.rs
+@@ -254,10 +254,85 @@
+     count: f64,
+ }
+ 
++// Scratch prototype: chunks are scoped to one finder triple and one image.
++struct AlignmentChunk { number: usize, first: usize, masks: [u32; 36], overflow: u32 }
++struct AlignmentRow { queried: bool, chunks: Vec<AlignmentChunk> }
++pub(crate) struct AlignmentCache { rows: Vec<AlignmentRow> }
++impl AlignmentCache {
++    pub(crate) fn new() -> Self { Self { rows: Vec::new() } }
++    fn row(&mut self, y: usize) -> &mut AlignmentRow {
++        if self.rows.len() <= y { self.rows.resize_with(y + 1, || AlignmentRow { queried: false, chunks: Vec::new() }); }
++        &mut self.rows[y]
++    }
++}
++fn bucket(lo: usize, hi: usize) -> usize { (lo - 1) * (18 - lo) / 2 + hi - lo }
++fn make_chunk(changes: &[i32], width: usize, number: usize, parity: usize) -> AlignmentChunk {
++    let start = number * 64;
++    let mut k = changes.partition_point(|&x| (x as usize) < start);
++    if k % 2 != parity { k += 1; }
++    let first = k;
++    let mut out = AlignmentChunk { number, first, masks: [0; 36], overflow: 0 };
++    while k + 1 < changes.len() && (changes[k] as usize) < start.saturating_add(64) {
++        let before = changes[k] as i64 - if k == 0 { 0 } else { changes[k - 1] as i64 };
++        let middle = changes[k + 1] as i64 - changes[k] as i64;
++        let end = if k + 2 < changes.len() { changes[k + 2] as i64 } else { width as i64 };
++        let after = end - changes[k + 1] as i64;
++        let lo = before.min(middle).min(after) as usize;
++        let hi = before.max(middle).max(after) as usize;
++        let bit = 1u32 << ((k - first) / 2);
++        if lo > 0 && hi <= 8 { out.masks[bucket(lo, hi)] |= bit; } else { out.overflow |= bit; }
++        k += 2;
++    }
++    out
++}
++// Calls in exactly the original row order. Both edge candidates are always
++// included, since their light runs may be cut by the current window.
++fn alignment_row<F: FnMut(i64, i64, i64, i64)>(changes: &[i32], width: usize, left: i64, right: i64, selected: &[usize], first_pixel_dark: bool, row: &mut AlignmentRow, mut visit: F) {
++    let n = changes.len();
++    let mut k = changes.partition_point(|&x| x as i64 <= left);
++    // The parity of the first light-to-dark boundary depends on left colour.
++    // changes alternate, so parity 0 starts dark iff the first pixel is light.
++    let first_dark_parity = if first_pixel_dark { 1 } else { 0 };
++    if k % 2 != first_dark_parity { k += 1; }
++    if k + 1 >= n || changes[k + 1] as i64 > right { row.queried = true; return; }
++    let first = k;
++    let count_end = changes.partition_point(|&x| x as i64 <= right);
++    let mut last = count_end - 2;
++    if last % 2 != first % 2 { last -= 1; }
++    let scalar = !row.queried;
++    row.queried = true;
++    let emit = |k: usize, visit: &mut F| {
++        let start = if k == 0 { 0 } else { changes[k-1] as i64 }.max(left);
++        let dark_start = changes[k] as i64;
++        let dark_end = changes[k+1] as i64;
++        let end = (if k+2 < n { changes[k+2] as i64 } else { width as i64 }).min(right+1);
++        visit(start, dark_start, dark_end, end);
++    };
++    if scalar {
++        while k <= last { emit(k, &mut visit); k += 2; }
++        return;
++    }
++    for number in (changes[first] as usize / 64)..=(changes[last] as usize / 64) {
++        let pos = match row.chunks.binary_search_by_key(&number, |c| c.number) {
++            Ok(pos) => pos,
++            Err(pos) => { row.chunks.insert(pos, make_chunk(changes, width, number, first%2)); pos }
++        };
++        let chunk = &row.chunks[pos];
++        let mut bits = chunk.overflow;
++        for &index in selected { bits |= chunk.masks[index]; }
++        for edge in [first,last] { if edge >= chunk.first && (edge-chunk.first)%2==0 && (edge-chunk.first)/2<32 && changes[edge] as usize/64==number { bits |= 1 << ((edge-chunk.first)/2); } }
++        while bits != 0 {
++            let b=bits.trailing_zeros() as usize; bits &= bits-1;
++            let candidate=chunk.first+2*b;
++            if candidate >= first && candidate <= last { emit(candidate, &mut visit); }
++        }
++    }
++}
++
+ /// Searches near `estimate` for alignment pattern centres, whose modules span
+ /// `wide` pixels along a row and `tall` down a column. Candidates seen on two
+ /// or more rows come first, then nearest the estimate.
+-fn find_alignments(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f64, tall: f64, reach: f64, work: Option<&mut Work>) -> Vec<Point> {
++fn find_alignments_cached(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f64, tall: f64, reach: f64, work: Option<&mut Work>, cache: &mut AlignmentCache) -> Vec<Point> {
+     let module_size = jmax(wide, tall);
+     let radius = (reach * module_size).ceil();
+     let left = jmax(0.0, (estimate.x - radius).floor());
+@@ -279,6 +354,14 @@
+     let width = image.width as i64;
+     let slack = wide * 0.6;
+     let slack_down = tall * 0.6;
++    let mut selected = [0usize; 36];
++    let mut selected_len = 0;
++    for lo in 1..=8 { for hi in lo..=8 {
++        if (lo as f64-wide).abs() < slack && (hi as f64-wide).abs() < slack {
++            selected[selected_len]=bucket(lo,hi); selected_len+=1;
++        }
++    }}
++
+     let vertical = |x: i64, y: i64| -> f64 {
+         // Light, dark, light runs through (x, y) going up and down from the dark centre.
+         let mut up = y;
+@@ -316,44 +399,7 @@
+     let mut found: Vec<Seen> = Vec::new();
+     for y in top..=bottom {
+         let changes = edges.row(y as usize);
+-        let n = changes.len();
+-        // The first change of colour past the window's left edge.
+-        let mut k = 0usize;
+-        let mut high = n;
+-        while k < high {
+-            let middle = (k + high) >> 1;
+-            if changes[middle] as i64 <= left {
+-                k = middle + 1;
+-            } else {
+-                high = middle;
+-            }
+-        }
+-        let mut x = left;
+-        if data[(y * width + left) as usize] == 1 {
+-            // Skip a dark run cut by the window.
+-            x = if k < n && changes[k] as i64 <= right {
+-                k += 1;
+-                changes[k - 1] as i64
+-            } else {
+-                right + 1
+-            };
+-        }
+-        // Each candidate is a light, dark, light triple. The first two
+-        // runs must end inside the window; the final light run may be cut off.
+-        let mut start = x;
+-        if k >= n || changes[k] as i64 > right { continue; }
+-        let mut light_end = changes[k] as i64;
+-        k += 1;
+-        if k >= n || changes[k] as i64 > right { continue; }
+-        let mut dark_end = changes[k] as i64;
+-        k += 1;
+-        loop {
+-            let x = if k < n && changes[k] as i64 <= right {
+-                k += 1;
+-                changes[k - 1] as i64
+-            } else {
+-                right + 1
+-            };
++        alignment_row(changes, image.width, left, right, &selected[..selected_len], data[y as usize * image.width] == 1, cache.row(y as usize), |start, light_end, dark_end, x| {
+             let before = light_end - start;
+             let last = dark_end - light_end;
+             let run = x - dark_end;
+@@ -369,19 +415,10 @@
+                         same.x = (same.x * same.count + cx) / (same.count + 1.0);
+                         same.y = (same.y * same.count + cy) / (same.count + 1.0);
+                         same.count += 1.0;
+-                    } else {
+-                        found.push(Seen { x: cx, y: cy, count: 1.0 });
+-                    }
+-                }
+-            }
+-            if x > right { break; }
+-            // The trailing light run becomes the first of the next triple.
+-            start = dark_end;
+-            light_end = x;
+-            if k >= n || changes[k] as i64 > right { break; }
+-            dark_end = changes[k] as i64;
+-            k += 1;
+-        }
++                    } else { found.push(Seen { x: cx, y: cy, count: 1.0 }); }
++                }
++            }
++        });
+     }
+     // A candidate seen on one row only counts as three modules further away.
+     let mut scored: Vec<(f64, Point)> = found
+@@ -477,7 +514,10 @@
+ /// Turns three finders into sampling maps: one through each likely alignment
+ /// pattern (when the version has one), then one through the fourth corner.
+ /// `size_hint` overrides the estimated module count.
+-pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mut work: Option<&mut Work>, edges: &mut Edges) -> Vec<Location> {
++pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, work: Option<&mut Work>, edges: &mut Edges) -> Vec<Location> {
++    locate_cached(image, triple, size_hint, work, edges, &mut AlignmentCache::new())
++}
++pub(crate) fn locate_cached(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mut work: Option<&mut Work>, edges: &mut Edges, cache: &mut AlignmentCache) -> Vec<Location> {
+     let [top_left, top_right, bottom_left] = triple.map(|f| at(&f));
+     let across = run_module_size(image, top_left, top_right);
+     let down = run_module_size(image, top_left, bottom_left);
+@@ -557,7 +597,7 @@
+         let mut scored: Vec<Scored> = Vec::new();
+         for reach in [4.0, 8.0, 16.0] {
+             for estimate in &estimates {
+-                for p in find_alignments(image, edges, *estimate, wide, tall, reach, work.as_deref_mut()) {
++                for p in find_alignments_cached(image, edges, *estimate, wide, tall, reach, work.as_deref_mut(), cache) {
+                     // A point outside the enclosing square cannot be within the circle.
+                     let radius = module_size / 2.0;
+                     if scored.iter().any(|a| (a.p.x - p.x).abs() <= radius && (a.p.y - p.y).abs() <= radius && distance(a.p, p) <= radius) {
+@@ -594,6 +634,11 @@
+     let mut out: Vec<Location> = alignments.iter().map(|a| map(Some(*a), corner)).collect();
+     out.extend(corners.iter().map(|c| map(None, *c)));
+     out
++}
++
++#[cfg(test)]
++fn find_alignments(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f64, tall: f64, reach: f64, work: Option<&mut Work>) -> Vec<Point> {
++    find_alignments_cached(image, edges, estimate, wide, tall, reach, work, &mut AlignmentCache::new())
+ }
+ 
+ #[cfg(test)]
+@@ -738,6 +783,121 @@
+     use super::*;
+ 
+ 
++    fn selected_for(wide: f64) -> Vec<usize> {
++        let slack = wide * 0.6;
++        let mut out = Vec::new();
++        for lo in 1..=8 { for hi in lo..=8 {
++            if (lo as f64-wide).abs() < slack && (hi as f64-wide).abs() < slack { out.push(bucket(lo,hi)); }
++        }}
++        out
++    }
++    fn qualifying(row: &[u8], left: usize, right: usize, wide: f64, cache: &mut AlignmentRow) -> Vec<(i64,i64,i64,i64)> {
++        let changes: Vec<i32> = (1..row.len()).filter(|&i| row[i] != row[i-1]).map(|x|x as i32).collect();
++        let mut out=Vec::new(); let slack=wide*0.6;
++        alignment_row(&changes,row.len(),left as i64,right as i64,&selected_for(wide),row[0]==1,cache,|a,b,c,d| {
++            if [b-a,c-b,d-c].into_iter().all(|v| (v as f64-wide).abs()<slack) { out.push((a,b,c,d)); }
++        }); out
++    }
++    // Independent of edge indices and alignment_row: walk the pixels in each
++    // clipped window and collect its light-dark-light runs in order.
++    fn pixel_oracle(row: &[u8], left: usize, right: usize, wide: f64) -> Vec<(i64,i64,i64,i64)> {
++        let mut x=left; let mut out=Vec::new(); let slack=wide*0.6;
++        while x<=right && row[x]==1 { x+=1; }
++        while x<=right {
++            let start=x; while x<=right && row[x]==0 { x+=1; }
++            if x>right { break; } let ds=x;
++            while x<=right && row[x]==1 { x+=1; }
++            if x>right { break; } let de=x;
++            while x<=right && row[x]==0 { x+=1; } let end=x;
++            if [ds-start,de-ds,end-de].into_iter().all(|v| (v as f64-wide).abs()<slack) {
++                out.push((start as i64,ds as i64,de as i64,end as i64));
++            }
++            x=de;
++        }
++        out
++    }
++    #[test]
++    fn indexed_rows_match_scalar_exhaustively_and_at_chunk_edges() {
++        let mut built=0;
++        for width in 1..=8 { for bits in 0..(1usize<<width) {
++            let row:Vec<u8>=(0..width).map(|i|((bits>>i)&1) as u8).collect();
++            for left in 0..width { for right in left..width { for wide in [0.5,1.0,1.25,2.0,3.0,5.0] {
++                let mut cache=AlignmentRow { queried:false,chunks:Vec::new() };
++                let expected=pixel_oracle(&row,left,right,wide);
++                let a=qualifying(&row,left,right,wide,&mut cache);
++                let b=qualifying(&row,left,right,wide,&mut cache);
++                assert_eq!(a,expected);
++                assert_eq!(b,expected,"width={width} bits={bits} left={left} right={right} wide={wide}");
++                if !cache.chunks.is_empty() { built+=1; }
++            }}}
++        }}
++        assert!(built>0);
++        for width in [63,64,65,127,128,129,257] { for inverse in [0,1] {
++            for kind in 0..3 { let row:Vec<u8>=(0..width).map(|x| (((match kind {0=>x,1=>x/13,_=>(x*x+3*x)/7}) & 1) as u8)^inverse).collect();
++                let mut cache=AlignmentRow { queried:false,chunks:Vec::new() };
++                for &(left,right) in &[(0,width-1),(1,width-2),(width/3,width-1),(0,width/2)] { for wide in [1.0,2.0,7.9,9.0,13.0] {
++                    let mut scalar=AlignmentRow { queried:false,chunks:Vec::new() };
++                    let expected=pixel_oracle(&row,left,right,wide);
++                    assert_eq!(qualifying(&row,left,right,wide,&mut scalar),expected);
++                    assert_eq!(qualifying(&row,left,right,wide,&mut cache),expected,"width={width} inverse={inverse} kind={kind} left={left} right={right} wide={wide}");
++                }}
++                assert!(!cache.chunks.is_empty());
++            }
++        }}
++    }
++    #[test]
++    fn shared_cache_matches_reference_windows_and_work() {
++        let mut seed=0xabc235u32;
++        for case in 0..200 {
++            let mut next=||{seed=seed.wrapping_mul(1664525).wrapping_add(1013904223);seed};
++            let width=65+(next()%80) as usize; let height=19+(next()%25) as usize;
++            let data=(0..width*height).map(|_|(next()>>31) as u8).collect();
++            let image=BitImage {data,width,height}; let mut cache=AlignmentCache::new();let mut edges=Edges::new(&image);let mut refedges=Edges::new(&image);
++            for turn in 0..6 {
++                let estimate=Point{x:(next()%(width as u32*4)) as f64/4.0,y:(next()%(height as u32*4)) as f64/4.0};
++                let wide=0.5+(next()%72) as f64/8.0;let tall=0.5+(next()%72) as f64/8.0; let reach=[4.0,8.0,16.0][turn%3];
++                let (mut a,mut b)=(Work::default(),Work::default());
++                let expected=find_alignments_reference(&image,&mut refedges,estimate,wide,tall,reach,Some(&mut a));
++                let actual=find_alignments_cached(&image,&mut edges,estimate,wide,tall,reach,Some(&mut b),&mut cache);
++                assert_eq!(actual,expected,"case {case} turn {turn}");assert_eq!(a,b);
++            }
++        }
++    }
++
++    #[test]
++    fn decodes_thin_centres_at_both_quiet_margins() {
++        let qr=crate::encode::encode("A",&crate::encode::Options {version:Some(1),ecc:crate::symbol::Ecc::H,..Default::default()}).unwrap();
++        for centre in [1,2] { for pad in [4,5] {
++            let side=qr.size+2*pad; let mut data=vec![235u8;side*side];
++            for y in 0..qr.size { for x in 0..qr.size { if qr.modules[y*qr.size+x]!=0 {data[(y+pad)*side+x+pad]=20;} }}
++            for (ox,oy) in [(0,0),(qr.size-7,0),(0,qr.size-7)] {
++                for y in [2,4] {for x in 2..=4 {data[(pad+oy+y)*side+pad+ox+x]=235;}}
++                if centre==2 {data[(pad+oy+2)*side+pad+ox+3]=20;}
++                for x in 0..=6 {data[(pad+oy+7)*side+pad+ox+x]=20;}
++            }
++            let reading=crate::decode::decode(&data,side,side,1,side,crate::decode::Inversion::Both,None).expect("thin finder reading");
++            assert_eq!(reading.payload.text,"A");assert_eq!(reading.payload.bytes,b"A");
++        }}
++    }
++
++    #[test]
++    fn shared_size_hints_preserve_ordered_locations_and_work() {
++        let qr=crate::encode::encode("alignment cache", &crate::encode::Options {version:Some(5),..Default::default()}).unwrap();
++        let scale=3usize; let pad=4usize; let width=(qr.size+pad*2)*scale; let mut data=vec![0;width*width];
++        for y in 0..qr.size { for x in 0..qr.size { if qr.modules[y*qr.size+x]==1 { for dy in 0..scale { for dx in 0..scale { data[((y+pad)*scale+dy)*width+(x+pad)*scale+dx]=1; }}}}}
++        let image=BitImage { data,width,height:width };
++        let low=(pad as f64+3.5)*scale as f64;let high=(pad as f64+qr.size as f64-3.5)*scale as f64;
++        let f=|x,y|Finder { x,y,module_size:scale as f64,count:1 };
++        let triple=[f(low,low),f(high,low),f(low,high)];let mut cache=AlignmentCache::new();let mut edges=Edges::new(&image);
++        for size in [None,Some(33),Some(41),Some(29),Some(45)] {
++            let (mut a,mut b)=(Work::default(),Work::default());
++            let expected=locate(&image,&triple,size,Some(&mut a),&mut Edges::new(&image));
++            let actual=locate_cached(&image,&triple,size,Some(&mut b),&mut edges,&mut cache);
++            assert_eq!(actual,expected);assert_eq!(a,b);
++        }
++        assert!(cache.rows.iter().any(|r| !r.chunks.is_empty()));
++    }
++
+     #[test]
+     fn alignment_windows_match_original_run_walk() {
+         let mut seed = 0x1cafeu32;
+--- a/rust/src/decode.rs
++++ b/rust/src/decode.rs
+@@ -3,7 +3,7 @@
+ 
+ use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
+ use crate::locate::{find_finders, Edges, Finder, Work};
+-use crate::place::{estimate_size, finder_triples, locate, Location, Point};
++use crate::place::{estimate_size, finder_triples, locate_cached, AlignmentCache, Location, Point};
+ use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
+ use crate::symbol::{read_symbol, Payload, FORMAT_COORDS};
+ use std::cell::Cell;
+@@ -199,7 +199,8 @@
+         let triples = finder_triples(image, &found);
+         for ids in triples.iter().take(MAX_TRIPLES) {
+             let triple: [Finder; 3] = ids.map(|i| found[i]);
+-            let first = locate(image, &triple, None, work.as_deref_mut(), edges);
++            let mut alignment_cache = AlignmentCache::new();
++            let first = locate_cached(image, &triple, None, work.as_deref_mut(), edges, &mut alignment_cache);
+             // An estimate past version 40 by no more than the retries reach still
+             // tries the sizes of 177 or less among them.
+             let size = match first.first() {
+@@ -215,7 +216,7 @@
+                 let locations: &[Location] = if delta == 0 {
+                     &first
+                 } else {
+-                    retried = locate(image, &triple, Some(size + delta), work.as_deref_mut(), edges);
++                    retried = locate_cached(image, &triple, Some(size + delta), work.as_deref_mut(), edges, &mut alignment_cache);
+                     &retried
+                 };
+                 for location in locations {

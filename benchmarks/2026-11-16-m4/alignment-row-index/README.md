@@ -1,5 +1,10 @@
 # Alignment row observation
 
+The resulting compact-mask prototype preserved the checked results but made
+all seven noise workloads slower in both M4 processes. It was rejected. See
+`prototype.md`, `prototype.patch`, `paired1.json` and `paired2.json`; the
+following tools record the accounting that motivated that experiment.
+
 Pinned commit 497d12a91742899fe8ed2801c81bd720398cb94c. Source hash (sorted `.ts` filename + bytes) f0ab875c24cd74649a8e3635528f885e920567da8522649c05ed123f3da1ef01. This is observation only; it does not skip work or implement an index. The four thin-centre frames are engineering regressions, not the unevaluated fresh corpus.
 
 ```
