@@ -53,6 +53,11 @@ oracle cases passed. Logical noise storage falls 93.7%, but repeated transition
 extraction adds work and clean storage grows 5.76 times. The source ledger did
 not justify a compiled prototype; it is not a measured runtime regression.
 The coordinate representation and production module remain unchanged.
+An [invariant finder-leg observer](benchmarks/2026-11-16-m4/invariant-legs/README.md)
+also passed all 38 equality checks. It found 9,177 repeated pixel reads on main
+noise, but the absolute walks are short and the named ray closure accounts for
+only 0.1865% of the sampled profile. A rewrite is deferred rather than compiled
+for this noise objective; no measured speedup or regression is claimed.
 
 The Rust 1.96.0 compiler qualification used unchanged Rust source before the
 budget-guard change. Two paired M4 forks reduced clean-frame time by 10.5–11.0%,
@@ -127,6 +132,18 @@ independent photographic corpus. The receipt is
 The fourth candidate retained every outcome in
 [`candidate4-validation.json`](benchmarks/2026-11-16-m4/candidate4-validation.json).
 Single-pass accuracy-loop timings are diagnostic, not latency comparisons.
+
+The previously unused [256-case frozen corpus](benchmarks/2026-11-16-m4/fresh256-qualification/README.md)
+was then evaluated once against the unchanged accepted build: TypeScript/WASM
+read 170/224 positive QR frames correctly versus ZXing's 150/224, an 8.93
+percentage-point advantage. Both have zero wrong payloads and no false reads
+on all 32 negatives. Ours alone reads 22 frames; ZXing alone reads two version-40
+perspective/blur cases; neither reads 52. The largest wins are rotation (28/28
+versus 21/28) and finder erosion (18/28 versus 3/28). Both miss all 28 occluded
+finder cases. TypeScript/WASM payload outcomes agree on all 256. This is
+synthetic evidence from an independent encoder and the existing photograph
+renderer, not physical-camera acceptance. No tuning followed the results;
+the corpus is now regression data and cannot be reused as unseen validation.
 
 The third candidate's paired negative-frame run shows the exact uniform-image
 shortcut taking 1.26–1.29 ms across three blank levels, against ZXing's
@@ -663,7 +680,7 @@ work in that case. It still leaves a repeatable pattern slowdown. All three
 variants are rejected and this cache family is closed without further tuning.
 Production source, SPEC, vectors and the packaged WASM remain unchanged. These
 are comparisons against our own baseline, not new ZXing headline measurements.
-The fresh held-out corpus remains unevaluated.
+At that earlier checkpoint the fresh corpus remained unevaluated; its subsequent frozen-build qualification is recorded above.
 
 ### Alignment merge frontier: accepted exact optimisation
 
@@ -712,9 +729,12 @@ in the first fork and within 0.2% in the second. This is a modest scoped noise
 improvement, not a claim that every workload accelerates.
 
 A [256-frame synthetic stress set](benchmarks/2026-11-16-m4/fresh-stress-unevaluated/README.md)
-is frozen but has never been decoded. Both rejected filters failed separate
-engineering fixtures before this set was opened. Its generator, expected bytes
-and pixel hashes are retained for a future candidate; it is not accuracy evidence.
+was kept unevaluated through the optimisation experiments, then qualified
+against the frozen accepted build. Both rejected filters failed separate
+engineering fixtures before this set was opened. Its unchanged generator,
+expected bytes and pixel hashes now accompany the
+[first qualification](benchmarks/2026-11-16-m4/fresh256-qualification/README.md);
+the set is now regression evidence.
 
 ### Next acceptance targets
 
@@ -725,6 +745,13 @@ and pixel hashes are retained for a future candidate; it is not accuracy evidenc
 | 3 | Turn tracked scanning into a measured phone advantage | Real Android/iOS first-read and reacquisition latency, moving payloads, difficult lighting, sustained memory/CPU and energy use. |
 | 4 | Broaden independent accuracy evidence | A separately collected, frozen camera corpus, exact text/bytes, false-positive controls and per-image outcomes. Existing development and regression sets are not fresh validation. |
 | 5 | Make adoption and claims reproducible | Small documented entry points, package checks, copyable examples and versioned comparison commands/results. |
+
+A [pinned-source comparison of noise rejection](benchmarks/2026-11-16-m4/noise-search-comparison.md)
+identifies stronger early finder-shape validation and fewer resolution levels
+in the exact ZXing implementation tested. Our main noise still attempts 341
+sampling maps. Those source differences suggest measuring candidate survival
+through both pipelines next; their individual latency contributions have not
+been measured, and stricter rejection can lose damaged-code reads.
 
 A win on these finite suites is not evidence of superiority on every image or
 over every ZXing implementation. Current remaining losses include noisy-frame
