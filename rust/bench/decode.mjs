@@ -79,6 +79,14 @@ const typescript = (f) => {
   return decode({ data: f.data, width: f.width, height: f.height }, { channels: f.channels })
 }
 
+// The TypeScript finder objects may carry internal count/moduleSize fields.
+// Compare the complete public contract: its points consist of x and y only.
+const publicResult = (result) => {
+  if (result === undefined) return undefined
+  const point = (p) => p === undefined ? undefined : { x: p.x, y: p.y }
+  return { ...result, location: Object.fromEntries(Object.entries(result.location).map(([key, p]) => [key, point(p)])) }
+}
+
 const run = (cmd, argv) => {
   try {
     return execFileSync(cmd, argv, { encoding: 'utf8' }).trim()
@@ -149,7 +157,7 @@ for (const f of frames) {
   }
   // Compare complete results, including text. Unsupported character sets must
   // be benchmarked separately and must not silently pass this comparison.
-  deepStrictEqual(wasmResult, tsResult, `${f.name}: full decoded result differs`)
+  deepStrictEqual(publicResult(wasmResult), publicResult(tsResult), `${f.name}: full decoded result differs`)
   const nat = native.get(f.name)
   const agree = tsLength === wasmLength && (nat === undefined || nat.length === tsLength)
   if (!agree) mismatches++
