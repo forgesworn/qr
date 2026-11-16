@@ -877,14 +877,36 @@ through the `result` and `work` of the pictures that need a second look.
    every lattice point but the three at the finders `probed` grows by
    25 x 25 x 25, found or not, and `meshes` grows by one when any is
    found.
-4. A point (x, y) of the bent map lies in the lattice cell found for each
-   coordinate apart: the coordinate is held to the first and last centres,
-   and the cell is the first whose upper centre is not below it, so a
-   point on a centre belongs to the cell below it; `s` and `t` are its
-   fractions across and down that cell. Its offset is
+4. After all alignment searches, mark each measured node (state 2) trusted.
+   The three synthetic lattice corners are not measurements: the actual
+   finder centres are at module indices `(3, 3)`, `(size - 4, 3)` and
+   `(3, size - 4)`. For each corresponding corner cell, fit its synthetic
+   corner only when all three other nodes are measured. Evaluate that cell's
+   bilinear weights at the actual finder centre, using the actual centre
+   spacings. In row-major order, sum each other node's weight times its
+   offset; the fitted corner offset is the negative sum divided by its own
+   weight, separately for x and y. A non-finite or zero divisor, or a
+   non-finite fitted value, leaves the corner unchanged. Mark a fitted
+   corner trusted without changing its state or the measured-node count.
+   Fits never become search anchors; measured alignment offsets are unchanged.
+
+   A point (x, y) of the bent map lies in the lattice cell found for each
+   coordinate apart: initially hold the coordinate to `0 .. size - 1`,
+   and select the first cell whose upper centre is not below it, with the
+   first or last cell used beyond the lattice. A point on a centre belongs
+   to the cell below it; `s` and `t` are its fractions across and down.
+   When either coordinate lies outside the lattice and any of the cell's
+   four nodes is untrusted, recompute both cells and fractions with each
+   coordinate held to the first and last lattice centres, as before.
+   Trusted outer cells therefore continue linearly to legal module centres;
+   unsupported outer cells retain the previous clamp. The offset is
    `(1 - t) ((1 - s) o00 + s o10) + t ((1 - s) o01 + s o11)` in each of x
    and y, o being the cell's four corner offsets, and it is mapped as
-   (x, y) itself plus that offset, not the held coordinates.
+   (x, y) itself plus that offset, not the held coordinates. Fitting preserves
+   the finder anchors up to floating-point roundoff and changes interpolation
+   inside those three corner cells as well as outside the lattice. Different
+   sampled modules can change the reported correction count or which valid
+   map supplies the optional alignment location.
 5. The timing walk measures along the line from one module's centre to
    the next one's, in units of that step. For module k from 8 to
    `size - 9`, dark when k is even: the seed is the last measured offset
@@ -1135,6 +1157,9 @@ among them.
   bound of 92 pattern searches per second look and 5,750,000 points a frame,
   each interpolating four pixels, whatever the picture's size. Frames using
   only ordinary meshes retain the 2,875,000-point bound.
+- Boundary continuation adds one trusted flag per lattice node (at most 49)
+  and three four-node corner fits. It adds no image probes, map searches,
+  alignment searches or refinement passes.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

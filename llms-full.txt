@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.4
+# @forgesworn/qr 0.3.5
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -83,11 +83,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.4'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.4/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.5'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.5/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.4` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.5` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -728,7 +728,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.4") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.5") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -758,7 +758,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.4`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.5`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -906,15 +906,16 @@ These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
 Both readers miss all 28 finder-occlusion cases in that stress set. Version
-0.3.3 adds one correct dense curved photograph, preserving every earlier
-success across 888 checked cases. It also reads seven of 16 transformed
-versions of that photo, versus none before. Version 0.3.4 raises that to
-14/16 by recovering seven inverted views. The unmirrored 180-degree view
-remains unread in both polarities. Across all 2,944 transformations of the
-184-photo set, correct reads rise from 2,863 to 2,870, without lost reads
+0.3.5 reads all 16 rotated, mirrored and inverted views of one dense curved
+photograph, versus 14/16 in 0.3.4. Across all 2,944 transformations of the
+184-photo set, correct reads rise from 2,870 to 2,872, without lost reads
 or wrong text; these are related transformations, not independent photographs.
-A separate new family of 18 synthetic curved sheets remains unread by both
-QR versions. This is a measured improvement, not general curvature coverage.
+Trusted mesh continuation also recovers two of 18 evaluated curved sheets.
+On a separate 96-case distortion set frozen before evaluation, QR improves
+from 29 to 30 reads, while ZXing reads 42. Curvature remains a limitation,
+and these measurements do not establish general curvature coverage.
+Correction counts can change as sampling improves; the successful placement
+can also supply a different optional alignment location.
 The previously qualified 160-case set is now regression data: QR remains
 69/128 on positives, with all 32 negatives rejected. The additional curvature
 pass produces no gain on those cases.
@@ -936,6 +937,10 @@ medians within 0.5%. Recovering the newly readable curved photo takes about
 seven inverted views; the original inverted view takes about 22.6 ms in WASM
 versus a previous 12.6 ms miss. Main-noise WASM medians remain within 0.5%
 in its two paired runs. The inverse image stays live longer during recovery.
+Version 0.3.5 keeps main-noise WASM medians within 0.5% in two paired M4 runs.
+Its newly readable rotated photo succeeds in about 21.7 ms, compared with
+roughly 52.2 ms spent failing before. This is a specific recovery improvement,
+not a general speed claim.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful
@@ -973,7 +978,7 @@ the TypeScript and optional WASM backends on your actual devices.
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. The 0.3.4 release
+published on Maven Central as `io.github.forgesworn:qr`. The 0.3.5 release
 aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
 fix for the 0.3.0 library; its version number is not reused.
 
@@ -996,9 +1001,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.4
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.4
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.4
+npm install --save-exact @forgesworn/qr@0.3.5
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.5
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.5
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -1008,12 +1013,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.4
+deno add jsr:@forgesworn/qr@0.3.5
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.4'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.4/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.5'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.5/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1028,7 +1033,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.4") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.5") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -1037,7 +1042,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.4
+cargo add forgesworn-qr@0.3.5
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and
@@ -2125,14 +2130,36 @@ through the `result` and `work` of the pictures that need a second look.
    every lattice point but the three at the finders `probed` grows by
    25 x 25 x 25, found or not, and `meshes` grows by one when any is
    found.
-4. A point (x, y) of the bent map lies in the lattice cell found for each
-   coordinate apart: the coordinate is held to the first and last centres,
-   and the cell is the first whose upper centre is not below it, so a
-   point on a centre belongs to the cell below it; `s` and `t` are its
-   fractions across and down that cell. Its offset is
+4. After all alignment searches, mark each measured node (state 2) trusted.
+   The three synthetic lattice corners are not measurements: the actual
+   finder centres are at module indices `(3, 3)`, `(size - 4, 3)` and
+   `(3, size - 4)`. For each corresponding corner cell, fit its synthetic
+   corner only when all three other nodes are measured. Evaluate that cell's
+   bilinear weights at the actual finder centre, using the actual centre
+   spacings. In row-major order, sum each other node's weight times its
+   offset; the fitted corner offset is the negative sum divided by its own
+   weight, separately for x and y. A non-finite or zero divisor, or a
+   non-finite fitted value, leaves the corner unchanged. Mark a fitted
+   corner trusted without changing its state or the measured-node count.
+   Fits never become search anchors; measured alignment offsets are unchanged.
+
+   A point (x, y) of the bent map lies in the lattice cell found for each
+   coordinate apart: initially hold the coordinate to `0 .. size - 1`,
+   and select the first cell whose upper centre is not below it, with the
+   first or last cell used beyond the lattice. A point on a centre belongs
+   to the cell below it; `s` and `t` are its fractions across and down.
+   When either coordinate lies outside the lattice and any of the cell's
+   four nodes is untrusted, recompute both cells and fractions with each
+   coordinate held to the first and last lattice centres, as before.
+   Trusted outer cells therefore continue linearly to legal module centres;
+   unsupported outer cells retain the previous clamp. The offset is
    `(1 - t) ((1 - s) o00 + s o10) + t ((1 - s) o01 + s o11)` in each of x
    and y, o being the cell's four corner offsets, and it is mapped as
-   (x, y) itself plus that offset, not the held coordinates.
+   (x, y) itself plus that offset, not the held coordinates. Fitting preserves
+   the finder anchors up to floating-point roundoff and changes interpolation
+   inside those three corner cells as well as outside the lattice. Different
+   sampled modules can change the reported correction count or which valid
+   map supplies the optional alignment location.
 5. The timing walk measures along the line from one module's centre to
    the next one's, in units of that step. For module k from 8 to
    `size - 9`, dark when k is even: the seed is the last measured offset
@@ -2383,6 +2410,9 @@ among them.
   bound of 92 pattern searches per second look and 5,750,000 points a frame,
   each interpolating four pixels, whatever the picture's size. Frames using
   only ordinary meshes retain the 2,875,000-point bound.
+- Boundary continuation adds one trusted flag per lattice node (at most 49)
+  and three four-node corner fits. It adds no image probes, map searches,
+  alignment searches or refinement passes.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

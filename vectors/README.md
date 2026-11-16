@@ -68,7 +68,7 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then fifteen in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then seventeen in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
@@ -76,7 +76,13 @@ symbol read by the second look, a larger one read through the mesh, a
 symbol of zero codewords, and three shaded light-on-dark symbols requiring
 inverted-luminance thresholds, including mirrored and reduced-size reads,
 version-directed recovery of a blurred version-40 symbol, and recovery of a
-perspective frame whose correct finder triple ranks seventh).
+perspective frame whose correct finder triple ranks seventh, and two curved
+sheets requiring trusted mesh continuation beyond the alignment lattice).
+
+The mesh-boundary regeneration adds those two sheets at two and three pixels
+per module. They fail with the previous clamped mesh and recover after fitting
+the synthetic corners to the actual finder centres and continuing trusted
+outer cells. Every earlier frame, stage, result and work count is unchanged.
 
 The inverted-luminance fallback regeneration adds those three frames and
 increases the cross-check work for the existing refused close-up format and

@@ -40,15 +40,16 @@ These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
 Both readers miss all 28 finder-occlusion cases in that stress set. Version
-0.3.3 adds one correct dense curved photograph, preserving every earlier
-success across 888 checked cases. It also reads seven of 16 transformed
-versions of that photo, versus none before. Version 0.3.4 raises that to
-14/16 by recovering seven inverted views. The unmirrored 180-degree view
-remains unread in both polarities. Across all 2,944 transformations of the
-184-photo set, correct reads rise from 2,863 to 2,870, without lost reads
+0.3.5 reads all 16 rotated, mirrored and inverted views of one dense curved
+photograph, versus 14/16 in 0.3.4. Across all 2,944 transformations of the
+184-photo set, correct reads rise from 2,870 to 2,872, without lost reads
 or wrong text; these are related transformations, not independent photographs.
-A separate new family of 18 synthetic curved sheets remains unread by both
-QR versions. This is a measured improvement, not general curvature coverage.
+Trusted mesh continuation also recovers two of 18 evaluated curved sheets.
+On a separate 96-case distortion set frozen before evaluation, QR improves
+from 29 to 30 reads, while ZXing reads 42. Curvature remains a limitation,
+and these measurements do not establish general curvature coverage.
+Correction counts can change as sampling improves; the successful placement
+can also supply a different optional alignment location.
 The previously qualified 160-case set is now regression data: QR remains
 69/128 on positives, with all 32 negatives rejected. The additional curvature
 pass produces no gain on those cases.
@@ -70,6 +71,10 @@ medians within 0.5%. Recovering the newly readable curved photo takes about
 seven inverted views; the original inverted view takes about 22.6 ms in WASM
 versus a previous 12.6 ms miss. Main-noise WASM medians remain within 0.5%
 in its two paired runs. The inverse image stays live longer during recovery.
+Version 0.3.5 keeps main-noise WASM medians within 0.5% in two paired M4 runs.
+Its newly readable rotated photo succeeds in about 21.7 ms, compared with
+roughly 52.2 ms spent failing before. This is a specific recovery improvement,
+not a general speed claim.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

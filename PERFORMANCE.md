@@ -1,5 +1,56 @@
 # Performance and verification
 
+## 0.3.5 mesh boundary continuation
+
+Alignment patterns stop short of a QR symbol's edges. Previously the mesh held
+their outer offsets constant and treated three synthetic lattice corners as
+finder centres. The decoder now fits those corners to the actual finder
+positions and continues fully trusted outer cells to the symbol boundary.
+Cells containing predicted nodes retain the previous clamp. This changes the
+geometry after alignment acquisition, with no additional searches or passes.
+
+| Dataset | QR 0.3.4 | QR 0.3.5 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Curved target: rotations, mirrors and both polarities | 14/16 | **16/16** | — |
+| All 184 photos with those 16 transformations | 2,870/2,944 | **2,872/2,944** | — |
+| Original photographs | 180/184 | 180/184 | 171/184 |
+| Evaluated synthetic curved sheets | 0/18 | **2/18** | — |
+| Fresh distortion set, frozen before evaluation | 29/96 | **30/96** | **42/96** |
+
+The two photo gains are related views of one image. The fresh set uses different
+versions, scales, curves, orientations and polarities from the evaluated sheets;
+it is now a regression set. ZXing remains ahead on it. These results establish
+limited improvements, not universal curvature support or superiority.
+
+No previously correct read is lost, no incorrect QR payload is found, and all
+64 negative controls remain rejected in the 888-case regression. Correction
+counts change on eight previously readable regression cases; one also adds an
+optional alignment point. Across transformed photos, 49 previous results change
+only their correction count. Payloads and other fields are preserved. Packaged
+WASM matches all declared TypeScript result fields across the 888 cases and
+2,944 transformed photographs. Photo oracles independently supply text;
+synthetic cases also check bytes.
+
+The regenerated conformance pack adds two curved sheets; every prior frame,
+stage, result and work count remains unchanged. Boundary fitting adds at most
+49 trusted flags and three four-node fits per mesh. The 720-map,
+four-second-look and 5,750,000-alignment-probe limits remain unchanged.
+
+Two paired M4 Max/native Node 24.21.0 runs show main-noise WASM medians
+changing by +0.13% and +0.41%; clean medians change by +0.13% and +0.61%.
+Blank medians vary by +0.67% and -0.06%. TypeScript main-noise medians change
+by -0.13% and -0.08%, with clean/blank variation within 1.1%. These small
+differences do not establish a general speed improvement.
+
+The newly readable rotated photo succeeds in 21.63–21.73 ms in WASM,
+versus the previous 52.15–52.17 ms miss; TypeScript takes 47.19–47.49 ms
+versus 111.74–113.38 ms. Both WASM instances finish the measured sequence
+with 14,483,456 bytes of linear-memory capacity, which is not a peak live
+allocation measurement. The module grows by 3,522 bytes to 227,276 bytes,
+SHA-256 `6e749ecc264e41d8a4eecc59552f4b00d445cdea02cf789ce844d3f9384b649e`.
+
+See the [0.3.5 evidence and reproduction commands](benchmarks/2026-11-16-m4/mesh-boundary-continuation/README.md).
+
 ## 0.3.4 inverted curved-map recovery
 
 The inverse-luminance fallback now retains qualifying curved maps for a final

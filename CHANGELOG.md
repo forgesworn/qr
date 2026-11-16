@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.5
+
+- Continue fully trusted alignment cells to the symbol boundary, fitting the
+  three synthetic corners to the actual finder centres. Unmeasured outer
+  cells retain the previous clamp; no search budgets or acceptance gates change.
+- Recover both remaining views of the dense curved photograph: 16/16 target
+  transformations and 2,872/2,944 across the photo set, with no lost reads.
+  Recover two of the 18 evaluated curved sheets and one additional image in
+  a separate 96-case distortion set. Significant curvature failures remain.
+- Keep TypeScript, Rust, packaged WASM and Kotlin aligned through two new shared
+  conformance sheets and stronger orientation tests. Previously readable
+  payloads remain unchanged; correction counts and optional alignment locations
+  can change because sampling or the successful placement changes.
+
 ## 0.3.4
 
 - Preserve curved-map candidates from the existing inverse-luminance fallback
