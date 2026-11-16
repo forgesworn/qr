@@ -136,8 +136,9 @@ private fun crossCheck(
     originalTotal: Int,
     tolerance: Double = 0.5,
     work: Work? = null,
+    counts: IntArray,
 ): Double {
-    val counts = intArrayOf(0, 0, 0, 0, 0)
+    counts.fill(0)
     try {
         return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
     } finally {
@@ -235,17 +236,18 @@ internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? =
     fun file(i: Int) {
         cells.getOrPut(down(found[i].y) * columns + across(found[i].x)) { ArrayList() }.add(i)
     }
+    val crossCounts = IntArray(5)
     fun consider(counts: IntArray, y: Int, end: Int): Boolean {
         val total = counts.sum()
         var cx = centreFromEnd(counts, end.toDouble())
         val maxCount = counts[2]
-        val dy = crossCheck(image, floor(cx).toInt(), y, 0, 1, maxCount, total, tolerance, work)
+        val dy = crossCheck(image, floor(cx).toInt(), y, 0, 1, maxCount, total, tolerance, work, crossCounts)
         if (dy.isNaN()) return false
         val cy = y + dy
-        val dx = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 0, maxCount, total, tolerance, work)
+        val dx = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 0, maxCount, total, tolerance, work, crossCounts)
         if (dx.isNaN()) return false
         cx = floor(cx) + dx
-        val diagonal = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 1, maxCount * 2, total, tolerance + 0.25, work)
+        val diagonal = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 1, maxCount * 2, total, tolerance + 0.25, work, crossCounts)
         if (diagonal.isNaN()) return false
         val moduleSize = total / 7.0
         // The earliest stored candidate within a module, of a like module size, takes this sighting.

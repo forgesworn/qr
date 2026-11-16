@@ -174,12 +174,13 @@ private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Bud
     val edges = Edges(bits)
     val strict = f > 1 || strictOverride
     val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
+    val scratch = ReadScratch()
     if (inversion != Inversion.INVERTED) {
-        val found = search(bits, edges, false, candidates, budget, strict, f, work)
+        val found = search(bits, edges, false, candidates, budget, strict, f, work, scratch)
         if (found != null) return found
     }
     if (inversion != Inversion.NORMAL) {
-        val found = search(invert(bits), edges, true, candidates, budget, strict, f, work)
+        val found = search(invert(bits), edges, true, candidates, budget, strict, f, work, scratch)
         if (found != null) return found
     }
     // Nothing read: look again at the few maps whose format copies agreed.
@@ -213,6 +214,7 @@ private fun search(
     strict: Boolean,
     f: Int,
     work: Work?,
+    scratch: ReadScratch,
 ): DecodeResult? {
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
@@ -232,7 +234,7 @@ private fun search(
                         work.maps++
                         if (f > 1) work.reduced++
                     }
-                    val result = read(image, location, inverted, candidates, strict, f)
+                    val result = read(image, location, inverted, candidates, strict, f, scratch)
                     if (result != null) return result
                 }
             }
@@ -247,6 +249,10 @@ private fun over(image: BitImage, triple: Array<Finder>): Int? {
     return if (size > 177 && size <= 177 + 8) size else null
 }
 
+private class ReadScratch {
+    var modules = ByteArray(0)
+}
+
 private fun read(
     image: BitImage,
     location: Placement,
@@ -254,9 +260,13 @@ private fun read(
     candidates: MutableList<Retry>,
     strict: Boolean,
     f: Int,
+    scratch: ReadScratch,
 ): DecodeResult? {
     val size = location.size
-    val modules = ByteArray(size * size) { 2 } // Unsampled, then 0 for light or 1 for dark.
+    val length = size * size
+    if (scratch.modules.size < length) scratch.modules = ByteArray(length)
+    val modules = scratch.modules
+    modules.fill(2, 0, length) // Unsampled, then 0 for light or 1 for dark.
     val m = location.matrix
     val sample = ModuleReader { x, y ->
         val index = y * size + x

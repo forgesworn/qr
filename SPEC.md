@@ -401,6 +401,12 @@ planes; reduction sums remain integers until the specified final rounding.
 This representation does not change luminance values, stage results or work
 counts.
 
+Kotlin reuses five cross-check counters within each finder scan and the
+module-sampling buffer within each picture-size search. Counters and the
+active module region are reset before every use. These buffers are local
+to the decode call; returned payloads and retained retry locations do not
+refer to them.
+
 ### Binarisation, exactly
 
 Step 2, as `vectors/conformance.json` checks it (`bits`).
