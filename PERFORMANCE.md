@@ -53,7 +53,13 @@ packed consumer gate. [Compiler qualification](benchmarks/2026-11-16-m4/compiler
 records small mixed tail results and the final provenance.
 The initial Linux mismatch was traced to local Rust standard-library source
 paths. The build now canonicalises those paths; the final M4 module matches the
-captured Linux binary byte-for-byte. The strict CI reproduction gate remains.
+captured Linux binary byte-for-byte. The unchanged strict Linux reproduction
+gate passes at `8aca1e4` in [CI run 43883912412](https://github.com/forgesworn/qr/actions/runs/43883912412).
+
+The [exact-module noise profile](benchmarks/2026-11-16-m4/compiler196/profile/README.md)
+places about 45% of sampled self time in finder scanning/cross-checks/row edges
+and 31% in placement/alignment scoring. Those are diagnostic proportions, not
+competitive latency measurements.
 
 The latest matched run uses that Rust 1.96.0 WASM (median latency, lower is better):
 

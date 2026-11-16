@@ -1,0 +1,11 @@
+{
+  "compilerVerbose": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "flags": [
+    "--remap-path-prefix=/private/tmp/qr-next-20261116/repo/=.",
+    "--remap-path-prefix=<rustc-sysroot>/lib/rustlib/src/rust/=/rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/"
+  ],
+  "sha256": "7ac605980c88eaabc08ab9b366651b6921a2bc6525e39b0f3c829fc7500c7ed7",
+  "bytes": 221663,
+  "originalReceiptSha256": "9650de61027a6b918f76ac260919024899b9d24a3320393a47bb8af56f2e1e8c",
+  "redactions": "The local compiler sysroot prefix is replaced with <rustc-sysroot>; the script resolves it with rustc --print sysroot."
+}

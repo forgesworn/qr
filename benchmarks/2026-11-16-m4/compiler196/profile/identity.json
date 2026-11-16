@@ -1,0 +1,15 @@
+{
+  "frame": {
+    "name": "noise",
+    "width": 1280,
+    "height": 720,
+    "rgbaSha256": "a8f45cdbc1cf37281e9dcc8da4f65db2f662778802cbee394208d97bbe31889f"
+  },
+  "files": {
+    "scripts/profile-decode.mjs": "741520de8394e8cdec1d5acac66bc38e20c6e0c31ca9246cf6154aafc8482021",
+    "scripts/comparison-fixtures.mjs": "7509f3755638a46be75c777b223ffe4be8520ac323b761ed3dd664fe3faddf55",
+    "benchmarks/2026-11-16-m4/alignment-frontier/map-profile-names.mjs": "af7382d6006ef5e5095e0497a12b9702c18d7a57288cf0aa85fe411b41b4cbcb",
+    "../compiler196-final.cpuprofile": "51484de4ec2ac5ec8903221f24ddacaf3266a25c89861f3a07241011dc01b5d2",
+    "../build-named.mjs": "9315bc4c5fec054f2f32463a0acca990d30b75c07b52048ac45a942c6bca0931"
+  }
+}

@@ -38,7 +38,10 @@ selected build. The resulting M4 module matches the captured Linux module
 byte-for-byte. It contains no `/Users/`, `/home/runner/` or local rustlib source
 prefixes. The final source hash is
 `0cbed56e671163c7233acbfe1074c345b73466bcc7077026e89ea4be61ffa51c`.
-The updated manifest must also pass the unchanged independent CI rebuild gate.
+The updated manifest passes the unchanged independent Linux rebuild gate in
+[CI run 43883912412](https://github.com/forgesworn/qr/actions/runs/43883912412)
+at revision `8aca1e4`; its Rust job also passes standalone WASM results, options,
+encoding, native/WASM grids and renderings, and repeated-read memory checks.
 
 The verifier now distinguishes binary and provenance mismatches, logs both
 identities and the first differing byte, and retains a failed Linux artefact
@@ -136,3 +139,8 @@ to the saved Rust 1.94.1 module during comparison and restored afterwards.
 Browser verification uses the final candidate in `dist/qr.wasm` and closes its
 browser, server and profile. The fresh 256-case held-out corpus is untouched.
 No physical camera, mobile-energy or universal-superiority claim is made.
+
+The [final-module noise profile](profile/README.md) attributes about 45% of
+sampled self time to finder scanning, cross-checks and row edges, and about
+31% to placement and alignment scoring. It identifies the next investigation
+areas; it establishes no further performance gain.
