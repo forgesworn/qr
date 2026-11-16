@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run build
-      - run: npm pack --dry-run
+      - run: npm run check:package
 
   kotlin:
     runs-on: ubuntu-latest
@@ -75,9 +75,12 @@ jobs:
         working-directory: .
       - run: npm run build
         working-directory: .
-      # The runner's own stable toolchain; the crate has no dependencies, and the tests' three are locked.
+      # Match the frozen module's compiler and verify the distributed bytes on Linux.
+      - run: rustup toolchain install 1.94.1 --profile minimal --target wasm32-unknown-unknown
+      - run: rustup override set 1.94.1
       - run: cargo test --locked
-      - run: rustup target add wasm32-unknown-unknown && cargo build --locked --release --target wasm32-unknown-unknown
+      - run: npm run check:wasm
+        working-directory: .
       - name: Compare WebAssembly results, options and encoding
         run: |
           node bench/wasm-pack.mjs

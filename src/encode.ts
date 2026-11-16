@@ -1,3 +1,5 @@
+import { QrCapacityError } from './errors.js'
+export { QrCapacityError } from './errors.js'
 import { ALIGNMENT_CENTRES, EC_BLOCKS } from './tables.js'
 
 /** Error correction level: about 7, 15, 25 or 30 per cent of codewords recoverable. */
@@ -51,11 +53,6 @@ export interface QrCode {
   readonly size: number
   /** Row-major modules, `size * size` entries, 1 for dark. */
   readonly modules: Uint8Array
-}
-
-/** Thrown when the data does not fit the requested or any version. */
-export class QrCapacityError extends RangeError {
-  override readonly name = 'QrCapacityError'
 }
 
 /** True if the module at column `x`, row `y` is dark; false outside the symbol (the quiet zone is light). */

@@ -13,8 +13,8 @@ universal superiority is established by a desktop microbenchmark.
 - [x] Cheaper failed decoder candidates, preserving recovered reads and work bounds.
 - [x] Optional reusable camera decoder session, tested for changed frames,
   movement, polarity, independent sessions and stale-result rejection.
-- [ ] Usable optional browser WASM backend, full-result timing and memory
-  lifecycle checks; investigate SIMD only where measurements justify it.
+- [x] Usable optional browser WASM backend, full-result timing and memory
+  lifecycle checks. SIMD evaluation recorded below when complete.
 - [ ] Per-photograph accuracy regression gate and independent evaluation.
 - [ ] TypeScript, Kotlin, Rust and WASM conformance; package/API documentation.
 - [ ] Review final changes, commit, prepare a PR and run hosted checks.
@@ -72,28 +72,44 @@ repository release workflow, never manual npm publishing.
   evaluation and final package/hosted checks. No physical device results or
   independent competitor ranking have been established.
 
-### Next implementation notes
+### Optional WASM package
 
-The existing `rust/bench/loader.js` is Node-only and allocates/frees each input.
-Move the supported browser interface into a separately imported package entry,
-with reusable input memory, result ownership, explicit disposal and documented
-Rust character-set limitations. Preserve the dependency-free default entry.
-A binary must be included and checked against its Rust source; do not require
-package consumers to install Rust or fetch an unpinned remote module.
+`@forgesworn/qr/wasm` exports `loadWasm(bytes)` and `wasmUrl`. Each instance
+provides full encoder/decoder results, reusable input allocation, independent
+copied outputs, reset, disposal and memory accounting. Shared validation and
+capacity errors live in small modules so importing the WASM entry does not
+import the TypeScript core. Rust's character-set limitations remain explicit.
+The module performs no fetching, telemetry or access to cameras itself.
 
-The anvil reusable release workflow was inspected at `v0`: build-a and build-b
-both run `npm ci` then `npm run build`, but build-b does not run test-command.
-Generating the distributed WASM only in test-command would therefore break
-reproducible tarballs. Resolve packaging in the common build path (for example,
-a small checked-in, reproducibly verified WASM asset copied into dist), and
-validate the actual packed package. The current local compiler is Rust 1.94.1;
-the current release WASM is 209,055 bytes. No release workflow was changed.
+The 195,192-byte module is checked in with compiler/source/binary hashes.
+`npm run build` verifies and copies it without needing Rust. `check:wasm`
+rebuilds with Rust 1.94.1 and compares bytes; this also runs on Linux CI.
+The anvil release workflow builds two independent npm tarballs, so both build
+paths now include the same verified asset. Release publication remains through
+the existing workflow, never manual npm publication.
 
-Task-created caches still needed for final verification: `vectors/photos-cache`,
-`rust/target`, Kotlin build output (inspect pre-existing cache ownership before
-cleanup), and `/tmp/qr-performance-Eoi9WV`. No task server, emulator or fixture
-process is running. The original checkout was clean and detached at `91dd037`;
-`qr-release` is a separate pre-existing worktree and must be preserved.
+Verified locally: real packed-package installation and exports, complete encoder
+vectors and conformance frames, metadata, modes and error paths, independent
+instances, output ownership after memory growth/disposal, and bounded memory
+through 1,200 rounds. All 424 tests passed with required photos before one extra
+mode/options test was added; that focused suite now passes all seven tests.
+Chrome 157 successfully loaded the asset over localhost, read full frames on
+the page and in a worker, and imported only image/error helpers with the WASM
+entry. Browser-native QR detection is available on this Mac. This is desktop
+browser evidence, not physical-phone acceptance.
+
+Current comparative evaluation uses jsQR 1.4.0, zxing-wasm 3.1.7 (QR-only,
+one symbol, tryHarder/rotate/invert/downscale, plain text) and qrcode 1.5.4.
+Rivals are installed only in temporary external scratch. The new 96-frame
+corpus uses qrcode-generated symbols with a fixed seed, rotation, shear,
+contrast, noise, occasional blur and inversion; it was fixed before inspecting
+results and has not been tuned against failures. It is synthetic, not fresh
+camera evidence. Existing photographs are regression evidence, not held-out data.
+
+Task-owned scratch: `/tmp/qr-performance-Eoi9WV`, photograph cache, and Rust
+and Kotlin build output created by this task. Preserve pre-existing Gradle
+caches and the neighbouring `qr-release` worktree. Browser profiles and
+local servers are removed by their runners. Final report/CI/cleanup remain.
 
 ## Initial before/after measurements
 

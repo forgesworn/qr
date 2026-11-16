@@ -62,6 +62,10 @@ pub fn front(data: &[u8], width: usize, height: usize, channels: usize) -> u32 {
 
 #[cfg(target_arch = "wasm32")]
 mod exports {
+    /// The browser adapter's ABI version. Changes when existing exports change meaning.
+    #[no_mangle]
+    pub extern "C" fn qr_abi_version() -> u32 { 1 }
+
     /// Reserves `len` bytes of WebAssembly memory and returns their address.
     #[no_mangle]
     pub extern "C" fn alloc(len: usize) -> *mut u8 {
@@ -508,6 +512,42 @@ mod exports {
     #[no_mangle]
     pub unsafe extern "C" fn qr_mode(handle: u32) -> u32 {
         (*(handle as usize as *const QrCode)).mode as u32 + 1
+    }
+
+    /// The level: 0 L, 1 M, 2 Q, 3 H.
+    ///
+    /// # Safety
+    /// As `qr_size`.
+    #[no_mangle]
+    pub unsafe extern "C" fn qr_level(handle: u32) -> u32 {
+        (*(handle as usize as *const QrCode)).ecc as u32
+    }
+
+    /// Number of data segments.
+    ///
+    /// # Safety
+    /// As `qr_size`.
+    #[no_mangle]
+    pub unsafe extern "C" fn qr_segments(handle: u32) -> u32 {
+        (*(handle as usize as *const QrCode)).segments.len() as u32
+    }
+
+    /// Segment mode: 1 numeric, 2 alphanumeric, 3 byte; 0 for an invalid index.
+    ///
+    /// # Safety
+    /// As `qr_size`.
+    #[no_mangle]
+    pub unsafe extern "C" fn qr_segment_mode(handle: u32, index: u32) -> u32 {
+        (&(*(handle as usize as *const QrCode)).segments).get(index as usize).map_or(0, |s| s.mode as u32 + 1)
+    }
+
+    /// Segment character count (byte count in byte mode); 0 for an invalid index.
+    ///
+    /// # Safety
+    /// As `qr_size`.
+    #[no_mangle]
+    pub unsafe extern "C" fn qr_segment_count(handle: u32, index: u32) -> u32 {
+        (&(*(handle as usize as *const QrCode)).segments).get(index as usize).map_or(0, |s| s.count as u32)
     }
 
     /// The address of the modules: `size * size` bytes, 1 for dark, valid until `qr_free`.

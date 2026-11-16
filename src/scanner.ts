@@ -1,4 +1,5 @@
-import { decodeCounted, imageLayout, type DecodeOptions, type DecodeResult, type DecodeWorkspace, type ImageLike } from './decode.js'
+import { imageLayout } from './image.js'
+import { decodeCounted, type DecodeOptions, type DecodeResult, type DecodeWorkspace, type ImageLike } from './decode.js'
 
 /** A reusable, synchronous decoder for consecutive frames from one camera. */
 export interface Decoder {

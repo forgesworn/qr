@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Faster mask scoring and earlier rejection of uncorrectable decoder blocks in
+  TypeScript, Kotlin and Rust, preserving encoded matrices and decoded results.
+- Optional `createDecoder()` camera session with reusable luminance storage,
+  tracked-region search, full-frame fallback and explicit reset.
+- Separately imported `@forgesworn/qr/wasm` backend with a bundled, reproducibly
+  verified module, complete result extraction and explicit memory lifecycle.
+  The Rust character-set limitations still apply.
+- Per-photograph regression checks and reproducible comparative benchmarks.
+
 ## 0.2.0
 
 - CI downloads and verifies the real-photograph set for both TypeScript

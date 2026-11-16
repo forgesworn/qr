@@ -681,15 +681,42 @@ and the whole decoder, with no dependencies. It is held to the same
 vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
-on all 2,412. It is not published as a crate or a package yet.
+on all 2,412. It is not published as a standalone Rust crate yet.
 
-It builds for `wasm32-unknown-unknown` without a binding generator, to a
-module of about 200 kB, or about 70 kB compressed for transfer, and on the
-machine the project is measured on that build decodes in roughly half the
-time the TypeScript takes. The module returns the whole result of a read
-and was compared with the TypeScript in the same way, with the same
-outcome. It is not packaged: `rust/bench/loader.js` is the small loader
-the comparisons use.
+The npm package includes an optional WebAssembly backend, imported separately
+from the TypeScript entry. The module is about 195 kB before compression.
+Fetch and instantiate it once, then reuse it for frames:
+
+```ts
+import { loadWasm, wasmUrl } from '@forgesworn/qr/wasm'
+
+const response = await fetch(wasmUrl)
+if (!response.ok) throw new Error(`QR module: HTTP ${response.status}`)
+const qr = await loadWasm(await response.arrayBuffer())
+try {
+  const symbol = qr.encode('https://example.com/')
+  const found = qr.decodeModules(symbol.modules, symbol.size)
+  console.log(found?.text)
+  // qr.decode(imageData) accepts the same pixels and options as decode().
+} finally {
+  qr.dispose() // stop using this instance
+}
+```
+
+In Node, replace the fetch with `readFile(new URL(wasmUrl))` from
+`node:fs/promises`. `loadWasm` performs no network or filesystem access. With a
+bundler, ensure it copies `new URL('./qr.wasm', import.meta.url)` as an asset,
+or supply bytes from your own deployed copy of `@forgesworn/qr/qr.wasm`.
+Serve the module from your own origin; no CDN or runtime dependencies are used.
+
+The backend exposes `encode`, `decode`, `decodeModules`, `reset`, `dispose`
+and `memoryBytes`. It copies outputs before freeing native result handles,
+so earlier results survive later calls and disposal. Each instance reuses an
+input allocation; `reset()` frees that allocation and leaves the instance
+usable. WebAssembly memory retains its high-water size until the instance is
+collected. `dispose()` releases the instance and rejects further operations;
+it is safe to call repeatedly. Use one instance per worker and a worker for
+camera frames. This backend does not use the TypeScript session's tracked region.
 
 The Rust port carries no character tables. `bytes` is always exact, but
 `text` holds less than in the other ports: a kanji character is U+FFFD,
@@ -711,10 +738,19 @@ TypeScript and time it.
 ```bash
 npm install
 npm run check              # typecheck and tests
-npm run build              # compile to dist/
+npm run build              # compile to dist/ and verify/copy the bundled WASM
 npm run generate-vectors   # regenerate the encode vectors (needs a JDK and network once)
 npm run fetch-photos       # download the photograph test set (about 13 MB, needs a JDK)
 ```
+
+The checked-in WASM asset is built from this repository's Rust sources with
+Rust 1.94.1. Install that toolchain and its `wasm32-unknown-unknown` target,
+then use `npm run build:wasm` after changing Rust. `npm run check:wasm`
+rebuilds and compares the exact bytes and provenance; CI does this on Linux.
+Normal npm builds need no Rust toolchain. `npm run check:package` installs a
+real packed tarball into a temporary consumer and checks both entries.
+`npm run bench` runs the local benchmark; [PERFORMANCE.md](PERFORMANCE.md)
+records the method, measurements and their limits.
 
 [SPEC.md](SPEC.md) defines the behaviour; a change to behaviour changes it
 in the same commit.

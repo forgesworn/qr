@@ -344,6 +344,31 @@ is never evidence that the current frame is readable. The stateless pipeline
 and its conformance work counters are unchanged. The additional cropped search
 has the same work caps as an ordinary call on that smaller picture.
 
+### Optional WebAssembly adapter
+
+The separate `@forgesworn/qr/wasm` entry exports `wasmUrl`, the bundled asset's
+URL, and `loadWasm(bytes)`, which asynchronously instantiates caller-supplied
+`Uint8Array` or `ArrayBuffer` bytes without fetching anything. The module must
+implement ABI version 1. The default TypeScript entry does not import it.
+
+Each instance exposes synchronous `encode`, `decode` and `decodeModules` with
+the corresponding TypeScript input shapes, options and public result fields.
+Encoding follows the same segmentation, version and mask rules. Decoding
+follows the Rust port's text capabilities: raw bytes are exact, kanji produces
+U+FFFD without character tables, unsupported ECI bytes follow the platform
+fallback below, and hanzi symbols are refused. Callers needing those character
+sets should use the TypeScript decoder or interpret the returned bytes and ECI.
+
+Input bytes are copied to private reusable linear memory. Native result handles
+are freed on success or JavaScript extraction failure. Returned byte and module
+arrays are independent copies. `reset()` frees reusable input storage and leaves
+the instance usable; it need not shrink linear memory. `dispose()` frees input
+storage and releases references to the instance; subsequent encoding, decoding
+and reset throw. Disposal is idempotent. `memoryBytes` reports the current
+linear-memory size, or zero after disposal, not a guarantee about when garbage
+collection occurs. Instances share no mutable state. The adapter applies the
+stateless decoder pipeline; it does not track the previous camera region.
+
 ### Arithmetic
 
 Real numbers are IEEE 754 doubles, and each expression is evaluated in the
