@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.4
+
+- Preserve curved-map candidates from the existing inverse-luminance fallback
+  and refine them with the same polarity-specific thresholds. Earlier reads
+  retain priority; the 720-map and four-second-look limits remain unchanged.
+- Recover seven inverted views of the dense curved photograph, raising its
+  transformed-image result from 7/16 to 14/16. Across all 2,944 transformations
+  of the 184-photo set, preserve earlier reads and add those seven successes.
+- Keep TypeScript, Rust, packaged WASM and Kotlin aligned, with public photo
+  regressions covering inversion options, orientation and input preservation.
+  No public API changes.
+
 ## 0.3.3
 
 - Recover a dense curved QR photograph with a deferred alignment retry. One

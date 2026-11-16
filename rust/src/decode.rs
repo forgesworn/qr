@@ -109,14 +109,16 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
             return Some(found);
         }
     }
+    let mut inverse_luminance = None;
+    let mut inverse_curvature = Vec::new();
     if inversion != Inversion::Normal && budget.maps > 0 && budget.inverted_fallback {
         budget.here = REDUCED_MAPS;
-        let inverse = invert_luminance(&luminance);
-        if let Some(mut found) = look(&inverse, Inversion::Normal, 1, &mut budget, work.as_deref_mut(), true) {
+        let inverse = inverse_luminance.insert(invert_luminance(&luminance));
+        if let Some(mut found) = look_with_hints(inverse, Inversion::Normal, 1, &mut budget, work.as_deref_mut(), true, None, None, Some(&mut inverse_curvature)) {
             found.inverted = true;
             return Some(found);
         }
-        let mut inverse_shrunk = Reductions::new(&inverse);
+        let mut inverse_shrunk = Reductions::new(inverse);
         for f in REDUCTIONS {
             if budget.maps == 0 || budget.here == 0 { break; }
             if width / f < MIN_REDUCED || height / f < MIN_REDUCED { continue; }
@@ -129,7 +131,14 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     }
     if let Some(found) = recover(&luminance, &hints, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_overflow(&luminance, &overflow, &mut budget, work.as_deref_mut()) { return Some(found); }
-    recover_curvature(&luminance, &curvature, &mut budget, work.as_deref_mut())
+    if let Some(found) = recover_curvature(&luminance, &curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
+    if let Some(inverse) = inverse_luminance.as_ref() {
+        if let Some(mut found) = recover_curvature(inverse, &inverse_curvature, &mut budget, work.as_deref_mut()) {
+            found.inverted = true;
+            return Some(found);
+        }
+    }
+    None
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -570,7 +579,10 @@ fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, ca
             cell.set(value);
             value == 1
         };
-        if strict && agreement_read(&sample, size).is_none() { return None; }
+        if strict && agreement_read(&sample, size).is_none() {
+            if let Some(curvature) = curvature { keep_curvature(curvature, location, inverted, &sample); }
+            return None;
+        }
         let straight_read = |x, y| sample(x, y);
         if let Some(payload) = read_symbol(straight_read, size) {
             if strict && !format_agrees(&straight_read, size, payload.ecc, payload.mask) {
@@ -591,18 +603,7 @@ fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, ca
             let (sx, sy) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + (i - 8)) };
             sample(sx, sy); sample(sy, sx);
         }
-        if let Some(curvature) = curvature {
-            for mirrored in [false, true] {
-                let oriented = |x, y| if mirrored { sample(y, x) } else { sample(x, y) };
-                let Some((ecc, mask, distance)) = curvature_header(&oriented, size) else { continue; };
-                let duplicate = curvature.iter().any(|c| c.inverted == inverted && c.mirrored == mirrored
-                    && c.ecc == ecc && c.mask == mask && c.location.size == size
-                    && c.location.matrix == location.matrix);
-                if !duplicate {
-                    keep(curvature, Candidate { location: location.clone(), inverted, mirrored, ecc, mask, distance });
-                }
-            }
-        }
+        if let Some(curvature) = curvature { keep_curvature(curvature, location, inverted, &sample); }
     }
     if let Some(agreed) = agreement(modules, size) {
         if sized(modules, size, agreed.mirrored) {
@@ -610,6 +611,20 @@ fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, ca
         }
     }
     None
+}
+
+/// Retain header-qualified maps within a single luminance basis.
+fn keep_curvature<R: Fn(usize, usize) -> bool>(candidates: &mut Vec<Candidate>, location: &Location, inverted: bool, sample: &R) {
+    for mirrored in [false, true] {
+        let oriented = |x, y| if mirrored { sample(y, x) } else { sample(x, y) };
+        let Some((ecc, mask, distance)) = curvature_header(&oriented, location.size) else { continue; };
+        let duplicate = candidates.iter().any(|c| c.inverted == inverted && c.mirrored == mirrored
+            && c.ecc == ecc && c.mask == mask && c.location.size == location.size
+            && c.location.matrix == location.matrix);
+        if !duplicate {
+            keep(candidates, Candidate { location: location.clone(), inverted, mirrored, ecc, mask, distance });
+        }
+    }
 }
 
 #[cfg(test)]

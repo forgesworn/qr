@@ -42,7 +42,11 @@ of damage. The evaluated sets are regression data, not unseen validation.
 Both readers miss all 28 finder-occlusion cases in that stress set. Version
 0.3.3 adds one correct dense curved photograph, preserving every earlier
 success across 888 checked cases. It also reads seven of 16 transformed
-versions of that photo, versus none before; inverted variants remain unread.
+versions of that photo, versus none before. Version 0.3.4 raises that to
+14/16 by recovering seven inverted views. The unmirrored 180-degree view
+remains unread in both polarities. Across all 2,944 transformations of the
+184-photo set, correct reads rise from 2,863 to 2,870, without lost reads
+or wrong text; these are related transformations, not independent photographs.
 A separate new family of 18 synthetic curved sheets remains unread by both
 QR versions. This is a measured improvement, not general curvature coverage.
 The previously qualified 160-case set is now regression data: QR remains
@@ -62,7 +66,10 @@ costs 3.6–3.9% more to reject in exchange for the additional accuracy. See the
 performance report for both complete timing forks. The 0.3.3 change adds
 about 0.2% to main-noise WASM medians in its two paired runs, with clean and blank
 medians within 0.5%. Recovering the newly readable curved photo takes about
-22.2 ms instead of the earlier 12.1 ms miss.
+22.2 ms instead of the earlier 12.1 ms miss. Version 0.3.4 also recovers
+seven inverted views; the original inverted view takes about 22.6 ms in WASM
+versus a previous 12.6 ms miss. Main-noise WASM medians remain within 0.5%
+in its two paired runs. The inverse image stays live longer during recovery.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

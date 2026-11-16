@@ -1,5 +1,42 @@
 # Performance and verification
 
+## 0.3.4 inverted curved-map recovery
+
+The inverse-luminance fallback now retains qualifying curved maps for a final
+retry against the same polarity-specific thresholds. Earlier reads and the
+original curved-map queue remain first; no new map searches are added.
+
+| Regression set | QR 0.3.3 | QR 0.3.4 |
+|---|---:|---:|
+| Curved target: rotations, mirrors and both polarities | 7/16 | **14/16** |
+| All 184 photos with those 16 transformations | 2,863/2,944 | **2,870/2,944** |
+| Original photos | 180/184 | 180/184 |
+| Synthetic curved sheets | 0/18 | 0/18 |
+
+The seven additional reads are related inverted views of one photograph. Its
+unmirrored 180-degree view still fails in both polarities. All previous complete
+TypeScript results survive; no wrong QR text is found. The original 888-case
+regression also preserves its results, including 64 rejected negative controls.
+Packaged WASM matches every declared result field on all 888 cases and all
+2,944 transformed photographs. Photo oracles independently specify text;
+synthetic cases also check bytes. These are evaluated regression sets.
+
+Two paired M4 runs show main-noise WASM medians changing by +0.1% and -0.5%,
+with clean/blank variation within 1.3%. TypeScript main noise varies from -0.3%
+to +0.9%; clean/blank variation reaches 3.7%. The added correct inverted-photo
+read takes 22.58–22.60 ms in WASM versus the previous 12.56–12.76 ms miss, and
+50.21–50.31 ms in TypeScript versus 28.34–28.36 ms. This trades extra recovery
+time for accuracy; it does not establish a general speed improvement.
+
+The four-second-look, 720-map and 5,750,000-probe limits remain. Two candidate
+lists can retain eight map records, and the inverse luminance stays live longer
+(one byte per pixel). Both WASM instances end the measured fixture sequence at
+14,483,456 bytes of linear-memory capacity; this does not measure peak live
+allocations. The packaged module is 223,754 bytes, SHA-256
+`e86faa3268415f29e7f531c3092ff14ec7947f4830eab0a5bb4e0606003141b5`.
+
+See the [0.3.4 evidence and reproduction commands](benchmarks/2026-11-16-m4/inverted-curvature-recovery/README.md).
+
 ## 0.3.3 curved-map recovery
 
 One deferred alignment retry recovers the dense curved `s2-qrcode-2-high-res-1`
