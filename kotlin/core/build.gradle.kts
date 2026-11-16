@@ -30,3 +30,19 @@ tasks.test {
     // The tests read the shared vectors from the repository root.
     systemProperty("qr.vectors", rootProject.projectDir.resolve("../vectors").canonicalPath)
 }
+
+// Development only: uses the existing oracle, or an explicitly supplied external jar.
+tasks.register<JavaExec>("compareZxing") {
+    dependsOn(tasks.testClasses)
+    mainClass.set("dev.forgesworn.qr.PerformanceMainKt")
+    val rival = providers.gradleProperty("qrBenchmarkZxingJar")
+    classpath = if (rival.isPresent) {
+        sourceSets.test.get().runtimeClasspath.filter { it.name != "core-${libs.versions.zxing.get()}.jar" } + files(rival.get())
+    } else sourceSets.test.get().runtimeClasspath
+    workingDir(rootProject.projectDir.parentFile)
+    minHeapSize = "512m"
+    maxHeapSize = "512m"
+    doFirst {
+        args(providers.gradleProperty("qrBenchmarkOutput").get())
+    }
+}
