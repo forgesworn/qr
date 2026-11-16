@@ -1044,9 +1044,9 @@ retain their result, ordering and work counts.
 
 Step 13 runs only after steps 2 to 12 return no result. During failed reads
 of original full-resolution binary maps, retain a separate list of at most
-four candidates. Reduced pictures, the inverted-luminance fallback and other
-recovery passes do not add candidates. No new finder, size or map search is
-performed by this recovery.
+four candidates. Reduced pictures and other recovery passes do not add to this
+list; the full-size inverted-luminance fallback has its own list below. No new
+finder, size or map search is performed by this recovery.
 
 Check straight and then transposed orientations separately. From version 7,
 at least one version copy must be an exact BCH codeword for the map's existing
@@ -1061,6 +1061,16 @@ level and mask identify a duplicate. Retain only four; this list never displaces
 the ordinary second-look queue. After every earlier recovery fails, process it
 in order using only the frame's remaining second looks, even if map allowance
 is exhausted. Stop at the first successful strict read.
+
+The full-size inverse-luminance fallback in step 10 retains a separate list of
+up to four maps under the same admission, ranking and duplicate rules. It may
+retain a map before step 10's ordinary two-copy format gate refuses it; this
+does not relax that gate for an ordinary read. Only maps already charged to
+step 10's shared 30-map allowance qualify, never its reduced-size maps. Keep
+the original-luminance list first. If that list also fails and second looks
+remain, refine the inverse-luminance list against the same inverted luminance
+and its own thresholds, then report a successful result as inverted. The lists
+share the frame's four-second-look cap and add no map searches.
 
 Each candidate first uses the ordinary alignment mesh. Then freeze its accepted
 alignment states and offsets. Visit only nodes that were predicted, in the
@@ -1149,11 +1159,15 @@ remaining map allowance exist. It retains references to existing ranked data
 until the frame completes and adds corner geometry work for unselected triples;
 it does not repeat finder scans. Alignment work is counted only after agreeing
 headers admit a full location.
-Step 13 stores at most four additional map references and header results. It
-recomputes thresholds only when an admitted map and a second look remain; it
-needs no new binary image or finder scan. The extra alignment sweep is bounded
-as above. Header checks during original failed reads add a fixed number of
-module samples per map; the existing Work counters do not measure these samples.
+Step 13 stores at most four map references and header results per luminance
+basis: eight across the original and inverse lists, still sharing four second
+looks. The existing inverse luminance can remain live through later recovery,
+retaining up to width x height bytes for longer. It recomputes thresholds only
+when an admitted map and a second look remain; it needs no new binary image or
+finder scan. The extra alignment sweep is bounded as above. Header checks
+during original failed reads and full-size inverse-luminance fallback reads
+add a fixed number of module samples per map; the existing Work counters do
+not measure these samples.
 
 All three ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,

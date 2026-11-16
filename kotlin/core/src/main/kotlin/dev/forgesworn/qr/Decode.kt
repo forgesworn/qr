@@ -140,10 +140,13 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
         val reduced = look(shrunk.by(f), inversion, f, budget, work)
         if (reduced != null) return reduced
     }
+    var inverse: Luminance? = null
+    var inverseCurvature: MutableList<Retry>? = null
     if (inversion != Inversion.NORMAL && budget.maps > 0 && budget.invertedFallback) {
         budget.here = REDUCED_MAPS
-        val inverse = invertLuminance(luminance)
-        val fallback = look(inverse, Inversion.NORMAL, 1, budget, work, true)
+        inverse = invertLuminance(luminance)
+        inverseCurvature = ArrayList(SECOND_LOOKS + 1)
+        val fallback = look(inverse, Inversion.NORMAL, 1, budget, work, true, inverseCurvature)
         if (fallback != null) return DecodeResult(
             fallback.text, fallback.bytes, fallback.version, fallback.ecc, fallback.mask, fallback.eci,
             fallback.corrected, fallback.mirrored, true, fallback.location, fallback.structuredAppend, fallback.fnc1,
@@ -163,7 +166,17 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (recovered != null) return recovered
     val overflow = recoverOverflow(luminance, budget, work)
     if (overflow != null) return overflow
-    return recoverCurvature(luminance, budget, work)
+    val curved = recoverCurvature(luminance, budget, work)
+    if (curved != null) return curved
+    if (inverse != null && inverseCurvature != null) {
+        val inverseRecovered = recoverCurvature(inverse, budget, work, inverseCurvature)
+        if (inverseRecovered != null) return DecodeResult(
+            inverseRecovered.text, inverseRecovered.bytes, inverseRecovered.version, inverseRecovered.ecc,
+            inverseRecovered.mask, inverseRecovered.eci, inverseRecovered.corrected, inverseRecovered.mirrored,
+            true, inverseRecovered.location, inverseRecovered.structuredAppend, inverseRecovered.fnc1,
+        )
+    }
+    return null
 }
 
 /**
@@ -172,7 +185,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false): DecodeResult? {
+private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false, inverseCurvature: MutableList<Retry>? = null): DecodeResult? {
     val levels = thresholds(luminance)
     if (f == 1 && !strictOverride) {
         budget.invertedFallback = levels.invertedFallback
@@ -186,7 +199,7 @@ private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Bud
     val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
     val scratch = ReadScratch()
     if (inversion != Inversion.INVERTED) {
-        val found = search(bits, edges, false, candidates, budget, strict, f, work, scratch)
+        val found = search(bits, edges, false, candidates, budget, strict, f, work, scratch, if (f == 1) inverseCurvature else null)
         if (found != null) return found
     }
     if (inversion != Inversion.NORMAL) {
@@ -225,6 +238,7 @@ private fun search(
     f: Int,
     work: Work?,
     scratch: ReadScratch,
+    inverseCurvature: MutableList<Retry>? = null,
 ): DecodeResult? {
     if (budget.maps == 0 || budget.here == 0) return null
     // A strict pass first; a looser one for blurred or small codes.
@@ -247,7 +261,8 @@ private fun search(
                         if (f > 1) work.reduced++
                     }
                     val result = read(image, location, inverted, candidates, strict, f, scratch,
-                        if (f == 1 && !strict) triple else null, budget)
+                        if (f == 1 && !strict) triple else null, budget,
+                        if (f == 1 && !strict) budget.curvature else inverseCurvature)
                     if (result != null) return result
                     if (budget.maps == 0 || budget.here == 0) return null
                 }
@@ -278,6 +293,7 @@ private fun read(
     scratch: ReadScratch,
     triple: Array<Finder>? = null,
     budget: Budget? = null,
+    curvature: MutableList<Retry>? = null,
 ): DecodeResult? {
     val size = location.size
     val length = size * size
@@ -309,7 +325,10 @@ private fun read(
     }
     // A strict read needs two agreeing copies in one orientation; sample only
     // those format modules before attempting either full symbol read.
-    if (strict && agreementRead(sample, size) == null) return null
+    if (strict && agreementRead(sample, size) == null) {
+        if (curvature != null) keepCurvature(curvature, location, inverted, sample)
+        return null
+    }
     val straightRead = sample
     val straight = readSymbol(straightRead, size)
     if (straight != null) {
@@ -332,18 +351,7 @@ private fun read(
         val sy = if (i < 8) 8 else size - 7 + (i - 8)
         sample.read(sx, sy); sample.read(sy, sx)
     }
-    if (triple != null && budget != null) {
-        for (isMirrored in booleanArrayOf(false, true)) {
-            val header = curvatureHeader(if (isMirrored) mirroredRead else straightRead, size, isMirrored) ?: continue
-            val duplicate = budget.curvature.any {
-                val old = it.location.matrix
-                it.inverted == inverted && it.agreed.mirrored == isMirrored && it.agreed.ecc == header.ecc &&
-                    it.agreed.mask == header.mask && it.location.size == size && old != null && m != null &&
-                    old.indices.all { i -> old[i] == m[i] }
-            }
-            if (!duplicate) keep(budget.curvature, Retry(location, inverted, header))
-        }
-    }
+    if (curvature != null) keepCurvature(curvature, location, inverted, sample)
     val agreed = agreement(modules, size)
     if (agreed != null) {
         // Preserve the existing candidate decision before sampling additional version modules.
@@ -361,11 +369,28 @@ private fun read(
     return null
 }
 
+/** Retain header-qualified maps within one luminance basis. */
+private fun keepCurvature(candidates: MutableList<Retry>, location: Placement, inverted: Boolean, sample: ModuleReader) {
+    val size = location.size
+    val matrix = location.matrix
+    for (isMirrored in booleanArrayOf(false, true)) {
+        val reader = if (isMirrored) ModuleReader { x, y -> sample.read(y, x) } else sample
+        val header = curvatureHeader(reader, size, isMirrored) ?: continue
+        val duplicate = candidates.any {
+            val old = it.location.matrix
+            it.inverted == inverted && it.agreed.mirrored == isMirrored && it.agreed.ecc == header.ecc &&
+                it.agreed.mask == header.mask && it.location.size == size && old != null && matrix != null &&
+                old.indices.all { i -> old[i] == matrix[i] }
+        }
+        if (!duplicate) keep(candidates, Retry(location, inverted, header))
+    }
+}
+
 /** A final bounded retry of original maps anchored by an exact version word. */
-private fun recoverCurvature(luminance: Luminance, budget: Budget, work: Work?): DecodeResult? {
-    if (budget.curvature.isEmpty() || budget.second == 0) return null
+private fun recoverCurvature(luminance: Luminance, budget: Budget, work: Work?, candidates: List<Retry> = budget.curvature): DecodeResult? {
+    if (candidates.isEmpty() || budget.second == 0) return null
     val levels = thresholds(luminance)
-    for (candidate in budget.curvature) {
+    for (candidate in candidates) {
         if (budget.second == 0) break
         budget.second--
         if (work != null) work.second++

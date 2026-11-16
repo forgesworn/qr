@@ -89,7 +89,7 @@ dependencies = [
 
 [[package]]
 name = "forgesworn-qr"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "png",
  "serde_json",

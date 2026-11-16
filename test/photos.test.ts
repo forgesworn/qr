@@ -12,6 +12,7 @@
 // Failure messages name the photo and what the decoder returned, never the expected text.
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { isDeepStrictEqual } from 'node:util'
 import jsQRModule from 'jsqr'
 import { describe, expect, it } from 'vitest'
 import { createDecoder, decode } from '../src/index.js'
@@ -73,6 +74,56 @@ function summary(photos: Photo[]): string {
 }
 
 describe.skipIf(!cached)('photographs', () => {
+  it('recovers inverted curved photographs after the ordinary fallback fails', async () => {
+    const photo = manifest.photos.find(p => p.id === 's2-qrcode-2-high-res-1')!
+    const original = load(photo), want = expected(photo)
+    const wasm = await loadWasm(readFileSync(new URL('../wasm/qr.wasm', import.meta.url)))
+    // Finder objects can carry internal counts in TypeScript. Compare every
+    // declared result field, including the public x/y location coordinates.
+    const publicFields = (result: ReturnType<typeof decode>) => result && ({
+      ...result,
+      location: Object.fromEntries(Object.entries(result.location).map(([key, point]) =>
+        [key, point && { x: point.x, y: point.y }])),
+    })
+    try {
+      let recovered = 0
+      for (const mirrored of [false, true]) {
+        let image = { ...original, data: original.data.slice() }
+        if (mirrored) {
+          const before = image.data.slice()
+          for (let y = 0; y < image.height; y++) for (let x = 0; x < image.width; x++) {
+            image.data[y * image.width + x] = before[y * image.width + image.width - 1 - x]!
+          }
+        }
+        for (let rotation = 0; rotation < 4; rotation++) {
+          const reference = decode(image)
+          const inverted = { ...image, data: Uint8Array.from(image.data, v => 255 - v) }
+          const pixels = inverted.data.slice()
+          for (const inversion of ['both', 'inverted'] as const) {
+            const result = decode(inverted, { inversion })
+            if (reference) {
+              expect(result?.text === want, `${mirrored}/${rotation}/${inversion}: expected text`).toBe(true)
+              expect(isDeepStrictEqual(result?.bytes, reference.bytes), 'payload bytes').toBe(true)
+              expect(result?.inverted).toBe(true)
+              expect(result?.mirrored).toBe(reference.mirrored)
+            }
+            if (result) expect(result.text === want, 'no incorrect text').toBe(true)
+            expect(isDeepStrictEqual(publicFields(wasm.decode(inverted, { inversion })), publicFields(result)), 'complete public backend result').toBe(true)
+          }
+          expect(decode(inverted, { inversion: 'normal' })).toBeUndefined()
+          expect(isDeepStrictEqual(inverted.data, pixels), 'unchanged input').toBe(true)
+          if (reference) recovered++
+          const { width, height, data } = image, rotated = new Uint8Array(data.length)
+          for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+            rotated[x * height + height - 1 - y] = data[y * width + x]!
+          }
+          image = { data: rotated, width: height, height: width }
+        }
+      }
+      expect(recovered).toBeGreaterThanOrEqual(7)
+    } finally { wasm.dispose() }
+  }, 60_000)
+
   it('preserves every readable photo and complete text in the packaged WASM backend', async () => {
     const wasm = await loadWasm(readFileSync(new URL('../wasm/qr.wasm', import.meta.url)))
     try {

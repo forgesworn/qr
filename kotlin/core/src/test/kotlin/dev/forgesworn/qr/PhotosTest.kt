@@ -45,6 +45,59 @@ class PhotosTest {
     }
 
     @Test
+    fun recoversInvertedCurvedPhotographInBothInversionModes() {
+        val all = photos()
+        val cache = File(vectorsDir(), "photos-cache")
+        val grey = File(cache, "grey")
+        val raw = File(cache, "raw")
+        val cached = all.isNotEmpty() && all.all { File(grey, "${it.id}.png").exists() && File(raw, "${it.id}.txt").exists() }
+        if (System.getenv("QR_REQUIRE_PHOTOS") == "1") {
+            assertTrue("photograph cache required: run npm run fetch-photos", cached)
+        }
+        assumeTrue("photograph cache absent: run npm run fetch-photos", cached)
+        val photo = all.single { it.id == "s2-qrcode-2-high-res-1" }
+        val want = expected(raw, photo)
+        val original = load(File(grey, "${photo.id}.png"))
+        var recovered = 0
+        for (mirrored in booleanArrayOf(false, true)) {
+            var image = Grey(original.data.copyOf(), original.width, original.height)
+            if (mirrored) {
+                val before = image.data.copyOf()
+                for (y in 0 until image.height) for (x in 0 until image.width) {
+                    image.data[y * image.width + x] = before[y * image.width + image.width - 1 - x]
+                }
+            }
+            for (rotation in 0 until 4) {
+                val originalPixels = image.data.copyOf()
+                val reference = decode(image.data, image.width, image.height)
+                assertTrue("${photo.id}: reference input changed", image.data.contentEquals(originalPixels))
+                val inverted = ByteArray(image.data.size) { (255 - (image.data[it].toInt() and 255)).toByte() }
+                val pixels = inverted.copyOf()
+                for (inversion in arrayOf(Inversion.BOTH, Inversion.INVERTED)) {
+                    val result = decode(inverted, image.width, image.height, inversion = inversion)
+                    assertTrue("${photo.id}: input changed", inverted.contentEquals(pixels))
+                    val label = "${photo.id} mirrored=$mirrored rotation=$rotation inversion=$inversion"
+                    if (reference != null) {
+                        assertTrue("$label: missing or incorrect text", result != null && result.text == want)
+                        assertTrue("$label: incorrect bytes", result!!.bytes.contentEquals(reference.bytes))
+                        assertTrue("$label: incorrect polarity or orientation", result.inverted && result.mirrored == reference.mirrored)
+                    }
+                    if (result != null) assertTrue("$label: incorrect text", result.text == want)
+                }
+                assertTrue("${photo.id}: normal-only inversion unexpectedly read", decode(inverted, image.width, image.height, inversion = Inversion.NORMAL) == null)
+                assertTrue("${photo.id}: input changed", inverted.contentEquals(pixels))
+                if (reference != null) recovered++
+                val rotated = ByteArray(image.data.size)
+                for (y in 0 until image.height) for (x in 0 until image.width) {
+                    rotated[x * image.height + image.height - 1 - y] = image.data[y * image.width + x]
+                }
+                image = Grey(rotated, image.height, image.width)
+            }
+        }
+        assertTrue("${photo.id}: fewer than seven reference orientations read", recovered >= 7)
+    }
+
+    @Test
     fun readsEveryPhotographTheTypeScriptDecoderReads_neverTheWrongText() {
         val all = photos()
         val cache = File(vectorsDir(), "photos-cache")

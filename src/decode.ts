@@ -60,10 +60,13 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     const reduced = look(shrunk(f), inversion, f, budget, work)
     if (reduced) return reduced
   }
+  let inverse: Luminance | undefined
+  let inverseCurvature: Candidate[] | undefined
   if (inversion !== 'normal' && budget.maps > 0 && budget.invertedFallback) {
     budget.here = REDUCED_MAPS
-    const inverse = invertLuminance(luminance)
-    const fallback = look(inverse, 'normal', 1, budget, work, true)
+    inverse = invertLuminance(luminance)
+    inverseCurvature = []
+    const fallback = look(inverse, 'normal', 1, budget, work, true, inverseCurvature)
     if (fallback) return { ...fallback, inverted: true }
     const inverseShrunk = reductions(inverse)
     for (const f of REDUCTIONS) {
@@ -77,7 +80,13 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (recovered) return recovered
   const overflow = recoverOverflow(luminance, budget, work)
   if (overflow) return overflow
-  return recoverCurvature(luminance, budget, work)
+  const curved = recoverCurvature(luminance, budget, work)
+  if (curved) return curved
+  if (inverse && inverseCurvature) {
+    const recovered = recoverCurvature(inverse, budget, work, inverseCurvature)
+    if (recovered) return { ...recovered, inverted: true }
+  }
+  return undefined
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -113,7 +122,7 @@ interface VersionHint {
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false): DecodeResult | undefined {
+function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false, inverseCurvature?: Candidate[]): DecodeResult | undefined {
   const levels = thresholds(luminance)
   if (f === 1 && !strictOverride) {
     budget.invertedFallback = levels.invertedFallback
@@ -126,7 +135,7 @@ function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f
   // The inverse changes colour where the picture does, so one set of edges serves both.
   const edges = edgesOf(bits)
   if (inversion !== 'inverted') {
-    const found = search(bits, edges, false, candidates, budget, strict, f, work, f === 1 && !strictOverride)
+    const found = search(bits, edges, false, candidates, budget, strict, f, work, f === 1 && !strictOverride, f === 1 ? inverseCurvature : undefined)
     if (found) return found
   }
   if (inversion !== 'normal') {
@@ -177,6 +186,7 @@ function search(
   f: number,
   work?: Work,
   collectHints = false,
+  inverseCurvature?: Candidate[],
 ): DecodeResult | undefined {
   if (budget.maps === 0 || budget.here === 0) return undefined
   // A strict pass first; a looser one for blurred or small codes.
@@ -199,7 +209,7 @@ function search(
             work.maps++
             if (f > 1) work.reduced = (work.reduced ?? 0) + 1
           }
-          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple, collectHints ? budget.curvature : undefined)
+          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple, collectHints ? budget.curvature : inverseCurvature)
           if (result) return result
           if (budget.maps === 0 || budget.here === 0) return undefined
         }
@@ -261,7 +271,12 @@ function read(
       return value === 1
     }
   }
-  if (strict && !agreementRead(sample, size)) return undefined
+  if (strict && !agreementRead(sample, size)) {
+    // The inverse-luminance fallback keeps its ordinary two-copy gate. A map
+    // with an exact version anchor may still qualify for deferred refinement.
+    if (curvature) keepCurvature(curvature, location, inverted, sample)
+    return undefined
+  }
   const straightRead = sample
   const straight = readSymbol(straightRead, size)
   if (straight) {
@@ -284,14 +299,7 @@ function read(
     const sy = i < 8 ? 8 : size - 7 + (i - 8)
     sample(sx, sy); sample(sy, sx)
   }
-  if (curvature) {
-    for (const mirrored of [false, true]) {
-      const header = curvatureHeader(mirrored ? mirroredRead : straightRead, size)
-      if (!header) continue
-      const duplicate = curvature.some(c => c.inverted === inverted && c.mirrored === mirrored && c.ecc === header.ecc && c.mask === header.mask && c.location.size === size && c.location.matrix && matrix && c.location.matrix.every((v,i)=>v === matrix[i]))
-      if (!duplicate) keep(curvature, {location, inverted, mirrored, ...header})
-    }
-  }
+  if (curvature) keepCurvature(curvature, location, inverted, sample)
   const agreed = agreement(modules, size)
   if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
   if (agreed && hints && triple && hints.length < SECOND_LOOKS) {
@@ -304,6 +312,17 @@ function read(
     }
   }
   return undefined
+}
+
+/** Retains header-qualified maps within one luminance basis, never mixing polarity-specific thresholds. */
+function keepCurvature(candidates: Candidate[], location: Location, inverted: boolean, sample: ModuleReader): void {
+  const { size, matrix } = location
+  for (const mirrored of [false, true]) {
+    const header = curvatureHeader(mirrored ? (x, y) => sample(y, x) : sample, size)
+    if (!header) continue
+    const duplicate = candidates.some(c => c.inverted === inverted && c.mirrored === mirrored && c.ecc === header.ecc && c.mask === header.mask && c.location.size === size && c.location.matrix && matrix && c.location.matrix.every((v, i) => v === matrix[i]))
+    if (!duplicate) keep(candidates, { location, inverted, mirrored, ...header })
+  }
 }
 
 /** Evidence-directed retries run only after every existing search and second look has failed. */
@@ -412,10 +431,10 @@ export function decodeModules(modules: ArrayLike<number | boolean>, size: number
 }
 
 /** A final bounded retry of original maps anchored by an exact version word. */
-function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work): DecodeResult | undefined {
-  if (budget.curvature.length === 0 || budget.second === 0) return undefined
+function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, candidates = budget.curvature): DecodeResult | undefined {
+  if (candidates.length === 0 || budget.second === 0) return undefined
   const levels = thresholds(luminance)
-  for (const candidate of budget.curvature) {
+  for (const candidate of candidates) {
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++

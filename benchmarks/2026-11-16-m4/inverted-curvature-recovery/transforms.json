@@ -1,0 +1,675 @@
+{
+  "passed": true,
+  "identity": {
+    "revision": "d6d91b17a0cca31dbb4f6008a4f6b584049ef027",
+    "compiler": "5.9.3",
+    "sources": {
+      "base": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "5e2842a735754130fc32339d309f22deee7244077e9903f41810f16f7c674d0b",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "d966fa2f6e864f9a90fc4b91186cfbaf66942f6ca95bd076c8cb40720ecc7b1c",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "18288c0bccc74a6e4ff82293051d70835420e8aa6233bb34c6d567ba047a68d1",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "public": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "4bebef665b0255cf6b365a125c49292660247329b03c4b608c4d8a67e7512e15",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "d966fa2f6e864f9a90fc4b91186cfbaf66942f6ca95bd076c8cb40720ecc7b1c",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "18288c0bccc74a6e4ff82293051d70835420e8aa6233bb34c6d567ba047a68d1",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      }
+    },
+    "generated": {
+      "base": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "c9e2e459446145b14378fc280843b43b7409520c1de7ab68a81bebe8c871309e",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "c450fd498b5901548d660245c034fa6c81effafa2b4e04a1177fdc990dd31c8e",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e32f193c6b60b935c8819e1b906ed513f71f3e361f5c35b74ca3a0f0f7232626",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      },
+      "public": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "e139627fcca7ada061bd21879b233608c4ed0a3b1c8299a1b9e7f479fd922cd4",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "c450fd498b5901548d660245c034fa6c81effafa2b4e04a1177fdc990dd31c8e",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e32f193c6b60b935c8819e1b906ed513f71f3e361f5c35b74ca3a0f0f7232626",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      }
+    },
+    "builderSha256": "ae16b633715297bc078878e508757b808f27761fb9551f2d3a73edd84a83bd4b"
+  },
+  "runnerSha256": "d3b4f5335163c5ae2fa9be78f84cccf24524fa6aab1a482243b142bdde7d679c",
+  "rows": [
+    {
+      "rotation": 0,
+      "mirrored": false,
+      "inverted": false,
+      "pixelSha256": "3e53597945b6466428b19e6cd3f5a12b877291bd80ae992e6872599a41cce1c1",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 136040,
+            "compared": 109,
+            "scanned": 2944325,
+            "maps": 450,
+            "second": 2,
+            "meshes": 1,
+            "probed": 781250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 136040,
+            "compared": 109,
+            "scanned": 2944325,
+            "maps": 450,
+            "second": 2,
+            "meshes": 1,
+            "probed": 781250,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 0,
+      "mirrored": false,
+      "inverted": true,
+      "pixelSha256": "801c4895510bd6a597117daa4302a8577e3023d20d77f7e66b6a2908a8250ede",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 172935,
+            "compared": 151,
+            "scanned": 3519147,
+            "maps": 432,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 172935,
+            "compared": 151,
+            "scanned": 3519147,
+            "maps": 432,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 0,
+      "mirrored": true,
+      "inverted": false,
+      "pixelSha256": "888014d0c72e8e6842856c5da1ec59d0d1211c0ff58543cbbfce169d375e2588",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 183507,
+            "compared": 151,
+            "scanned": 2694199,
+            "maps": 486,
+            "second": 2,
+            "meshes": 1,
+            "probed": 640625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 183507,
+            "compared": 151,
+            "scanned": 2694199,
+            "maps": 486,
+            "second": 2,
+            "meshes": 1,
+            "probed": 640625,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 0,
+      "mirrored": true,
+      "inverted": true,
+      "pixelSha256": "142408f8db366fda4304b2fc55b1dddbb5c3b7c078b8a104d55ecb01560caa5d",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 136813,
+            "compared": 110,
+            "scanned": 2936335,
+            "maps": 466,
+            "second": 1,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 41
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 136813,
+            "compared": 110,
+            "scanned": 2936335,
+            "maps": 466,
+            "second": 2,
+            "meshes": 1,
+            "probed": 640625,
+            "reduced": 41
+          }
+        }
+      }
+    },
+    {
+      "rotation": 1,
+      "mirrored": false,
+      "inverted": false,
+      "pixelSha256": "d9d9cad5566064cd5841041b871e04211455b74659ef1dc7d7a3789f710429e4",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 185869,
+            "compared": 145,
+            "scanned": 2504042,
+            "maps": 447,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 185869,
+            "compared": 145,
+            "scanned": 2504042,
+            "maps": 447,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 1,
+      "mirrored": false,
+      "inverted": true,
+      "pixelSha256": "a983bd7aa44de65be33968c4a4afc06a369bb44fdccc191cdcac423dd6e15c90",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 130198,
+            "compared": 104,
+            "scanned": 2617235,
+            "maps": 396,
+            "second": 1,
+            "meshes": 0,
+            "probed": 93750,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 130198,
+            "compared": 104,
+            "scanned": 2617235,
+            "maps": 396,
+            "second": 2,
+            "meshes": 1,
+            "probed": 781250,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 1,
+      "mirrored": true,
+      "inverted": false,
+      "pixelSha256": "89ab4b9206567f4266d549596480ed6dc7ce2961de000efe4adfe0721da9a3ec",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 185169,
+            "compared": 146,
+            "scanned": 1793887,
+            "maps": 350,
+            "second": 1,
+            "meshes": 1,
+            "probed": 640625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 185169,
+            "compared": 146,
+            "scanned": 1793887,
+            "maps": 350,
+            "second": 1,
+            "meshes": 1,
+            "probed": 640625,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 1,
+      "mirrored": true,
+      "inverted": true,
+      "pixelSha256": "68bd69ad03def6e5df0795507ab11a1f38189b4775e3586bdb97dd510d88095b",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 166700,
+            "compared": 153,
+            "scanned": 2278754,
+            "maps": 360,
+            "second": 1,
+            "meshes": 1,
+            "probed": 640625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 166700,
+            "compared": 153,
+            "scanned": 2278754,
+            "maps": 360,
+            "second": 2,
+            "meshes": 2,
+            "probed": 1281250,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 2,
+      "mirrored": false,
+      "inverted": false,
+      "pixelSha256": "4f3be19260307d83291d923f3c6d9e29605cd7068fffd02e78385c2b2531ff3e",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 180710,
+            "compared": 149,
+            "scanned": 3776395,
+            "maps": 384,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2906250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 180710,
+            "compared": 149,
+            "scanned": 3776395,
+            "maps": 384,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2906250,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 2,
+      "mirrored": false,
+      "inverted": true,
+      "pixelSha256": "e1119799f47f52df1a815d9c3887615687b246dcbee8d5782857fc1ba4932e7b",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 169770,
+            "compared": 131,
+            "scanned": 3551153,
+            "maps": 351,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 169770,
+            "compared": 131,
+            "scanned": 3551153,
+            "maps": 351,
+            "second": 4,
+            "meshes": 4,
+            "probed": 2906250,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 2,
+      "mirrored": true,
+      "inverted": false,
+      "pixelSha256": "1e35b4e366b264560cfe62235486e2a0895c35cbad7270b89bcff92bb1ffe316",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 182283,
+            "compared": 163,
+            "scanned": 2515726,
+            "maps": 426,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 182283,
+            "compared": 163,
+            "scanned": 2515726,
+            "maps": 426,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 2,
+      "mirrored": true,
+      "inverted": true,
+      "pixelSha256": "dd3d8b4ed6a8595c97999af7cee039bc99ff28f72617b5372540fc1e61901014",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 132800,
+            "compared": 128,
+            "scanned": 2213298,
+            "maps": 372,
+            "second": 0,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 132800,
+            "compared": 128,
+            "scanned": 2213298,
+            "maps": 372,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 3,
+      "mirrored": false,
+      "inverted": false,
+      "pixelSha256": "15034f8a56cfc1a33b3635162dc0f63f258880ecc28165265037af87a58de1ce",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 187445,
+            "compared": 171,
+            "scanned": 2323261,
+            "maps": 389,
+            "second": 3,
+            "meshes": 1,
+            "probed": 875000,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 187445,
+            "compared": 171,
+            "scanned": 2323261,
+            "maps": 389,
+            "second": 3,
+            "meshes": 1,
+            "probed": 875000,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "rotation": 3,
+      "mirrored": false,
+      "inverted": true,
+      "pixelSha256": "ddbabd087c567701992dc5ce2a46921ccc6aa9c4cb8d1faa6a23dddd5dafc769",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 136219,
+            "compared": 135,
+            "scanned": 2422575,
+            "maps": 378,
+            "second": 1,
+            "meshes": 0,
+            "probed": 93750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 136219,
+            "compared": 135,
+            "scanned": 2422575,
+            "maps": 378,
+            "second": 2,
+            "meshes": 1,
+            "probed": 781250,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "rotation": 3,
+      "mirrored": true,
+      "inverted": false,
+      "pixelSha256": "f1235e5201f6571f58c0939dc08288280a3e69deeca4b0644bec936f50378ebe",
+      "readers": {
+        "base": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 135652,
+            "compared": 115,
+            "scanned": 1978847,
+            "maps": 421,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 135652,
+            "compared": 115,
+            "scanned": 1978847,
+            "maps": 421,
+            "second": 1,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "rotation": 3,
+      "mirrored": true,
+      "inverted": true,
+      "pixelSha256": "2bb2aabc1fbac1fe53b0b8f300b9e55a1a3340daaa7d518106227b89a5c91d9a",
+      "readers": {
+        "base": {
+          "read": false,
+          "bytesSha256": null,
+          "work": {
+            "steps": 166271,
+            "compared": 164,
+            "scanned": 2027362,
+            "maps": 391,
+            "second": 1,
+            "meshes": 0,
+            "probed": 0,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "bytesSha256": "dcc9bdf360e429900ab6927a80530906a3ae2d3b746be6a3a230c114d0c64748",
+          "work": {
+            "steps": 166271,
+            "compared": 164,
+            "scanned": 2027362,
+            "maps": 391,
+            "second": 2,
+            "meshes": 1,
+            "probed": 687500,
+            "reduced": 60
+          }
+        }
+      }
+    }
+  ]
+}
