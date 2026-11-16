@@ -32,7 +32,8 @@ if (result) console.log(result.text)
   first and recover through the full frame when needed. Every call reads fresh
   pixels; payloads are never cached.
 - **Choose your runtime:** browsers, Web Workers and Node 22.13+, typed ESM,
-  optional WASM through a separate import, a native Rust crate and Kotlin sources.
+  optional WASM through a separate import, JSR for Deno, a native Rust crate and
+  Kotlin/JVM on Maven Central.
 - **Inspect and reproduce:** MIT licence, no runtime dependencies, a detailed
   specification, shared vectors and public benchmark receipts.
 
@@ -64,5 +65,6 @@ other symbologies, or a camera wrapper if you want a complete scanning interface
 - [Security reporting](../SECURITY.md)
 - [Distribution and release verification](DISTRIBUTION.md)
 - [Native Rust crate](https://crates.io/crates/forgesworn-qr) and [Rust API](https://docs.rs/forgesworn-qr)
+- [JSR package](https://jsr.io/@forgesworn/qr) and [Kotlin on Maven Central](https://central.sonatype.com/artifact/io.github.forgesworn/qr)
 - [Concise machine-readable documentation](../llms.txt)
 - [Complete documentation as plain text](../llms-full.txt)

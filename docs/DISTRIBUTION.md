@@ -1,8 +1,10 @@
 # Distribution
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
-package `@forgesworn/qr`. They use the same version. The native Rust crate is `forgesworn-qr`. Kotlin is also available as source in this repository. The JSR and Maven Central
-publication workflows are configured; their public releases are pending final consumer verification.
+package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
+published on Maven Central as `io.github.forgesworn:qr`. These use version 0.3.0.
+JSR publishes the same library as `@forgesworn/qr` 0.3.1: a packaging fix for its
+WASM asset. Both new registry distributions have passed public consumer checks.
 
 | Channel | What it provides |
 |---|---|
@@ -11,7 +13,8 @@ publication workflows are configured; their public releases are pending final co
 | [Documentation](https://forgesworn.github.io/qr/) | Guide, API, comparison, specification and machine-readable text |
 | [jsDelivr](https://www.jsdelivr.com/package/npm/@forgesworn/qr) | CDN distribution of the npm package |
 | [UNPKG](https://unpkg.com/@forgesworn/qr/) | CDN distribution of the npm package |
-| Kotlin | Source under `kotlin/core/src/main/kotlin`, JVM 17, Kotlin standard library required |
+| [JSR](https://jsr.io/@forgesworn/qr) | TypeScript sources, generated API documentation and optional WASM |
+| [Maven Central](https://central.sonatype.com/artifact/io.github.forgesworn/qr) | Kotlin/JVM 17 library, sources and API documentation; Kotlin standard library required |
 | [crates.io](https://crates.io/crates/forgesworn-qr) | Native Rust source crate, no runtime dependencies, Rust 1.96+ |
 | [docs.rs](https://docs.rs/forgesworn-qr) | Rust API documentation and tested usage examples |
 
@@ -31,6 +34,35 @@ Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
 entry point has no WebAssembly initialisation requirement. Import the optional
 backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitly.
 
+## JSR installation
+
+```sh
+deno add jsr:@forgesworn/qr@0.3.1
+```
+
+```ts
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.1'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.1/wasm'
+```
+
+The JSR package has the same API as npm. Supply WASM bytes explicitly when using
+that backend. Keep npm as the normal installation route for Node and bundlers.
+Deno may defer a newly published version under its minimum dependency age policy.
+Our release consumer uses a per-command age override for the exact dependency-free
+version, after checking its registry hashes and recorded provenance.
+
+## Kotlin installation
+
+For Kotlin with Gradle:
+
+```kotlin
+repositories { mavenCentral() }
+dependencies { implementation("io.github.forgesworn:qr:0.3.0") }
+```
+
+Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
+library is a runtime dependency. The Maven group and Kotlin package differ.
+
 ## Native Rust
 
 ```sh
@@ -40,7 +72,7 @@ cargo add forgesworn-qr@0.3.0
 See the [Rust guide](../rust/README.md) for API contracts, pixel layout and
 character-set differences. The published crate includes its licence, library
 unit tests and a tested example. Its repository integration tests use the shared
-cross-language conformance pack. Kotlin remains available as self-contained
+cross-language conformance pack. Kotlin is also available as self-contained
 source under `kotlin/core/src/main/kotlin`.
 
 ## Verify a release
@@ -79,7 +111,7 @@ a crate. This checks registry authentication without releasing another version.
 
 ## JSR and Maven Central release workflows
 
-The reserved coordinates are `@forgesworn/qr` on JSR and
+The published coordinates are `@forgesworn/qr` on JSR and
 `io.github.forgesworn:qr` on Maven Central. Both workflows take an existing stable
 GitHub release tag and default to a dry run. They use the current packaging
 configuration and require unchanged library sources from the selected tag.
@@ -118,11 +150,15 @@ workflow logs and registry state first. A successful upload is separate from
 public availability; a delayed public readback does not justify reuploading.
 Maven readback can be rerun with `scripts/verify-maven-publication.py` using the
 retained `kotlin/build/central-publication/receipt.json`. JSR readback uses
-`scripts/verify-jsr-publication.mjs --stage <verified-stage>`.
+`scripts/verify-jsr-publication.mjs --stage <verified-stage>`, or dispatch
+`release-jsr.yml` with `verify_only=true` to check the existing package without
+uploading it again.
 
-Installation instructions will be added after both public packages pass these
-checks. An account, reserved name or GitHub source release alone does not
-establish registry availability.
+JSR 0.3.1 passed native Deno and registry-generated npm compatibility consumers;
+Maven 0.3.0 passed its public Gradle consumer and signed artefact byte comparison.
+The Rust trusted-publishing authentication check also passed without uploading
+another crate version. An account, reserved name or GitHub source release alone
+does not establish registry availability.
 
 ## Search and AI discovery
 
