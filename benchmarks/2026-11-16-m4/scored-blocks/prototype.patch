@@ -1,0 +1,156 @@
+--- a/rust/src/place.rs
++++ b/rust/src/place.rs
+@@ -9,6 +9,60 @@
+ pub struct Point {
+     pub x: f64,
+     pub y: f64,
++}
++
++// Scored points remain in insertion order, including low-scoring suppressors.
++struct Scored {
++    p: Point,
++    score: u32,
++    away: f64,
++}
++
++struct ScoredBlock {
++    min_x: f64,
++    max_x: f64,
++    min_y: f64,
++    max_y: f64,
++    valid: bool,
++}
++
++fn append_scored(scored: &mut Vec<Scored>, blocks: &mut Vec<ScoredBlock>, entry: Scored) {
++    let p = entry.p;
++    let valid = p.x.is_finite() && p.y.is_finite();
++    if scored.len() % 8 == 0 {
++        blocks.push(ScoredBlock { min_x: p.x, max_x: p.x, min_y: p.y, max_y: p.y, valid });
++    } else {
++        let b = blocks.last_mut().unwrap();
++        b.valid = b.valid && valid;
++        b.min_x = b.min_x.min(p.x);
++        b.max_x = b.max_x.max(p.x);
++        b.min_y = b.min_y.min(p.y);
++        b.max_y = b.max_y.max(p.y);
++    }
++    scored.push(entry);
++}
++
++fn scored_duplicate(scored: &[Scored], blocks: &[ScoredBlock], p: Point, radius: f64) -> Option<usize> {
++    let valid_query = radius.is_finite() && radius >= 0.0 && p.x.is_finite() && p.y.is_finite();
++    for (group, b) in blocks.iter().enumerate() {
++        // Each bound uses the original stored-coordinate-minus-query order.
++        // Equality remains eligible; invalid values use the scalar predicate.
++        if valid_query && b.valid && (
++            (b.min_x > p.x && (b.min_x - p.x).abs() > radius) ||
++            (b.max_x < p.x && (b.max_x - p.x).abs() > radius) ||
++            (b.min_y > p.y && (b.min_y - p.y).abs() > radius) ||
++            (b.max_y < p.y && (b.max_y - p.y).abs() > radius)
++        ) { continue; }
++        let start = group * 8;
++        let end = (start + 8).min(scored.len());
++        for i in start..end {
++            let a = &scored[i];
++            if (a.p.x - p.x).abs() <= radius && (a.p.y - p.y).abs() <= radius && distance(a.p, p) <= radius {
++                return Some(i);
++            }
++        }
++    }
++    None
+ }
+ 
+ /// Where a symbol sits in the picture, and how to sample it.
+@@ -581,23 +635,19 @@
+         // Rank candidates by how well the 5x5 pattern around them matches, read
+         // along the code's own axes, then by nearness to a guess.
+         let near = |p: Point| -> f64 { estimates.iter().map(|e| distance(p, *e)).fold(f64::INFINITY, jmin) };
+-        struct Scored {
+-            p: Point,
+-            score: u32,
+-            away: f64,
+-        }
+         let mut scored: Vec<Scored> = Vec::new();
++        let mut blocks: Vec<ScoredBlock> = Vec::new();
+         for reach in [4.0, 8.0, 16.0] {
+             for estimate in &estimates {
+                 for p in find_alignments(image, edges, *estimate, wide, tall, reach, work.as_deref_mut()) {
+                     // A point outside the enclosing square cannot be within the circle.
+                     let radius = module_size / 2.0;
+-                    if scored.iter().any(|a| (a.p.x - p.x).abs() <= radius && (a.p.y - p.y).abs() <= radius && distance(a.p, p) <= radius) {
++                    if scored_duplicate(&scored, &blocks, p, radius).is_some() {
+                         continue;
+                     }
+                     // Scores below 20 are discarded, but their points still suppress duplicates.
+                     let score = alignment_score(image, p, u0, v0, alignment_score(image, p, u, v, 19));
+-                    scored.push(Scored { p, score, away: near(p) });
++                    append_scored(&mut scored, &mut blocks, Scored { p, score, away: near(p) });
+                 }
+             }
+             if scored.iter().any(|c| c.score >= 23) {
+@@ -1300,3 +1350,65 @@
+         }
+     }
+ }
++
++#[cfg(test)]
++mod scored_block_tests {
++    use super::*;
++
++    // Independent original scalar predicate, retaining its exact order.
++    fn scalar(scored: &[Scored], p: Point, radius: f64) -> Option<usize> {
++        scored.iter().position(|a| {
++            (a.p.x - p.x).abs() <= radius
++                && (a.p.y - p.y).abs() <= radius
++                && distance(a.p, p) <= radius
++        })
++    }
++
++    #[test]
++    fn groups_match_original_predicate_for_every_prefix() {
++        let mut scored = Vec::new();
++        let mut blocks = Vec::new();
++        let unusual = [0.0, -0.0, 1.0, -1.0, f64::MIN_POSITIVE, f64::MAX, -f64::MAX, f64::INFINITY, f64::NEG_INFINITY, f64::NAN];
++        let radii = [0.0, -0.0, 1.0, 2.0, -1.0, f64::MAX, f64::INFINITY, f64::NEG_INFINITY, f64::NAN];
++        for i in 0..28 {
++            let p = if i < 18 { Point { x: (i * 4) as f64, y: (i % 3) as f64 } }
++                else { Point { x: unusual[i - 18], y: unusual[27 - i] } };
++            // Zero-score points must remain duplicate suppressors.
++            append_scored(&mut scored, &mut blocks, Scored { p, score: if i % 2 == 0 { 0 } else { 22 }, away: 0.0 });
++            assert_eq!(blocks.len(), (scored.len() + 7) / 8);
++            for &x in &unusual {
++                for &y in &unusual {
++                    let query = Point { x, y };
++                    for &radius in &radii {
++                        assert_eq!(scored_duplicate(&scored, &blocks, query, radius), scalar(&scored, query, radius), "prefix {} query {:?} radius {:?}", scored.len(), query, radius);
++                    }
++                }
++            }
++            for j in 0..scored.len() {
++                for radius in [0.0, 1.0, 2.0] {
++                    let query = Point { x: scored[j].p.x + radius, y: scored[j].p.y };
++                    assert_eq!(scored_duplicate(&scored, &blocks, query, radius), scalar(&scored, query, radius));
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn earliest_match_and_inclusive_circle_survive_group_boundaries() {
++        let mut scored = Vec::new();
++        let mut blocks = Vec::new();
++        for i in 0..17 {
++            let p = if i == 7 || i == 8 { Point { x: 0.0, y: 0.0 } }
++                else { Point { x: 100.0 + 10.0 * i as f64, y: 100.0 } };
++            append_scored(&mut scored, &mut blocks, Scored { p, score: 0, away: 0.0 });
++            for query in [Point { x: 3.0, y: 4.0 }, Point { x: 3.0, y: 4.000000000000001 }, Point { x: 5.0, y: 0.0 }, Point { x: 5.000000000000001, y: 0.0 }] {
++                assert_eq!(scored_duplicate(&scored, &blocks, query, 5.0), scalar(&scored, query, 5.0));
++            }
++            if i >= 7 {
++                assert_eq!(scored_duplicate(&scored, &blocks, Point { x: 3.0, y: 4.0 }, 5.0), Some(7));
++                assert_eq!(scored_duplicate(&scored, &blocks, Point { x: 5.0, y: 0.0 }, 5.0), Some(7));
++                assert_eq!(scored_duplicate(&scored, &blocks, Point { x: 5.000000000000001, y: 0.0 }, 5.0), None);
++            }
++        }
++    }
++}

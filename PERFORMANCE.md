@@ -31,33 +31,48 @@ required, retaining 179/184 correct reads and no wrong text. These are paired
 old/new Kotlin measurements, not a fresh ZXing comparison. See the
 [Kotlin receipts and reproduction steps](benchmarks/2026-11-16-m4/kotlin-frontier/README.md).
 
-The latest matched run uses the accepted alignment-frontier WASM (median
-latency, lower is better):
+A fixed-eight-point bound for scored alignment duplicates was also measured
+and rejected. Despite 83% fewer point visits on the main noise frame, two paired
+M4 runs were 0.9–1.0% slower; smaller noisy frames were 1.1–1.3% slower. All 39
+native tests, 89 complete ABI comparisons and 184 photographic comparisons
+passed, but correctness and lower operation counts did not yield a speed gain.
+The [diagnostic, frozen patch and timings](benchmarks/2026-11-16-m4/scored-blocks/README.md)
+are retained; production keeps the original duplicate scan.
+
+The packaged module now uses Rust 1.96.0 with unchanged Rust source. Two paired
+M4 forks reduce clean-frame time by 9.1–9.5%, blank-frame time by 8.3–9.9% and
+gradient time by 9.9–10.6%; main-noise gains are only 0.5–0.6%. The module is
+5,593 bytes smaller at 207,272 bytes. The exact timed binary passes complete
+ABI/photo comparisons, Chrome page/worker/character-set/session checks and the
+packed consumer gate. [Compiler qualification](benchmarks/2026-11-16-m4/compiler196/README.md)
+records small mixed tail results and the final provenance.
+
+The latest matched run uses that Rust 1.96.0 WASM (median latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM 3.1.7 |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.630 | 1.897 |
-| Blank 1280×720 RGBA, median ms | 1.257 | 2.092 |
-| Random noise, median ms | 20.114 | 7.448 |
+| Clean 1280×720 RGBA, median ms | 1.511 | 1.936 |
+| Blank 1280×720 RGBA, median ms | 1.143 | 2.084 |
+| Random noise, median ms | 20.192 | 7.536 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
 | Synthetic validation regression set, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 7.356 | 18.686 |
+| Ten-frame moving/changing-payload sequence, median total ms | 6.752 | 18.511 |
 
-The current receipts are [library comparisons](benchmarks/2026-11-16-m4/alignment-frontier/frontier-libraries.json),
-[tracking sequences](benchmarks/2026-11-16-m4/alignment-frontier/frontier-sessions.json)
-and [192-case regression results](benchmarks/2026-11-16-m4/alignment-frontier/frontier-validation.json).
+The current receipts are [library comparisons](benchmarks/2026-11-16-m4/compiler196/compiler196-libraries.json),
+[tracking sequences](benchmarks/2026-11-16-m4/compiler196/compiler196-sessions.json)
+and [192-case regression results](benchmarks/2026-11-16-m4/compiler196/compiler196-validation.json).
 These use the same rival WASM and frame hashes as the earlier seventh-candidate
-run. Different-run absolute timings do not measure the frontier's gain: the
-paired old/new runs below establish its 1.4–1.8% main-noise improvement.
-Earlier `candidate7-*` receipts remain historical evidence.
+run. Different-run absolute timings do not measure either the compiler's gain
+or the frontier's earlier gain: the separate paired runs establish those.
+Earlier `candidate7-*` and frontier receipts remain historical evidence.
 The final paired negative-frame matrix is retained with the frontier receipts.
 Final Chrome page/worker, character-set and tracked-session checks also passed
-with the current binary; their receipt is retained with the frontier results.
+with the current binary; their receipt is retained with the compiler results.
 Earlier full rival negative-frame comparisons remain in the parent M4
 directory, bound to their recorded binaries and workloads.
 These headline wins use the optional WASM backend: TypeScript alone measured
-4.162 ms clean and 54.516 ms noise in the same run.
+4.205 ms clean and 54.420 ms noise in the same run.
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed

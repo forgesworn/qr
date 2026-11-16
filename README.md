@@ -752,7 +752,7 @@ npm run fetch-photos       # download the photograph test set (about 13 MB, need
 ```
 
 The checked-in WASM asset is built from this repository's Rust sources with
-Rust 1.94.1. Install that toolchain and its `wasm32-unknown-unknown` target,
+Rust 1.96.0. Install that toolchain and its `wasm32-unknown-unknown` target,
 then use `npm run build:wasm` after changing Rust. `npm run check:wasm`
 rebuilds and compares the exact bytes and provenance; CI does this on Linux.
 Normal npm builds need no Rust toolchain. `npm run check:package` installs a

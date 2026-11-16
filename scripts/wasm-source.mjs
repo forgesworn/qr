@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync, readdirSync } from 'node:fs'
 
 export const root = new URL('../', import.meta.url)
-export const compiler = 'rustc 1.94.1 (e408947bf 2026-03-25)'
+export const compiler = 'rustc 1.96.0 (ac68faa20 2026-05-25)'
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 export function sourceHash() {
   const hash = createHash('sha256')

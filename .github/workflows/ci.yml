@@ -76,8 +76,8 @@ jobs:
       - run: npm run build
         working-directory: .
       # Match the frozen module's compiler and verify the distributed bytes on Linux.
-      - run: rustup toolchain install 1.94.1 --profile minimal --target wasm32-unknown-unknown
-      - run: rustup override set 1.94.1
+      - run: rustup toolchain install 1.96.0 --profile minimal --target wasm32-unknown-unknown
+      - run: rustup override set 1.96.0
       - run: cargo test --locked
       - run: npm run check:wasm
         working-directory: .
