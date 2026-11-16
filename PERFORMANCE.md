@@ -520,6 +520,27 @@ must retain original order and exact comparisons. This targets repeated
 horizontal alignment work without requiring additional finder structure.
 No index implementation or speedup is established.
 
+The [row-index diagnostic](benchmarks/2026-11-16-m4/alignment-row-index/README.md)
+now preserves all 28 observed results and work counts, including four thin-finder
+regressions. An independent row oracle covers 89,076 short-row/window cases.
+For the main 720p noise frame, 225,732 interior visits cover 36,413 unique
+triples when reuse is scoped to each finder triple. Whole-row setup would inspect
+390,280 triples and is rejected. After leaving each row's first query scalar,
+64-pixel touched chunks inspect 55,544 triples across 3,486 chunks; the first
+queries still perform 19,461 interior visits. These counts are cumulative, not
+peak storage or timing. Eligible patterns still need ordered processing and
+exact checks. The clean frame has no repeated row queries and needs no index.
+This justifies one bounded compact-mask prototype, subject to correctness and
+whole-frame measurements; it does not establish a speedup.
+
+`scripts/compare-wasm.mjs` now accepts `--negative` to compare two modules on
+the same 12 clean/blank/noise/pattern fixtures as the paired TypeScript runner.
+It records frame, harness and binary hashes, warms up for at least 20 paired
+rounds and one second, then measures 60 alternating pairs. Full-result and
+input-mutation checks remain outside timed intervals. A same-binary control
+completed all 12 cases, with fixture hashes matching the previous TypeScript
+receipts. This validates the runner, not a candidate's performance.
+
 A [256-frame synthetic stress set](benchmarks/2026-11-16-m4/fresh-stress-unevaluated/README.md)
 is frozen but has never been decoded. Both rejected filters failed separate
 engineering fixtures before this set was opened. Its generator, expected bytes
