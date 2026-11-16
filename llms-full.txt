@@ -922,8 +922,9 @@ the TypeScript and optional WASM backends on your actual devices.
 # Distribution
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
-package `@forgesworn/qr`. They use the same version. The native Rust crate is `forgesworn-qr`. Kotlin currently comes from this
-repository; do not invent Maven or JSR coordinates.
+package `@forgesworn/qr`. They use the same version. The native Rust crate is `forgesworn-qr`. Kotlin is also available as source in this repository. The JSR and Maven Central
+publication workflows are configured; their first public releases are pending
+verification.
 
 | Channel | What it provides |
 |---|---|
@@ -993,16 +994,50 @@ The versioned package includes its MIT licence, declarations and specification.
 The separate `release-rust.yml` workflow publishes an existing GitHub release
 tag after testing the repository and extracted crate. Initial publication uses
 a temporary `CARGO_REGISTRY_TOKEN` environment secret, removed afterwards.
-Subsequent publication uses crates.io trusted publishing once the crate owner
-registers `forgesworn/qr`, workflow `release-rust.yml`, environment
-`crates-publish` in the crate settings. That registry-side registration is
-separate from committing the workflow.
+The trusted publisher is registered for `forgesworn/qr`, workflow
+`release-rust.yml`, environment `crates-publish`. The workflow supports
+`verify_only=true` to exchange a short-lived publishing token without uploading
+a crate. This checks registry authentication without releasing another version.
 
-## Other registries
+## JSR and Maven Central release workflows
 
-Maven Central and JSR require separate publisher accounts and package setup. A GitHub source release does not establish a release
-on those registries. Registry publication will be documented here only after
-the package can be installed and verified there.
+The reserved coordinates are `@forgesworn/qr` on JSR and
+`io.github.forgesworn:qr` on Maven Central. Both workflows take an existing stable
+GitHub release tag and default to a dry run. They use the current packaging
+configuration and require unchanged library sources from the selected tag.
+Their GitHub environments permit deployment only from `main`.
+
+`release-jsr.yml` stages the TypeScript sources and verified WASM bytes, requires
+strict JSR declaration generation and tests a Deno consumer. Publication uses
+GitHub OIDC with provenance. Afterwards it checks native JSR imports and the
+registry-generated npm compatibility archive, including its types and WASM.
+The npmjs package remains the recommended npm installation route.
+
+`release-maven.yml` tests and stages the JVM 17 library, sources, generated API
+documentation and Maven metadata. Its only runtime dependency is the Kotlin
+standard library. The `maven-central` environment holds `CENTRAL_USERNAME`,
+`CENTRAL_PASSWORD`, `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE`.
+The Central credentials are the generated user-token pair, not login credentials.
+The public signing key is [kotlin/signing-key.asc](https://github.com/forgesworn/qr/blob/main/kotlin/signing-key.asc),
+fingerprint `E6762E1C42D06BD8F591A50E5FF0091A43ABEF66`, also available from
+[keyserver.ubuntu.com](https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xE6762E1C42D06BD8F591A50E5FF0091A43ABEF66).
+Rotate the key before its expiry on 15 November 2028.
+
+The Maven workflow verifies every signature, uploads one signed bundle, waits
+for Central validation, then requests publication once. It retains the deployment
+identity even on failure. After Central reports publication, it compares public
+artefact bytes and runs an independent consumer against Maven Central.
+
+Never rerun an uncertain publication blindly. Inspect the retained receipt,
+workflow logs and registry state first. A successful upload is separate from
+public availability; a delayed public readback does not justify reuploading.
+Maven readback can be rerun with `scripts/verify-maven-publication.py` using the
+retained `kotlin/build/central-publication/receipt.json`. JSR readback uses
+`scripts/verify-jsr-publication.mjs --stage <verified-stage>`.
+
+Installation instructions will be added after both public packages pass these
+checks. An account, reserved name or GitHub source release alone does not
+establish registry availability.
 
 ## Search and AI discovery
 

@@ -4,6 +4,8 @@ dist/
 .DS_Store
 vectors/generator/.cache/
 kotlin/.gradle
+kotlin/**/.gradle
+kotlin/**/.kotlin
 kotlin/**/build
 kotlin/.kotlin
 vectors/photos-cache/

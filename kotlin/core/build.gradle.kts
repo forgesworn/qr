@@ -2,13 +2,84 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    id("org.jetbrains.dokka-javadoc") version "2.2.0"
+    `maven-publish`
+    signing
 }
 
-group = "dev.forgesworn"
+group = "io.github.forgesworn"
+// Keep the package versions together without a second manually maintained number.
+version = Regex("\"version\"\\s*:\\s*\"([^\"]+)\"")
+    .find(rootProject.file("../package.json").readText())!!.groupValues[1]
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+    from(tasks.named("dokkaGeneratePublicationJavadoc"))
+}
+
+tasks.withType<Jar>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+    from(rootProject.file("../LICENSE")) { into("META-INF") }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+            artifactId = "qr"
+            artifact(javadocJar)
+            pom {
+                name.set("ForgeSworn QR")
+                description.set("QR code encoder and decoder for Kotlin and the JVM, with no dependencies beyond the Kotlin standard library")
+                url.set("https://forgesworn.github.io/qr/")
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/license/mit/")
+                        distribution.set("repo")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("forgesworn")
+                        name.set("ForgeSworn")
+                        url.set("https://github.com/forgesworn")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/forgesworn/qr.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/forgesworn/qr.git")
+                    url.set("https://github.com/forgesworn/qr")
+                }
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("https://github.com/forgesworn/qr/issues")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "staging"
+            url = uri(rootProject.layout.buildDirectory.dir("staging-deploy"))
+        }
+    }
+}
+
+signing {
+    val key = providers.environmentVariable("MAVEN_GPG_PRIVATE_KEY").orNull?.takeIf { it.isNotBlank() }
+    isRequired = key != null
+    if (key != null) {
+        useInMemoryPgpKeys(key, providers.environmentVariable("MAVEN_GPG_PASSPHRASE").orNull)
+        sign(publishing.publications["maven"])
+    }
 }
 
 kotlin {
