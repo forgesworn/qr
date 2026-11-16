@@ -47,6 +47,12 @@ An [uncounted WASM diagnostic](benchmarks/2026-11-16-m4/uncounted/README.md)
 was also rejected: the main noise time is unchanged and other noise cases
 show only small mixed differences. The package keeps the existing counted
 entry point and raw Work ABI; no optional uncounted export is added.
+A [packed-transition representation diagnostic](benchmarks/2026-11-16-m4/packed-transitions/README.md)
+was closed at screening after all 38 result/Work comparisons and 6,168 edge
+oracle cases passed. Logical noise storage falls 93.7%, but repeated transition
+extraction adds work and clean storage grows 5.76 times. The source ledger did
+not justify a compiled prototype; it is not a measured runtime regression.
+The coordinate representation and production module remain unchanged.
 
 The Rust 1.96.0 compiler qualification used unchanged Rust source before the
 budget-guard change. Two paired M4 forks reduced clean-frame time by 10.5–11.0%,
