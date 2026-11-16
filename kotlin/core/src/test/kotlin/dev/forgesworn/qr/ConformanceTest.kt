@@ -25,8 +25,6 @@ class ConformanceTest {
 
     private fun sha(bytes: ByteArray): String = hex(MessageDigest.getInstance("SHA-256").digest(bytes))
 
-    private fun bytesOf(values: IntArray): ByteArray = ByteArray(values.size) { values[it].toByte() }
-
     private fun number(v: Any?): Double = (v as Number).toDouble()
 
     private fun load(file: String): Grey {
@@ -79,7 +77,7 @@ class ConformanceTest {
                 val a = rgba[4 * it + 3].toInt() and 0xff
                 (a shl 24) or (r shl 16) or (g shl 8) or b
             }
-            assertEquals("$width x $height", v["grey"], hex(bytesOf(toLuminance(argb, width, height, width).data)))
+            assertEquals("$width x $height", v["grey"], hex(toLuminance(argb, width, height, width).data))
         }
     }
 
@@ -109,13 +107,13 @@ class ConformanceTest {
             assertEquals(file, (v["width"] as Number).toInt(), g.width)
             assertEquals(file, (v["height"] as Number).toInt(), g.height)
             val luminance = toLuminance(g.data, g.width, g.height, g.width)
-            assertEquals("$file luminance", v["luminance"], sha(bytesOf(luminance.data)))
+            assertEquals("$file luminance", v["luminance"], sha(luminance.data))
             val bits = binarise(luminance)
             assertEquals("$file bits", v["bits"], sha(bits.data))
             val reduced = v["reduced"] as Map<String, Any?>
             for (f in intArrayOf(2, 4, 8)) {
                 val want = reduced["$f"]
-                val got = if (g.width / f >= 1 && g.height / f >= 1) sha(bytesOf(shrink(luminance, f).data)) else null
+                val got = if (g.width / f >= 1 && g.height / f >= 1) sha(shrink(luminance, f).data) else null
                 assertEquals("$file shrunk by $f", want, got)
             }
             val finders = v["finders"] as Map<String, Any?>

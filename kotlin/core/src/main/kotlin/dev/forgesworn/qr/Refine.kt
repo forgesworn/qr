@@ -110,8 +110,8 @@ private class Probe(private val image: Luminance, private val t: Thresholds, pri
         val y1 = minOf(height - 1, y0 + 1)
         val ax = maxOf(0.0, minOf(1.0, fx - x0))
         val ay = maxOf(0.0, minOf(1.0, fy - y0))
-        val top = data[y0 * width + x0] * (1 - ax) + data[y0 * width + x1] * ax
-        val bottom = data[y1 * width + x0] * (1 - ax) + data[y1 * width + x1] * ax
+        val top = (data[y0 * width + x0].toInt() and 0xff) * (1 - ax) + (data[y0 * width + x1].toInt() and 0xff) * ax
+        val bottom = (data[y1 * width + x0].toInt() and 0xff) * (1 - ax) + (data[y1 * width + x1].toInt() and 0xff) * ax
         val grey = top * (1 - ay) + bottom * ay
         val d = thresholdAt(t, width, height, floor(x).toInt(), floor(y).toInt()) - grey
         return if (inverted) -d else d

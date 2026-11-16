@@ -63,15 +63,15 @@ class ReducedTest {
     @Test
     fun shrinksByWholeBoxesRoundingHalfUpAndDroppingTheRemainder() {
         // 5 x 3 by 2: two columns and one row, the last column and row dropped.
-        val image = Luminance(intArrayOf(0, 1, 2, 3, 99, 4, 5, 6, 8, 99, 99, 99, 99, 99, 99), 5, 3)
+        val image = Luminance(byteArrayOf(0, 1, 2, 3, 99, 4, 5, 6, 8, 99, 99, 99, 99, 99, 99), 5, 3)
         val small = shrink(image, 2)
         assertEquals(2, small.width)
         assertEquals(1, small.height)
         // (0 + 1 + 4 + 5 + 2) div 4 = 3; (2 + 3 + 6 + 8 + 2) div 4 = 5.
-        assertArrayEquals(intArrayOf(3, 5), small.data)
+        assertArrayEquals(byteArrayOf(3, 5), small.data)
         // 8 x 8 boxes: (sum + 32) div 64.
-        assertArrayEquals(intArrayOf(255), shrink(Luminance(IntArray(64) { 255 }, 8, 8), 8).data)
-        assertArrayEquals(intArrayOf(1), shrink(Luminance(IntArray(64) { if (it < 32) 1 else 0 }, 8, 8), 8).data)
+        assertArrayEquals(byteArrayOf(255.toByte()), shrink(Luminance(ByteArray(64) { 255.toByte() }, 8, 8), 8).data)
+        assertArrayEquals(byteArrayOf(1), shrink(Luminance(ByteArray(64) { if (it < 32) 1 else 0 }, 8, 8), 8).data)
     }
 
     @Test
@@ -79,7 +79,7 @@ class ReducedTest {
         // Sides that leave every remainder, and some too small for a square of 8.
         val random = Random(53)
         for ((width, height) in listOf(64 to 64, 65 to 71, 67 to 62, 103 to 9, 9 to 103, 5 to 3, 200 to 131)) {
-            val image = Luminance(IntArray(width * height) { floor(random.next() * 256).toInt() }, width, height)
+            val image = Luminance(ByteArray(width * height) { floor(random.next() * 256).toInt().toByte() }, width, height)
             val shrunk = Reductions(image)
             // Asked for in the decoder's order, coarse to fine, and then again.
             for (f in intArrayOf(8, 4, 2, 8, 2, 4)) {
@@ -90,7 +90,7 @@ class ReducedTest {
                 assertArrayEquals("$width x $height by $f", want.data, got.data)
             }
         }
-        assertArrayEquals(IntArray(6) { 255 }, Reductions(Luminance(IntArray(24 * 16) { 255 }, 24, 16)).by(8).data)
+        assertArrayEquals(ByteArray(6) { 255.toByte() }, Reductions(Luminance(ByteArray(24 * 16) { 255.toByte() }, 24, 16)).by(8).data)
     }
 
     @Test

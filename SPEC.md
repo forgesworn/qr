@@ -392,6 +392,15 @@ order written. A length is `sqrt(dx * dx + dy * dy)`, never a library
 `hypot`, whose last place differs between platforms. Rounding to a whole
 number is `floor(x + 0.5)`. Sorts keep the order of equal items.
 
+The Kotlin port stores luminance in bytes, read as unsigned values from 0
+to 255. An exactly sized, packed greyscale input is borrowed for the
+synchronous decode call without modification or retention afterwards.
+Padded rows and inputs with unused trailing bytes are copied into a packed
+plane. ARGB conversion, inversion and reduced pictures also produce byte
+planes; reduction sums remain integers until the specified final rounding.
+This representation does not change luminance values, stage results or work
+counts.
+
 ### Binarisation, exactly
 
 Step 2, as `vectors/conformance.json` checks it (`bits`).
