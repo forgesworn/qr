@@ -55,6 +55,8 @@ jobs:
         run: node scripts/prepare-jsr.mjs --out "$RUNNER_TEMP/qr-jsr"
       - name: Verify strict types and Deno consumer
         run: node scripts/check-jsr.mjs --stage "$RUNNER_TEMP/qr-jsr"
+      - name: Verify actual publisher archive on loopback
+        run: python3 scripts/check-jsr-upload.py --stage "$RUNNER_TEMP/qr-jsr"
       - name: Publish with GitHub OIDC and provenance
         if: ${{ !inputs.dry_run }}
         working-directory: ${{ runner.temp }}/qr-jsr

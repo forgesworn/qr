@@ -29,7 +29,7 @@ while (!native || !compatibility) {
   console.log('Waiting for native JSR and npm compatibility availability')
   await new Promise(resolve => setTimeout(resolve, 30_000))
 }
-assert.equal(native.manifest['/src/qr.wasm'].checksum, 'sha256-' + receipt.wasmSha256)
+assert.equal(native.manifest['/src/qr.bin'].checksum, 'sha256-' + receipt.wasmSha256)
 assert.deepEqual(native.exports, { '.': './src/index.ts', './wasm': './src/wasm.ts' })
 const packageMetadata = await json(`${base}/meta.json`)
 assert.equal(packageMetadata.githubRepository.owner.toLowerCase(), 'forgesworn')

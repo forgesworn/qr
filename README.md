@@ -74,11 +74,11 @@ the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.0'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.0/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.1'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.1/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.0` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.1` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](docs/DISTRIBUTION.md) for registry publication status and
 verification.
