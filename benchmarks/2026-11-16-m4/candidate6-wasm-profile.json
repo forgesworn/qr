@@ -1,0 +1,308 @@
+{
+  "revision": "d2fa5eefb7d5b12c3501a4c4dea873a9cab527df",
+  "javascriptSha256": "c8453c0e5f81602ae25fa2187edf2a99b4c0c89f891fa2e7f969f89ce94cea0a",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "backend": "wasm",
+  "wasmSha256": "e5471fc725435868c7562b1ebc9bde870f181adeecd392d224002bf9a6dc936d",
+  "cpu": "Apple M4 Max",
+  "iterations": 150,
+  "loadBefore": [
+    2.23876953125,
+    3.34716796875,
+    4.154296875
+  ],
+  "loadAfter": [
+    2.29931640625,
+    3.34130859375,
+    4.1474609375
+  ],
+  "work": [
+    {
+      "name": "clean",
+      "steps": 6615,
+      "compared": 24,
+      "scanned": 5476,
+      "maps": 1,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "blank",
+      "steps": 0,
+      "compared": 0,
+      "scanned": 0,
+      "maps": 0,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "noise",
+      "steps": 454513,
+      "compared": 115,
+      "scanned": 984380,
+      "maps": 341,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0,
+      "reduced": 90
+    }
+  ],
+  "sampleDurationMs": 3394.792,
+  "self": [
+    {
+      "name": "_ZN13forgesworn_qr5place6locate17h8eecee85c9bc5952E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 869.329,
+      "percent": 25.60772500936729
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate12find_finders17h364655129fb5dee6E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 800.872,
+      "percent": 23.591194983374535
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate11cross_check17h5b79992afa7002f1E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 383.081,
+      "percent": 11.284373239951078
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate5Edges3row17h8a5d3b98a50e3ad3E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 258.621,
+      "percent": 7.618169242769513
+    },
+    {
+      "name": "_ZN13forgesworn_qr6symbol7correct17h27c4b3ca57629f9aE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 248.875,
+      "percent": 7.33108243450556
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place15alignment_score17hf74c1426ef1e5f9fE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 197.668,
+      "percent": 5.822683687247997
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode6search17hfb6e1ef601743319E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 171.256,
+      "percent": 5.044668421511539
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise12to_luminance17h3bc0a06030d9e75cE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 100.665,
+      "percent": 2.965277401384238
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise8binarise17hceabf03cd95ff461E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 77.374,
+      "percent": 2.2791970759916955
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10thresholds17h227c2f0f1cf6b7e9E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 39.209,
+      "percent": 1.1549750323436605
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions5level17hb3ccd8cf3086002dE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 36.415,
+      "percent": 1.0726724936314214
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place14finder_triples17heca7d389b128488cE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 30.168,
+      "percent": 0.8886553285149723
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode4look17hc3a9f022372d34bcE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 28.502,
+      "percent": 0.8395801568991561
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable9quicksort9quicksort17he188e3966cf7d3d3E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 28.293,
+      "percent": 0.8334236677828862
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode4read28_$u7b$$u7b$closure$u7d$$u7d$17h79612eedafa3d03bE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 19.084,
+      "percent": 0.5621552071526031
+    },
+    {
+      "name": "_ZN8dlmalloc8dlmalloc17Dlmalloc$LT$A$GT$6malloc17he97e96981fab807eE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 19.002,
+      "percent": 0.5597397425232533
+    },
+    {
+      "name": "post node:inspector:115",
+      "ms": 16.792,
+      "percent": 0.49464002507370114
+    },
+    {
+      "name": "_ZN8dlmalloc8dlmalloc17Dlmalloc$LT$A$GT$4free17ha98daa4c6dd8ad86E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 13.042,
+      "percent": 0.38417670360952894
+    },
+    {
+      "name": "_RNvCs1Y7DaGC1cwg_7___rustc13___rdl_realloc wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 10.084,
+      "percent": 0.2970432356385899
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions3get17he21d7f979ba96bd6E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 9.542,
+      "percent": 0.28107760357630157
+    },
+    {
+      "name": "decode file://dist/wasm.js:149",
+      "ms": 7.501,
+      "percent": 0.22095609981406814
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place17black_white_black28_$u7b$$u7b$closure$u7d$$u7d$17h6f0de18c9aba6a87E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 4.999,
+      "percent": 0.14725497173317245
+    },
+    {
+      "name": "_ZN13forgesworn_qr6refine9agreement17h2932516f3566f3a1E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 4.375,
+      "percent": 0.12887387504153422
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable5drift4sort17hcf1d5793bee2f05bE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 3.042,
+      "percent": 0.08960784637173647
+    },
+    {
+      "name": "_RNvCs1Y7DaGC1cwg_7___rustc11___rdl_alloc wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 2.5,
+      "percent": 0.07364221430944812
+    }
+  ],
+  "inclusive": [
+    {
+      "name": "(root) :0",
+      "ms": 3394.792,
+      "percent": 100
+    },
+    {
+      "name": "(anonymous) file://scripts/profile-decode.mjs:0",
+      "ms": 3382.707,
+      "percent": 99.64401353602813
+    },
+    {
+      "name": "decode file://dist/wasm.js:149",
+      "ms": 3365.915,
+      "percent": 99.14937351095443
+    },
+    {
+      "name": "read file://scripts/profile-decode.mjs:26",
+      "ms": 3365.915,
+      "percent": 99.14937351095443
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode6decode17h957470a2499dad1eE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 3358.414,
+      "percent": 98.92841741114036
+    },
+    {
+      "name": "read_picture wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 3358.414,
+      "percent": 98.92841741114036
+    },
+    {
+      "name": "js-to-wasm:i:i wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 3358.414,
+      "percent": 98.92841741114036
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode4look17hc3a9f022372d34bcE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 3211.167,
+      "percent": 94.59097935897104
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode6search17hfb6e1ef601743319E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 3062.331,
+      "percent": 90.20673431538663
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate12find_finders17h364655129fb5dee6E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 1341.034,
+      "percent": 39.502685289702576
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place6locate17h8eecee85c9bc5952E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 1223.164,
+      "percent": 36.03060216944072
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate11cross_check17h5b79992afa7002f1E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 383.081,
+      "percent": 11.284373239951078
+    },
+    {
+      "name": "_ZN13forgesworn_qr6symbol7correct17h27c4b3ca57629f9aE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 267.126,
+      "percent": 7.868700055850256
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate5Edges3row17h8a5d3b98a50e3ad3E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 260.538,
+      "percent": 7.674638092701998
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place15alignment_score17hf74c1426ef1e5f9fE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 197.668,
+      "percent": 5.822683687247997
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise12to_luminance17h3bc0a06030d9e75cE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 101.29,
+      "percent": 2.9836879549616
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise8binarise17hceabf03cd95ff461E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 77.999,
+      "percent": 2.2976076295690575
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions3get17he21d7f979ba96bd6E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 45.957,
+      "percent": 1.353750097207723
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10thresholds17h227c2f0f1cf6b7e9E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 40.418,
+      "percent": 1.1905884071837096
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions5level17hb3ccd8cf3086002dE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 36.415,
+      "percent": 1.0726724936314214
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable14driftsort_main17h3e6f137c32c93035E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 31.96,
+      "percent": 0.9414420677319848
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable5drift4sort17hcf1d5793bee2f05bE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 31.335,
+      "percent": 0.9230315141546227
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place14finder_triples17heca7d389b128488cE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 30.793,
+      "percent": 0.9070658820923344
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable9quicksort9quicksort17he188e3966cf7d3d3E wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 28.293,
+      "percent": 0.8334236677828862
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode4read28_$u7b$$u7b$closure$u7d$$u7d$17h79612eedafa3d03bE wasm://wasm/forgesworn_qr.wasm-00604d76:1",
+      "ms": 19.084,
+      "percent": 0.5621552071526031
+    }
+  ]
+}

@@ -13,28 +13,30 @@ ZXing-WASM 3.1.7 was still the registry's current version at baseline setup.
 The same pinned external rival packages and complete-result comparisons are
 used. Source/binary identities, workload hashes and load are retained in
 [the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
-experimental snapshots. The current implementation is `d21f0c2`, following
-`dc62837` for direct run enumeration and Rust word comparisons. The sixth
-candidate adds TypeScript word comparisons; the fifth and sixth use the same
-WASM bytes. Merge, publication and physical camera acceptance remain pending.
+experimental snapshots. The current TypeScript/Rust implementation is `22f3428`,
+with the Kotlin byte-plane optimisation at `dbb830f`. The seventh candidate
+applies the existing strict-format requirement before reading payload modules.
+Merge, publication and physical camera acceptance remain pending.
 
-The sixth candidate measured (median latency, lower is better):
+The seventh candidate measured (median latency, lower is better):
 
-| Measurement | Our packaged WASM | ZXing-WASM |
+| Measurement | Our packaged WASM | ZXing-WASM 3.1.7 |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.815 | 2.230 |
-| Blank 1280×720 RGBA, median ms | 1.362 | 2.225 |
-| Random noise, median ms | 23.253 | 8.120 |
+| Clean 1280×720 RGBA, median ms | 1.767 | 2.140 |
+| Blank 1280×720 RGBA, median ms | 1.322 | 2.235 |
+| Random noise, median ms | 22.024 | 8.274 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
 | Synthetic validation regression set, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 8.208 | 20.823 |
+| Ten-frame moving/changing-payload sequence, median total ms | 7.843 | 20.080 |
 
-The current receipts are [`candidate6-libraries.json`](benchmarks/2026-11-16-m4/candidate6-libraries.json),
-[`candidate6-sessions.json`](benchmarks/2026-11-16-m4/candidate6-sessions.json)
-and [`candidate6-validation.json`](benchmarks/2026-11-16-m4/candidate6-validation.json).
+The current receipts are [`candidate7-libraries.json`](benchmarks/2026-11-16-m4/candidate7-libraries.json),
+[`candidate7-sessions.json`](benchmarks/2026-11-16-m4/candidate7-sessions.json)
+and [`candidate7-validation.json`](benchmarks/2026-11-16-m4/candidate7-validation.json).
 The complete negative-frame matrix and Chrome page/worker measurements are
 retained alongside them. Their hashes identify the exact build and workloads.
+These headline wins use the optional WASM backend: TypeScript alone measured
+4.581 ms clean and 58.086 ms noise in the same run.
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed
@@ -184,21 +186,124 @@ previously readable photographs are preserved, with zero text mismatches from
 our TypeScript or packaged WASM decoders. The Rust module remains the exact
 rebuild already checked for `dc62837`.
 
-The next investigations should measure removable work before adding more
-caches or changing search policy:
+The seventh candidate (`22f3428`) samples the two format copies in both
+orientations before attempting a strict read. If neither orientation satisfies
+the existing agreement rule, no payload or second-look candidate can survive.
+All other reads retain the original order and post-read checks. Ordinary
+full-size reads are unchanged. Differential and regression checks cover
+recoverable format damage, mirrored/inverted/scaled reads and queue retention;
+no vectors changed. The packaged module is 212,269 bytes, 1,611 bytes larger.
 
-| Priority | Investigation | Evidence needed before adopting |
+The paired M4 comparison against `d2fa5ee` measured 23.168 to 22.397 ms on noise
+(3.3% less time), with clean/blank effectively unchanged. Six other noise cases
+in the integrated run improve; see
+[`candidate7-paired.json`](benchmarks/2026-11-16-m4/candidate7-paired.json) and
+[`candidate7-negative.json`](benchmarks/2026-11-16-m4/candidate7-negative.json).
+The headline values above come from a separate rival comparison, so they are
+not subtracted from earlier runs to claim the incremental speedup.
+
+A refreshed named-function WASM profile of `d2fa5ee` attributes 25.6% of self
+samples to location, 23.6% to finder discovery, 11.3% to cross-checks, 7.6% to
+row edges and 7.3% to Reed–Solomon correction. It is diagnostic, with a distinct
+binary hash, not a competitive timing result. See
+[`candidate6-wasm-profile.json`](benchmarks/2026-11-16-m4/candidate6-wasm-profile.json).
+
+Exact duplicate-search instrumentation did not justify a cache: the main noise
+frame made 99 locator calls and 341 maps with no identical locator/map keys.
+A second noise seed also had none. Some damaged fixtures repeat maps, but
+second-look queue state differs. Raw cross-check walks repeat about 18% of
+counted work; their final acceptance depends on tolerance, and complete-key
+reuse is negligible. With cross-checks accounting for 11.3% of the profile,
+the ideal raw-walk saving is only about 2% of total time before cache overhead.
+All 16 instrumented cases preserved full results and work counters. The
+[diagnostic summary](benchmarks/2026-11-16-m4/candidate6-duplicate-work.json)
+records the experiment; no cache was adopted.
+
+### Kotlin against ZXing Java
+
+The separate JVM comparison uses native aarch64 OpenJDK 21.0.11 on the same M4,
+a 512 MiB heap and identical packed greyscale pixels. It is not interchangeable
+with RGBA/WASM timing. ZXing Java is pinned to
+[3.5.4](https://github.com/zxing/zxing/releases/tag/zxing-3.5.4), using an external
+jar with SHA-256 `71de5d89341b5fcf5dd89da7f44e84d825d0e084cdf3ec77c9abe26b0f0ceb13`.
+The repository's existing test oracle remains 3.5.3; no dependency was added.
+
+Each case gets at least 200 warm-up pairs and two seconds of warm-up, then
+60 measured pairs with alternating order. Every result is validated outside
+the timer: exact ASCII text, our payload bytes and ZXing's byte segments.
+ZXing uses QRCodeReader, HybridBinarizer, TRY_HARDER and normal then inverted
+luminance. ThreadMXBean measures allocation during each decode, separately
+from validation. Two independent JVM forks qualify the byte-plane candidate.
+Shared-process GC counts and p95 observations do not attribute pauses to one
+library independently. Source, harness, jar, workload and environment identities
+are retained with raw latency samples.
+
+The pre-strict Kotlin baseline allocated 4,874,112 bytes per clean 720p read,
+against ZXing's 178,360 bytes, and took 1.265–1.276 ms against 0.987–1.001 ms.
+Noisy 720p reads took 46.078–46.875 ms against 13.451–14.094 ms. These losses
+motivated byte-backed luminance: exactly sized packed inputs are borrowed for
+the synchronous call, other layouts are compacted, and ARGB/inverse/reduced
+planes use bytes. Loads are unsigned; reduction sums stay wide integers with
+the same rounding. Public signatures, decoded results and conformance remain
+unchanged. The [baseline fork 1](benchmarks/2026-11-16-m4/jvm-baseline-fork1.json),
+[baseline fork 2](benchmarks/2026-11-16-m4/jvm-baseline-fork2.json) and
+[strict-format intermediate](benchmarks/2026-11-16-m4/jvm-strict.json) remain
+available to separate the two optimisations.
+
+The byte-plane candidate (`dbb830f`) produced these two independent fork
+results. Allocations are decimal bytes per decode, excluding input creation.
+
+| Workload | Kotlin median ms, fork 1 / 2 | ZXing Java median ms, fork 1 / 2 | Kotlin allocated bytes | ZXing allocated bytes |
+|---|---:|---:|---:|---:|
+| Clean 720p | 1.080 / 1.079 | 0.999 / 0.986 | 1,187,640 | 178,360 |
+| Blank 720p | 0.483 / 0.490 | 1.753 / 1.765 | 230,544 | 1,271,872 |
+| Noise 720p | 43.801 / 43.959 | 14.370 / 14.286 | 17,875,176–17,884,608 | 1,277,288 |
+| Noise 512×512 | 35.205 / 36.379 | 3.975 / 3.922 | 14,584,080 | 365,088 |
+| Noise 1080p | 50.530 / 51.346 | 32.201 / 32.098 | 22,246,888 | 2,865,536 |
+| Stripes 720p | 8.077 / 8.145 | 2.553 / 2.564 | 13,547,176 | 1,271,872 |
+| Checkerboard 720p | 6.579 / 6.636 | 2.319 / 2.300 | 12,850,872 | 1,271,872 |
+
+Clean allocation fell 75.6%, blank allocation 94.1%, and 720p noise allocation
+about 20.4% against the strict-format intermediate. Clean latency is consistently
+lower across these forks, but baseline/candidate timings were taken in separate
+JVM processes, not an interleaved before/after pair. The rival comparisons within
+each fork are paired. No material noise-latency improvement is established for
+the byte-plane change alone; search remains the dominant gap. Retaining the
+change is justified by its allocation reduction and clean/blank observations.
+See [byte fork 1](benchmarks/2026-11-16-m4/jvm-byte-fork1.json) and
+[byte fork 2](benchmarks/2026-11-16-m4/jvm-byte-fork2.json), including p95 samples.
+
+Current local verification passes 458 JavaScript tests with required photographs,
+33 native Rust tests with all features, and 111 Kotlin tests with required
+photographs. The Kotlin suite includes unsigned-byte, alpha, packed/padded/tail
+input, input-preservation and independent box-mean checks. The exact packaged
+WASM rebuild and packed-package consumer checks pass. Chrome page/worker,
+character-set and tracked-session checks pass for the unchanged TypeScript/WASM
+revision `22f3428`. Hosted checks for this phase are tracked on PR #4.
+
+To reproduce, obtain the pinned jar outside the repository, verify its SHA-256,
+and run from `kotlin/` twice, with separate output files:
+
+```sh
+./gradlew :core:compareZxing --console=plain --no-daemon --max-workers=2 \
+  -PqrBenchmarkZxingJar=/external/path/core-3.5.4.jar \
+  -PqrBenchmarkOutput=/external/path/jvm-fork1.json
+```
+
+### Next acceptance targets
+
+| Priority | Work | Evidence required |
 |---|---|---|
-| 1 | Exact duplicate locator/maps across passes | Repeated identical geometry or matrices account for material time; reuse preserves candidate order, fallback retention and logical budgets. |
-| 2 | Repeated vertical walks in overlapping alignment windows | Reuse outweighs setup/storage; clipped-window candidates and work counts remain identical. |
-| 3 | Apply the existing mandatory strict-format condition before Reed–Solomon | Neither orientation can pass the existing condition; preserve mirrored precedence, second-look candidates and all outcomes. |
-| 4 | Kotlin versus ZXing Java | Same greyscale frames, warmed JVM, alternating order, complete-result checks and pinned versions. Existing test-only ZXing 3.5.3 can be reused. |
-| 5 | Independent physical camera evaluation | Android/iOS first-read and p95 latency, difficult lighting/movement, sustained memory/CPU use and false positives. |
+| 1 | Reduce finder/location work on unsuccessful images | Paired M4 median/p95 wins over ZXing across noise resolutions and patterns, with preserved valid reads, candidate ordering and bounded work. |
+| 2 | Continue reducing Kotlin allocations and search cost | Paired JVM comparisons with pinned ZXing Java, allocation counts and independent forks; then Android measurements. |
+| 3 | Turn tracked scanning into a measured phone advantage | Real Android/iOS first-read and reacquisition latency, moving payloads, difficult lighting, sustained memory/CPU and energy use. |
+| 4 | Broaden independent accuracy evidence | A separately collected, frozen camera corpus, exact text/bytes, false-positive controls and per-image outcomes. Existing development and regression sets are not fresh validation. |
+| 5 | Make adoption and claims reproducible | Small documented entry points, package checks, copyable examples and versioned comparison commands/results. |
 
-The first three are unproven hypotheses, not implemented speedups. The current
-M4 WASM results do not establish JVM or phone performance. A win on these finite
-suites is not evidence of superiority on every image or over every ZXing
-implementation.
+A win on these finite suites is not evidence of superiority on every image or
+over every ZXing implementation. Current remaining losses include noisy-frame
+latency, Kotlin memory use, TypeScript-only latency and the earlier smooth-gradient
+recovery cost. Physical camera and energy measurements remain outstanding.
 
 
 ## Earlier M1 phase (historical)
