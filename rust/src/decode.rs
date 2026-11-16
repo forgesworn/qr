@@ -303,6 +303,50 @@ mod strict_format_tests {
     use crate::encode::{encode, Options};
     use crate::symbol::Ecc;
 
+    #[test]
+    fn decodes_thin_finder_centres_at_both_quiet_margins() {
+        let qr = crate::encode::encode(
+            "A",
+            &crate::encode::Options {
+                version: Some(1),
+                ecc: crate::symbol::Ecc::H,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        for centre in [1, 2] {
+            for pad in [4, 5] {
+                let side = qr.size + 2 * pad;
+                let mut data = vec![235u8; side * side];
+                for y in 0..qr.size {
+                    for x in 0..qr.size {
+                        if qr.modules[y * qr.size + x] != 0 {
+                            data[(y + pad) * side + x + pad] = 20;
+                        }
+                    }
+                }
+                for (ox, oy) in [(0, 0), (qr.size - 7, 0), (0, qr.size - 7)] {
+                    for y in [2, 4] {
+                        for x in 2..=4 {
+                            data[(pad + oy + y) * side + pad + ox + x] = 235;
+                        }
+                    }
+                    if centre == 2 {
+                        data[(pad + oy + 2) * side + pad + ox + 3] = 20;
+                    }
+                    for x in 0..=6 {
+                        data[(pad + oy + 7) * side + pad + ox + x] = 20;
+                    }
+                }
+                let reading =
+                    super::decode(&data, side, side, 1, side, super::Inversion::Both, None)
+                        .expect("thin finder reading");
+                assert_eq!(reading.payload.text, "A");
+                assert_eq!(reading.payload.bytes, b"A");
+            }
+        }
+    }
+
     fn location(size: usize) -> Location {
         Location {
             top_left: Point { x: 3.5, y: 3.5 },

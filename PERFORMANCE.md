@@ -13,38 +13,48 @@ ZXing-WASM 3.1.7 was still the registry's current version at baseline setup.
 The same pinned external rival packages and complete-result comparisons are
 used. Source/binary identities, workload hashes and load are retained in
 [the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
-experimental snapshots. The current Rust/WASM implementation is `22f3428`,
-with Kotlin byte planes, local cross-check counters and reusable module storage
-at `7419507`, and the TypeScript scalar-counter refinement at `8fd581b`. The seventh candidate
+experimental snapshots. The Rust/WASM implementation builds on `22f3428` and
+adds the exact alignment merge frontier qualified below. Kotlin byte planes,
+local cross-check counters and reusable module storage are at `7419507`; the
+TypeScript scalar-counter refinement is at `8fd581b`. The seventh candidate
 applies the existing strict-format requirement before reading payload modules.
 Merge, publication and physical camera acceptance remain pending.
 
-The seventh candidate measured (median latency, lower is better):
+The latest matched run uses the accepted alignment-frontier WASM (median
+latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM 3.1.7 |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.767 | 2.140 |
-| Blank 1280×720 RGBA, median ms | 1.322 | 2.235 |
-| Random noise, median ms | 22.024 | 8.274 |
+| Clean 1280×720 RGBA, median ms | 1.630 | 1.897 |
+| Blank 1280×720 RGBA, median ms | 1.257 | 2.092 |
+| Random noise, median ms | 20.114 | 7.448 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
 | Synthetic validation regression set, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 7.843 | 20.080 |
+| Ten-frame moving/changing-payload sequence, median total ms | 7.356 | 18.686 |
 
-The current receipts are [`candidate7-libraries.json`](benchmarks/2026-11-16-m4/candidate7-libraries.json),
-[`candidate7-sessions.json`](benchmarks/2026-11-16-m4/candidate7-sessions.json)
-and [`candidate7-validation.json`](benchmarks/2026-11-16-m4/candidate7-validation.json).
-The complete negative-frame matrix and Chrome page/worker measurements are
-retained alongside them. Their hashes identify the exact build and workloads.
+The current receipts are [library comparisons](benchmarks/2026-11-16-m4/alignment-frontier/frontier-libraries.json),
+[tracking sequences](benchmarks/2026-11-16-m4/alignment-frontier/frontier-sessions.json)
+and [192-case regression results](benchmarks/2026-11-16-m4/alignment-frontier/frontier-validation.json).
+These use the same rival WASM and frame hashes as the earlier seventh-candidate
+run. Different-run absolute timings do not measure the frontier's gain: the
+paired old/new runs below establish its 1.4–1.8% main-noise improvement.
+Earlier `candidate7-*` receipts remain historical evidence.
+The final paired negative-frame matrix is retained with the frontier receipts.
+Final Chrome page/worker, character-set and tracked-session checks also passed
+with the current binary; their receipt is retained with the frontier results.
+Earlier full rival negative-frame comparisons remain in the parent M4
+directory, bound to their recorded binaries and workloads.
 These headline wins use the optional WASM backend: TypeScript alone measured
-4.581 ms clean and 58.086 ms noise in the same run.
+4.162 ms clean and 54.516 ms noise in the same run.
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed
 payload, a jump, a blank and reacquisition; it is not physical camera evidence.
 The old 96-frame set is now development data. A separate 192-frame synthetic
 validation seed and payload prefix were fixed before evaluating the candidate;
-it returned 172 correct reads against the baseline's 157 and ZXing's 169, with
+the earlier decoder changes raised correct reads from 157 to 172 against ZXing's
+169. The frontier preserves all 172. The earlier comparison recorded
 zero wrong results from any of those implementations and no lost baseline
 successes. TypeScript and packaged WASM agree on every outcome. It uses fresh
 pixels and payloads from the same transformation family, so it is not a new
@@ -76,7 +86,7 @@ finder/timing damage cases prove it can discard correct reads. These cases are
 now public-contract regression tests. They are adversarial engineering evidence,
 not an independent accuracy ranking.
 
-The frozen candidate passed all 452 TypeScript tests with photographs required
+Historical candidate 3 passed all 452 TypeScript tests with photographs required
 on M4 and the byte-for-byte packaged WASM rebuild. Earlier integration checks
 passed 25 native Rust tests with all features, the full Kotlin suite,
 packed-package verification, and standalone WASM parity
@@ -590,6 +600,52 @@ variants are rejected and this cache family is closed without further tuning.
 Production source, SPEC, vectors and the packaged WASM remain unchanged. These
 are comparisons against our own baseline, not new ZXing headline measurements.
 The fresh held-out corpus remains unevaluated.
+
+### Alignment merge frontier: accepted exact optimisation
+
+The next [bounded diagnostic](benchmarks/2026-11-16-m4/alignment-frontier/README.md)
+examines comparisons against historical alignment centres. Because rows advance
+monotonically, a centre sufficiently far above the current row cannot match any
+later accepted observation. An ordered active-ID list could omit it from merge
+searches while preserving the original full vector, earliest match, weighted
+updates and final sorting.
+
+All 28 diagnostic cases preserve full results, finder lists and Work. On main
+720p noise, merge comparisons fall from 1,157,797 to 184,542 before charging
+67,224 retirement tests and 40,723 retained-ID moves. Clean performs eight
+original and eight active comparisons, plus eight retirement tests; stripes
+and gradient have none. The separate 1,002,625 scored-duplicate comparisons on
+main noise are unchanged. These counts justified one prototype; its runtime qualification follows below.
+
+A fresh sample of 150 main-noise decodes profiles the exact pre-frontier
+packaged WASM (`33a95f2d…`): `place::locate` accounts for 25.14% of sampled self time, finder scanning
+24.57%, cross-checks 12.42%, row edges 7.90%, alignment scoring 6.21% and
+Reed-Solomon correction 5.74%. The frontier addresses only part of locate.
+Symbols were mapped from a named rebuild only after all non-custom WASM
+sections were verified byte-identical; the profile and mapper hashes are
+retained. The final implementation keeps original centre storage, earliest-match
+order, weighted updates, output sorting and Work; SPEC records the equivalence.
+The [final source and receipts](benchmarks/2026-11-16-m4/alignment-frontier/final.md)
+passed 37 native Rust tests with all features, 89 complete ABI comparisons,
+184 photographic comparisons, all 462 JavaScript tests with required photographs,
+and actual packed-package checks. The final WASM is 212,865 bytes, SHA-256
+`d41c7e06bd693c51cb4c3f7fbb4df1a79ae6853aa58b2160b1817fb739fc427d`.
+
+| Final paired workload | Baseline median ms, two forks | Final median ms, two forks |
+|---|---:|---:|
+| Main 720p noise | 19.993 / 20.285 | 19.711 / 19.914 |
+| Clean | 1.548 / 1.569 | 1.567 / 1.572 |
+| Blank | 1.180 / 1.188 | 1.200 / 1.191 |
+| Stripes | 7.474 / 7.507 | 7.486 / 7.524 |
+| Checkerboard | 6.232 / 6.222 | 6.229 / 6.228 |
+| Gradient | 4.128 / 4.134 | 4.185 / 4.141 |
+
+Main noise improves 1.4–1.8%; five other noise cases improve 0.5–2.4% and the
+sixth is neutral (+0.2% / −0.4%). The earlier prototype's stripe slowdown did
+not recur: final medians differ by about 0.2%, with p95 changing from
+7.716/7.618 to 7.575/7.683 ms. Clean, blank and gradient were 1.2–1.7% slower
+in the first fork and within 0.2% in the second. This is a modest scoped noise
+improvement, not a claim that every workload accelerates.
 
 A [256-frame synthetic stress set](benchmarks/2026-11-16-m4/fresh-stress-unevaluated/README.md)
 is frozen but has never been decoded. Both rejected filters failed separate

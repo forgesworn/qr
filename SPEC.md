@@ -610,6 +610,13 @@ Step 5, as `vectors/conformance.json` checks it (`triples[].size` and
    These overlapping triples may be read directly from row boundaries,
    advancing by two runs each time and retaining the clipped first and
    last light runs.
+   Rust may omit a stored candidate from later merge lookup when, at the
+   first accepted observation on row `y`, `lower = y - ceil(tall)`, its
+   centre `f.y` is below `lower`, and `abs(f.y - lower) > m`. Accepted
+   centres on that row and later rows cannot match it, so it cannot move
+   back into range. The complete candidate vector, insertion order, running
+   means, returned order and work counts are retained; equality at the
+   distance boundary is retained in lookup.
 8. The score of a centre along steps `u` and `v` is the most, over the
    scales 0.85, 1 and 1.15, of the 25 modules (i, j) from -2 to 2 each
    that match: the pixel at `floor(centre + (i u + j v) * scale)` is dark

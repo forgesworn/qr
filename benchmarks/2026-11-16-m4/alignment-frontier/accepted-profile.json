@@ -1,0 +1,308 @@
+{
+  "revision": "60cf67acd180f0a5968856cb9e0fd2f518d63322",
+  "javascriptSha256": "3b43bbf7f6f4ebe260a3b1c2ea1b413e7546401363d3b04e526663b76a8410c5",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "backend": "wasm",
+  "wasmSha256": "33a95f2de8d70d61eeef76b8c23eb251e1f748d15f43fa30e6ff90546f983115",
+  "cpu": "Apple M4 Max",
+  "iterations": 150,
+  "loadBefore": [
+    2.07177734375,
+    1.84619140625,
+    1.84375
+  ],
+  "loadAfter": [
+    1.98583984375,
+    1.83203125,
+    1.83837890625
+  ],
+  "work": [
+    {
+      "name": "clean",
+      "steps": 6615,
+      "compared": 24,
+      "scanned": 5476,
+      "maps": 1,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "blank",
+      "steps": 0,
+      "compared": 0,
+      "scanned": 0,
+      "maps": 0,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "noise",
+      "steps": 454513,
+      "compared": 115,
+      "scanned": 984380,
+      "maps": 341,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0,
+      "reduced": 90
+    }
+  ],
+  "sampleDurationMs": 2991.417,
+  "self": [
+    {
+      "name": "wasm-function[21] wasm://wasm/000cf4b6:1",
+      "ms": 751.956,
+      "percent": 25.137117292574054
+    },
+    {
+      "name": "wasm-function[9] wasm://wasm/000cf4b6:1",
+      "ms": 734.961,
+      "percent": 24.56899188578523
+    },
+    {
+      "name": "wasm-function[56] wasm://wasm/000cf4b6:1",
+      "ms": 371.461,
+      "percent": 12.417559972414411
+    },
+    {
+      "name": "wasm-function[22] wasm://wasm/000cf4b6:1",
+      "ms": 236.376,
+      "percent": 7.901807070027348
+    },
+    {
+      "name": "wasm-function[19] wasm://wasm/000cf4b6:1",
+      "ms": 185.797,
+      "percent": 6.211003012953393
+    },
+    {
+      "name": "wasm-function[36] wasm://wasm/000cf4b6:1",
+      "ms": 171.662,
+      "percent": 5.738484470737447
+    },
+    {
+      "name": "wasm-function[29] wasm://wasm/000cf4b6:1",
+      "ms": 127.793,
+      "percent": 4.271988826699855
+    },
+    {
+      "name": "wasm-function[11] wasm://wasm/000cf4b6:1",
+      "ms": 98.287,
+      "percent": 3.2856335308651383
+    },
+    {
+      "name": "wasm-function[8] wasm://wasm/000cf4b6:1",
+      "ms": 61.211,
+      "percent": 2.0462209046749416
+    },
+    {
+      "name": "wasm-function[7] wasm://wasm/000cf4b6:1",
+      "ms": 47.628,
+      "percent": 1.592155155901033
+    },
+    {
+      "name": "wasm-function[76] wasm://wasm/000cf4b6:1",
+      "ms": 39.622,
+      "percent": 1.324522793044233
+    },
+    {
+      "name": "wasm-function[28] wasm://wasm/000cf4b6:1",
+      "ms": 26.417,
+      "percent": 0.8830931963012847
+    },
+    {
+      "name": "wasm-function[94] wasm://wasm/000cf4b6:1",
+      "ms": 25.501,
+      "percent": 0.8524722564590627
+    },
+    {
+      "name": "wasm-function[15] wasm://wasm/000cf4b6:1",
+      "ms": 24.041,
+      "percent": 0.8036659549638181
+    },
+    {
+      "name": "wasm-function[157] wasm://wasm/000cf4b6:1",
+      "ms": 14.457,
+      "percent": 0.4832826717238018
+    },
+    {
+      "name": "wasm-function[12] wasm://wasm/000cf4b6:1",
+      "ms": 10.583,
+      "percent": 0.3537788278932693
+    },
+    {
+      "name": "post node:inspector:115",
+      "ms": 10.292,
+      "percent": 0.34405099656784727
+    },
+    {
+      "name": "wasm-function[160] wasm://wasm/000cf4b6:1",
+      "ms": 8.249,
+      "percent": 0.27575560344813177
+    },
+    {
+      "name": "wasm-function[31] wasm://wasm/000cf4b6:1",
+      "ms": 7.5,
+      "percent": 0.25071730220159877
+    },
+    {
+      "name": "decode file://dist/wasm.js:149",
+      "ms": 6,
+      "percent": 0.20057384176127901
+    },
+    {
+      "name": "wasm-function[161] wasm://wasm/000cf4b6:1",
+      "ms": 5.833,
+      "percent": 0.1949912031655901
+    },
+    {
+      "name": "wasm-function[20] wasm://wasm/000cf4b6:1",
+      "ms": 5.332,
+      "percent": 0.1782432873785233
+    },
+    {
+      "name": "wasm-function[38] wasm://wasm/000cf4b6:1",
+      "ms": 4.541,
+      "percent": 0.15180096923966133
+    },
+    {
+      "name": "wasm-function[155] wasm://wasm/000cf4b6:1",
+      "ms": 3.042,
+      "percent": 0.10169093777296846
+    },
+    {
+      "name": "wasm-function[166] wasm://wasm/000cf4b6:1",
+      "ms": 2.333,
+      "percent": 0.07798979547151066
+    }
+  ],
+  "inclusive": [
+    {
+      "name": "(root) :0",
+      "ms": 2991.417,
+      "percent": 100
+    },
+    {
+      "name": "(anonymous) file://scripts/profile-decode.mjs:0",
+      "ms": 2981.667,
+      "percent": 99.67406750713792
+    },
+    {
+      "name": "decode file://dist/wasm.js:149",
+      "ms": 2971.375,
+      "percent": 99.33001651057008
+    },
+    {
+      "name": "read file://scripts/profile-decode.mjs:26",
+      "ms": 2971.375,
+      "percent": 99.33001651057008
+    },
+    {
+      "name": "wasm-function[32] wasm://wasm/000cf4b6:1",
+      "ms": 2965.375,
+      "percent": 99.12944266880879
+    },
+    {
+      "name": "wasm-function[136] wasm://wasm/000cf4b6:1",
+      "ms": 2965.375,
+      "percent": 99.12944266880879
+    },
+    {
+      "name": "js-to-wasm:i:i wasm://wasm/000cf4b6:1",
+      "ms": 2965.375,
+      "percent": 99.12944266880879
+    },
+    {
+      "name": "wasm-function[28] wasm://wasm/000cf4b6:1",
+      "ms": 2816.091,
+      "percent": 94.13903176989366
+    },
+    {
+      "name": "wasm-function[29] wasm://wasm/000cf4b6:1",
+      "ms": 2678.585,
+      "percent": 89.54234732235592
+    },
+    {
+      "name": "wasm-function[9] wasm://wasm/000cf4b6:1",
+      "ms": 1249.878,
+      "percent": 41.78213869881731
+    },
+    {
+      "name": "wasm-function[21] wasm://wasm/000cf4b6:1",
+      "ms": 1079.506,
+      "percent": 36.08677760405855
+    },
+    {
+      "name": "wasm-function[56] wasm://wasm/000cf4b6:1",
+      "ms": 371.461,
+      "percent": 12.417559972414411
+    },
+    {
+      "name": "wasm-function[22] wasm://wasm/000cf4b6:1",
+      "ms": 240.043,
+      "percent": 8.024391116317117
+    },
+    {
+      "name": "wasm-function[19] wasm://wasm/000cf4b6:1",
+      "ms": 185.797,
+      "percent": 6.211003012953393
+    },
+    {
+      "name": "wasm-function[36] wasm://wasm/000cf4b6:1",
+      "ms": 184.452,
+      "percent": 6.166041043425239
+    },
+    {
+      "name": "wasm-function[11] wasm://wasm/000cf4b6:1",
+      "ms": 99.079,
+      "percent": 3.312109277977627
+    },
+    {
+      "name": "wasm-function[8] wasm://wasm/000cf4b6:1",
+      "ms": 61.211,
+      "percent": 2.0462209046749416
+    },
+    {
+      "name": "wasm-function[12] wasm://wasm/000cf4b6:1",
+      "ms": 50.205,
+      "percent": 1.6783016209375021
+    },
+    {
+      "name": "wasm-function[7] wasm://wasm/000cf4b6:1",
+      "ms": 48.378,
+      "percent": 1.6172268861211927
+    },
+    {
+      "name": "wasm-function[76] wasm://wasm/000cf4b6:1",
+      "ms": 39.622,
+      "percent": 1.324522793044233
+    },
+    {
+      "name": "wasm-function[23] wasm://wasm/000cf4b6:1",
+      "ms": 28.543,
+      "percent": 0.9541631942320312
+    },
+    {
+      "name": "wasm-function[88] wasm://wasm/000cf4b6:1",
+      "ms": 27.793,
+      "percent": 0.9290914640118713
+    },
+    {
+      "name": "wasm-function[94] wasm://wasm/000cf4b6:1",
+      "ms": 25.501,
+      "percent": 0.8524722564590627
+    },
+    {
+      "name": "wasm-function[15] wasm://wasm/000cf4b6:1",
+      "ms": 24.041,
+      "percent": 0.8036659549638181
+    },
+    {
+      "name": "wasm-function[157] wasm://wasm/000cf4b6:1",
+      "ms": 14.457,
+      "percent": 0.4832826717238018
+    }
+  ]
+}
