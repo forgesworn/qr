@@ -497,45 +497,36 @@ pub fn read_symbol<R: Fn(usize, usize) -> bool>(read: R, size: usize) -> Option<
 
     let [ec_per_block, g1, d1, g2] = blocks_for(version, ecc);
     let block_count = g1 + g2;
-    let total = g1 * d1 + g2 * (d1 + 1) + block_count * ec_per_block;
-    let mut stream = vec![0u8; total];
+    let data_count = g1 * d1 + g2 * (d1 + 1);
     let places = placement(version);
-    let bits = places.len().min(total * 8);
-    for bit in 0..bits {
-        let x = (places[bit] & 255) as usize;
-        let y = (places[bit] >> 8) as usize;
-        if read(x, y) != mask_bit(mask, x, y) {
-            stream[bit >> 3] |= 0x80 >> (bit & 7);
-        }
-    }
-
-    let data_len = |b: usize| if b < g1 { d1 } else { d1 + 1 };
-    let mut blocks: Vec<Vec<u8>> = (0..block_count).map(|b| vec![0u8; data_len(b) + ec_per_block]).collect();
-    let mut k = 0;
-    for i in 0..=d1 {
-        for (b, block) in blocks.iter_mut().enumerate() {
-            if i < data_len(b) {
-                block[i] = stream[k];
-                k += 1;
+    let word = |index: usize| {
+        let mut value = 0u8;
+        for bit in index * 8..((index + 1) * 8).min(places.len()) {
+            let x = (places[bit] & 255) as usize;
+            let y = (places[bit] >> 8) as usize;
+            if read(x, y) != mask_bit(mask, x, y) {
+                value |= 0x80 >> (bit & 7);
             }
         }
-    }
-    for i in 0..ec_per_block {
-        for (b, block) in blocks.iter_mut().enumerate() {
-            block[data_len(b) + i] = stream[k];
-            k += 1;
-        }
-    }
-    let mut data: Vec<u8> = Vec::with_capacity(g1 * d1 + g2 * (d1 + 1));
+        value
+    };
+    // Read interleaved blocks on demand: a failed block rejects the symbol,
+    // so later blocks need neither sampling nor allocating.
+    let mut data: Vec<u8> = Vec::with_capacity(data_count);
     let mut corrected = 0;
     let limit = correctable(version, ecc);
-    for (b, block) in blocks.iter_mut().enumerate() {
-        let fixed = correct(block, ec_per_block)?;
+    for b in 0..block_count {
+        let length = if b < g1 { d1 } else { d1 + 1 };
+        let mut block = vec![0u8; length + ec_per_block];
+        for i in 0..d1 { block[i] = word(i * block_count + b); }
+        if b >= g1 { block[d1] = word(d1 * block_count + b - g1); }
+        for i in 0..ec_per_block { block[length + i] = word(data_count + i * block_count + b); }
+        let fixed = correct(&mut block, ec_per_block)?;
         if fixed > limit {
             return None;
         }
         corrected += fixed;
-        data.extend_from_slice(&block[..data_len(b)]);
+        data.extend_from_slice(&block[..length]);
     }
 
     // Zero in every data codeword is what a texture matching the mask pattern

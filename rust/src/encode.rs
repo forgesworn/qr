@@ -326,7 +326,7 @@ pub fn encode<'a>(data: impl Into<Data<'a>>, options: &Options) -> Result<QrCode
             let mut best_modules = Vec::new();
             for m in 0..8u8 {
                 let candidate = grid.render(ecc, m);
-                let score = penalty(&candidate, size);
+                let score = penalty(&candidate, size, best);
                 if score < best {
                     best = score;
                     chosen = m;
@@ -707,11 +707,12 @@ impl Grid {
 }
 
 /// Mask penalty per ISO/IEC 18004 section 7.8.3, scoring the finished symbol.
-fn penalty(m: &[u8], size: usize) -> u32 {
+fn penalty(m: &[u8], size: usize, limit: u32) -> u32 {
     let mut score = 0u32;
     let mut dark = 0u32;
     for y in 0..size {
         let (mut row_run, mut col_run) = (0u32, 0u32);
+        let (mut row_bits, mut col_bits) = (0u32, 0u32);
         for x in 0..size {
             let here = m[y * size + x];
             dark += here as u32;
@@ -736,11 +737,14 @@ fn penalty(m: &[u8], size: usize) -> u32 {
             {
                 score += 3;
             }
-            if x + 6 < size && finder_like(m, size, x, y, 1, 0) {
-                score += 40;
-            }
-            if x + 6 < size && finder_like(m, size, y, x, 0, 1) {
-                score += 40;
+            row_bits = (row_bits << 1) | here as u32;
+            col_bits = (col_bits << 1) | down as u32;
+            // Count each finder-like core once, even with quiet runs on both sides.
+            if x >= 10 {
+                for bits in [row_bits, col_bits] {
+                    if bits & 0x7ff == 0x05d { score += 40; }
+                    if bits & 0x7ff == 0x5d0 && (x < 14 || bits & 0x7800 != 0) { score += 40; }
+                }
             }
         }
         if row_run >= 5 {
@@ -749,35 +753,9 @@ fn penalty(m: &[u8], size: usize) -> u32 {
         if col_run >= 5 {
             score += col_run - 2;
         }
+        // Every remaining penalty is non-negative; ties keep the earlier mask.
+        if score >= limit { return score; }
     }
     let total = (size * size) as u32;
     score + (dark * 2).abs_diff(total) * 10 / total * 10
-}
-
-const FINDER_RUN: [u8; 7] = [1, 0, 1, 1, 1, 0, 1];
-
-/// 1:1:3:1:1 starting at (x, y) along (dx, dy), with four light modules on one side.
-fn finder_like(m: &[u8], size: usize, x: usize, y: usize, dx: usize, dy: usize) -> bool {
-    for (i, &want) in FINDER_RUN.iter().enumerate() {
-        if m[(y + i * dy) * size + x + i * dx] != want {
-            return false;
-        }
-    }
-    light_run(m, size, x, y, dx, dy, -4) || light_run(m, size, x, y, dx, dy, 7)
-}
-
-/// Four modules from offset `from` along the line are light. A run that would
-/// leave the symbol does not count: the quiet zone is not scored.
-fn light_run(m: &[u8], size: usize, x: usize, y: usize, dx: usize, dy: usize, from: i64) -> bool {
-    for i in from..from + 4 {
-        let px = x as i64 + i * dx as i64;
-        let py = y as i64 + i * dy as i64;
-        if px < 0 || py < 0 || px >= size as i64 || py >= size as i64 {
-            return false;
-        }
-        if m[py as usize * size + px as usize] == 1 {
-            return false;
-        }
-    }
-    true
 }

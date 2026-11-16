@@ -120,6 +120,7 @@ describe.skipIf(!cached)('photographs', () => {
     const readIds = manifest.photos.filter((p) => read(p) === expected(p)).map((p) => p.id)
     const lost = manifest.photos.filter((p) => p.typescript && !readIds.includes(p.id)).map((p) => p.id)
     console.log(`photographs read: ${readIds.length}/${manifest.photos.length} (floor ${manifest.ratchet.typescript}); baseline images no longer read: ${lost.join(' ') || 'none'}`)
+    expect(lost, 'previously readable photographs must remain readable').toEqual([])
     expect(readIds.length).toBeGreaterThanOrEqual(manifest.ratchet.typescript)
   }, 1_800_000)
 })

@@ -170,34 +170,33 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
 
   const [ecPerBlock, g1, d1, g2] = blocksFor(version, format.ecc)
   const blockCount = g1 + g2
-  const total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
-  const stream = new Uint8Array(total)
+  const dataCount = g1 * d1 + g2 * (d1 + 1)
   const places = placement(version)
-  const bits = Math.min(places.length, total * 8)
-  for (let bit = 0; bit < bits; bit++) {
-    const x = places[bit]! & 255
-    const y = places[bit]! >> 8
-    if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
+  const word = (index: number): number => {
+    let value = 0
+    const end = Math.min((index + 1) * 8, places.length)
+    for (let bit = index * 8; bit < end; bit++) {
+      const x = places[bit]! & 255
+      const y = places[bit]! >> 8
+      if (read(x, y) !== maskBit(format.mask, x, y)) value |= 0x80 >>> (bit & 7)
+    }
+    return value
   }
-
-  const blocks: Uint8Array[] = []
-  for (let b = 0; b < blockCount; b++) blocks.push(new Uint8Array((b < g1 ? d1 : d1 + 1) + ecPerBlock))
-  let k = 0
-  for (let i = 0; i <= d1; i++) {
-    for (let b = 0; b < blockCount; b++) if (i < (b < g1 ? d1 : d1 + 1)) blocks[b]![i] = stream[k++]!
-  }
-  for (let i = 0; i < ecPerBlock; i++) {
-    for (let b = 0; b < blockCount; b++) blocks[b]![(b < g1 ? d1 : d1 + 1) + i] = stream[k++]!
-  }
-  const data = new Uint8Array(g1 * d1 + g2 * (d1 + 1))
+  // Extract a block directly from its interleaved positions. A failed block
+  // rejects the symbol, so no later blocks need sampling or allocating.
+  const data = new Uint8Array(dataCount)
   let corrected = 0
   const limit = correctable(version, format.ecc)
   for (let b = 0, offset = 0; b < blockCount; b++) {
-    const fixed = correct(blocks[b]!, ecPerBlock)
+    const length = b < g1 ? d1 : d1 + 1
+    const block = new Uint8Array(length + ecPerBlock)
+    for (let i = 0; i < d1; i++) block[i] = word(i * blockCount + b)
+    if (b >= g1) block[d1] = word(d1 * blockCount + b - g1)
+    for (let i = 0; i < ecPerBlock; i++) block[length + i] = word(dataCount + i * blockCount + b)
+    const fixed = correct(block, ecPerBlock)
     if (fixed < 0 || fixed > limit) return undefined
     corrected += fixed
-    const length = b < g1 ? d1 : d1 + 1
-    data.set(blocks[b]!.subarray(0, length), offset)
+    data.set(block.subarray(0, length), offset)
     offset += length
   }
 

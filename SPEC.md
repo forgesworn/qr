@@ -604,6 +604,9 @@ What `decodeModules` does to a grid, and step 6 to each sampled one;
    most one, and the block becomes it. With none the grid does not read,
    and it does not read when e is past the block's capacity under step 6
    of the pipeline. `corrected` is the sum of e over the blocks.
+   Implementations may extract and correct each block directly from its
+   interleaved positions and stop at the first failing block; this changes
+   neither acceptance nor the resulting data and correction count.
 6. The data codewords of the blocks, in block order, are the data. All
    zero, the grid does not read.
 7. Segments are parsed from the first bit while 4 bits or more remain; the
