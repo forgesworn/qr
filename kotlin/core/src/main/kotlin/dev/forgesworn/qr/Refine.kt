@@ -29,10 +29,14 @@ internal class Retry(val location: Placement, val inverted: Boolean, val agreed:
  * both lie within AGREEMENT bits of it; straight before mirrored, and within
  * each the first word in level and mask order.
  */
-internal fun agreement(modules: ByteArray, size: Int): Agreement? {
+internal fun agreement(modules: ByteArray, size: Int): Agreement? =
+    agreementRead(ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }, size)
+
+/** The same agreement check over a lazy module reader. */
+internal fun agreementRead(read: ModuleReader, size: Int): Agreement? {
     var best: Agreement? = null
     for (mirrored in booleanArrayOf(false, true)) {
-        fun at(x: Int, y: Int): Boolean = (if (mirrored) modules[x * size + y] else modules[y * size + x]).toInt() == 1
+        fun at(x: Int, y: Int): Boolean = if (mirrored) read.read(y, x) else read.read(x, y)
         var first = 0
         var second = 0
         for (i in 14 downTo 0) {

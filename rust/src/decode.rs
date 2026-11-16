@@ -4,7 +4,7 @@
 use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, Location, Point};
-use crate::refine::{agreement, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
+use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
 use crate::symbol::{read_symbol, Payload, FORMAT_COORDS};
 use std::cell::Cell;
 use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
@@ -267,6 +267,7 @@ fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut 
             cell.set(value);
             value == 1
         };
+        if strict && agreement_read(&sample, size).is_none() { return None; }
         let straight_read = |x, y| sample(x, y);
         if let Some(payload) = read_symbol(straight_read, size) {
             if strict && !format_agrees(&straight_read, size, payload.ecc, payload.mask) {
@@ -294,4 +295,115 @@ fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut 
         }
     }
     None
+}
+
+#[cfg(test)]
+mod strict_format_tests {
+    use super::*;
+    use crate::encode::{encode, Options};
+    use crate::symbol::Ecc;
+
+    fn location(size: usize) -> Location {
+        Location {
+            top_left: Point { x: 3.5, y: 3.5 },
+            top_right: Point { x: size as f64 - 3.5, y: 3.5 },
+            bottom_left: Point { x: 3.5, y: size as f64 - 3.5 },
+            alignment: None,
+            size,
+            matrix: [1., 0., 0., 0., 1., 0., 0., 0., 1.],
+        }
+    }
+
+    fn sentinel(map: &Location) -> Candidate {
+        Candidate { location: map.clone(), inverted: false, mirrored: false, ecc: Ecc::M, mask: 0, distance: 2 }
+    }
+
+    fn flip_second_copy(data: &mut [u8], size: usize, i: usize) {
+        let (x, y) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + i - 8) };
+        data[y * size + x] ^= 1;
+    }
+
+    fn transpose(data: &mut [u8], size: usize) {
+        for y in 0..size {
+            for x in 0..y { data.swap(y * size + x, x * size + y); }
+        }
+    }
+
+    #[test]
+    fn strict_rejects_disagreeing_formats_before_sampling_data() {
+        for version in [1, 7, 12] {
+            let qr = encode("hello", &Options { version: Some(version), ..Options::default() }).unwrap();
+            let size = qr.size;
+            let map = location(size);
+            // Keep the first copy intact. Find three errors in the second copy
+            // for which neither orientation has a shared format within two bits.
+            let mut damaged = None;
+            'find: for a in 0..15 { for b in a + 1..15 { for c in b + 1..15 {
+                let mut data = qr.modules.clone();
+                for i in [a, b, c] { flip_second_copy(&mut data, size, i); }
+                if agreement(&data, size).is_none() {
+                    damaged = Some(data);
+                    break 'find;
+                }
+            }}}
+            let damaged = damaged.expect("a format pair rejected in both orientations");
+            for mirrored in [false, true] {
+                let mut data = damaged.clone();
+                if mirrored { transpose(&mut data, size); }
+                assert!(agreement(&data, size).is_none());
+                let image = BitImage { data, width: size, height: size };
+                let mut queue = vec![sentinel(&map)];
+                let before = format!("{queue:?}");
+                let mut modules = Vec::new();
+                let found = read(&image, &map, true, &mut queue, false, 4, &mut modules).unwrap();
+                assert_eq!(found.payload.text, "hello");
+                assert_eq!(found.payload.bytes.as_slice(), b"hello");
+                assert_eq!(found.mirrored, mirrored);
+                assert_eq!(format!("{queue:?}"), before);
+
+                modules.clear();
+                assert!(read(&image, &map, true, &mut queue, true, 4, &mut modules).is_none());
+                assert_eq!(format!("{queue:?}"), before);
+                let mut expected = vec![false; size * size];
+                for (i, &(x, y)) in FORMAT_COORDS.iter().enumerate() {
+                    let (sx, sy) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + i - 8) };
+                    for (x, y) in [(x, y), (y, x), (sx, sy), (sy, sx)] {
+                        expected[y * size + x] = true;
+                    }
+                }
+                for (index, &sampled) in expected.iter().enumerate() {
+                    assert_eq!(modules[index] != 2, sampled, "version {version}, module {index}");
+                }
+                assert!(expected.iter().filter(|&&sampled| sampled).count() < size * size / 2);
+            }
+        }
+    }
+
+    #[test]
+    fn strict_accepts_matching_formats_and_preserves_metadata() {
+        for version in [1, 7, 12] {
+            let qr = encode("hello", &Options { version: Some(version), ..Options::default() }).unwrap();
+            let size = qr.size;
+            let map = location(size);
+            for errors in 0..=2 { for mirrored in [false, true] { for inverted in [false, true] {
+                let mut data = qr.modules.clone();
+                for i in 0..errors { flip_second_copy(&mut data, size, i); }
+                if mirrored { transpose(&mut data, size); }
+                let image = BitImage { data, width: size, height: size };
+                let mut strict_queue = vec![sentinel(&map)];
+                let mut ordinary_queue = strict_queue.clone();
+                let mut modules = Vec::new();
+                let strict = read(&image, &map, inverted, &mut strict_queue, true, 4, &mut modules).unwrap();
+                let ordinary = read(&image, &map, inverted, &mut ordinary_queue, false, 4, &mut modules).unwrap();
+                assert_eq!(strict, ordinary);
+                assert_eq!(strict.payload.text, "hello");
+                assert_eq!(strict.payload.bytes.as_slice(), b"hello");
+                assert_eq!(strict.mirrored, mirrored);
+                assert_eq!(strict.inverted, inverted);
+                assert_eq!(strict.location, place(&map, 4));
+                assert_eq!(format!("{strict_queue:?}"), format!("{ordinary_queue:?}"));
+                assert_eq!(strict_queue.len(), 1);
+            }}}
+        }
+    }
 }

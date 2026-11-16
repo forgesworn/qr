@@ -43,9 +43,17 @@ export function agreement(
   modules: Uint8Array,
   size: number,
 ): { mirrored: boolean; ecc: ErrorCorrection; mask: number; distance: number } | undefined {
+  return agreementRead((x, y) => modules[y * size + x] === 1, size)
+}
+
+/** The same agreement check against a lazily sampled module reader. */
+export function agreementRead(
+  read: ModuleReader,
+  size: number,
+): { mirrored: boolean; ecc: ErrorCorrection; mask: number; distance: number } | undefined {
   let best: { mirrored: boolean; ecc: ErrorCorrection; mask: number; distance: number } | undefined
   for (const mirrored of [false, true]) {
-    const at = (x: number, y: number) => (mirrored ? modules[x * size + y] : modules[y * size + x]) === 1
+    const at = mirrored ? (x: number, y: number) => read(y, x) : read
     let first = 0
     let second = 0
     for (let i = 14; i >= 0; i--) {

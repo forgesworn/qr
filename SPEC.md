@@ -899,6 +899,13 @@ full one; the first read ends the search.
    mask. Format words are at least 7 bits apart, so no other word is as
    near. A read that fails the gate is no read, and no transposed read and
    no candidate follow from that map.
+   Before ordinary symbol reading wherever this gate applies, the two
+   format copies are checked in both orientations. If neither orientation
+   has a shared format word within 2 bits, the map is rejected before
+   sampling data or correcting codewords: it could neither pass the gate
+   nor become a second-look candidate. If either orientation agrees, the
+   original read order and post-read gate still apply. This does not apply
+   to ordinary full-size reads, and does not change map or work counts.
 5. The `inversion` option holds as at full size. The location returned is
    in full-picture coordinates: coordinates are continuous, pixel i covering
    `[i, i + 1)`, so a point `(x, y)` in the reduced picture is `(x f, y f)`

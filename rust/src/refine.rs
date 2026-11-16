@@ -51,12 +51,16 @@ fn format_words<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> (u32, u32
 /// both lie within `AGREEMENT` bits of it; straight before mirrored, and within
 /// each the first word in level and mask order.
 pub fn agreement(modules: &[u8], size: usize) -> Option<Agreed> {
+    agreement_read(&|x, y| modules[y * size + x] == 1, size)
+}
+
+pub(crate) fn agreement_read<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<Agreed> {
     let mut best: Option<Agreed> = None;
     for mirrored in [false, true] {
         let (first, second) = if mirrored {
-            format_words(&|x, y| modules[x * size + y] == 1, size)
+            format_words(&|x, y| read(y, x), size)
         } else {
-            format_words(&|x, y| modules[y * size + x] == 1, size)
+            format_words(read, size)
         };
         for &(bits, ecc, mask) in FORMATS.iter() {
             let distance = (bits ^ first).count_ones().max((bits ^ second).count_ones());

@@ -2,7 +2,7 @@ import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
 import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
-import { agreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
+import { agreement, agreementRead, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
 import { FORMAT_COORDS } from './encode.js'
 
@@ -238,6 +238,7 @@ function read(
       return value === 1
     }
   }
+  if (strict && !agreementRead(sample, size)) return undefined
   const straightRead = sample
   const straight = readSymbol(straightRead, size)
   if (straight) {

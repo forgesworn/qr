@@ -280,6 +280,9 @@ private fun read(
             value.toInt() == 1
         }
     }
+    // A strict read needs two agreeing copies in one orientation; sample only
+    // those format modules before attempting either full symbol read.
+    if (strict && agreementRead(sample, size) == null) return null
     val straightRead = sample
     val straight = readSymbol(straightRead, size)
     if (straight != null) {
