@@ -53,6 +53,13 @@ oracle cases passed. Logical noise storage falls 93.7%, but repeated transition
 extraction adds work and clean storage grows 5.76 times. The source ledger did
 not justify a compiled prototype; it is not a measured runtime regression.
 The coordinate representation and production module remain unchanged.
+A [surrounding-ring shadow gate](benchmarks/2026-11-16-m4/surrounding-ring/README.md)
+rejects the original finder triples behind all 341 main-noise sampling attempts,
+but also rejects the successful triples for five of 18 readable engineering
+cases. All 38 unchanged-path result, finder, Work and input comparisons pass.
+The mandatory gate is rejected before compilation or broad screening; these
+are candidate-survival counts, not measured latency savings or an actual
+filtered decoder's miss count. Production retains its existing finder policy.
 An [invariant finder-leg observer](benchmarks/2026-11-16-m4/invariant-legs/README.md)
 also passed all 38 equality checks. It found 9,177 repeated pixel reads on main
 noise, but the absolute walks are short and the named ray closure accounts for
@@ -749,9 +756,10 @@ the set is now regression evidence.
 A [pinned-source comparison of noise rejection](benchmarks/2026-11-16-m4/noise-search-comparison.md)
 identifies stronger early finder-shape validation and fewer resolution levels
 in the exact ZXing implementation tested. Our main noise still attempts 341
-sampling maps. Those source differences suggest measuring candidate survival
-through both pipelines next; their individual latency contributions have not
-been measured, and stricter rejection can lose damaged-code reads.
+sampling maps. Their individual latency contributions have not been measured. Our first
+ring-gate shadow experiment rejects every original main-noise sampling triple
+but also rejects five successful engineering-case triples, so it is unsuitable
+as a mandatory filter under the current preservation target.
 
 A win on these finite suites is not evidence of superiority on every image or
 over every ZXing implementation. Current remaining losses include noisy-frame
