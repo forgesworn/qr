@@ -481,14 +481,49 @@ and [runner](benchmarks/2026-11-16-m4/format-envelope-diagnostic/run.mjs);
 both take an explicit checkout path and scratch directory. These tools only
 instrument a scratch build and never modify the checkout.
 
-The next experiment investigates region-first finder
-proposals from connected runs and nested or partial rings, followed by existing
-precise cross-checks. This changes detection policy and must preserve broken and
-occluded finder recovery. Compare proposals against every previously successful
-finder triple before changing decode. Retain all known successful reads, zero
-wrong payloads, and then freeze before evaluating a new untouched stress set.
-The current 184 photos and 192 synthetic cases are regression evidence. The region proposal
-is not implemented or qualified as a production change.
+Neighbouring-row finder support showed promising work attribution, but failed
+correctness. A diagnostic across 24 cases identified unsupported triples
+responsible for 63% of alignment-search area in the main noise frame while
+retaining all observed successful finder sightings. The actual prototype
+computed support only after existing cross-checks accepted a sighting, kept
+finder merging and ranking unchanged, and filtered ranked triples before the
+six-triple limit. It retained every complete result across 272 cases, including
+179/184 correct photographs and 61 conformance frames.
+
+Nevertheless, an independently constructed version-1 symbol with one-pixel
+finder centres still reads `A` in the baseline and fails in the prototype.
+Adding recovery for single-pixel vertical centres fixes that example but loses
+a second valid symbol with a two-pixel centre. These alter finder structure,
+not payload modules. Both filters were rejected. Four permanent public tests
+(two centre shapes, two quiet margins) protect TypeScript and packaged WASM.
+The result demonstrates why extra finder structure cannot be assumed from the
+existing successful horizontal, vertical and diagonal cross-checks.
+
+| Initial filter workload | Baseline median ms | Prototype median ms | Outcome |
+|---|---:|---:|---|
+| Main 720p noise | 45.159 | 30.277 | 33.0% less time |
+| 512×512 noise, seed fe13bc9 | 33.949 | 22.723 | 33.1% less time |
+| 720p noise, seed 49ad7e32 | 31.236 | 33.564 | 7.5% more time |
+| 1080p noise, seed fe13bc9 | 50.043 | 53.368 | 6.6% more time |
+
+Reduced alignment work frees budgets for later passes, so some workloads do
+more finder work and run slower. The repaired filter was not timed after its
+second correctness failure. The [portable prototype tools, per-case results,
+falsifiers and paired M4 receipt](benchmarks/2026-11-16-m4/region-neighbours/README.md)
+record both rejected versions. No detector policy or vectors changed.
+
+The next exact experiment is a lazy row index of interior light-dark-light
+triples, grouped by minimum and maximum run length. Measure query overlap,
+unique touched triples, whole-row setup and bucket/merge cost first. Clipped
+first/last triples must keep their existing scalar treatment; returned candidates
+must retain original order and exact comparisons. This targets repeated
+horizontal alignment work without requiring additional finder structure.
+No index implementation or speedup is established.
+
+A [256-frame synthetic stress set](benchmarks/2026-11-16-m4/fresh-stress-unevaluated/README.md)
+is frozen but has never been decoded. Both rejected filters failed separate
+engineering fixtures before this set was opened. Its generator, expected bytes
+and pixel hashes are retained for a future candidate; it is not accuracy evidence.
 
 ### Next acceptance targets
 
