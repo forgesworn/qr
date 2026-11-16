@@ -1,5 +1,49 @@
 # Performance and verification
 
+## 0.3.2 ranked-overflow recovery
+
+The decoder now screens previously ranked finder triples beyond the first six
+only after all earlier searches fail. Agreeing format and version copies admit
+a full read; the pass shares the existing 720-map/four-second-look frame caps
+and uses at most 30 maps, including header probes. Earlier successful reads
+keep their result and work counts. The perspective regression needs three
+additional maps and is the 63rd frame in the shared conformance pack.
+
+| Dataset | QR 0.3.0 | QR 0.3.2 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Photographs, correct text | 179/184 | 179/184 | 171/184 |
+| Synthetic regression, correct text and bytes | 172/192 | 174/192 | 169/192 |
+| Stress positives, correct text and bytes | 171/224 | 172/224 | 150/224 |
+| Earlier synthetic set, correct text and bytes | 91/96 | 92/96 | 89/96 |
+| Fresh qualification positives, correct text and bytes | 69/128 | 69/128 | 55/128 |
+| Stress negative controls, false reads | 0/32 | 0/32 | 0/32 |
+| Fresh negative controls, false reads | 0/32 | 0/32 | 0/32 |
+
+No previous success was lost and QR returned no wrong payload in these sets.
+The fresh 160-case manifest was frozen before candidate evaluation, after
+checking unique pixel hashes. It varies versions, error-correction levels and
+image damage, but still shares the independent qrcode encoder and our image
+renderer with earlier synthetic sets. It shows no additional accuracy gain
+from this patch; all evaluated cases are now regression data. Both readers
+still miss the 28 finder-occlusion stress cases. A dense curved real photograph
+remains unreadable by QR. These finite results do not prove universal accuracy
+or physical-camera performance.
+
+Two paired M4 Max/native arm64 Node 24.21.0 timing forks compare the packaged
+0.3.0 and 0.3.2 WASM modules, alternating order over 60 measured rounds after
+at least 20 warm-up rounds and one second of warm-up per case. Clean and blank
+medians are broadly unchanged (changes range from -2.6% to +0.7%). Main random
+noise costs 3.6–3.9% more; the six additional noise controls cost 0.6–6.1% more.
+This is an accuracy trade-off, not a rejection-speed improvement. The previous
+TypeScript comparison and its repeat show about 3% more time on main noise.
+ZXing remains substantially faster on random noise in the earlier direct
+comparison below; do not combine timings from different runs into a new ratio.
+
+Exact inputs, code and binary hashes, per-case outcomes, paired samples and
+reproduction commands are in the [0.3.2 evidence](benchmarks/2026-11-16-m4/overflow-recovery/README.md).
+The packaged module is 217,706 bytes, SHA-256
+`ca263eab7555cf8cc40474f9d05baa1d76a1fa0a154f2106ea3b2d31b5ecb32f`.
+
 ## 0.3.0 release qualification
 
 Accuracy is the primary objective. Version-directed recovery now reads the

@@ -1,0 +1,20 @@
+{
+  "exactPayload": true,
+  "case": "perspective-25",
+  "greySha256": "ad5cf7b20a1c7df59b7d35dedca5f14ac2654191dfa833a93593ed61a0f48600",
+  "work": {
+    "steps": 237840,
+    "compared": 48,
+    "scanned": 9893599,
+    "maps": 423,
+    "second": 0,
+    "meshes": 0,
+    "probed": 0,
+    "reduced": 90
+  },
+  "javascriptSha256": "6f68e0b9318bb33064df05222a77ead52da1d5eb1e2cad5012384d0a5cf6a5f4",
+  "candidateSources": {
+    "decode.ts": "491e43c7cff8ccc5058b77341c7ed074ea2d0453958ac40390e2b1fd9307c02b",
+    "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824"
+  }
+}

@@ -333,6 +333,9 @@ pipeline:
     saved full-resolution triples whose agreeing format and version copies
     identify a different size. Strict reads use only the remaining budgets.
     See "Version-directed recovery" below.
+12. Ranked overflow: after version-directed recovery also fails, screen
+    previously ranked full-resolution triples beyond the first six using
+    agreeing format and version copies. See "Ranked overflow recovery" below.
 
 ### Reusable camera decoder
 
@@ -1000,6 +1003,39 @@ neither frame cap. Earlier successful results therefore keep priority. Grid
 decoding and symbol parsing still reject a mismatching version; this pass
 creates new picture maps rather than resizing a sampled grid.
 
+### Ranked overflow recovery
+
+Step 12 runs only after steps 2 to 11 return no result. When the original
+full-resolution binary search finishes trying the selected six triples in a
+pass, retain its ranked list if more triples remain. Reduced pictures and the
+inverted-luminance fallback do not supply lists. Retain the original pass order,
+rank order and binary polarity; do not rescan for finders.
+
+With map allowance remaining, rebuild the original binary picture. Inspect
+each retained list from its seventh triple onwards. Triples with identical
+three ordered finder centres and polarity are duplicates, even across passes.
+For each unseen triple, compute only the original corner maps at the estimated
+size, in their usual order, without an alignment search or neighbouring sizes.
+Invalid sizes and geometry produce no maps.
+
+Probe each corner map for both format copies under the existing agreement
+rule, then both version copies in the format's orientation. The version copies
+must independently decode within three bit errors to the same version. A
+qualifying map admits full location at exactly `17 + 4 * version`, whether or
+not that size differs from the estimate. Admit each ordered triple, polarity
+and target size only once. Full maps and queued second looks require strict
+format agreement and all ordinary version, Reed-Solomon and segment checks.
+Keep second-look candidates in their existing distance order.
+
+One local allowance of 30 maps includes both header probes and full-map reads;
+each also consumes one of the frame's remaining 720 maps. Check the allowance
+before computing the full locations. Header probes count as maps even though
+they sample only headers. Invalid geometry consumes no maps, but the finite
+retained ranked lists bound the number of such probes. Queued second looks use
+only the frame's remaining four and remain eligible after map exhaustion.
+This pass collects no additional lists or version hints. Earlier successes
+retain their result, ordering and work counts.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1022,7 +1058,9 @@ among them.
   most size x size modules, straight and transposed. The reduced sizes of
   step 9 take theirs from the same 720, at most 30 each; step 10 takes at most
   30 more from what remains, shared by its sizes. Step 11 takes at most
-  30 remaining maps across all saved version hints. Only sizes from 21 to
+  30 remaining maps across all saved version hints. Step 12 shares a further
+  allowance of 30 remaining maps between header probes and full reads of
+  admitted overflow triples. Only sizes from 21 to
   177 give maps. An estimate of 181 or 185, past 177 by no more than the
   retries reach, still has its retries tried, and those of 177 or less
   give maps; any other estimate outside 21 to 177 gives none.
@@ -1046,7 +1084,7 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 to 11 as without them,
+The caps on maps and second looks are the same with steps 9 to 12 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying
@@ -1056,6 +1094,11 @@ when the polarity-sensitive flat-block rule cannot help.
 Step 11 only rebuilds the original binary picture when a retained version
 hint and remaining map allowance exist; its additional location work is
 counted like ordinary location work, and its maps are full-resolution maps.
+Step 12 rebuilds the binary picture only when a retained overflow list and
+remaining map allowance exist. It retains references to existing ranked data
+until the frame completes and adds corner geometry work for unselected triples;
+it does not repeat finder scans. Alignment work is counted only after agreeing
+headers admit a full location.
 
 All three ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,

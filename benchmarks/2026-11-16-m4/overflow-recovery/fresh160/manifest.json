@@ -1,0 +1,5754 @@
+{
+  "description": "Fresh perspective, finder and resolution admission set; freeze before any candidate evaluation",
+  "count": 160,
+  "factorCounts": {
+    "rotation": {
+      "0": 16,
+      "13": 16,
+      "37": 16,
+      "44": 16,
+      "46": 16,
+      "73": 16,
+      "112": 16,
+      "157": 16
+    },
+    "scale": {
+      "1": 16,
+      "2": 16,
+      "3": 16,
+      "4": 16,
+      "5": 16,
+      "6": 16,
+      "2.5": 16,
+      "1.5": 16
+    },
+    "perspective": {
+      "0": 16,
+      "0.3": 16,
+      "0.08": 16,
+      "0.43": 16,
+      "0.24": 16,
+      "0.35": 16,
+      "0.12": 16,
+      "0.18": 16
+    },
+    "noise": {
+      "0": 48,
+      "5": 32,
+      "9": 16,
+      "12": 16,
+      "16": 16
+    },
+    "blur": {
+      "0": 112,
+      "1": 16
+    },
+    "damage": {
+      "centre": 16,
+      "none": 96,
+      "occlusion": 16
+    },
+    "invert": {
+      "false": 96,
+      "true": 32
+    },
+    "mirror": {
+      "false": 96,
+      "true": 32
+    },
+    "distractors": {
+      "true": 64,
+      "false": 64
+    },
+    "payload": {
+      "byte": 64,
+      "alpha": 64
+    }
+  },
+  "qrcodeVersion": "1.5.4",
+  "qrcodeMainSha256": "c1f2fa38779ae32562a32a1392f7f747649d3ec839eebb934950cee25fb1c2b4",
+  "generatorSha256": "3a9041fcce7214feb2a35b07bbe9ac909e91785739b112721b8d97053945db96",
+  "photoSha256": "06c665a630e8bb6b5bf0196d422154cf855c2fc3fd7299195ec1223865ffa1b4",
+  "cases": [
+    {
+      "id": "holdout-000",
+      "seed": 1960943304,
+      "version": 1,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 6,
+        "angle": 112,
+        "perspective": 0.3,
+        "seed": 1960943304,
+        "noise": 16,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 307,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 307,
+          "unit": 2
+        },
+        {
+          "x": 307,
+          "y": 307,
+          "unit": 2
+        }
+      ],
+      "width": 320,
+      "height": 320,
+      "expectedText": "uixt",
+      "expectedUtf8Hex": "75697874",
+      "greySha256": "1a2740ff3059fa7b423d153230ba602982a340dda1c9984af1b1bccbfafd3ac2"
+    },
+    {
+      "id": "holdout-001",
+      "seed": 1962398835,
+      "version": 1,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 6,
+        "angle": 73,
+        "perspective": 0.08,
+        "seed": 1962398835,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 256,
+      "height": 256,
+      "expectedText": "yn1ag",
+      "expectedUtf8Hex": "796e316167",
+      "greySha256": "4e57e637ff81c760c23f759c3b5ac3337137c642bce72e036f3e03638b2cb828"
+    },
+    {
+      "id": "holdout-002",
+      "seed": 1963854366,
+      "version": 1,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 13,
+        "perspective": 0.43,
+        "seed": 1963854366,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 256,
+      "height": 256,
+      "expectedText": "1S6RRQ",
+      "expectedUtf8Hex": "315336525251",
+      "greySha256": "a73f1c787a735f3970bce818553cf9d6648696140ada026096c5b0a689119743"
+    },
+    {
+      "id": "holdout-003",
+      "seed": 1965309897,
+      "version": 1,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 44,
+        "perspective": 0,
+        "seed": 1965309897,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 112,
+      "height": 112,
+      "expectedText": "4XA7224",
+      "expectedUtf8Hex": "34584137323234",
+      "greySha256": "0d142d6ebb6e0558d61f4a6da1c9f574a06a5a82851af50687e00fcdc34e73b7"
+    },
+    {
+      "id": "holdout-004",
+      "seed": 1966765428,
+      "version": 1,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 37,
+        "perspective": 0.3,
+        "seed": 1966765428,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 174,
+      "height": 174,
+      "expectedText": "82EO",
+      "expectedUtf8Hex": "3832454f",
+      "greySha256": "a9ec7cdedc4f1e4b93bd78bbaccb2eabc8b804989982faaa1123dd0a4266cbca"
+    },
+    {
+      "id": "holdout-005",
+      "seed": 1968220959,
+      "version": 1,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 37,
+        "perspective": 0.3,
+        "seed": 1968220959,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 265,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 265,
+          "unit": 2
+        },
+        {
+          "x": 265,
+          "y": 265,
+          "unit": 2
+        }
+      ],
+      "width": 278,
+      "height": 278,
+      "expectedText": "b7i5n",
+      "expectedUtf8Hex": "623769356e",
+      "greySha256": "3fc30e70a71094eec3016a37af9e02a696cbdd835f42c074493877571f727c1b"
+    },
+    {
+      "id": "holdout-006",
+      "seed": 1969676490,
+      "version": 1,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 44,
+        "perspective": 0.24,
+        "seed": 1969676490,
+        "noise": 12,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 70,
+      "height": 70,
+      "expectedText": "fcmmy4",
+      "expectedUtf8Hex": "66636d6d7934",
+      "greySha256": "c6db91d1e98ff46177e9ba22e205acd13a600048e08600c8d90640ab6fb06f4a"
+    },
+    {
+      "id": "holdout-007",
+      "seed": 1971132021,
+      "version": 1,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 44,
+        "perspective": 0.35,
+        "seed": 1971132021,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 256,
+      "height": 256,
+      "expectedText": "IHQ39G6",
+      "expectedUtf8Hex": "49485133394736",
+      "greySha256": "6323d3f9ab9bd460d7e6f3a22f42efda9a80990b9e2d27b4a6b5d41960b6d54b"
+    },
+    {
+      "id": "holdout-008",
+      "seed": 1972587552,
+      "version": 1,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 13,
+        "perspective": 0.08,
+        "seed": 1972587552,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 132,
+      "height": 132,
+      "expectedText": "LMVK",
+      "expectedUtf8Hex": "4c4d564b",
+      "greySha256": "93ac9b10404cee4e189e15b5ac5909b47936583fe1307d39a92480c0cec91c13"
+    },
+    {
+      "id": "holdout-009",
+      "seed": 1974043083,
+      "version": 1,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 44,
+        "perspective": 0,
+        "seed": 1974043083,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 265,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 265,
+          "unit": 2
+        },
+        {
+          "x": 265,
+          "y": 265,
+          "unit": 2
+        }
+      ],
+      "width": 278,
+      "height": 278,
+      "expectedText": "psz1v",
+      "expectedUtf8Hex": "70737a3176",
+      "greySha256": "00c25c4e6a7610b8ed854624b51367a82ca1284798257b44b49c3a8b0e50cfac"
+    },
+    {
+      "id": "holdout-010",
+      "seed": 1975498614,
+      "version": 1,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 0,
+        "perspective": 0.08,
+        "seed": 1975498614,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 143,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 143,
+          "unit": 2
+        },
+        {
+          "x": 143,
+          "y": 143,
+          "unit": 2
+        }
+      ],
+      "width": 156,
+      "height": 156,
+      "expectedText": "SX3H5I",
+      "expectedUtf8Hex": "535833483549",
+      "greySha256": "65791166acfdfe5edff98ffb01d45595d777f66198440617113902986b9733df"
+    },
+    {
+      "id": "holdout-011",
+      "seed": 1976954145,
+      "version": 1,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 44,
+        "perspective": 0.35,
+        "seed": 1976954145,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 307,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 307,
+          "unit": 2
+        },
+        {
+          "x": 307,
+          "y": 307,
+          "unit": 2
+        }
+      ],
+      "width": 320,
+      "height": 320,
+      "expectedText": "W27YGU8",
+      "expectedUtf8Hex": "57323759475538",
+      "greySha256": "b44ecea8e6f26e0779d9c312d20a49c07845ac3733449a1b6c8b2345480ee9a4"
+    },
+    {
+      "id": "holdout-012",
+      "seed": 1978409676,
+      "version": 1,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 37,
+        "perspective": 0.24,
+        "seed": 1978409676,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 183,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 183,
+          "unit": 2
+        },
+        {
+          "x": 183,
+          "y": 183,
+          "unit": 2
+        }
+      ],
+      "width": 196,
+      "height": 196,
+      "expectedText": "Z7BF",
+      "expectedUtf8Hex": "5a374246",
+      "greySha256": "07035c658d54d995fb9cdcf4e3bbbd5abeb5dded4813b70720e2ba6e7e58712c"
+    },
+    {
+      "id": "holdout-013",
+      "seed": 1979865207,
+      "version": 1,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 21,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 46,
+        "perspective": 0,
+        "seed": 1979865207,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 112,
+      "height": 112,
+      "expectedText": "2CGW2",
+      "expectedUtf8Hex": "3243475732",
+      "greySha256": "b7823ed5ed146c43f3b9558a78e4ad6d94f50f08ac50c2ab46fde3a8dca08044"
+    },
+    {
+      "id": "holdout-014",
+      "seed": 1981320738,
+      "version": 1,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 37,
+        "perspective": 0.08,
+        "seed": 1981320738,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 265,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 265,
+          "unit": 2
+        },
+        {
+          "x": 265,
+          "y": 265,
+          "unit": 2
+        }
+      ],
+      "width": 278,
+      "height": 278,
+      "expectedText": "6hkdcv",
+      "expectedUtf8Hex": "36686b646376",
+      "greySha256": "96c22112fa4220e1adcce2f157c3c312544454227f34ed04598e4c4210e6bb51"
+    },
+    {
+      "id": "holdout-015",
+      "seed": 1982776269,
+      "version": 1,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 21,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 13,
+        "perspective": 0,
+        "seed": 1982776269,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 101,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 101,
+          "unit": 2
+        },
+        {
+          "x": 101,
+          "y": 101,
+          "unit": 2
+        }
+      ],
+      "width": 114,
+      "height": 114,
+      "expectedText": "9moun8a",
+      "expectedUtf8Hex": "396d6f756e3861",
+      "greySha256": "0792a73654230cbe058395ed50c73351e6679db4ff0c2a47d56e6eb5996f51e5"
+    },
+    {
+      "id": "holdout-016",
+      "seed": 1984231800,
+      "version": 2,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 112,
+        "perspective": 0.24,
+        "seed": 1984231800,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 247,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 247,
+          "unit": 2
+        },
+        {
+          "x": 247,
+          "y": 247,
+          "unit": 2
+        }
+      ],
+      "width": 260,
+      "height": 260,
+      "expectedText": "DRSAYK1CNMZ9",
+      "expectedUtf8Hex": "44525341594b31434e4d5a39",
+      "greySha256": "569353254a88e9beefe0a9e67e50aab6a3cd8ce51a639eaee4a1b935b4c2f78a"
+    },
+    {
+      "id": "holdout-017",
+      "seed": 1985687331,
+      "version": 2,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 0,
+        "perspective": 0.35,
+        "seed": 1985687331,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 2,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 150,
+      "height": 150,
+      "expectedText": "gwwr9xteaoqmwv",
+      "expectedUtf8Hex": "6777777239787465616f716d7776",
+      "greySha256": "2e0ead38e9226e73e1aab5ffe69aaadd97826f0bc3b7786527f3ea7f0c61f9f8"
+    },
+    {
+      "id": "holdout-018",
+      "seed": 1987142862,
+      "version": 2,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 0,
+        "perspective": 0.3,
+        "seed": 1987142862,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 293,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 293,
+          "unit": 2
+        },
+        {
+          "x": 293,
+          "y": 293,
+          "unit": 2
+        }
+      ],
+      "width": 306,
+      "height": 306,
+      "expectedText": "J218J9KFXQHYPX",
+      "expectedUtf8Hex": "4a3231384a394b46585148595058",
+      "greySha256": "90e0d2bceb7491190b23a0dbe9fa591501cbe0dd7a31792f3e60f1f160b64fce"
+    },
+    {
+      "id": "holdout-019",
+      "seed": 1988598393,
+      "version": 2,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 13,
+        "perspective": 0.12,
+        "seed": 1988598393,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 107,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 107,
+          "unit": 2
+        },
+        {
+          "x": 107,
+          "y": 107,
+          "unit": 2
+        }
+      ],
+      "width": 120,
+      "height": 120,
+      "expectedText": "n75pumcglt8aiz",
+      "expectedUtf8Hex": "6e373570756d63676c743861697a",
+      "greySha256": "81e944135be233dc47265c529f14068db5e74c026f5e10954d30dd1ec08f389f"
+    },
+    {
+      "id": "holdout-020",
+      "seed": 1990053924,
+      "version": 2,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 0,
+        "perspective": 0.24,
+        "seed": 1990053924,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 0,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 131,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 131,
+          "unit": 2
+        },
+        {
+          "x": 131,
+          "y": 131,
+          "unit": 2
+        }
+      ],
+      "width": 144,
+      "height": 144,
+      "expectedText": "qc965y3i8vzn",
+      "expectedUtf8Hex": "716339363579336938767a6e",
+      "greySha256": "6b22b7f95d357f5526ec2798dfda81eaf92a9cb3be9c46902687d5359af0709a"
+    },
+    {
+      "id": "holdout-021",
+      "seed": 1991509455,
+      "version": 2,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 73,
+        "perspective": 0.18,
+        "seed": 1991509455,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 341,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 341,
+          "unit": 2
+        },
+        {
+          "x": 341,
+          "y": 341,
+          "unit": 2
+        }
+      ],
+      "width": 354,
+      "height": 354,
+      "expectedText": "UHDNGBUJVXQZ53",
+      "expectedUtf8Hex": "5548444e4742554a5658515a3533",
+      "greySha256": "0521d713d43cecc7077d5ecaa293519f15341cc05262d143f3c6c7feb27b1f31"
+    },
+    {
+      "id": "holdout-022",
+      "seed": 1992964986,
+      "version": 2,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 13,
+        "perspective": 0.08,
+        "seed": 1992964986,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 247,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 247,
+          "unit": 2
+        },
+        {
+          "x": 247,
+          "y": 247,
+          "unit": 2
+        }
+      ],
+      "width": 260,
+      "height": 260,
+      "expectedText": "xmh4qnmkj0hby5",
+      "expectedUtf8Hex": "786d6834716e6d6b6a3068627935",
+      "greySha256": "ddf9d86a50046af9f000e8c5c80e6f3704b2cd8997991d566c483d4da2425113"
+    },
+    {
+      "id": "holdout-023",
+      "seed": 1994420517,
+      "version": 2,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 73,
+        "perspective": 0.12,
+        "seed": 1994420517,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 150,
+      "height": 150,
+      "expectedText": "0rmk10dm628ns7",
+      "expectedUtf8Hex": "30726d6b3130646d3632386e7337",
+      "greySha256": "5d00b5508a41d5c90e3338e9c7d53cb9abd2272cd04f124731b2b6ead28a4dae"
+    },
+    {
+      "id": "holdout-024",
+      "seed": 1995876048,
+      "version": 2,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 46,
+        "perspective": 0.18,
+        "seed": 1995876048,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 196,
+      "height": 196,
+      "expectedText": "4WQ1CC5NT4Y0",
+      "expectedUtf8Hex": "345751314343354e54345930",
+      "greySha256": "98fd675f1d631684f32ef27c46c5c8170470c4669fc3a73fa9fc38ed66bf89d2"
+    },
+    {
+      "id": "holdout-025",
+      "seed": 1997331579,
+      "version": 2,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 73,
+        "perspective": 0.18,
+        "seed": 1997331579,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 150,
+      "height": 150,
+      "expectedText": "71uinowog6pceb",
+      "expectedUtf8Hex": "373175696e6f776f673670636562",
+      "greySha256": "51efcfbd18d6301ed0178c8ca19b352934387cc9b8eb08af13b10e804546856b"
+    },
+    {
+      "id": "holdout-026",
+      "seed": 1998787110,
+      "version": 2,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 13,
+        "perspective": 0.43,
+        "seed": 1998787110,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 56,
+      "height": 56,
+      "expectedText": "b6yzx1op49go8d",
+      "expectedUtf8Hex": "6236797a78316f703439676f3864",
+      "greySha256": "e53868aba4b801bef936c1d93f1a95a90d6c9ff8281a02efe9962472780a3447"
+    },
+    {
+      "id": "holdout-027",
+      "seed": 2000242641,
+      "version": 2,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 73,
+        "perspective": 0.43,
+        "seed": 2000242641,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 153,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 153,
+          "unit": 2
+        },
+        {
+          "x": 153,
+          "y": 153,
+          "unit": 2
+        }
+      ],
+      "width": 166,
+      "height": 166,
+      "expectedText": "EC2G8DFRRB711F",
+      "expectedUtf8Hex": "4543324738444652524237313146",
+      "greySha256": "146c595ec931d8819d17555555af2a640b962d68d561993a4ed48708d098ef73"
+    },
+    {
+      "id": "holdout-028",
+      "seed": 2001698172,
+      "version": 2,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 37,
+        "perspective": 0.08,
+        "seed": 2001698172,
+        "noise": 16,
+        "blur": 1,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 242,
+      "height": 242,
+      "expectedText": "HH6XJQ7SEDYD",
+      "expectedUtf8Hex": "484836584a51375345445944",
+      "greySha256": "3ebd375468eeab1fef11209780b9f95d2a420cdba4ee8234fb096bfcc52c2f61"
+    },
+    {
+      "id": "holdout-029",
+      "seed": 2003153703,
+      "version": 2,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 25,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 6,
+        "angle": 112,
+        "perspective": 0.35,
+        "seed": 2003153703,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 1,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 341,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 341,
+          "unit": 2
+        },
+        {
+          "x": 341,
+          "y": 341,
+          "unit": 2
+        }
+      ],
+      "width": 354,
+      "height": 354,
+      "expectedText": "lmbeu2yt2gppoj",
+      "expectedUtf8Hex": "6c6d626575327974326770706f6a",
+      "greySha256": "2aee5d062581143e95aaf9495dffa3aad2fe26aa66f74f38e6035cf1be7a537d"
+    },
+    {
+      "id": "holdout-030",
+      "seed": 2004609234,
+      "version": 2,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 157,
+        "perspective": 0.12,
+        "seed": 2004609234,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 247,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 247,
+          "unit": 2
+        },
+        {
+          "x": 247,
+          "y": 247,
+          "unit": 2
+        }
+      ],
+      "width": 260,
+      "height": 260,
+      "expectedText": "ORFU4FQVPIG2HL",
+      "expectedUtf8Hex": "4f5246553446515650494732484c",
+      "greySha256": "52127a62c092818df56aa06b73cc83e8477f301a90249257bd020d01dc1a19e4"
+    },
+    {
+      "id": "holdout-031",
+      "seed": 2006064765,
+      "version": 2,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 25,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 73,
+        "perspective": 0.12,
+        "seed": 2006064765,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 242,
+      "height": 242,
+      "expectedText": "SWJBFRHWCK7EAN",
+      "expectedUtf8Hex": "53574a4246524857434b3745414e",
+      "greySha256": "11f884b5bb662f55bb5277d8dcc3106c4f9b29dc54b79aba7f77ad8769d3e351"
+    },
+    {
+      "id": "holdout-032",
+      "seed": 2007520296,
+      "version": 4,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 157,
+        "perspective": 0.08,
+        "seed": 2007520296,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 233,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 233,
+          "unit": 2
+        },
+        {
+          "x": 233,
+          "y": 233,
+          "unit": 2
+        }
+      ],
+      "width": 246,
+      "height": 246,
+      "expectedText": "v1nsq48xzmxq4pdc",
+      "expectedUtf8Hex": "76316e73713438787a6d787134706463",
+      "greySha256": "6e005f4c0383a8e1b984cb9a36c5cdc8361ab4a4ce92fb7168199446334245b4"
+    },
+    {
+      "id": "holdout-033",
+      "seed": 2008975827,
+      "version": 4,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 112,
+        "perspective": 0.3,
+        "seed": 2008975827,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 66,
+      "height": 66,
+      "expectedText": "y6r91g0znpo3xrxe92g",
+      "expectedUtf8Hex": "793672393167307a6e706f3378727865393267",
+      "greySha256": "ed859e08f3c928a88bf5fdc1fe6a5c4b68147c38dca33e8628d05e6ca87cbc2d"
+    },
+    {
+      "id": "holdout-034",
+      "seed": 2010431358,
+      "version": 4,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 33,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 157,
+        "perspective": 0,
+        "seed": 2010431358,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 1,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 147,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 147,
+          "unit": 2
+        }
+      ],
+      "width": 160,
+      "height": 160,
+      "expectedText": "2BWQBTR0ARFFQTHGYK1XHA",
+      "expectedUtf8Hex": "32425751425452304152464651544847594b31584841",
+      "greySha256": "faea69fa9d2ce8038108f4002cb1b46c20776b97d5d9946c5d6a8de417cc0107"
+    },
+    {
+      "id": "holdout-035",
+      "seed": 2011886889,
+      "version": 4,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 0,
+        "perspective": 0.24,
+        "seed": 2011886889,
+        "noise": 16,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 147,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 147,
+          "unit": 2
+        }
+      ],
+      "width": 160,
+      "height": 160,
+      "expectedText": "5g07m5j1xt6rkv2ho3mr04dha",
+      "expectedUtf8Hex": "356730376d356a31787436726b7632686f336d723034646861",
+      "greySha256": "fcb43926c3e2e9628b2b14928868d03c44a9d282bdd2b9420ef5bc521fcd4aec"
+    },
+    {
+      "id": "holdout-036",
+      "seed": 2013342420,
+      "version": 4,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 37,
+        "perspective": 0.12,
+        "seed": 2013342420,
+        "noise": 9,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 182,
+      "height": 182,
+      "expectedText": "9m4nxha3lvx4dxmj",
+      "expectedUtf8Hex": "396d346e786861336c76783464786d6a",
+      "greySha256": "711db5e9d1769e49ed71f9e6f59152ef74ae84b38a46763de27f88f6ab1df52b"
+    },
+    {
+      "id": "holdout-037",
+      "seed": 2014797951,
+      "version": 4,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 33,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1,
+        "angle": 44,
+        "perspective": 0.35,
+        "seed": 2014797951,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 117,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 117,
+          "unit": 2
+        },
+        {
+          "x": 117,
+          "y": 117,
+          "unit": 2
+        }
+      ],
+      "width": 130,
+      "height": 130,
+      "expectedText": "CR848U248YOG6Z6L25R",
+      "expectedUtf8Hex": "435238343855323438594f47365a364c323552",
+      "greySha256": "baf9d4f2446b244b868d3dfb1cfa7ef9e5b9384209960de61af75ec4c2554b37"
+    },
+    {
+      "id": "holdout-038",
+      "seed": 2016253482,
+      "version": 4,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 112,
+        "perspective": 0.18,
+        "seed": 2016253482,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 291,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 291,
+          "unit": 2
+        },
+        {
+          "x": 291,
+          "y": 291,
+          "unit": 2
+        }
+      ],
+      "width": 304,
+      "height": 304,
+      "expectedText": "gwcli6t5v0fsz1qnsocall",
+      "expectedUtf8Hex": "6777636c69367435763066737a31716e736f63616c6c",
+      "greySha256": "3c4d54d9c3c5c598e6f9eccf9d9999dcd9159c92bb12bab8efe0cc3df0016f89"
+    },
+    {
+      "id": "holdout-039",
+      "seed": 2017709013,
+      "version": 4,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 44,
+        "perspective": 0.43,
+        "seed": 2017709013,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 147,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 147,
+          "unit": 2
+        }
+      ],
+      "width": 160,
+      "height": 160,
+      "expectedText": "j1h2tjl7i265t3aoh7x45e7ld",
+      "expectedUtf8Hex": "6a316832746a6c37693236357433616f683778343565376c64",
+      "greySha256": "29034ace8e9b14c948cab2ba6e2dafa0b23f8d72e63def6139b757537ff5c1c5"
+    },
+    {
+      "id": "holdout-040",
+      "seed": 2019164544,
+      "version": 4,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 33,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 157,
+        "perspective": 0,
+        "seed": 2019164544,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 291,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 291,
+          "unit": 2
+        },
+        {
+          "x": 291,
+          "y": 291,
+          "unit": 2
+        }
+      ],
+      "width": 304,
+      "height": 304,
+      "expectedText": "M6LJ4VC865XHM5UQ",
+      "expectedUtf8Hex": "4d364c4a34564338363558484d355551",
+      "greySha256": "ce9a33b35733a35a1ee470f88dccfe8b76d8aef03916e292b0e2228a4fd52bc4"
+    },
+    {
+      "id": "holdout-041",
+      "seed": 2020620075,
+      "version": 4,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 6,
+        "angle": 157,
+        "perspective": 0.12,
+        "seed": 2020620075,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 407,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 407,
+          "unit": 2
+        },
+        {
+          "x": 407,
+          "y": 407,
+          "unit": 2
+        }
+      ],
+      "width": 420,
+      "height": 420,
+      "expectedText": "qbp0f849t7ntf7fsw93",
+      "expectedUtf8Hex": "716270306638343974376e7466376673773933",
+      "greySha256": "ac96b27ff49afe8d4b58c9212771a5eeb0bc19c48535f35fedcf9f8529df82ae"
+    },
+    {
+      "id": "holdout-042",
+      "seed": 2022075606,
+      "version": 4,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 44,
+        "perspective": 0.24,
+        "seed": 2022075606,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 291,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 291,
+          "unit": 2
+        },
+        {
+          "x": 291,
+          "y": 291,
+          "unit": 2
+        }
+      ],
+      "width": 304,
+      "height": 304,
+      "expectedText": "tgthpkvbg9e699ztlsnnqv",
+      "expectedUtf8Hex": "74677468706b76626739653639397a746c736e6e7176",
+      "greySha256": "9a26812a2da8a1e6abe2544e2186ea48c3e6e70a7e3229554f4c5b44db221257"
+    },
+    {
+      "id": "holdout-043",
+      "seed": 2023531137,
+      "version": 4,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 33,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 157,
+        "perspective": 0.08,
+        "seed": 2023531137,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 154,
+      "height": 154,
+      "expectedText": "XLXX0XMC4B5I2BJVAA8H9O1PG",
+      "expectedUtf8Hex": "584c585830584d433442354932424a5641413848394f315047",
+      "greySha256": "4a6bb217ef5af59f02332cf43c0243176f994e54f3c8bb099bd7ce18a35af83a"
+    },
+    {
+      "id": "holdout-044",
+      "seed": 2024986668,
+      "version": 4,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 33,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 46,
+        "perspective": 0.08,
+        "seed": 2024986668,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 205,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 205,
+          "unit": 2
+        },
+        {
+          "x": 205,
+          "y": 205,
+          "unit": 2
+        }
+      ],
+      "width": 218,
+      "height": 218,
+      "expectedText": "0Q1EB9EDREWUVD3X",
+      "expectedUtf8Hex": "30513145423945445245575556443358",
+      "greySha256": "8154a154cb76acf19768dff74dfa1073cd53e514ac63b69d598892f52ea9bdfa"
+    },
+    {
+      "id": "holdout-045",
+      "seed": 2026442199,
+      "version": 4,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 37,
+        "perspective": 0.12,
+        "seed": 2026442199,
+        "noise": 12,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 205,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 205,
+          "unit": 2
+        },
+        {
+          "x": 205,
+          "y": 205,
+          "unit": 2
+        }
+      ],
+      "width": 218,
+      "height": 218,
+      "expectedText": "3w6vmm5fegn7pfnzpce",
+      "expectedUtf8Hex": "337736766d6d356665676e3770666e7a706365",
+      "greySha256": "06d2af15806ba3d6581b194e3a10de7652d29541596a8183057d388d4f6f7144"
+    },
+    {
+      "id": "holdout-046",
+      "seed": 2027897730,
+      "version": 4,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 37,
+        "perspective": 0.12,
+        "seed": 2027897730,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 147,
+          "unit": 2
+        },
+        {
+          "x": 147,
+          "y": 147,
+          "unit": 2
+        }
+      ],
+      "width": 160,
+      "height": 160,
+      "expectedText": "71acwyxg2iejih70evz0u5",
+      "expectedUtf8Hex": "37316163777978673269656a6968373065767a307535",
+      "greySha256": "c28d689e15e95e75bd44d2e1d38f7d736a936853e54486f68fef5476bc798374"
+    },
+    {
+      "id": "holdout-047",
+      "seed": 2029353261,
+      "version": 4,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 33,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 157,
+        "perspective": 0.43,
+        "seed": 2029353261,
+        "noise": 0,
+        "blur": 1,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 0,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 205,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 205,
+          "unit": 2
+        },
+        {
+          "x": 205,
+          "y": 205,
+          "unit": 2
+        }
+      ],
+      "width": 218,
+      "height": 218,
+      "expectedText": "a6et7bohpl5vbjs24ejudyvuk",
+      "expectedUtf8Hex": "6136657437626f68706c3576626a733234656a75647976756b",
+      "greySha256": "7545d58dc9794be67bf563b26481ae4765516df6c8fecce227d7ba1c76a09e26"
+    },
+    {
+      "id": "holdout-048",
+      "seed": 2030808792,
+      "version": 7,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 6,
+        "angle": 13,
+        "perspective": 0.43,
+        "seed": 2030808792,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 458,
+      "height": 458,
+      "expectedText": "ebiaingicnw75lc4tx4ows",
+      "expectedUtf8Hex": "65626961696e6769636e7737356c63347478346f7773",
+      "greySha256": "b8cc6843b284aa34d151d1cda430f181fcb90393c14f57043a4caa5e01bf91b7"
+    },
+    {
+      "id": "holdout-049",
+      "seed": 2032264323,
+      "version": 7,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 37,
+        "perspective": 0.18,
+        "seed": 2032264323,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 384,
+      "height": 384,
+      "expectedText": "hgmrtz7kzpmkynw6igpjfltel",
+      "expectedUtf8Hex": "68676d72747a376b7a706d6b796e77366967706a666c74656c",
+      "greySha256": "051e7dad1f5b34057a4fbe52bed397d5c2f2a2d0f9ea1aab4b1c0a4d21fc3beb"
+    },
+    {
+      "id": "holdout-050",
+      "seed": 2033719854,
+      "version": 7,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 112,
+        "perspective": 0,
+        "seed": 2033719854,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 173,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 173,
+          "unit": 2
+        },
+        {
+          "x": 173,
+          "y": 173,
+          "unit": 2
+        }
+      ],
+      "width": 186,
+      "height": 186,
+      "expectedText": "klr73czlnrdwrpg78zadyf9omkww",
+      "expectedUtf8Hex": "6b6c723733637a6c6e72647772706737387a61647966396f6d6b7777",
+      "greySha256": "2b05b62bef4aaaed6b87bec39028d4c2a0f36a45306dfd767db37da7bd20df1e"
+    },
+    {
+      "id": "holdout-051",
+      "seed": 2035175385,
+      "version": 7,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2,
+        "angle": 13,
+        "perspective": 0.43,
+        "seed": 2035175385,
+        "noise": 16,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 209,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 209,
+          "unit": 2
+        },
+        {
+          "x": 209,
+          "y": 209,
+          "unit": 2
+        }
+      ],
+      "width": 222,
+      "height": 222,
+      "expectedText": "oqvoeoqmau48lr09xiv7h8qynbxmz52",
+      "expectedUtf8Hex": "6f71766f656f716d617534386c72303978697637683871796e62786d7a3532",
+      "greySha256": "d33bdef56c6e4849685b9b64d8fadcf24d900104a050acc74e254617e57ede2e"
+    },
+    {
+      "id": "holdout-052",
+      "seed": 2036630916,
+      "version": 7,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 0,
+        "perspective": 0.18,
+        "seed": 2036630916,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 435,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 435,
+          "unit": 2
+        }
+      ],
+      "width": 448,
+      "height": 448,
+      "expectedText": "rvz5p1ioxwvletkbm0f102",
+      "expectedUtf8Hex": "72767a357031696f7877766c65746b626d3066313032",
+      "greySha256": "b3db1f2fb2cf6e7a7ae774df69639d06b2cd274db427bb051ac437ce2bda7be3"
+    },
+    {
+      "id": "holdout-053",
+      "seed": 2038086447,
+      "version": 7,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 37,
+        "perspective": 0.35,
+        "seed": 2038086447,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 458,
+      "height": 458,
+      "expectedText": "V03M0D9PLYMX7V5CCJ0WJVNIO",
+      "expectedUtf8Hex": "5630334d304439504c594d5837563543434a30574a564e494f",
+      "greySha256": "ca2c2196244e5f562eac20d96f8b22bc6f6c42d7ee5b5636e1db8f70e74cbbcb"
+    },
+    {
+      "id": "holdout-054",
+      "seed": 2039541978,
+      "version": 7,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 46,
+        "perspective": 0.35,
+        "seed": 2039541978,
+        "noise": 0,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 234,
+      "height": 234,
+      "expectedText": "Y673AQ0Q80D90XPE12LQ3P4SPIZP",
+      "expectedUtf8Hex": "5936373341513051383044393058504531324c513350345350495a50",
+      "greySha256": "cf87ecf8b954cd0eddddfded09b30c4f03adf69622e212c55d3852fcc5a79a3b"
+    },
+    {
+      "id": "holdout-055",
+      "seed": 2040997509,
+      "version": 7,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 0,
+        "perspective": 0.3,
+        "seed": 2040997509,
+        "noise": 0,
+        "blur": 1,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 285,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 285,
+          "unit": 2
+        },
+        {
+          "x": 285,
+          "y": 285,
+          "unit": 2
+        }
+      ],
+      "width": 298,
+      "height": 298,
+      "expectedText": "1BCKL2SSV34MUZ9GQL6KMJK2Q80EQB1",
+      "expectedUtf8Hex": "3142434b4c3253535633344d555a3947514c364b4d4a4b3251383045514231",
+      "greySha256": "ded2efd382e5fca25c9e61d23900f0c27e1ed6f303fc63b1dacaf3cfb55488d0"
+    },
+    {
+      "id": "holdout-056",
+      "seed": 2042453040,
+      "version": 7,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 157,
+        "perspective": 0.12,
+        "seed": 2042453040,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 435,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 435,
+          "unit": 2
+        }
+      ],
+      "width": 448,
+      "height": 448,
+      "expectedText": "5gg1wfjti5vyn1tig4re5c",
+      "expectedUtf8Hex": "3567673177666a74693576796e317469673472653563",
+      "greySha256": "aac09a8b175806f65cd9171c751e6420df3ecbf6756e43bb00b1228e3a2681a4"
+    },
+    {
+      "id": "holdout-057",
+      "seed": 2043908571,
+      "version": 7,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 73,
+        "perspective": 0.3,
+        "seed": 2043908571,
+        "noise": 0,
+        "blur": 1,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 234,
+      "height": 234,
+      "expectedText": "8lkh7rbu67lag3dj5nb8o6hms",
+      "expectedUtf8Hex": "386c6b683772627536376c616733646a356e62386f36686d73",
+      "greySha256": "44029c04a1a4388b51449d7085f7cf4332cfc12c5f47cf3b5c047a3152451431"
+    },
+    {
+      "id": "holdout-058",
+      "seed": 2045364102,
+      "version": 7,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 13,
+        "perspective": 0.12,
+        "seed": 2045364102,
+        "noise": 9,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 435,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 435,
+          "unit": 2
+        }
+      ],
+      "width": 448,
+      "height": 448,
+      "expectedText": "CQOYH42WTACNA5XLU6W37ZYWSF2I",
+      "expectedUtf8Hex": "43514f59483432575441434e4135584c55365733375a595753463249",
+      "greySha256": "e8fc16c6e4c615d0f2365a1f9ffd1bf8ca1c94ccf13f16da5784bcf95935e6f9"
+    },
+    {
+      "id": "holdout-059",
+      "seed": 2046819633,
+      "version": 7,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 157,
+        "perspective": 0.24,
+        "seed": 2046819633,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 509,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 509,
+          "unit": 2
+        },
+        {
+          "x": 509,
+          "y": 509,
+          "unit": 2
+        }
+      ],
+      "width": 522,
+      "height": 522,
+      "expectedText": "FVSFSGUXGC3Z37INKPHXQTE6T637IH0",
+      "expectedUtf8Hex": "46565346534755584743335a3337494e4b5048585154453654363337494830",
+      "greySha256": "213f1e7df3458f91eabbe7596b3a12eaa6343fa09699193c2888e2853842d2ce"
+    },
+    {
+      "id": "holdout-060",
+      "seed": 2048275164,
+      "version": 7,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 46,
+        "perspective": 0.3,
+        "seed": 2048275164,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "occlusion",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 122,
+      "height": 122,
+      "expectedText": "I0WW3TLY4EUBW92P982R9M",
+      "expectedUtf8Hex": "4930575733544c59344555425739325039383252394d",
+      "greySha256": "479e57cf2299f918955656de8858fc7a6542482f1f56776c4642e8e9f24b7d8c"
+    },
+    {
+      "id": "holdout-061",
+      "seed": 2049730695,
+      "version": 7,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2,
+        "angle": 46,
+        "perspective": 0.35,
+        "seed": 2049730695,
+        "noise": 9,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 158,
+      "height": 158,
+      "expectedText": "m51de5d0rgloqbmqyqnlsgcrv",
+      "expectedUtf8Hex": "6d3531646535643072676c6f71626d7179716e6c7367637276",
+      "greySha256": "bf811a162be87ed76b65d1ce08d84741a2ddc6622dbe8f409a3fe74ad5886790"
+    },
+    {
+      "id": "holdout-062",
+      "seed": 2051186226,
+      "version": 7,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 45,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2,
+        "angle": 73,
+        "perspective": 0.18,
+        "seed": 2051186226,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 2,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 158,
+      "height": 158,
+      "expectedText": "pa5uoh41ejc0jd6so97gb9s1wd5b",
+      "expectedUtf8Hex": "706135756f683431656a63306a6436736f3937676239733177643562",
+      "greySha256": "d44ea6486d2326a404444acb0e9d3305aeaf7d9ffb6fe7e705113143736154de"
+    },
+    {
+      "id": "holdout-063",
+      "seed": 2052641757,
+      "version": 7,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 45,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 46,
+        "perspective": 0,
+        "seed": 2052641757,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 435,
+          "unit": 2
+        },
+        {
+          "x": 435,
+          "y": 435,
+          "unit": 2
+        }
+      ],
+      "width": 448,
+      "height": 448,
+      "expectedText": "TG9AZUW21L3CCGQUDSSAU39BW360ANZ",
+      "expectedUtf8Hex": "544739415a555732314c334343475155445353415533394257333630414e5a",
+      "greySha256": "7f60a5002ca35484796e82093b8b0dab68351f125c925433ac5ebcea8e74fcd6"
+    },
+    {
+      "id": "holdout-064",
+      "seed": 2054097288,
+      "version": 12,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 46,
+        "perspective": 0.3,
+        "seed": 2054097288,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 112,
+      "height": 112,
+      "expectedText": "wldra6n4pnup6iav2bd4dwplxu7phohw",
+      "expectedUtf8Hex": "776c647261366e34706e757036696176326264346477706c78753770686f6877",
+      "greySha256": "58a26ef7ffd2f109a20c42ba008046ea00927574189252603ed04d6bf67e95cb"
+    },
+    {
+      "id": "holdout-065",
+      "seed": 2055552819,
+      "version": 12,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 112,
+        "perspective": 0.12,
+        "seed": 2055552819,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 163,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 163,
+          "unit": 2
+        }
+      ],
+      "width": 176,
+      "height": 176,
+      "expectedText": "zqh8lje5cql1zkuxsuyywq6vyk8eoqz8r9f",
+      "expectedUtf8Hex": "7a7168386c6a653563716c317a6b75787375797977713676796b38656f717a38723966",
+      "greySha256": "cb231cb1e79134968e725ae346f4f70a88b9af7dd185d8f989892ad669a0227a"
+    },
+    {
+      "id": "holdout-066",
+      "seed": 2057008350,
+      "version": 12,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 157,
+        "perspective": 0.43,
+        "seed": 2057008350,
+        "noise": 9,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 422,
+      "height": 422,
+      "expectedText": "3vmpvv66zsbdsmfzhdjtfjm5za84vrhkuakgbc",
+      "expectedUtf8Hex": "33766d70767636367a736264736d667a68646a74666a6d357a6138347672686b75616b676263",
+      "greySha256": "f0ba1f36e6e4ca61c125a950304c3a181f91dddbf5e06d482d7c0be5e54121b4"
+    },
+    {
+      "id": "holdout-067",
+      "seed": 2058463881,
+      "version": 12,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 44,
+        "perspective": 0.18,
+        "seed": 2058463881,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 628,
+      "height": 628,
+      "expectedText": "60Q668X8NU2QMOZ16W3NYD3F019T2TYWYAQABVN67",
+      "expectedUtf8Hex": "36305136363858384e5532514d4f5a313657334e5944334630313954325459575941514142564e3637",
+      "greySha256": "a67f86ef677b1031c425609ee2b1f0eb47a66e60cbaae16862851abf6addefca"
+    },
+    {
+      "id": "holdout-068",
+      "seed": 2059919412,
+      "version": 12,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 13,
+        "perspective": 0.24,
+        "seed": 2059919412,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 267,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 267,
+          "unit": 2
+        },
+        {
+          "x": 267,
+          "y": 267,
+          "unit": 2
+        }
+      ],
+      "width": 280,
+      "height": 280,
+      "expectedText": "A5UNHKP9AWT2FQJ2WFOHH6KP1RAI9UG8",
+      "expectedUtf8Hex": "4135554e484b50394157543246514a3257464f4848364b503152414939554738",
+      "greySha256": "812a47d1bc05dfea44b5cf623dfb50ce14091bdd042a05f6c520f2c65e9977d4"
+    },
+    {
+      "id": "holdout-069",
+      "seed": 2061374943,
+      "version": 12,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 46,
+        "perspective": 0.35,
+        "seed": 2061374943,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 163,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 163,
+          "unit": 2
+        }
+      ],
+      "width": 176,
+      "height": 176,
+      "expectedText": "day4sxgaxzke8s34ly9b000z1ib7gwyk4b0",
+      "expectedUtf8Hex": "6461793473786761787a6b65387333346c7939623030307a316962376777796b346230",
+      "greySha256": "675ab3d24911745020973363251695ddda4d3e3a8bc682c9999b8312bd97d80e"
+    },
+    {
+      "id": "holdout-070",
+      "seed": 2062830474,
+      "version": 12,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 46,
+        "perspective": 0.3,
+        "seed": 2062830474,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 216,
+      "height": 216,
+      "expectedText": "GF2K298BK1BR2UN6AGU5KTH928CXMXGV7C5TAH",
+      "expectedUtf8Hex": "4746324b323938424b31425232554e36414755354b544839323843584d584756374335544148",
+      "greySha256": "e8c29c08441cdb6e18a81b75efb609c238fa82a5662ae00a7e1ecf65e72755e4"
+    },
+    {
+      "id": "holdout-071",
+      "seed": 2064286005,
+      "version": 12,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 46,
+        "perspective": 0.18,
+        "seed": 2064286005,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "occlusion",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 112,
+      "height": 112,
+      "expectedText": "kl71dmzd8323vw770zf03nxj3ycmtzy7bcbna0a46",
+      "expectedUtf8Hex": "6b6c3731646d7a643833323376773737307a6630336e786a3379636d747a79376263626e6130613436",
+      "greySha256": "35aaba47c01d64f3a35269106a6da79c2e98c883a8b08db1b13bbf6d79171f11"
+    },
+    {
+      "id": "holdout-072",
+      "seed": 2065741536,
+      "version": 12,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 46,
+        "perspective": 0.35,
+        "seed": 2065741536,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 268,
+      "height": 268,
+      "expectedText": "nqbioyrev5tfoys9pizumhet4pdb00fj",
+      "expectedUtf8Hex": "6e7162696f797265763574666f79733970697a756d686574347064623030666a",
+      "greySha256": "57a805f4d3951fd9392c3e45b2993ec38abd608d715b7cee9a881ea715c3d798"
+    },
+    {
+      "id": "holdout-073",
+      "seed": 2067197067,
+      "version": 12,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 44,
+        "perspective": 0.3,
+        "seed": 2067197067,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 164,
+      "height": 164,
+      "expectedText": "RVFZZAIFI8KSH0CBE1KO5AU35FE072XVHDL",
+      "expectedUtf8Hex": "5256465a5a41494649384b534830434245314b4f35415533354645303732585648444c",
+      "greySha256": "0922a6b8db70817550dae6c0024d21a9d7cf5932f710aa72647e94bd7f466290"
+    },
+    {
+      "id": "holdout-074",
+      "seed": 2068652598,
+      "version": 12,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 46,
+        "perspective": 0,
+        "seed": 2068652598,
+        "noise": 5,
+        "blur": 1,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 318,
+      "height": 318,
+      "expectedText": "U0JG9NAH6AA4B2WD4K5IO4BD55FPE3F7KEQ6AM",
+      "expectedUtf8Hex": "55304a47394e41483641413442325744344b35494f34424435354650453346374b455136414d",
+      "greySha256": "76193bc90505f72c2378c580ce4840b181a3ae5dd86ec848c8ca09adb80f2a20"
+    },
+    {
+      "id": "holdout-075",
+      "seed": 2070108129,
+      "version": 12,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 112,
+        "perspective": 0.35,
+        "seed": 2070108129,
+        "noise": 5,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 163,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 163,
+          "unit": 2
+        }
+      ],
+      "width": 176,
+      "height": 176,
+      "expectedText": "x5nxkz1itc1g44get3qd7xsn6wffl5xjoew0a5x35",
+      "expectedUtf8Hex": "78356e786b7a31697463316734346765743371643778736e367766666c35786a6f6577306135783335",
+      "greySha256": "d498ecb5770cf8d08eabe98520f8196b98ac4c9b2131d3329686e4c7479676b6"
+    },
+    {
+      "id": "holdout-076",
+      "seed": 2071563660,
+      "version": 12,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 73,
+        "perspective": 0.08,
+        "seed": 2071563660,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 318,
+      "height": 318,
+      "expectedText": "1AREVCSJGFSSX60GIMB7QR8X7MG4S6EV",
+      "expectedUtf8Hex": "314152455643534a4746535358363047494d423751523858374d473453364556",
+      "greySha256": "452cdfb21fffd12bd86aa2ecb3bcdde120207e6115ffcb66d03649e1d493e07f"
+    },
+    {
+      "id": "holdout-077",
+      "seed": 2073019191,
+      "version": 12,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 65,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 44,
+        "perspective": 0.24,
+        "seed": 2073019191,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 267,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 267,
+          "unit": 2
+        },
+        {
+          "x": 267,
+          "y": 267,
+          "unit": 2
+        }
+      ],
+      "width": 280,
+      "height": 280,
+      "expectedText": "4FWU6OKL3HJ5R8KI85V19KP88DHTZ8W7UF6",
+      "expectedUtf8Hex": "34465755364f4b4c33484a3552384b4938355631394b5038384448545a385737554636",
+      "greySha256": "2342a932cd5c29cf868355a527962cd5149fda8a1d6038f1bd4a4673e02c3ae4"
+    },
+    {
+      "id": "holdout-078",
+      "seed": 2074474722,
+      "version": 12,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 44,
+        "perspective": 0.12,
+        "seed": 2074474722,
+        "noise": 12,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 163,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 163,
+          "unit": 2
+        }
+      ],
+      "width": 176,
+      "height": 176,
+      "expectedText": "8k0bg1bmrjahka5kxogvse5i93ii69ejxgbjar",
+      "expectedUtf8Hex": "386b30626731626d726a61686b61356b786f677673653569393369693639656a7867626a6172",
+      "greySha256": "9d8e2db6a845aad795814b249e6111fdb7ddecbfaa9cd2514dfbcd8cd5d2485c"
+    },
+    {
+      "id": "holdout-079",
+      "seed": 2075930253,
+      "version": 12,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 65,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 112,
+        "perspective": 0.35,
+        "seed": 2075930253,
+        "noise": 16,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 163,
+          "unit": 2
+        },
+        {
+          "x": 163,
+          "y": 163,
+          "unit": 2
+        }
+      ],
+      "width": 176,
+      "height": 176,
+      "expectedText": "bp4srd3nel1tdcplm61pb7ms9ti7dbwv1ggeabk24",
+      "expectedUtf8Hex": "627034737264336e656c31746463706c6d36317062376d7339746937646277763167676561626b3234",
+      "greySha256": "fc279bfade50e572d8abfc1ff1da4b1e8422e95df782e9c20936a734d1d1561f"
+    },
+    {
+      "id": "holdout-080",
+      "seed": 2077385784,
+      "version": 20,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 0,
+        "perspective": 0.43,
+        "seed": 2077385784,
+        "noise": 5,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 602,
+      "height": 602,
+      "expectedText": "ev892qup1os67e9ncpmku132akjxkce74hm89upkmp6t0ojo",
+      "expectedUtf8Hex": "6576383932717570316f73363765396e63706d6b75313332616b6a786b63653734686d383975706b6d703674306f6a6f",
+      "greySha256": "30d2ed38e573867d6d1d59f0ef0355b2fdeb4979ccdcfc8a9ddc2914dadb46e0"
+    },
+    {
+      "id": "holdout-081",
+      "seed": 2078841315,
+      "version": 20,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 0,
+        "perspective": 0.24,
+        "seed": 2078841315,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 380,
+      "height": 380,
+      "expectedText": "i0cqd2mqpqji0gtp187edujcbakmrevj7hr29dv24awwtcwhpqg",
+      "expectedUtf8Hex": "6930637164326d7170716a69306774703138376564756a6362616b6d7265766a37687232396476323461777774637768707167",
+      "greySha256": "f6433e6f00fe8b07b5c5081425a1d7fac2f7709243ad375d629c68ca56709659"
+    },
+    {
+      "id": "holdout-082",
+      "seed": 2080296846,
+      "version": 20,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 0,
+        "perspective": 0.3,
+        "seed": 2080296846,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 380,
+      "height": 380,
+      "expectedText": "L5H7NFDRCS9UTIDQQRR8WO0MC1LBYFDVAHWX9W1KLVNZN08BQSJJ23",
+      "expectedUtf8Hex": "4c3548374e464452435339555449445151525238574f304d43314c4259464456414857583957314b4c564e5a4e30384251534a4a3233",
+      "greySha256": "ae19ecb4d0a5636396bbd3347bc92a3c7240afcab4ab7afb675807f1014dc6e2"
+    },
+    {
+      "id": "holdout-083",
+      "seed": 2081752377,
+      "version": 20,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 112,
+        "perspective": 0.18,
+        "seed": 2081752377,
+        "noise": 16,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 602,
+      "height": 602,
+      "expectedText": "palnyr5tzv07nkxsgac2fhgwdrl05hv6ei1r9g613gd1hok5rvm3adi1k",
+      "expectedUtf8Hex": "70616c6e797235747a7630376e6b7873676163326668677764726c3035687636656931723967363133676431686f6b3572766d33616469316b",
+      "greySha256": "4a2943c7d6b1bd39cd0a380685d43662fcb9e16449a2ac3f7db8153c362941ed"
+    },
+    {
+      "id": "holdout-084",
+      "seed": 2083207908,
+      "version": 20,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 37,
+        "perspective": 0.43,
+        "seed": 2083207908,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 232,
+      "height": 232,
+      "expectedText": "sfp494wumxrjgmiu5txxybx6dhmpcidihi7l9zcjl134adxz",
+      "expectedUtf8Hex": "73667034393477756d78726a676d6975357478787962783664686d70636964696869376c397a636a6c3133346164787a",
+      "greySha256": "114c6cd5311f890e88cf376d785da6e6f380009251e2386d24dee59e75ae29d6"
+    },
+    {
+      "id": "holdout-085",
+      "seed": 2084663439,
+      "version": 20,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 13,
+        "perspective": 0.18,
+        "seed": 2084663439,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "centre",
+      "damagedFinder": 2,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 454,
+      "height": 454,
+      "expectedText": "WKTLKGOVAZIV9O2WUCIRI4DGE8NFJKVUKJCG9II12MU6419TTZS",
+      "expectedUtf8Hex": "574b544c4b474f56415a4956394f3257554349524934444745384e464a4b56554b4a434739494931324d553634313954545a53",
+      "greySha256": "bfdd257a11c805e05e61a37b187bf665f76326f18f4c3beb608ef158175c8174"
+    },
+    {
+      "id": "holdout-086",
+      "seed": 2086118970,
+      "version": 20,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 112,
+        "perspective": 0.08,
+        "seed": 2086118970,
+        "noise": 12,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 306,
+      "height": 306,
+      "expectedText": "ZPX2USFXX1983QMXKV3L1YUQFYO4QLC6NJHA92NJK7K9YPMNU2UR09",
+      "expectedUtf8Hex": "5a505832555346585831393833514d584b56334c3159555146594f34514c43364e4a484139324e4a4b374b3959504d4e553255523039",
+      "greySha256": "fb2f1417e403aa871434aa1128d84bc6c5b4e5f2fd06e019deb44f5e0e51bf67"
+    },
+    {
+      "id": "holdout-087",
+      "seed": 2087574501,
+      "version": 20,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2,
+        "angle": 157,
+        "perspective": 0.43,
+        "seed": 2087574501,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 306,
+      "height": 306,
+      "expectedText": "2u2j556yk40kws6z9enfkrb0gpotwnuirkm49lt02racreyhv4xb8jl4v",
+      "expectedUtf8Hex": "3275326a353536796b34306b7773367a39656e666b72623067706f74776e7569726b6d34396c7430327261637265796876347862386a6c3476",
+      "greySha256": "f728a27f3bc0f1ec09cc1613a741f0763b185567b86e01ae297766f50b6790a8"
+    },
+    {
+      "id": "holdout-088",
+      "seed": 2089030032,
+      "version": 20,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 13,
+        "perspective": 0.35,
+        "seed": 2089030032,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 951,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 951,
+          "unit": 2
+        },
+        {
+          "x": 951,
+          "y": 951,
+          "unit": 2
+        }
+      ],
+      "width": 964,
+      "height": 964,
+      "expectedText": "6Z60GHYZ86RWPUQ1YW8A3LRAHFPI3OCUUKSZ94ZIKC1EL2AB",
+      "expectedUtf8Hex": "365a36304748595a383652575055513159573841334c524148465049334f4355554b535a39345a494b4331454c324142",
+      "greySha256": "c27300f0e4eaeb0d88ffdc42d921aa308657183b09d784b616432cb6d8f7f914"
+    },
+    {
+      "id": "holdout-089",
+      "seed": 2090485563,
+      "version": 20,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 112,
+        "perspective": 0.08,
+        "seed": 2090485563,
+        "noise": 12,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 431,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 431,
+          "unit": 2
+        },
+        {
+          "x": 431,
+          "y": 431,
+          "unit": 2
+        }
+      ],
+      "width": 444,
+      "height": 444,
+      "expectedText": "95ahrup1v8i9iwa2oft4me8ki5q7aqu6xlxt9n401xrhfqn5x93",
+      "expectedUtf8Hex": "393561687275703176386939697761326f6674346d65386b6935713761717536786c7874396e34303178726866716e35783933",
+      "greySha256": "e3a49a397c14b9225a8ec1174baa7ecc1d471d56369154844c46210a6b5e1268"
+    },
+    {
+      "id": "holdout-090",
+      "seed": 2091941094,
+      "version": 20,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1.5,
+        "angle": 37,
+        "perspective": 0.18,
+        "seed": 2091941094,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "centre",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 232,
+      "height": 232,
+      "expectedText": "daex16h2ia9lcyv4dyey58ouiwrxhsbi0l2n87aijiik8fzzyc6yxf",
+      "expectedUtf8Hex": "64616578313668326961396c637976346479657935386f756977727868736269306c326e383761696a69696b38667a7a796336797866",
+      "greySha256": "4514548ce55e943f2040c7555260542f301c83cd5e6285c57de7c2ac5b37e007"
+    },
+    {
+      "id": "holdout-091",
+      "seed": 2093396625,
+      "version": 20,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 37,
+        "perspective": 0.12,
+        "seed": 2093396625,
+        "noise": 5,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 306,
+      "height": 306,
+      "expectedText": "GFIECJ835DZX50F62HZSO254JMRMOTTU4M7I8QGZ138M23CTZE9I5PO76",
+      "expectedUtf8Hex": "47464945434a383335445a583530463632485a534f3235344a4d524d4f545455344d37493851475a3133384d323343545a45394935504f3736",
+      "greySha256": "ef982f57096a14b3d9f421c99721e2e1315a01cec7f3543fbb6bdde9d69ed89e"
+    },
+    {
+      "id": "holdout-092",
+      "seed": 2094852156,
+      "version": 20,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 0,
+        "perspective": 0.43,
+        "seed": 2094852156,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 357,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 357,
+          "unit": 2
+        },
+        {
+          "x": 357,
+          "y": 357,
+          "unit": 2
+        }
+      ],
+      "width": 370,
+      "height": 370,
+      "expectedText": "JKNVNV04TFQAY2Z8S0JM7VLEKCSBVVB67MCC89LHJOYPVROM",
+      "expectedUtf8Hex": "4a4b4e564e5630345446514159325a3853304a4d37564c454b43534256564236374d434338394c484a4f595056524f4d",
+      "greySha256": "bbed316491da9225bc06a667d24eebc1c0a79f6f64f1319a6e45348ad92f2c2d"
+    },
+    {
+      "id": "holdout-093",
+      "seed": 2096307687,
+      "version": 20,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 0,
+        "perspective": 0.3,
+        "seed": 2096307687,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 380,
+      "height": 380,
+      "expectedText": "nprcy8r6ghhms4j9hj4hqp2pl3t02wtiani68srz09pspf0g1jf",
+      "expectedUtf8Hex": "6e707263793872366768686d73346a39686a3468717032706c33743032777469616e69363873727a3039707370663067316a66",
+      "greySha256": "1e6f08876e13bdd829e3b7c2187c3e8de48d4ace593386548509def75d9b3dcc"
+    },
+    {
+      "id": "holdout-094",
+      "seed": 2097763218,
+      "version": 20,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 97,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 112,
+        "perspective": 0,
+        "seed": 2097763218,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "centre",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 306,
+      "height": 306,
+      "expectedText": "QUVT8KJ73K8YL63B72PB9IJZMTUP9YBUDNN18CXHIUFUJ4DA2LI6UL",
+      "expectedUtf8Hex": "51555654384b4a37334b38594c3633423732504239494a5a4d54555039594255444e4e3138435848495546554a344441324c4936554c",
+      "greySha256": "41c6df6f22f690bb3e99961606b71427baf3a373e4c87f5557d0179e551020f6"
+    },
+    {
+      "id": "holdout-095",
+      "seed": 2099218749,
+      "version": 20,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 97,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 73,
+        "perspective": 0.18,
+        "seed": 2099218749,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 454,
+      "height": 454,
+      "expectedText": "uzzajxa8rmzbe8ndwla5scz9mkufgzs6hosv8v2y0f5xcsp43olq3vsbh",
+      "expectedUtf8Hex": "757a7a616a786138726d7a6265386e64776c613573637a396d6b7566677a7336686f7376387632793066357863737034336f6c713376736268",
+      "greySha256": "308261264e1aed52adbace6e61651c02c0293eaefafbd1704c09bded22d1396e"
+    },
+    {
+      "id": "holdout-096",
+      "seed": 2100674280,
+      "version": 32,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 112,
+        "perspective": 0.43,
+        "seed": 2100674280,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 226,
+      "height": 226,
+      "expectedText": "x43ru92aeoqn8a8fl4vzb5gjnav4n1ahkoxp8e8gi0w06g1y4qoab5sb2fbqv9bgbufh71ar",
+      "expectedUtf8Hex": "7834337275393261656f716e386138666c34767a6235676a6e6176346e3161686b6f787038653867693077303667317934716f616235736232666271763962676275666837316172",
+      "greySha256": "ad39e481343ebcd32d6198f0e981035ee9d29481a6fe942b3f5ef5d8315ac849"
+    },
+    {
+      "id": "holdout-097",
+      "seed": 2102129811,
+      "version": 32,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 157,
+        "perspective": 0.18,
+        "seed": 2102129811,
+        "noise": 0,
+        "blur": 1,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 1141,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 1141,
+          "unit": 2
+        },
+        {
+          "x": 1141,
+          "y": 1141,
+          "unit": 2
+        }
+      ],
+      "width": 1154,
+      "height": 1154,
+      "expectedText": "09775ltb1qhz1csgbmguuzwto0wtu2stnp3k8yeyzlm205es5trujgtcn8vq2kze1mc5u9qrvcr",
+      "expectedUtf8Hex": "30393737356c74623171687a31637367626d6775757a77746f307774753273746e70336b387965797a6c6d3230356573357472756a6774636e387671326b7a65316d633575397172766372",
+      "greySha256": "fb2c03836d30ce75ec81dbe3f67be4f22aeaac89999ae6d2d5ade3bc15ac49e0"
+    },
+    {
+      "id": "holdout-098",
+      "seed": 2103585342,
+      "version": 32,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 3,
+        "angle": 13,
+        "perspective": 0.18,
+        "seed": 2103585342,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 709,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 709,
+          "unit": 2
+        },
+        {
+          "x": 709,
+          "y": 709,
+          "unit": 2
+        }
+      ],
+      "width": 722,
+      "height": 722,
+      "expectedText": "4FCOFYKCOT8CUECI050ODSD3PRXI14A5QP8E8HJGH6D5TTQM6VUESQUD80FQAWNCREATGG6SZW48S1",
+      "expectedUtf8Hex": "3446434f46594b434f543843554543493035304f4453443350525849313441355150384538484a47483644355454514d36565545535155443830465141574e4352454154474736535a5734385331",
+      "greySha256": "fd6824edc3d0768b732ca5001de3ddb0d4c0ded72160f46d143dd35b02c0f34b"
+    },
+    {
+      "id": "holdout-099",
+      "seed": 2105040873,
+      "version": 32,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 44,
+        "perspective": 0.18,
+        "seed": 2105040873,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "occlusion",
+      "damagedFinder": 1,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 1141,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 1141,
+          "unit": 2
+        },
+        {
+          "x": 1141,
+          "y": 1141,
+          "unit": 2
+        }
+      ],
+      "width": 1154,
+      "height": 1154,
+      "expectedText": "7KG5QACECVYOOGWKPOLIWMTDQHX885SHUPD880PXZQ38NH3G7YXY01VETT0PH8BAH77G3OMS3HG8D3ADL",
+      "expectedUtf8Hex": "374b4735514143454356594f4f47574b504f4c49574d5444514858383835534855504438383050585a5133384e4833473759585930315645545430504838424148373747334f4d5333484738443341444c",
+      "greySha256": "670c749a3aedb0945f8bde074a6a32f838d9b53f956715bb2aa25501e6a36f7c"
+    },
+    {
+      "id": "holdout-100",
+      "seed": 2106496404,
+      "version": 32,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 0,
+        "perspective": 0.43,
+        "seed": 2106496404,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 1359,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 1359,
+          "unit": 2
+        },
+        {
+          "x": 1359,
+          "y": 1359,
+          "unit": 2
+        }
+      ],
+      "width": 1372,
+      "height": 1372,
+      "expectedText": "BPKM1N3FZXP0HIGLF76CGFANQ8YXF79TXQI38JVFGBTAH5FA800H9BWFDLKPOJZ87Z44QV1S",
+      "expectedUtf8Hex": "42504b4d314e33465a5850304849474c463736434746414e513859584637395458514933384a564647425441483546413830304839425746444c4b504f4a5a38375a343451563153",
+      "greySha256": "826630fd15fd97d4705931a6368bc36b7155eccfe334343135759297eb5d0eb5"
+    },
+    {
+      "id": "holdout-101",
+      "seed": 2107951935,
+      "version": 32,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 73,
+        "perspective": 0.08,
+        "seed": 2107951935,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "centre",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 385,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 385,
+          "unit": 2
+        },
+        {
+          "x": 385,
+          "y": 385,
+          "unit": 2
+        }
+      ],
+      "width": 398,
+      "height": 398,
+      "expectedText": "EUO3CZVGM0GDAK0N4QR6Z9RXRYZMM8R50QOX730XYWKDAUR49231HMXFYE4PWVN6XR2RD3HSBL6",
+      "expectedUtf8Hex": "45554f33435a56474d304744414b304e345152365a39525852595a4d4d38523530514f583733305859574b444155523439323331484d58465945345057564e365852325244334853424c36",
+      "greySha256": "bccbe17322fab85d8cf6b3f17fbbdcc0d7c1983c7d0f8b537818bcfb0a7313d7"
+    },
+    {
+      "id": "holdout-102",
+      "seed": 2109407466,
+      "version": 32,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 73,
+        "perspective": 0.24,
+        "seed": 2109407466,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 601,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 601,
+          "unit": 2
+        },
+        {
+          "x": 601,
+          "y": 601,
+          "unit": 2
+        }
+      ],
+      "width": 614,
+      "height": 614,
+      "expectedText": "HZSKMCMIA27P4MKPT9C1I277SO0BTA9H3RTR7M6FGHAG4I4XA56LPWXGJ6PP36B4NJZF0AXTF5J739",
+      "expectedUtf8Hex": "485a534b4d434d4941323750344d4b505439433149323737534f30425441394833525452374d364647484147344934584135364c505758474a365050333642344e4a5a463041585446354a373339",
+      "greySha256": "c6d3e7c3e7d2a03b543cbec624a1217e43554a8b222710879ad821cfc71a7aa7"
+    },
+    {
+      "id": "holdout-103",
+      "seed": 2110862997,
+      "version": 32,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 37,
+        "perspective": 0,
+        "seed": 2110862997,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 0,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 925,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 925,
+          "unit": 2
+        },
+        {
+          "x": 925,
+          "y": 925,
+          "unit": 2
+        }
+      ],
+      "width": 938,
+      "height": 938,
+      "expectedText": "L4X1XOEJX4Y1XO5RJSWV1WOHTF000BRT7RYM75CWY20IY6GRB795Y7YH4Z9PAIZ2DCX2NIDTJQV7OBQBU",
+      "expectedUtf8Hex": "4c345831584f454a58345931584f35524a53575631574f4854463030304252543752594d3735435759323049593647524237393559375948345a395041495a32444358324e4944544a5156374f42514255",
+      "greySha256": "30f39735e8670cb28a2c68ec0968d38e2cddd45c590fe23b60e3b5232b30935b"
+    },
+    {
+      "id": "holdout-104",
+      "seed": 2112318528,
+      "version": 32,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 44,
+        "perspective": 0.24,
+        "seed": 2112318528,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 334,
+      "height": 334,
+      "expectedText": "O91H815KK6PDQQPS8BHPKP4RU51Q7D95AS3G7PHEFNRLRVTLCACP6HZIPRTPIUN034UQAQTT",
+      "expectedUtf8Hex": "4f3931483831354b4b36504451515053384248504b50345255353151374439354153334737504845464e524c5256544c4341435036485a495052545049554e303334555141515454",
+      "greySha256": "64bd7ee138ae359249ce152ac12391d025e9f9ea7baa200d03207a1861671f32"
+    },
+    {
+      "id": "holdout-105",
+      "seed": 2113774059,
+      "version": 32,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 37,
+        "perspective": 0.35,
+        "seed": 2113774059,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 2,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 1090,
+      "height": 1090,
+      "expectedText": "se5yjdxm79gqks9uxu2j3jl1uw2fdeqhds9a78nwx8holj5fdcf9es0jakepp5bytwsdxx8trul",
+      "expectedUtf8Hex": "736535796a64786d373967716b7339757875326a336a6c3175773266646571686473396137386e777838686f6c6a3566646366396573306a616b657070356279747773647878387472756c",
+      "greySha256": "594e55a2892249d3ddae653dd9542f806244fecd43d30143fd8c9a3cf6c96950"
+    },
+    {
+      "id": "holdout-106",
+      "seed": 2115229590,
+      "version": 32,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 1,
+        "angle": 37,
+        "perspective": 0.24,
+        "seed": 2115229590,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 226,
+      "height": 226,
+      "expectedText": "vj9ftqonvb72dutwncnemc2bvm34kg8thte47rteft8qf7h9efitn21jucypwhzwjop1j5otvex6eg",
+      "expectedUtf8Hex": "766a396674716f6e76623732647574776e636e656d633262766d33346b67387468746534377274656674387166376839656669746e32316a7563797077687a776a6f70316a356f74766578366567",
+      "greySha256": "f19d5329a085920869ac48da61c799fa00d2d39f4aaf121e24fe24e6157bbc22"
+    },
+    {
+      "id": "holdout-107",
+      "seed": 2116685121,
+      "version": 32,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 6,
+        "angle": 13,
+        "perspective": 0.43,
+        "seed": 2116685121,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 1308,
+      "height": 1308,
+      "expectedText": "ypdw42goidxe6wdxcv8856ilwc3trhq5ktjz7ayvxeyt8wu3fhldvd1kf5ip4snu9hmp6c4uzya6zi594",
+      "expectedUtf8Hex": "797064773432676f6964786536776478637638383536696c77633374726871356b746a7a37617976786579743877753366686c647664316b6635697034736e7539686d70366334757a7961367a69353934",
+      "greySha256": "8019c64660028eea6b5a1a8b91a2ca5a3c8b20c5523c0ba77c84f0a8dba3e40b"
+    },
+    {
+      "id": "holdout-108",
+      "seed": 2118140652,
+      "version": 32,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 4,
+        "angle": 44,
+        "perspective": 0,
+        "seed": 2118140652,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 874,
+      "height": 874,
+      "expectedText": "2uidff7q5forzyxz1es2o0zvx34iyj8hnuot7u4dezow2k6xgjnx3n2l0x3pb4bsz9kctkku",
+      "expectedUtf8Hex": "327569646666377135666f727a79787a316573326f307a7678333469796a38686e756f7437753464657a6f77326b3678676a6e78336e326c30783370623462737a396b63746b6b75",
+      "greySha256": "da0b60a167ab0717c2b0328a24d23ce1f8010c2d663feb96732272e4a55003be"
+    },
+    {
+      "id": "holdout-109",
+      "seed": 2119596183,
+      "version": 32,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1,
+        "angle": 112,
+        "perspective": 0.08,
+        "seed": 2119596183,
+        "noise": 16,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "occlusion",
+      "damagedFinder": 2,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 226,
+      "height": 226,
+      "expectedText": "5ZMUQRYRTIF3T0I1RXDW7TF6YT585KPSQUTN7DAVWKFYW8JRHMQHCY3MLQNPIGZQP1H0GRZU73Z",
+      "expectedUtf8Hex": "355a4d55515259525449463354304931525844573754463659543538354b50535155544e37444156574b465957384a52484d51484359334d4c514e5049475a515031483047525a5537335a",
+      "greySha256": "0f27d2f361ed97095ce96763f5a6b04a1f69abd1cd47737274fdd8d256eb979b"
+    },
+    {
+      "id": "holdout-110",
+      "seed": 2121051714,
+      "version": 32,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 145,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 46,
+        "perspective": 0.12,
+        "seed": 2121051714,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 493,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 493,
+          "unit": 2
+        },
+        {
+          "x": 493,
+          "y": 493,
+          "unit": 2
+        }
+      ],
+      "width": 506,
+      "height": 506,
+      "expectedText": "94QA03QSGK6FM223GGYRQNWGZJ6XCM74UVZI7WGDE451PWVLIOT1K84N6I7PQRNOFTFN3ZFUBNC5PN",
+      "expectedUtf8Hex": "3934514130335153474b36464d32323347475952514e57475a4a3658434d373455565a4937574744453435315057564c494f54314b38344e3649375051524e4f4654464e335a4655424e4335504e",
+      "greySha256": "6ec03736260d70bc42f298ac3e9e1794e38bf4bfda453e28f94039bdf1f24cbf"
+    },
+    {
+      "id": "holdout-111",
+      "seed": 2122507245,
+      "version": 32,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 145,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 3,
+        "angle": 13,
+        "perspective": 0.24,
+        "seed": 2122507245,
+        "noise": 5,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 1,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 658,
+      "height": 658,
+      "expectedText": "c9urbghu3mxsf4m45zjl9gcqza7mjnpgxv4c6gluvpv4jl7fjrwltj5nqbspx3bm5lcbq7vuf7p5apl8e",
+      "expectedUtf8Hex": "6339757262676875336d787366346d34357a6a6c396763717a61376d6a6e70677876346336676c75767076346a6c37666a72776c746a356e716273707833626d356c6362713776756637703561706c3865",
+      "greySha256": "29effffd86840a6eb5ff2852ca97b8a45a84e25e556d3812077b99054b76f79f"
+    },
+    {
+      "id": "holdout-112",
+      "seed": 2123962776,
+      "version": 40,
+      "ecc": "L",
+      "replicate": 0,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 6,
+        "angle": 73,
+        "perspective": 0.3,
+        "seed": 2123962776,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 1629,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 1629,
+          "unit": 2
+        },
+        {
+          "x": 1629,
+          "y": 1629,
+          "unit": 2
+        }
+      ],
+      "width": 1642,
+      "height": 1642,
+      "expectedText": "FEY8MS9VQPO49666VI4FSAT0007BQP7S0W966ZRCDAM6D9K8KTZ41T5OB4CP4EZKVEAYDEBVJS14VRPGYD3S1S83",
+      "expectedUtf8Hex": "464559384d53395651504f34393636365649344653415430303037425150375330573936365a524344414d3644394b384b545a343154354f4234435034455a4b56454159444542564a533134565250475944335331533833",
+      "greySha256": "3117940ac07dab8afc9576dca3f90efd54e4e5753934c95f0770b2b14cf84449"
+    },
+    {
+      "id": "holdout-113",
+      "seed": 2125418307,
+      "version": 40,
+      "ecc": "L",
+      "replicate": 1,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1,
+        "angle": 13,
+        "perspective": 0.08,
+        "seed": 2125418307,
+        "noise": 0,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 321,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 321,
+          "unit": 2
+        },
+        {
+          "x": 321,
+          "y": 321,
+          "unit": 2
+        }
+      ],
+      "width": 334,
+      "height": 334,
+      "expectedText": "JJ2PX50WERFG28Q8K1O9B3AA1R80XQP43WE16IXUVVC96XW2LW2O946PWWWPCQNIM67MZMRVMCE4GTTPI0CZ9AZ7V10",
+      "expectedUtf8Hex": "4a4a32505835305745524647323851384b314f39423341413152383058515034335745313649585556564339365857324c57324f393436505757575043514e494d36374d5a4d52564d434534475454504930435a39415a37563130",
+      "greySha256": "8d531d0833e80bf3ac20121ce0c0fdb81125c7d187ebe28ff513606ec8ae8fa5"
+    },
+    {
+      "id": "holdout-114",
+      "seed": 2126873838,
+      "version": 40,
+      "ecc": "L",
+      "replicate": 2,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 73,
+        "perspective": 0.43,
+        "seed": 2126873838,
+        "noise": 9,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "centre",
+      "damagedFinder": 0,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 402,
+      "height": 402,
+      "expectedText": "MO767HSY1T6TVBAA9K93UXQK2H9Q4S6G7XKV612CDG3C0M9WMY58IE7QHPHPJ2BGCY49MT6VQWR40VXX3NM5HSRCUWUVMJ",
+      "expectedUtf8Hex": "4d4f3736374853593154365456424141394b39335558514b324839513453364737584b563631324344473343304d39574d59353849453751485048504a324247435934394d5436565157523430565858334e4d3548535243555755564d4a",
+      "greySha256": "b4f9babe445d6d28080f2af82c7fbc6f327745cc26c7c1c95577964559142f53"
+    },
+    {
+      "id": "holdout-115",
+      "seed": 2128329369,
+      "version": 40,
+      "ecc": "L",
+      "replicate": 3,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2,
+        "angle": 157,
+        "perspective": 0,
+        "seed": 2128329369,
+        "noise": 5,
+        "blur": 1,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 532,
+      "height": 532,
+      "expectedText": "QTBNIUJZOVW5PDVBZ2UYDQ7U37AFBTOSAXPP6L8TU1TEUALQN08SQP8R2H1PRDZE2Q2X91MVUG34LW16NBVCQ9IGTQO6AXGA8",
+      "expectedUtf8Hex": "5154424e49554a5a4f565735504456425a325559445137553337414642544f5341585050364c38545531544555414c514e303853515038523248315052445a453251325839314d56554733344c5731364e4256435139494754514f364158474138",
+      "greySha256": "f56f223b0da13f3c4af7269a31724b6d0d6b89f6f685a97469b9fc918fb83126"
+    },
+    {
+      "id": "holdout-116",
+      "seed": 2129784900,
+      "version": 40,
+      "ecc": "M",
+      "replicate": 0,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 5,
+        "angle": 0,
+        "perspective": 0.08,
+        "seed": 2129784900,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 1369,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 1369,
+          "unit": 2
+        },
+        {
+          "x": 1369,
+          "y": 1369,
+          "unit": 2
+        }
+      ],
+      "width": 1382,
+      "height": 1382,
+      "expectedText": "TZF4T6B0CYNHIFFDOLFSXKN43YA4IV64DYUK64EBCMJHNYXKO3BCYZ9RNALPYPOCSJZKW82WY1G36Y5E8Y4IYR9L",
+      "expectedUtf8Hex": "545a46345436423043594e48494646444f4c4653584b4e3433594134495636344459554b36344542434d4a484e59584b4f334243595a39524e414c5059504f43534a5a4b573832575931473336593545385934495952394c",
+      "greySha256": "15b84fb0b19e3ec1f0fba05f6a672a883abe0b6311a15032832f04ce9805aa35"
+    },
+    {
+      "id": "holdout-117",
+      "seed": 2131240431,
+      "version": 40,
+      "ecc": "M",
+      "replicate": 1,
+      "size": 177,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 5,
+        "angle": 157,
+        "perspective": 0.24,
+        "seed": 2131240431,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 1318,
+      "height": 1318,
+      "expectedText": "w4jk4j21z0eubhzfd40mgd4e4obtpwoggyze6njtu7akhmaeq5ew7aas726p50caibx8jgiw2lt3r09nsldp690prfc",
+      "expectedUtf8Hex": "77346a6b346a32317a30657562687a666434306d67643465346f627470776f6767797a65366e6a747537616b686d616571356577376161733732367035306361696278386a676977326c74337230396e736c647036393070726663",
+      "greySha256": "4e73dcc9dca78fd269bebb3e6b4d0d112c8cb7dc34bbee9993f29bab7ab811b8"
+    },
+    {
+      "id": "holdout-118",
+      "seed": 2132695962,
+      "version": 40,
+      "ecc": "M",
+      "replicate": 2,
+      "size": 177,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2,
+        "angle": 46,
+        "perspective": 0.24,
+        "seed": 2132695962,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 583,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 583,
+          "unit": 2
+        },
+        {
+          "x": 583,
+          "y": 583,
+          "unit": 2
+        }
+      ],
+      "width": 596,
+      "height": 596,
+      "expectedText": "09n1evu3m2565jjg3nkgz7ko5fciwy6sky5867pbcs0mbbm8r8hgfkatsvqpdc0883uw6oyw6563c2dwd9mweqruqa62c1",
+      "expectedUtf8Hex": "30396e31657675336d323536356a6a67336e6b677a376b6f35666369777936736b793538363770626373306d62626d3872386867666b6174737671706463303838337577366f7977363536336332647764396d7765717275716136326331",
+      "greySha256": "111448ac43148d7e3ed58197f159c30162d55dfc3e21059eed5da58968c5ca35"
+    },
+    {
+      "id": "holdout-119",
+      "seed": 2134151493,
+      "version": 40,
+      "ecc": "M",
+      "replicate": 3,
+      "size": 177,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 0,
+        "perspective": 0.12,
+        "seed": 2134151493,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 664,
+      "height": 664,
+      "expectedText": "3esip8l495wiyl3is65bi01y65d83zn4nza36qvstdqp4zy2sak0nvbudnapkoo6yvsjtvdwapi3w4h4xwv2n8iyp50d1f33r",
+      "expectedUtf8Hex": "3365736970386c3439357769796c3369733635626930317936356438337a6e346e7a61333671767374647170347a793273616b306e766275646e61706b6f6f367976736a747664776170693377346834787776326e386979703530643166333372",
+      "greySha256": "59283294a3c23ead190298556b9c1d1da454b1aeba850bd22d9a210a02ff9de7"
+    },
+    {
+      "id": "holdout-120",
+      "seed": 2135607024,
+      "version": 40,
+      "ecc": "Q",
+      "replicate": 0,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 46,
+        "perspective": 0,
+        "seed": 2135607024,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 1056,
+      "height": 1056,
+      "expectedText": "7JWZ0KC5X7NVRNNKHPQ51UI87VDXA15GQZFX690ABYHSYNBWTDNKW5CVYGUPRZC4OOP7G3TWE9V2H5LDHJ49VP93",
+      "expectedUtf8Hex": "374a575a304b433558374e56524e4e4b48505135315549383756445841313547515a46583639304142594853594e425754444e4b5735435659475550525a43344f4f5037473354574539563248354c44484a343956503933",
+      "greySha256": "b1eef1fab4077eaf0538d8c4fb9dff43894937cfc36cce9f2a7131983ab941a2"
+    },
+    {
+      "id": "holdout-121",
+      "seed": 2137062555,
+      "version": 40,
+      "ecc": "Q",
+      "replicate": 1,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 112,
+        "perspective": 0,
+        "seed": 2137062555,
+        "noise": 12,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "occlusion",
+      "damagedFinder": 2,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 1107,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 1107,
+          "unit": 2
+        },
+        {
+          "x": 1107,
+          "y": 1107,
+          "unit": 2
+        }
+      ],
+      "width": 1120,
+      "height": 1120,
+      "expectedText": "AO0GBW47K9E7LP8M78BZKNYI7MEMH2NST0KR6S6STJ7USCNQUFQ44GDWJ8FPZB02EGMU2A9XIU8227PL27DF3707NUO",
+      "expectedUtf8Hex": "414f3047425734374b3945374c50384d3738425a4b4e5949374d454d48324e5354304b5236533653544a375553434e5155465134344744574a3846505a42303245474d5532413958495538323237504c32374446333730374e554f",
+      "greySha256": "d54a660f49c689295ee442f33adf3875427c6b83d04dfe233ad5b731bbcd6aa7"
+    },
+    {
+      "id": "holdout-122",
+      "seed": 2138518086,
+      "version": 40,
+      "ecc": "Q",
+      "replicate": 2,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 157,
+        "perspective": 0,
+        "seed": 2138518086,
+        "noise": 0,
+        "blur": 0,
+        "invert": true,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 664,
+      "height": 664,
+      "expectedText": "DT4XL9V87B5JERSNWRWT3HFS8CFBN453X0PM5CC9A3YXL00JVHTOCQEW31ZP6MO048KIPIPXMEK2N9TUMUMMBPSCNOIA2K",
+      "expectedUtf8Hex": "445434584c3956383742354a4552534e5752575433484653384346424e3435335830504d35434339413359584c30304a5648544f4351455733315a50364d4f3034384b49504950584d454b324e3954554d554d4d425053434e4f4941324b",
+      "greySha256": "2c3979d5b1e5cdd2719829873d5cba73d95a94c85020da26aaab952b0dd6cd31"
+    },
+    {
+      "id": "holdout-123",
+      "seed": 2139973617,
+      "version": 40,
+      "ecc": "Q",
+      "replicate": 3,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 4,
+        "angle": 73,
+        "perspective": 0.3,
+        "seed": 2139973617,
+        "noise": 5,
+        "blur": 1,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 1056,
+      "height": 1056,
+      "expectedText": "HY8EWLN9VEWW7TCPLAGNMAV293G0U5MF01VG5VHRSOO0FOCDWKW7L0EXOTJPDYCXU0H5CP4XQYX17BX27HVTK6JGMJCKRXRVB",
+      "expectedUtf8Hex": "48593845574c4e3956455757375443504c41474e4d4156323933473055354d463031564735564852534f4f30464f4344574b57374c3045584f544a504459435855304835435034585159583137425832374856544b364a474d4a434b5258525642",
+      "greySha256": "097fca7c766e63b34ce8e1d60269a42a0ba780235c7f743b4db8ee1d42f30e34"
+    },
+    {
+      "id": "holdout-124",
+      "seed": 2141429148,
+      "version": 40,
+      "ecc": "H",
+      "replicate": 0,
+      "size": 177,
+      "payloadKind": "byte",
+      "shot": {
+        "scale": 2.5,
+        "angle": 73,
+        "perspective": 0.3,
+        "seed": 2141429148,
+        "noise": 16,
+        "blur": 0,
+        "invert": false,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 715,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 715,
+          "unit": 2
+        },
+        {
+          "x": 715,
+          "y": 715,
+          "unit": 2
+        }
+      ],
+      "width": 728,
+      "height": 728,
+      "expectedText": "k3du7yebigm80vwrbs1i54ccatgq174r310a5en9a9e29do7xmzrtbfy9m4pla0vktftzxkxuia1sd1br54zsoal",
+      "expectedUtf8Hex": "6b3364753779656269676d3830767772627331693534636361746771313734723331306135656e396139653239646f37786d7a7274626679396d34706c6130766b7466747a786b7875696131736431627235347a736f616c",
+      "greySha256": "fed14c617ae229b3cb84c2ce118dcfea39b5fe60832f17c5e9d3b088d49e1f59"
+    },
+    {
+      "id": "holdout-125",
+      "seed": 2142884679,
+      "version": 40,
+      "ecc": "H",
+      "replicate": 1,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 2.5,
+        "angle": 44,
+        "perspective": 0.35,
+        "seed": 2142884679,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 715,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 715,
+          "unit": 2
+        },
+        {
+          "x": 715,
+          "y": 715,
+          "unit": 2
+        }
+      ],
+      "width": 728,
+      "height": 728,
+      "expectedText": "O9HBIA6C5IDKUXGS0BMCOYSNBJHF88M362555XTRSU552111YP2B2LGZUEOPSLOTALCGM40YY3M1DF5JBSD6061PK80",
+      "expectedUtf8Hex": "4f394842494136433549444b5558475330424d434f59534e424a484638384d333632353535585452535535353231313159503242324c475a55454f50534c4f54414c43474d34305959334d314446354a42534436303631504b3830",
+      "greySha256": "1962a4e0b8ef1ef08a3ef823c44128a0dc11264066a3d203d0d89f11b3bd8aca"
+    },
+    {
+      "id": "holdout-126",
+      "seed": 2144340210,
+      "version": 40,
+      "ecc": "H",
+      "replicate": 2,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 157,
+        "perspective": 0.12,
+        "seed": 2144340210,
+        "noise": 16,
+        "blur": 0,
+        "invert": true,
+        "mirror": true
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 32,
+      "distractorCount": 4,
+      "distractors": [
+        {
+          "x": 12,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 453,
+          "y": 12,
+          "unit": 2
+        },
+        {
+          "x": 12,
+          "y": 453,
+          "unit": 2
+        },
+        {
+          "x": 453,
+          "y": 453,
+          "unit": 2
+        }
+      ],
+      "width": 466,
+      "height": 466,
+      "expectedText": "RELSSNXDSK4XNZ0UPU767R9XBAI4FA4FA2AZ5HY89FV8WPDVZR5VAWH0F78PZXCR0D949CGY2NZ1YG9SWFMC8NSUJ3UHS2",
+      "expectedUtf8Hex": "52454c53534e5844534b34584e5a3055505537363752395842414934464134464132415a3548593839465638575044565a52355641574830463738505a5843523044393439434759324e5a315947395357464d43384e53554a3355485332",
+      "greySha256": "61cda7d30495d752baacb2376e82bccbc6d00fbdfec33aa3f173aab7bc1493e0"
+    },
+    {
+      "id": "holdout-127",
+      "seed": 2145795741,
+      "version": 40,
+      "ecc": "H",
+      "replicate": 3,
+      "size": 177,
+      "payloadKind": "alpha",
+      "shot": {
+        "scale": 1.5,
+        "angle": 0,
+        "perspective": 0.35,
+        "seed": 2145795741,
+        "noise": 5,
+        "blur": 0,
+        "invert": false,
+        "mirror": false
+      },
+      "damage": "none",
+      "damagedFinder": null,
+      "padding": 0,
+      "distractorCount": 0,
+      "distractors": [],
+      "width": 402,
+      "height": 402,
+      "expectedText": "VJP93ZPFGNV9G1LWFDS0QLQ7C0JTMBMRD3GT504QR0LAPDQP0U8FI6I0ZZTP780PQ57RWKWY67C0JID1G3WJH5JYIXOSHFENU",
+      "expectedUtf8Hex": "564a5039335a5046474e563947314c5746445330514c513743304a544d424d52443347543530345152304c415044515030553846493649305a5a54503738305051353752574b5759363743304a4944314733574a48354a5949584f534846454e55",
+      "greySha256": "4aed7bbe144478304f5aaf3d86e8c0383a4261bc0d535b30071a9501fc71d82d"
+    },
+    {
+      "id": "holdout-128",
+      "seed": 2147251272,
+      "kind": "noise",
+      "phase": 8,
+      "cell": 6,
+      "markers": [],
+      "width": 279,
+      "height": 224,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "3ab2f378f85dcfe291506093a521b0368cffb76165e10bdc82611372deec8c48"
+    },
+    {
+      "id": "holdout-129",
+      "seed": 2148706803,
+      "kind": "checker",
+      "phase": 10,
+      "cell": 11,
+      "markers": [],
+      "width": 298,
+      "height": 252,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "58ff443da3a479c8bb1543bcbe85d58ecfd3e9baf64a8817e9855ee3ad6ee066"
+    },
+    {
+      "id": "holdout-130",
+      "seed": 2150162334,
+      "kind": "stripes",
+      "phase": 12,
+      "cell": 5,
+      "markers": [],
+      "width": 317,
+      "height": 280,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "36af5de9daf03b85cf554e2491142df9562ada706cd6aafd655dc8bfc68f7ea5"
+    },
+    {
+      "id": "holdout-131",
+      "seed": 2151617865,
+      "kind": "finder-tiles",
+      "phase": 14,
+      "cell": 10,
+      "markers": [
+        {
+          "x": 24,
+          "y": 46,
+          "unit": 3
+        },
+        {
+          "x": 105,
+          "y": 224,
+          "unit": 3
+        },
+        {
+          "x": 193,
+          "y": 114,
+          "unit": 3
+        },
+        {
+          "x": 310,
+          "y": 166,
+          "unit": 4
+        },
+        {
+          "x": 302,
+          "y": 73,
+          "unit": 4
+        }
+      ],
+      "width": 336,
+      "height": 309,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "7c932ab5f3bf0d8f5ffd25d86589998d44e904fb643a8d4b83b3a6f347b952cd"
+    },
+    {
+      "id": "holdout-132",
+      "seed": 2153073396,
+      "kind": "noise",
+      "phase": 0,
+      "cell": 5,
+      "markers": [],
+      "width": 155,
+      "height": 337,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "f539aa3fdcedc1415a861d81de7bccc4156e3f34d95c08a5c5669f804bef958d"
+    },
+    {
+      "id": "holdout-133",
+      "seed": 2154528927,
+      "kind": "checker",
+      "phase": 2,
+      "cell": 9,
+      "markers": [],
+      "width": 174,
+      "height": 166,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "355c3355a325dc7ddebcab9e9d9b431c5157624e4b27438b003ed951774ba177"
+    },
+    {
+      "id": "holdout-134",
+      "seed": 2155984458,
+      "kind": "stripes",
+      "phase": 3,
+      "cell": 4,
+      "markers": [],
+      "width": 193,
+      "height": 194,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "7151727dbe37389bee0ed1cd9ab25b18f9ee1cb5692e8871b8c00a101fa003ec"
+    },
+    {
+      "id": "holdout-135",
+      "seed": 2157439989,
+      "kind": "finder-tiles",
+      "phase": 5,
+      "cell": 9,
+      "markers": [
+        {
+          "x": 56,
+          "y": 108,
+          "unit": 3
+        },
+        {
+          "x": 94,
+          "y": 83,
+          "unit": 4
+        },
+        {
+          "x": 118,
+          "y": 151,
+          "unit": 4
+        },
+        {
+          "x": 55,
+          "y": 163,
+          "unit": 2
+        },
+        {
+          "x": 152,
+          "y": 74,
+          "unit": 2
+        }
+      ],
+      "width": 212,
+      "height": 222,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "f5f84ef878d664f4807f26af68a00a2aa38aaf61be6e078045bdcf389df81858"
+    },
+    {
+      "id": "holdout-136",
+      "seed": 2158895520,
+      "kind": "noise",
+      "phase": 7,
+      "cell": 3,
+      "markers": [],
+      "width": 230,
+      "height": 251,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "28a9432ba26578c1899b8ec42cf522519bc4d3a603833723236c3456016736f4"
+    },
+    {
+      "id": "holdout-137",
+      "seed": 2160351051,
+      "kind": "checker",
+      "phase": 9,
+      "cell": 8,
+      "markers": [],
+      "width": 249,
+      "height": 279,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "0e5415c2a11c1d4c21dfe5f6da0a9a273474c09183f1359025630601b7261e40"
+    },
+    {
+      "id": "holdout-138",
+      "seed": 2161806582,
+      "kind": "stripes",
+      "phase": 11,
+      "cell": 3,
+      "markers": [],
+      "width": 268,
+      "height": 308,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "edcfec870f1a05a9168b354427f9f4b3c0447de4ee0d1d38a3a1b8780171e8cc"
+    },
+    {
+      "id": "holdout-139",
+      "seed": 2163262113,
+      "kind": "finder-tiles",
+      "phase": 13,
+      "cell": 8,
+      "markers": [
+        {
+          "x": 120,
+          "y": 277,
+          "unit": 3
+        },
+        {
+          "x": 163,
+          "y": 296,
+          "unit": 2
+        },
+        {
+          "x": 158,
+          "y": 46,
+          "unit": 4
+        },
+        {
+          "x": 126,
+          "y": 27,
+          "unit": 2
+        },
+        {
+          "x": 164,
+          "y": 137,
+          "unit": 3
+        }
+      ],
+      "width": 287,
+      "height": 336,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "5393f171bc1545139a3e95dd89f8de137715ebd48bd75646c3b7143f6acdeb85"
+    },
+    {
+      "id": "holdout-140",
+      "seed": 2164717644,
+      "kind": "noise",
+      "phase": 15,
+      "cell": 2,
+      "markers": [],
+      "width": 306,
+      "height": 164,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "f658621f3d946a42d95e48b9926671b45671ad42dbcff36096e8a0a24615e89e"
+    },
+    {
+      "id": "holdout-141",
+      "seed": 2166173175,
+      "kind": "checker",
+      "phase": 1,
+      "cell": 7,
+      "markers": [],
+      "width": 325,
+      "height": 193,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "6b359bde38754e8e0f8984351588596ed233ee876ea0b06ab87ef5f4e9f5e853"
+    },
+    {
+      "id": "holdout-142",
+      "seed": 2167628706,
+      "kind": "stripes",
+      "phase": 2,
+      "cell": 2,
+      "markers": [],
+      "width": 144,
+      "height": 221,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "109400c5a2fdf388474ceb8131642b197d3118ff7ad20d85dfa650a60e13b4ef"
+    },
+    {
+      "id": "holdout-143",
+      "seed": 2169084237,
+      "kind": "finder-tiles",
+      "phase": 4,
+      "cell": 6,
+      "markers": [
+        {
+          "x": 93,
+          "y": 73,
+          "unit": 3
+        },
+        {
+          "x": 109,
+          "y": 129,
+          "unit": 3
+        },
+        {
+          "x": 87,
+          "y": 116,
+          "unit": 2
+        },
+        {
+          "x": 100,
+          "y": 76,
+          "unit": 3
+        },
+        {
+          "x": 69,
+          "y": 123,
+          "unit": 4
+        }
+      ],
+      "width": 163,
+      "height": 250,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "1be48079c0515e3c69847ba40c93860352fd74a02aa777797163eab34a811c90"
+    },
+    {
+      "id": "holdout-144",
+      "seed": 2170539768,
+      "kind": "noise",
+      "phase": 6,
+      "cell": 11,
+      "markers": [],
+      "width": 182,
+      "height": 278,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "f7625d21a0a0368dc0f58bdbf294a6f14da745a3235a0bed48388d90131e7d12"
+    },
+    {
+      "id": "holdout-145",
+      "seed": 2171995299,
+      "kind": "checker",
+      "phase": 8,
+      "cell": 6,
+      "markers": [],
+      "width": 201,
+      "height": 306,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "0cfad787db15917b3f3db87c47f16b57192db79e3d54581c803278484ed25e2d"
+    },
+    {
+      "id": "holdout-146",
+      "seed": 2173450830,
+      "kind": "stripes",
+      "phase": 10,
+      "cell": 10,
+      "markers": [],
+      "width": 220,
+      "height": 335,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "b964b6edb7cbd85bea27ee6a3155667d71b649e5514154a1c636b448c7832280"
+    },
+    {
+      "id": "holdout-147",
+      "seed": 2174906361,
+      "kind": "finder-tiles",
+      "phase": 12,
+      "cell": 5,
+      "markers": [
+        {
+          "x": 178,
+          "y": 98,
+          "unit": 4
+        },
+        {
+          "x": 194,
+          "y": 33,
+          "unit": 3
+        },
+        {
+          "x": 125,
+          "y": 121,
+          "unit": 3
+        },
+        {
+          "x": 194,
+          "y": 82,
+          "unit": 3
+        },
+        {
+          "x": 62,
+          "y": 92,
+          "unit": 2
+        }
+      ],
+      "width": 239,
+      "height": 163,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "7084bc954a17fafb1668dabc41306defe52c42c0dcec47bb04073e7a41d2640f"
+    },
+    {
+      "id": "holdout-148",
+      "seed": 2176361892,
+      "kind": "noise",
+      "phase": 14,
+      "cell": 10,
+      "markers": [],
+      "width": 257,
+      "height": 192,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "ea9e3d2e2a44ce4caffc06cb1a37ea35798e39536bc13411b5c582d6742a2b25"
+    },
+    {
+      "id": "holdout-149",
+      "seed": 2177817423,
+      "kind": "checker",
+      "phase": 15,
+      "cell": 4,
+      "markers": [],
+      "width": 276,
+      "height": 220,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "e47cfba043ff36af6a0c76b5328c59d79ecc6eed815f8c06e8bc48bf238f511b"
+    },
+    {
+      "id": "holdout-150",
+      "seed": 2179272954,
+      "kind": "stripes",
+      "phase": 1,
+      "cell": 9,
+      "markers": [],
+      "width": 295,
+      "height": 248,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "5613199abeee4ba773a1a5ecf6b562feee2c226268c0f71df5b39822a6827b50"
+    },
+    {
+      "id": "holdout-151",
+      "seed": 2180728485,
+      "kind": "finder-tiles",
+      "phase": 3,
+      "cell": 4,
+      "markers": [
+        {
+          "x": 291,
+          "y": 25,
+          "unit": 4
+        },
+        {
+          "x": 25,
+          "y": 185,
+          "unit": 4
+        },
+        {
+          "x": 162,
+          "y": 66,
+          "unit": 4
+        },
+        {
+          "x": 48,
+          "y": 197,
+          "unit": 4
+        },
+        {
+          "x": 28,
+          "y": 183,
+          "unit": 3
+        }
+      ],
+      "width": 314,
+      "height": 277,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "adbd101ed05ce5786ddfb12568b927b088b011e21ba87ba4f8795b00e51a0f5c"
+    },
+    {
+      "id": "holdout-152",
+      "seed": 2182184016,
+      "kind": "noise",
+      "phase": 5,
+      "cell": 8,
+      "markers": [],
+      "width": 333,
+      "height": 305,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "30c65bbd9ba6da9736e9d815991d7a358cad92042bc154bf9a512c08cfbaed61"
+    },
+    {
+      "id": "holdout-153",
+      "seed": 2183639547,
+      "kind": "checker",
+      "phase": 7,
+      "cell": 3,
+      "markers": [],
+      "width": 152,
+      "height": 334,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "0decd02703437c72e87dfa0870725925835b42b4efaf038b31aadedf2af9ee9f"
+    },
+    {
+      "id": "holdout-154",
+      "seed": 2185095078,
+      "kind": "stripes",
+      "phase": 9,
+      "cell": 8,
+      "markers": [],
+      "width": 171,
+      "height": 162,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "7100165d1660243a0d1b933d4258f9c8d725a55530c3d3aa62921486d4fbe7c5"
+    },
+    {
+      "id": "holdout-155",
+      "seed": 2186550609,
+      "kind": "finder-tiles",
+      "phase": 11,
+      "cell": 2,
+      "markers": [
+        {
+          "x": 47,
+          "y": 80,
+          "unit": 4
+        },
+        {
+          "x": 45,
+          "y": 62,
+          "unit": 2
+        },
+        {
+          "x": 95,
+          "y": 104,
+          "unit": 4
+        },
+        {
+          "x": 69,
+          "y": 168,
+          "unit": 4
+        },
+        {
+          "x": 146,
+          "y": 138,
+          "unit": 4
+        }
+      ],
+      "width": 190,
+      "height": 190,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "eeb8b831a7b7c17dcea74644d1cdc915cf10a5b60d0d65d1a7909a485b7894e3"
+    },
+    {
+      "id": "holdout-156",
+      "seed": 2188006140,
+      "kind": "noise",
+      "phase": 12,
+      "cell": 7,
+      "markers": [],
+      "width": 209,
+      "height": 219,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "1cc44384870eb8370e0882dcc17ab3178ace4d52ec640e790d34d375a3dcc6e9"
+    },
+    {
+      "id": "holdout-157",
+      "seed": 2189461671,
+      "kind": "checker",
+      "phase": 14,
+      "cell": 2,
+      "markers": [],
+      "width": 228,
+      "height": 247,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "14c99227d3e982960321f95f919f75e636b9d02b9d520d3d4ce5623db3245d59"
+    },
+    {
+      "id": "holdout-158",
+      "seed": 2190917202,
+      "kind": "stripes",
+      "phase": 0,
+      "cell": 6,
+      "markers": [],
+      "width": 247,
+      "height": 276,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "e07b53bc774168b069f77fe8475b6deb7e20e49ffb0e3c9dd5e409230d31b297"
+    },
+    {
+      "id": "holdout-159",
+      "seed": 2192372733,
+      "kind": "finder-tiles",
+      "phase": 2,
+      "cell": 11,
+      "markers": [
+        {
+          "x": 105,
+          "y": 228,
+          "unit": 4
+        },
+        {
+          "x": 90,
+          "y": 250,
+          "unit": 3
+        },
+        {
+          "x": 130,
+          "y": 266,
+          "unit": 2
+        },
+        {
+          "x": 144,
+          "y": 80,
+          "unit": 2
+        },
+        {
+          "x": 168,
+          "y": 254,
+          "unit": 4
+        }
+      ],
+      "width": 265,
+      "height": 304,
+      "expectedText": null,
+      "expectedUtf8Hex": null,
+      "greySha256": "e26d1073006886036fe8737cf3f8b286d7a4e3d726d8bb6d89e3f418576f80a4"
+    }
+  ]
+}

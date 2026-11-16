@@ -3,7 +3,7 @@
 
 use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
-use crate::place::{estimate_size, finder_triples, locate, Location, Point};
+use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
 use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
 use crate::symbol::{agreed_version, read_symbol, Payload, FORMAT_COORDS};
 use std::cell::Cell;
@@ -54,6 +54,12 @@ pub struct Reading {
 #[derive(Clone, Copy)]
 struct Hint { triple: [Finder; 3], size: usize, inverted: bool }
 
+struct Overflow {
+    finders: Vec<Finder>,
+    ranked: Vec<[usize; 3]>,
+    inverted: bool,
+}
+
 /// What is left of a frame's maps and second looks, shared by every size, and
 /// of the maps this size may take.
 struct Budget {
@@ -80,7 +86,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     let luminance = to_luminance(data, width, height, channels, row_stride);
     let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
-    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints)) {
+    let mut overflow = Vec::new();
+    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints), Some(&mut overflow)) {
         return Some(found);
     }
     if budget.uniform { return None; }
@@ -119,7 +126,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
             }
         }
     }
-    recover(&luminance, &hints, &mut budget, work.as_deref_mut())
+    if let Some(found) = recover(&luminance, &hints, &mut budget, work.as_deref_mut()) { return Some(found); }
+    recover_overflow(&luminance, &overflow, &mut budget, work.as_deref_mut())
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -127,10 +135,10 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
 /// only if its format copies agree on its level and mask, and locations are
 /// given in full-picture coordinates.
 fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
-    look_with_hints(luminance, inversion, f, budget, work, strict_override, None)
+    look_with_hints(luminance, inversion, f, budget, work, strict_override, None, None)
 }
 
-fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>) -> Option<Reading> {
+fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>, mut overflow: Option<&mut Vec<Overflow>>) -> Option<Reading> {
     let levels = thresholds(luminance);
     if f == 1 && !strict_override {
         budget.inverted_fallback = levels.inverted_fallback;
@@ -144,13 +152,13 @@ fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget
     let mut edges = Edges::new(&bits);
     let mut modules: Vec<u8> = Vec::new();
     if inversion != Inversion::Inverted {
-        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut()) {
             return Some(found);
         }
     }
     if inversion != Inversion::Normal {
         let inverse = invert(&bits);
-        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut()) {
             return Some(found);
         }
     }
@@ -247,7 +255,7 @@ fn search(
     modules: &mut Vec<u8>,
     work: Option<&mut Work>,
 ) -> Option<Reading> {
-    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None)
+    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None, None)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -262,6 +270,7 @@ fn search_with_hints(
     modules: &mut Vec<u8>,
     mut work: Option<&mut Work>,
     mut hints: Option<&mut Vec<Hint>>,
+    mut overflow: Option<&mut Vec<Overflow>>,
 ) -> Option<Reading> {
     // No map can be read, but the caller still owns the second-look queue.
     if budget.maps == 0 || budget.here == 0 { return None; }
@@ -310,6 +319,11 @@ fn search_with_hints(
                     }
                     if budget.maps == 0 || budget.here == 0 { return None; }
                 }
+            }
+        }
+        if triples.len() > MAX_TRIPLES {
+            if let Some(overflow) = overflow.as_deref_mut() {
+                overflow.push(Overflow { finders: found, ranked: triples, inverted });
             }
         }
     }
@@ -436,6 +450,77 @@ fn recover(luminance: &Luminance, hints: &[Hint], budget: &mut Budget, mut work:
     None
 }
 
+/// The same ordered finder centres identify a triple within one polarity.
+fn same_triple(a: &[Finder; 3], b: &[Finder; 3]) -> bool {
+    a.iter().zip(b).all(|(x, y)| x.x == y.x && x.y == y.y)
+}
+
+/// Probe already-ranked overflow only after the ordinary and version searches.
+fn recover_overflow(luminance: &Luminance, overflow: &[Overflow], budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    if overflow.is_empty() || budget.maps == 0 { return None; }
+    let levels = thresholds(luminance);
+    if levels.uniform { return None; }
+    let normal = binarise(luminance, &levels);
+    let mut inverse = None;
+    let mut edges = Edges::new(&normal);
+    let mut modules = Vec::new();
+    let mut candidates = Vec::new();
+    let mut remaining = REDUCED_MAPS;
+    let mut seen: Vec<([Finder; 3], bool)> = Vec::new();
+    let mut admitted: Vec<([Finder; 3], bool, usize)> = Vec::new();
+    for group in overflow {
+        if budget.maps == 0 || remaining == 0 { break; }
+        let image = if group.inverted { inverse.get_or_insert_with(|| invert(&normal)) } else { &normal };
+        for ids in group.ranked.iter().skip(MAX_TRIPLES) {
+            if budget.maps == 0 || remaining == 0 { break; }
+            let triple = ids.map(|i| group.finders[i]);
+            if seen.iter().any(|(t, inv)| *inv == group.inverted && same_triple(t, &triple)) { continue; }
+            seen.push((triple, group.inverted));
+            for probe in locate_corners(image, &triple, &mut edges) {
+                if budget.maps == 0 || remaining == 0 { break; }
+                budget.maps -= 1;
+                remaining -= 1;
+                if let Some(w) = work.as_deref_mut() { w.maps += 1; }
+                let [m0, m1, m2, m3, m4, m5, m6, m7, m8] = probe.matrix;
+                let sample = |x: usize, y: usize| {
+                    let u = x as f64 + 0.5;
+                    let v = y as f64 + 0.5;
+                    let w = m6 * u + m7 * v + m8;
+                    let px = ((m0 * u + m1 * v + m2) / w).floor();
+                    let py = ((m3 * u + m4 * v + m5) / w).floor();
+                    px >= 0.0 && py >= 0.0 && px < image.width as f64 && py < image.height as f64
+                        && image.data[py as usize * image.width + px as usize] == 1
+                };
+                let Some(format) = agreement_read(&sample, probe.size) else { continue; };
+                let oriented = |x, y| if format.mirrored { sample(y, x) } else { sample(x, y) };
+                let Some(version) = agreed_version(&oriented, probe.size) else { continue; };
+                let target = 17 + 4 * version;
+                if budget.maps == 0 || remaining == 0 { break; }
+                if admitted.iter().any(|(t, inv, size)| *inv == group.inverted && *size == target && same_triple(t, &triple)) { continue; }
+                admitted.push((triple, group.inverted, target));
+                for location in locate(image, &triple, Some(target as i64), work.as_deref_mut(), &mut edges) {
+                    if budget.maps == 0 || remaining == 0 { break; }
+                    budget.maps -= 1;
+                    remaining -= 1;
+                    if let Some(w) = work.as_deref_mut() { w.maps += 1; }
+                    if let Some(result) = read(image, &location, group.inverted, &mut candidates, true, 1, &mut modules) {
+                        return Some(result);
+                    }
+                }
+            }
+        }
+    }
+    for candidate in &candidates {
+        if budget.second == 0 { break; }
+        budget.second -= 1;
+        if let Some(w) = work.as_deref_mut() { w.second += 1; }
+        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), true) {
+            return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
+        }
+    }
+    None
+}
+
 /// Samples the module grid through the map and reads it, straight then
 /// mirrored. A map that reads neither way, whose format copies agree, is kept
 /// as a candidate for the second look.
@@ -498,6 +583,22 @@ mod strict_format_tests {
     use super::*;
     use crate::encode::{encode, Options};
     use crate::symbol::Ecc;
+
+    #[test]
+    fn overflow_triple_identity_uses_ordered_centres_only() {
+        let f = |x, y| Finder { x, y, module_size: 1.0, count: 1 };
+        let a = [f(0.0, 1.0), f(2.0, 3.0), f(4.0, 5.0)];
+        let mut b = a;
+        b[0].x = -0.0;
+        b[1].module_size = 9.0;
+        b[1].count = 8;
+        assert!(same_triple(&a, &b));
+        b.swap(1, 2);
+        assert!(!same_triple(&a, &b));
+        b = a;
+        b[0].x = f64::NAN;
+        assert!(!same_triple(&b, &b));
+    }
 
     #[test]
     fn recovery_without_maps_or_hints_preserves_budget_and_work() {

@@ -1,7 +1,7 @@
 import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
 import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
-import { edgesOf, estimateSize, finderTriples, findFinders, locate, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
+import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
 import { agreedVersion, readSymbol, type ModuleReader, type Payload } from './symbol.js'
 import { FORMAT_COORDS } from './encode.js'
@@ -73,7 +73,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
       if (reduced) return { ...reduced, inverted: true }
     }
   }
-  return recoverVersion(luminance, budget, work)
+  const recovered = recoverVersion(luminance, budget, work)
+  if (recovered) return recovered
+  return recoverOverflow(luminance, budget, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -93,6 +95,7 @@ interface Budget {
   invertedFallback: boolean
   uniform: boolean
   hints: VersionHint[]
+  overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
 }
 
 interface VersionHint {
@@ -175,7 +178,8 @@ function search(
   if (budget.maps === 0 || budget.here === 0) return undefined
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
-    const triples = finderTriples(image, findFinders(image, tolerance, work, edges)).slice(0, MAX_TRIPLES)
+    const ranked = finderTriples(image, findFinders(image, tolerance, work, edges))
+    const triples = ranked.slice(0, MAX_TRIPLES)
     for (const triple of triples) {
       const first = locate(image, triple, undefined, work, edges)
       // An estimate past version 40 by no more than the retries reach still
@@ -197,6 +201,9 @@ function search(
           if (budget.maps === 0 || budget.here === 0) return undefined
         }
       }
+    }
+    if (collectHints && ranked.length > MAX_TRIPLES) {
+      ;(budget.overflow ??= []).push({ ranked, inverted })
     }
   }
   return undefined
@@ -309,6 +316,65 @@ function recoverVersion(luminance: Luminance, budget: Budget, work?: Work): Deco
     }
   }
   // A queued map can still recover after the ordinary map allowance runs out.
+  for (const candidate of candidates) {
+    if (budget.second === 0) break
+    budget.second--
+    if (work) work.second++
+    const result = secondLook(luminance, levels, candidate, work, true)
+    if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
+  }
+  return undefined
+}
+
+/** A late, evidence-gated probe of the already-ranked full-size overflow. */
+function recoverOverflow(luminance: Luminance, budget: Budget, work?: Work): DecodeResult | undefined {
+  if (!budget.overflow || budget.maps === 0) return undefined
+  const levels = thresholds(luminance)
+  const bits = binarise(luminance, levels)
+  const edges = edgesOf(bits)
+  let inverse: BitImage | undefined
+  let remaining = REDUCED_MAPS
+  const candidates: Candidate[] = []
+  const seen: { triple: readonly [Finder, Finder, Finder]; inverted: boolean }[] = []
+  const admitted: { triple: readonly [Finder, Finder, Finder]; inverted: boolean; target: number }[] = []
+  for (const group of budget.overflow) {
+    if (budget.maps === 0 || remaining === 0) break
+    const image = group.inverted ? (inverse ??= invert(bits)) : bits
+    for (let index = MAX_TRIPLES; index < group.ranked.length; index++) {
+      if (budget.maps === 0 || remaining === 0) break
+      const triple = group.ranked[index]!
+      if (seen.some(s => s.inverted === group.inverted && s.triple.every((p, i) => p.x === triple[i]!.x && p.y === triple[i]!.y))) continue
+      seen.push({ triple, inverted: group.inverted })
+      const probes = locateCorners(image, triple, undefined, edges)
+      for (const probe of probes) {
+        if (budget.maps === 0 || remaining === 0) break
+        budget.maps--
+        remaining--
+        if (work) work.maps++
+        const sample: ModuleReader = (x, y) => {
+          const p = probe.project(x, y)
+          const px = Math.floor(p.x), py = Math.floor(p.y)
+          return px >= 0 && py >= 0 && px < image.width && py < image.height && image.data[py * image.width + px] === 1
+        }
+        const format = agreementRead(sample, probe.size)
+        if (!format) continue
+        const version = agreedVersion(format.mirrored ? (x, y) => sample(y, x) : sample, probe.size)
+        if (version === undefined) continue
+        const target = 17 + 4 * version
+        if (budget.maps === 0 || remaining === 0) break
+        if (admitted.some(a => a.inverted === group.inverted && a.target === target && a.triple.every((p, i) => p.x === triple[i]!.x && p.y === triple[i]!.y))) continue
+        admitted.push({ triple, inverted: group.inverted, target })
+        for (const location of locate(image, triple, target, work, edges)) {
+          if (budget.maps === 0 || remaining === 0) break
+          budget.maps--
+          remaining--
+          if (work) work.maps++
+          const found = read(image, location, group.inverted, candidates, true, 1)
+          if (found) return found
+        }
+      }
+    }
+  }
   for (const candidate of candidates) {
     if (budget.second === 0) break
     budget.second--

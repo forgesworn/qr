@@ -68,19 +68,28 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then thirteen in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then fifteen in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
 symbol read by the second look, a larger one read through the mesh, a
 symbol of zero codewords, and three shaded light-on-dark symbols requiring
-inverted-luminance thresholds, including mirrored and reduced-size reads).
+inverted-luminance thresholds, including mirrored and reduced-size reads,
+version-directed recovery of a blurred version-40 symbol, and recovery of a
+perspective frame whose correct finder triple ranks seventh).
 
 The inverted-luminance fallback regeneration adds those three frames and
 increases the cross-check work for the existing refused close-up format and
 zero-codeword frames. Every earlier frame keeps its result and all stage
 bytes. The extra work is intentional: those failed frames now qualify for
 the bounded final pass in SPEC.md step 10.
+
+The ranked-overflow regeneration adds `overflow-perspective-40.png`, built
+from independently encoded modules and a fixed photograph hash in
+`test/overflow-fixture.json`. It also adds 30 header probes to each of the
+existing unreadable `frame-07.png`, `frame-39.png` and `noise.png` frames.
+Their results and all other stage and work fields stay unchanged. Every
+previous successful frame retains its complete result and work counts.
 
 For each, in the order a port can build the decoder:
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.2
+
+- Recover additional difficult QR images when the correct finder triple ranks
+  below the first six. The late fallback requires agreeing format and version
+  information, shares the existing frame limits, and preserves earlier reads.
+- Apply the same behaviour to TypeScript, Rust, packaged WASM and Kotlin, with
+  a shared perspective regression and exact result/work conformance.
+- Add four correct reads across the existing synthetic regression suites,
+  with no lost success or wrong payload. The separate fresh qualification
+  remains 69/128 for both old and new QR, versus 55/128 for ZXing-WASM 3.1.7.
+- Align all registry versions on 0.3.2; JSR 0.3.1 was the packaging fix for
+  library 0.3.0. No public API changes.
+
 ## 0.3.0
 
 - Optional `@forgesworn/qr/wasm` backend with a bundled module, complete

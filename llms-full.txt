@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.0
+# @forgesworn/qr 0.3.2
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -51,7 +51,7 @@ Accuracy takes priority: speed changes must preserve successful regression
 reads and must not introduce incorrect payloads.
 
 The recorded WASM comparison reads **179/184 photographs versus ZXing-WASM's
-171/184**, and **171/224 positive stress frames versus 150/224**. Those finite
+171/184**, and **172/224 positive stress frames versus 150/224**. Those finite
 sets do not prove superiority on every image. ZXing is faster on random noise
 and reads one stress frame we miss. See [choosing a library](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md)
 for use cases, trade-offs and [reproducible evidence](https://github.com/forgesworn/qr/blob/main/PERFORMANCE.md).
@@ -83,11 +83,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.1'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.1/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.2'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.2/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.1` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.2` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -722,7 +722,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.0") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.2") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -752,7 +752,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.0`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.2`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -889,8 +889,9 @@ payload; the synthetic suites also check its bytes.
 | Dataset | QR | ZXing-WASM |
 |---|---:|---:|
 | Existing photograph collection | **179/184** | 171/184 |
-| 192-case synthetic regression set | **172/192** | 169/192 |
-| Frozen stress set: positive frames | **171/224** | 150/224 |
+| 192-case synthetic regression set | **174/192** | 169/192 |
+| Frozen stress set: positive frames | **172/224** | 150/224 |
+| Fresh synthetic qualification: positive frames | **69/128** | 55/128 |
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
@@ -898,18 +899,23 @@ payload; the synthetic suites also check its bytes.
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. ZXing reads
-one version-40 perspective case that this measured QR build misses. The blurred
-version-40 case is now recovered without losing a previous success.
+Both readers miss all 28 finder-occlusion cases in that stress set. The 0.3.2
+recovery adds four exact reads across the existing synthetic suites, including
+the version-40 perspective case. The fresh set was fixed before testing this
+change: both 0.3.0 and 0.3.2 read 69/128, so it shows no additional gain from
+this patch. All 32 fresh negative controls are rejected by both libraries.
 See [full methodology, identities and per-case evidence](https://github.com/forgesworn/qr/blob/main/PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-On the recorded Apple M4 Max/native Node 24 run, median clean 720p decoding is
+On the recorded 0.3.0 Apple M4 Max/native Node 24 run, median clean 720p decoding is
 1.590 ms for packaged QR WASM and 2.137 ms for ZXing-WASM. A ten-frame tracked
 sequence totals 7.074 ms versus 19.737 ms. Random noise favours ZXing:
 7.941 ms versus QR's 20.569 ms. These are desktop measurements, not phone
 latency or battery measurements. Pure TypeScript has different costs.
+The 0.3.2 paired checks keep clean/blank medians broadly unchanged; main noise
+costs 3.6–3.9% more to reject in exchange for the additional accuracy. See the
+performance report for both complete timing forks.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful
@@ -947,9 +953,9 @@ the TypeScript and optional WASM backends on your actual devices.
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. These use version 0.3.0.
-JSR publishes the same library as `@forgesworn/qr` 0.3.1: a packaging fix for its
-WASM asset. Both new registry distributions have passed public consumer checks.
+published on Maven Central as `io.github.forgesworn:qr`. The 0.3.2 release
+aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
+fix for the 0.3.0 library; its version number is not reused.
 
 | Channel | What it provides |
 |---|---|
@@ -970,9 +976,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.0
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.0
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.0
+npm install --save-exact @forgesworn/qr@0.3.2
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.2
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.2
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -982,12 +988,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.1
+deno add jsr:@forgesworn/qr@0.3.2
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.1'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.1/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.2'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.2/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1002,7 +1008,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.0") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.2") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -1011,7 +1017,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.0
+cargo add forgesworn-qr@0.3.2
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and
@@ -1555,6 +1561,9 @@ pipeline:
     saved full-resolution triples whose agreeing format and version copies
     identify a different size. Strict reads use only the remaining budgets.
     See "Version-directed recovery" below.
+12. Ranked overflow: after version-directed recovery also fails, screen
+    previously ranked full-resolution triples beyond the first six using
+    agreeing format and version copies. See "Ranked overflow recovery" below.
 
 ### Reusable camera decoder
 
@@ -2222,6 +2231,39 @@ neither frame cap. Earlier successful results therefore keep priority. Grid
 decoding and symbol parsing still reject a mismatching version; this pass
 creates new picture maps rather than resizing a sampled grid.
 
+### Ranked overflow recovery
+
+Step 12 runs only after steps 2 to 11 return no result. When the original
+full-resolution binary search finishes trying the selected six triples in a
+pass, retain its ranked list if more triples remain. Reduced pictures and the
+inverted-luminance fallback do not supply lists. Retain the original pass order,
+rank order and binary polarity; do not rescan for finders.
+
+With map allowance remaining, rebuild the original binary picture. Inspect
+each retained list from its seventh triple onwards. Triples with identical
+three ordered finder centres and polarity are duplicates, even across passes.
+For each unseen triple, compute only the original corner maps at the estimated
+size, in their usual order, without an alignment search or neighbouring sizes.
+Invalid sizes and geometry produce no maps.
+
+Probe each corner map for both format copies under the existing agreement
+rule, then both version copies in the format's orientation. The version copies
+must independently decode within three bit errors to the same version. A
+qualifying map admits full location at exactly `17 + 4 * version`, whether or
+not that size differs from the estimate. Admit each ordered triple, polarity
+and target size only once. Full maps and queued second looks require strict
+format agreement and all ordinary version, Reed-Solomon and segment checks.
+Keep second-look candidates in their existing distance order.
+
+One local allowance of 30 maps includes both header probes and full-map reads;
+each also consumes one of the frame's remaining 720 maps. Check the allowance
+before computing the full locations. Header probes count as maps even though
+they sample only headers. Invalid geometry consumes no maps, but the finite
+retained ranked lists bound the number of such probes. Queued second looks use
+only the frame's remaining four and remain eligible after map exhaustion.
+This pass collects no additional lists or version hints. Earlier successes
+retain their result, ordering and work counts.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -2244,7 +2286,9 @@ among them.
   most size x size modules, straight and transposed. The reduced sizes of
   step 9 take theirs from the same 720, at most 30 each; step 10 takes at most
   30 more from what remains, shared by its sizes. Step 11 takes at most
-  30 remaining maps across all saved version hints. Only sizes from 21 to
+  30 remaining maps across all saved version hints. Step 12 shares a further
+  allowance of 30 remaining maps between header probes and full reads of
+  admitted overflow triples. Only sizes from 21 to
   177 give maps. An estimate of 181 or 185, past 177 by no more than the
   retries reach, still has its retries tried, and those of 177 or less
   give maps; any other estimate outside 21 to 177 gives none.
@@ -2268,7 +2312,7 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 to 11 as without them,
+The caps on maps and second looks are the same with steps 9 to 12 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying
@@ -2278,6 +2322,11 @@ when the polarity-sensitive flat-block rule cannot help.
 Step 11 only rebuilds the original binary picture when a retained version
 hint and remaining map allowance exist; its additional location work is
 counted like ordinary location work, and its maps are full-resolution maps.
+Step 12 rebuilds the binary picture only when a retained overflow list and
+remaining map allowance exist. It retains references to existing ranked data
+until the frame completes and adds corner geometry work for unselected triples;
+it does not repeat finder scans. Alignment work is counted only after agreeing
+headers admit a full location.
 
 All three ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,

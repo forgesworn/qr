@@ -116,9 +116,11 @@ private const val MIN_REDUCED = 21
 private const val REDUCED_MAPS = 30
 
 private class VersionHint(val triple: Array<Finder>, val size: Int, val inverted: Boolean)
+private class Overflow(val ranked: List<Array<Finder>>, val inverted: Boolean)
 /** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
 private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
     val hints = ArrayList<VersionHint>(4)
+    val overflow = ArrayList<Overflow>()
 }
 
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
@@ -156,7 +158,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
             )
         }
     }
-    return recoverVersions(luminance, budget, work)
+    val recovered = recoverVersions(luminance, budget, work)
+    if (recovered != null) return recovered
+    return recoverOverflow(luminance, budget, work)
 }
 
 /**
@@ -222,7 +226,8 @@ private fun search(
     if (budget.maps == 0 || budget.here == 0) return null
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
-        val triples = finderTriples(image, findFinders(image, tolerance, work, edges)).take(MAX_TRIPLES)
+        val ranked = finderTriples(image, findFinders(image, tolerance, work, edges))
+        val triples = ranked.take(MAX_TRIPLES)
         for (triple in triples) {
             val first = locate(image, triple, null, work, edges)
             // An estimate past version 40 by no more than the retries reach still
@@ -245,6 +250,7 @@ private fun search(
                 }
             }
         }
+        if (f == 1 && !strict && ranked.size > MAX_TRIPLES) budget.overflow.add(Overflow(ranked, inverted))
     }
     return null
 }
@@ -371,6 +377,75 @@ private fun recoverVersions(luminance: Luminance, budget: Budget, work: Work?): 
     }
     return null
 }
+
+/** A late, evidence-gated probe of the already-ranked full-size overflow. */
+private fun recoverOverflow(luminance: Luminance, budget: Budget, work: Work?): DecodeResult? {
+    if (budget.overflow.isEmpty() || budget.maps == 0) return null
+    val levels = thresholds(luminance)
+    val bits = binarise(luminance, levels)
+    val edges = Edges(bits)
+    var inverse: BitImage? = null
+    var remaining = REDUCED_MAPS
+    val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
+    val scratch = ReadScratch()
+    val seen = ArrayList<OverflowTriple>()
+    val admitted = ArrayList<OverflowTarget>()
+    for (group in budget.overflow) {
+        if (budget.maps == 0 || remaining == 0) break
+        val image = if (group.inverted) {
+            if (inverse == null) inverse = invert(bits)
+            inverse
+        } else bits
+        for (index in MAX_TRIPLES until group.ranked.size) {
+            if (budget.maps == 0 || remaining == 0) break
+            val triple = group.ranked[index]
+            if (seen.any { it.inverted == group.inverted && sameTriple(it.triple, triple) }) continue
+            seen.add(OverflowTriple(triple, group.inverted))
+            val probes = locateCorners(image, triple, null, edges)
+            for (probe in probes) {
+                if (budget.maps == 0 || remaining == 0) break
+                budget.maps--
+                remaining--
+                if (work != null) work.maps++
+                val sample = ModuleReader { x, y ->
+                    val p = probe.project(x, y)
+                    val px = floor(p.x)
+                    val py = floor(p.y)
+                    px >= 0 && py >= 0 && px < image.width && py < image.height &&
+                        image.data[py.toInt() * image.width + px.toInt()].toInt() == 1
+                }
+                val format = agreementRead(sample, probe.size) ?: continue
+                val reader = if (format.mirrored) ModuleReader { x, y -> sample.read(y, x) } else sample
+                val version = agreedVersion(reader, probe.size) ?: continue
+                val target = 17 + 4 * version
+                if (budget.maps == 0 || remaining == 0) break
+                if (admitted.any { it.inverted == group.inverted && it.target == target && sameTriple(it.triple, triple) }) continue
+                admitted.add(OverflowTarget(triple, group.inverted, target))
+                for (location in locate(image, triple, target, work, edges)) {
+                    if (budget.maps == 0 || remaining == 0) break
+                    budget.maps--
+                    remaining--
+                    if (work != null) work.maps++
+                    val found = read(image, location, group.inverted, candidates, true, 1, scratch)
+                    if (found != null) return found
+                }
+            }
+        }
+    }
+    for (candidate in candidates) {
+        if (budget.second == 0) break
+        budget.second--
+        if (work != null) work.second++
+        val payload = secondLook(luminance, levels, candidate, work, true) ?: continue
+        return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
+    }
+    return null
+}
+
+private class OverflowTriple(val triple: Array<Finder>, val inverted: Boolean)
+private class OverflowTarget(val triple: Array<Finder>, val inverted: Boolean, val target: Int)
+private fun sameTriple(a: Array<Finder>, b: Array<Finder>): Boolean =
+    (0..2).all { a[it].x == b[it].x && a[it].y == b[it].y }
 
 private fun result(p: Payload, mirrored: Boolean, inverted: Boolean, location: QrLocation?): DecodeResult =
     DecodeResult(

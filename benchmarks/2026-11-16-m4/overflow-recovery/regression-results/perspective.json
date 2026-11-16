@@ -1,0 +1,112 @@
+{
+  "revision": "c6f05a9808df82365e5999aa5f00951093558a43",
+  "suite": "perspective",
+  "passed": true,
+  "baseJsSha256": "ba2eac46e12feef20cea48fd494cb8fce4147f6e58cd4618c1cb53f20d48f6bb",
+  "candidateJsSha256": "6f68e0b9318bb33064df05222a77ead52da1d5eb1e2cad5012384d0a5cf6a5f4",
+  "identity": {
+    "revision": "c6f05a9808df82365e5999aa5f00951093558a43",
+    "sourceSha256": {
+      "base": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "76ae986fbab6153a9bc2cc15ab26469c09aaa4a238d25e9e58a67f4c0ac749bc",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "a33c41f2b04532e7c36d87617b9855dcff52a2687912dbc8625297560fdd6d6a",
+        "refine.ts": "8704cb7563677e5a3a9c44c80e0f2fead336833477c2831587e68f4006c784f5",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "99e708112c33c91f8b5a8c6b3036c5b5d5704a743cd16e3e2b52451ae8173f7e",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "candidate": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "491e43c7cff8ccc5058b77341c7ed074ea2d0453958ac40390e2b1fd9307c02b",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "8704cb7563677e5a3a9c44c80e0f2fead336833477c2831587e68f4006c784f5",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "99e708112c33c91f8b5a8c6b3036c5b5d5704a743cd16e3e2b52451ae8173f7e",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      }
+    },
+    "jsSha256": {
+      "base": "ba2eac46e12feef20cea48fd494cb8fce4147f6e58cd4618c1cb53f20d48f6bb",
+      "candidate": "6f68e0b9318bb33064df05222a77ead52da1d5eb1e2cad5012384d0a5cf6a5f4"
+    },
+    "fixtureSha256": {
+      "comparison-fixtures.mjs": "7509f3755638a46be75c777b223ffe4be8520ac323b761ed3dd664fe3faddf55",
+      "photos.json": "4ea557c84811a30910eae0b6e8be97b010e27704fa66aeb1670754baff499a9d",
+      "generate.mjs": "18f9a09f86df2c790f60143830bbff8587f5ac82c1c89ea734ef69aa306bde6d",
+      "photo.mjs": "06c665a630e8bb6b5bf0196d422154cf855c2fc3fd7299195ec1223865ffa1b4",
+      "photo.ts": "d34ab6f88bce5e26342c07a3868577fd73b080379c605e1fd2e8516f85db7bf4",
+      "manifest.json": "ccaa10cce97579506cbeca720fc2752009c5a13fef267a22e59a84d020c0fff9",
+      "png.ts": "b0f276a4c6d667f504ff9f53bf111ebee31f42412299a22bd3a95b6fc6df9e8e"
+    },
+    "typescriptVersion": "5.9.3",
+    "builderSha256": "6589e68d6c5522ff2695c2cacf049482afb110be72dd5ee210947afd0adec432"
+  },
+  "identitySha256": "21aca00a3c08a0d457648353e278909645e2689c800a7f9a39418b938abb1980",
+  "runnerSha256": "3304b91155460e659312957214d025a8886dda79297d1e9dc8cf191fe0f30abc",
+  "rivalLockSha256": "bc7661ac97490c7e65827c49587f7a80ed22c77225fd54f34d9197f0bd6a7e0b",
+  "zxingWasmSha256": "33c8c50be17d0bb05454b4fd3ffb5b5ab9a8e8d1c0ebeb21a1adf4a89c1a8b59",
+  "qrcodeMainSha256": "c1f2fa38779ae32562a32a1392f7f747649d3ec839eebb934950cee25fb1c2b4",
+  "photoOracle": "text only; expected raw QR payload bytes are not supplied",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "count": 1,
+  "failures": [],
+  "rows": [
+    {
+      "name": "perspective-25",
+      "width": 1056,
+      "height": 1056,
+      "inputSha256": "ad5cf7b20a1c7df59b7d35dedca5f14ac2654191dfa833a93593ed61a0f48600",
+      "rgbaSha256": "0bc1872bea694d1edd05db4d271c277bdbb119f476276efd1889b5e4d9d1ef5d",
+      "expectedTextSha256": "b6c0778a17408a7a9ae5bc022fdc31df904cbebc10344fe8611bd8fa3c4502ce",
+      "readers": {
+        "base": {
+          "status": "miss",
+          "textSha256": null,
+          "bytesSha256": null,
+          "text": null,
+          "bytesHex": null
+        },
+        "candidate": {
+          "status": "correct",
+          "textSha256": "b6c0778a17408a7a9ae5bc022fdc31df904cbebc10344fe8611bd8fa3c4502ce",
+          "bytesSha256": "b6c0778a17408a7a9ae5bc022fdc31df904cbebc10344fe8611bd8fa3c4502ce",
+          "text": "S2PEXW8WC",
+          "bytesHex": "533250455857385743"
+        },
+        "zxing": {
+          "status": "correct",
+          "textSha256": "b6c0778a17408a7a9ae5bc022fdc31df904cbebc10344fe8611bd8fa3c4502ce",
+          "bytesSha256": "b6c0778a17408a7a9ae5bc022fdc31df904cbebc10344fe8611bd8fa3c4502ce",
+          "text": "S2PEXW8WC",
+          "bytesHex": "533250455857385743"
+        }
+      }
+    }
+  ]
+}
