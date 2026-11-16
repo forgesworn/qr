@@ -38,32 +38,38 @@ native tests, 89 complete ABI comparisons and 184 photographic comparisons
 passed, but correctness and lower operation counts did not yield a speed gain.
 The [diagnostic, frozen patch and timings](benchmarks/2026-11-16-m4/scored-blocks/README.md)
 are retained; production keeps the original duplicate scan.
+Checking the centre finder-ratio term first was rejected before compilation:
+all 28 diagnostic comparisons passed, but charging the earlier multiplications
+increases modelled noise work by 3.9–4.9%. The
+[fixed-order diagnostic](benchmarks/2026-11-16-m4/ratio-order/README.md) is retained;
+no alternative permutation or production change is included.
 
 The packaged module now uses Rust 1.96.0 with unchanged Rust source. Two paired
-M4 forks reduce clean-frame time by 9.1–9.5%, blank-frame time by 8.3–9.9% and
-gradient time by 9.9–10.6%; main-noise gains are only 0.5–0.6%. The module is
-5,593 bytes smaller at 207,272 bytes. The exact timed binary passes complete
+M4 forks of the final normalised module reduce clean-frame time by 10.5–11.0%,
+blank-frame time by 9.4–9.8% and gradient time by 10.7–11.1%; noise is effectively
+unchanged. The module is 5,697 bytes smaller at 207,168 bytes. The exact timed binary passes complete
 ABI/photo comparisons, Chrome page/worker/character-set/session checks and the
 packed consumer gate. [Compiler qualification](benchmarks/2026-11-16-m4/compiler196/README.md)
 records small mixed tail results and the final provenance.
-The initial Linux rebuild failed its exact-byte/provenance gate; compiler
-delivery qualification remains pending while that mismatch is investigated.
+The initial Linux mismatch was traced to local Rust standard-library source
+paths. The build now canonicalises those paths; the final M4 module matches the
+captured Linux binary byte-for-byte. The strict CI reproduction gate remains.
 
 The latest matched run uses that Rust 1.96.0 WASM (median latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM 3.1.7 |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.511 | 1.936 |
-| Blank 1280×720 RGBA, median ms | 1.143 | 2.084 |
-| Random noise, median ms | 20.192 | 7.536 |
+| Clean 1280×720 RGBA, median ms | 1.588 | 2.050 |
+| Blank 1280×720 RGBA, median ms | 1.189 | 2.149 |
+| Random noise, median ms | 21.183 | 7.883 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
 | Synthetic validation regression set, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 6.752 | 18.511 |
+| Ten-frame moving/changing-payload sequence, median total ms | 6.867 | 19.053 |
 
-The current receipts are [library comparisons](benchmarks/2026-11-16-m4/compiler196/compiler196-libraries.json),
-[tracking sequences](benchmarks/2026-11-16-m4/compiler196/compiler196-sessions.json)
-and [192-case regression results](benchmarks/2026-11-16-m4/compiler196/compiler196-validation.json).
+The current receipts are [library comparisons](benchmarks/2026-11-16-m4/compiler196/compiler196-final-libraries.json),
+[tracking sequences](benchmarks/2026-11-16-m4/compiler196/compiler196-final-sessions.json)
+and [192-case regression results](benchmarks/2026-11-16-m4/compiler196/compiler196-final-validation.json).
 These use the same rival WASM and frame hashes as the earlier seventh-candidate
 run. Different-run absolute timings do not measure either the compiler's gain
 or the frontier's earlier gain: the separate paired runs establish those.
@@ -74,7 +80,7 @@ with the current binary; their receipt is retained with the compiler results.
 Earlier full rival negative-frame comparisons remain in the parent M4
 directory, bound to their recorded binaries and workloads.
 These headline wins use the optional WASM backend: TypeScript alone measured
-4.205 ms clean and 54.420 ms noise in the same run.
+4.367 ms clean and 56.058 ms noise in the same run.
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed

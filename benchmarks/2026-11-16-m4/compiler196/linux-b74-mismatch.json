@@ -1,0 +1,26 @@
+{
+  "assetMatches": false,
+  "provenanceMatches": false,
+  "expected": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "90aea8169b12582a393930c126f91480290efbb5921e307315e1729d13fa43c7",
+    "sha256": "af724c2b9c47a9ad3286cf179e70404236e1bc285f04754a821881219b12d1d6",
+    "bytes": 207272
+  },
+  "actual": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "90aea8169b12582a393930c126f91480290efbb5921e307315e1729d13fa43c7",
+    "sha256": "22ce2eec574d397baced1dada9e14afbaa4a3349f819d3f2af6c788bc8886aec",
+    "bytes": 207168
+  },
+  "expectedAssetSha256": "af724c2b9c47a9ad3286cf179e70404236e1bc285f04754a821881219b12d1d6",
+  "compilerVerbose": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "checkoutRoot": "/home/runner/work/qr/qr/",
+  "firstDifferingByte": 546,
+  "expectedBytesAtDifference": "9190c1000b7f0041a090c1000b07c905",
+  "actualBytesAtDifference": "a98fc1000b7f0041b08fc1000b07c905"
+}
