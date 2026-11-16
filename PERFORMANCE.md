@@ -24,7 +24,8 @@ synthetic stress set.
 - [x] Per-photograph regression gate and independently encoded synthetic
   evaluation; comparisons with jsQR, ZXing-WASM, node-qrcode and native Chrome.
 - [x] Local TypeScript, Kotlin, Rust, WASM, browser and packed-package checks.
-- [ ] Final revision reviewed, PR ready and hosted checks passed.
+- [x] Implementation reviewed and hosted checks passed, including an exact
+  Linux WASM rebuild. The PR tracks the final documentation/tooling revision.
 - [ ] Task-owned scratch and build output cleaned up after evidence is retained.
 
 This library change adds no hosted service, telemetry, camera access or automatic
@@ -205,8 +206,10 @@ supported configuration. No SIMD phone-performance claim is made.
   main/WASM exports, binary bytes, full results and disposal passed. Chrome
   page and worker reads passed using the served asset. The WASM entry alone
   loaded only its image/error helpers, not the TypeScript encoder or decoder.
-- The pinned Rust asset rebuild matches locally. Linux byte-for-byte verification
-  and the final hosted suite remain the delivery gate below.
+- The pinned Rust asset rebuild matches locally and on Linux. All five hosted
+  jobs passed for implementation revision `dae4913`: Node 22.13, Node 24,
+  photographs (TypeScript and Kotlin), Rust/WASM and Kotlin.
+  [Hosted evidence](https://github.com/forgesworn/qr/actions/runs/43781284813).
 
 The next useful investigations are bounded noisy-frame work without losing hard
 reads, better recovery on unseen camera frames, and full character-set support
@@ -216,9 +219,14 @@ not results established by these desktop tests.
 
 ## Delivery state
 
-[PR #4](https://github.com/forgesworn/qr/pull/4) is currently a draft while hosted
-checks run. No merge or npm publication has occurred. Task scratch is temporarily
-retained at `/tmp/qr-performance-Eoi9WV` until the evidence and CI are complete.
-Task-created photo, Rust and Kotlin build output can then be removed; preserve
-pre-existing caches and the neighbouring `qr-release` worktree. No task-created
-browser, local server, emulator or fixture is intentionally left running.
+[PR #4](https://github.com/forgesworn/qr/pull/4) contains the implementation,
+reproduction scripts and results. The PR's current checks are the authority for
+its final documentation/tooling revision. No merge or npm publication is part of
+this handover. No physical-device or fresh camera-corpus result is claimed.
+
+All comparative results needed for review are committed under `benchmarks/`;
+`wasm/` retains the distributed binary and provenance. After the final checks,
+remove task scratch `/tmp/qr-performance-Eoi9WV`, the task-created photograph
+cache, `rust/target`, and `kotlin/core/build`. Preserve pre-existing caches, the
+main checkout/branch and the neighbouring `qr-release` worktree. Browser runners
+stop their browser/server and remove profiles; no emulator or fixture was started.

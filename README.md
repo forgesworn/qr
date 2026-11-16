@@ -23,8 +23,7 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
 - **Careful by design:** the decoder is built to return nothing rather than
   a wrong text, which matters for payment links and sign-in codes.
 - **Small and plain:** no runtime dependencies, ESM with types, tree
-  shaking. Minified and gzipped: about 6 kB to encode and draw SVG, 14 kB
-  to decode, 18 kB for everything.
+  shaking. WebAssembly is available through a separate optional import.
 - **Portable:** Kotlin and Rust ports are in this repository, checked
   against the same vectors, and [SPEC.md](SPEC.md) with
   [test vectors](vectors/README.md) lets other languages match it exactly.
