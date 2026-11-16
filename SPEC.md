@@ -442,11 +442,11 @@ tolerance 0.5 and once with 0.8 in each polarity.
    directly from row boundaries. Their starting run advances by two after
    rejection or six after acceptance; initial light runs cannot begin a
    candidate, and a final dark run still ends at `width`.
-   Rust finds the same row boundaries eight adjacent byte comparisons at
-   a time, using two little-endian words and XOR. Each non-zero byte emits
-   one boundary in left-to-right order, then is cleared in full; remaining
-   pixels are compared individually. Row boundaries and work counts are
-   unchanged.
+   TypeScript and Rust find the same row boundaries four and eight adjacent
+   byte comparisons at a time respectively, using two little-endian words
+   and XOR. Each non-zero byte emits one boundary in left-to-right order,
+   then is cleared in full; remaining pixels are compared individually.
+   Row boundaries and work counts are unchanged.
 3. Ratio test with a tolerance: all five counts non-zero and their total at
    least 7; with `module = total / 7` and `slack = module * tolerance`, each
    outer count is under `slack` from `module` and the centre count under

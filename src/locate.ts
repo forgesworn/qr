@@ -61,19 +61,24 @@ export function edgesOf(image: BitImage): Edges {
   const { data, width, height } = image
   const rows: (Int32Array | undefined)[] = new Array<Int32Array | undefined>(height)
   const scratch = new Int32Array(width)
+  const words = new DataView(data.buffer, data.byteOffset, data.byteLength)
   return {
     row: (y) => {
       let edges = rows[y]
       if (edges === undefined) {
         const start = y * width
         let n = 0
-        let ink = data[start]!
-        for (let x = 1; x < width; x++) {
-          const v = data[start + x]!
-          if (v !== ink) {
-            scratch[n++] = x
-            ink = v
+        let x = 1
+        for (; x + 4 <= width; x += 4) {
+          let changed = words.getUint32(start + x - 1, true) ^ words.getUint32(start + x, true)
+          while (changed !== 0) {
+            const byte = (31 - Math.clz32(changed & -changed)) >>> 3
+            scratch[n++] = x + byte
+            changed &= ~(255 << (byte * 8))
           }
+        }
+        for (; x < width; x++) {
+          if (data[start + x] !== data[start + x - 1]) scratch[n++] = x
         }
         edges = scratch.slice(0, n)
         rows[y] = edges

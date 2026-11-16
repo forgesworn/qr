@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { binarise } from '../src/binarise.js'
-import { findFinders, finderTriples, locate, type Work } from '../src/locate.js'
+import { edgesOf, findFinders, finderTriples, locate, type Work } from '../src/locate.js'
 import { readPng } from './png.js'
 
 const finders = [
@@ -29,5 +29,28 @@ describe('finder and alignment row runs', () => {
     expect(maps[0]?.alignment).toEqual(alignment)
     expect(maps.map((map) => map.size)).toEqual(alignment ? [37, 37] : [])
     expect(work).toEqual({ steps, compared, scanned, maps: 0, second: 0, meshes: 0, probed: 0 })
+  })
+})
+
+describe('row edges', () => {
+  it('matches adjacent bytes across word tails, offsets and cached row order', () => {
+    let seed = 0x2473a6bf
+    for (let width = 1; width <= 257; width++) for (const offset of [0, 1, 3, 7]) for (const pattern of ['bytes', 'binary', 'stripes'] as const) {
+      const height = 4
+      const backing = new Uint8Array(offset + width * height + 5)
+      for (let i = 0; i < backing.length; i++) {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0
+        backing[i] = pattern === 'bytes' ? seed >>> 24 : pattern === 'binary' ? seed >>> 31 : i % 2 ? 255 : 0
+      }
+      const data = backing.subarray(offset, offset + width * height)
+      const edges = edgesOf({ data, width, height })
+      for (const y of [3, 0, 2, 3, 1, 0]) {
+        const expected: number[] = []
+        for (let x = 1; x < width; x++) if (data[y * width + x] !== data[y * width + x - 1]) expected.push(x)
+        const row = edges.row(y)
+        expect([...row], `width ${width}, offset ${offset}, ${pattern}, row ${y}`).toEqual(expected)
+        expect(edges.row(y)).toBe(row)
+      }
+    }
   })
 })
