@@ -1,0 +1,72 @@
+name: release JSR package
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing stable release tag whose library sources are being packaged
+        type: string
+        required: true
+      dry_run:
+        description: Verify the package without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-jsr
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: jsr-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Packaging may be added after a release. The source check below requires
+      # the library and WASM to remain identical to the selected release tag.
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: npm
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: v2.9.8
+      - name: Check release identity and unchanged library sources
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/verify-registry-source.py "$RELEASE_TAG" jsr
+      - run: npm ci
+      - run: npm run fetch-photos
+      - run: npm run check
+        env:
+          QR_REQUIRE_PHOTOS: '1'
+      - name: Prepare the source package
+        run: node scripts/prepare-jsr.mjs --out "$RUNNER_TEMP/qr-jsr"
+      - name: Verify strict types and Deno consumer
+        run: node scripts/check-jsr.mjs --stage "$RUNNER_TEMP/qr-jsr"
+      - name: Publish with GitHub OIDC and provenance
+        if: ${{ !inputs.dry_run }}
+        working-directory: ${{ runner.temp }}/qr-jsr
+        run: deno publish --sloppy-imports
+      - name: Verify public Deno and npm compatibility consumers
+        if: ${{ !inputs.dry_run }}
+        run: node scripts/verify-jsr-publication.mjs --stage "$RUNNER_TEMP/qr-jsr"
+      - name: Retain package identity
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: jsr-package-identity
+          include-hidden-files: true
+          path: ${{ runner.temp }}/qr-jsr/.stage-manifest.json
+          retention-days: 30

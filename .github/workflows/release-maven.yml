@@ -1,0 +1,146 @@
+name: release Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing stable release tag with identical Kotlin library sources
+        type: string
+        required: true
+      dry_run:
+        description: Build and verify unsigned artefacts without uploading
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-maven-central
+  cancel-in-progress: false
+
+jobs:
+  dry-run:
+    if: ${{ inputs.dry_run }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      QR_REQUIRE_PHOTOS: '1'
+    steps:
+      # Keep new registry packaging from this workflow revision, not the old tag.
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind library sources to the stable release
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/verify-registry-source.py "$RELEASE_TAG" maven
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '24'
+      - run: npm run fetch-photos
+      - name: Test and stage unsigned publication
+        env:
+          MAVEN_GPG_PRIVATE_KEY: ''
+          MAVEN_GPG_PASSPHRASE: ''
+        run: ./kotlin/gradlew --project-dir kotlin --no-daemon --max-workers=2 --console=plain test publishAllPublicationsToStagingRepository
+      - run: python3 scripts/check-maven.py
+      - run: python3 scripts/publish-maven.py --dry-run
+      - name: Retain unsigned artefacts and verification reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: maven-dry-run-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            kotlin/build/staging-deploy/
+            kotlin/build/central-publication/
+            kotlin/core/build/reports/tests/
+          retention-days: 7
+          if-no-files-found: warn
+
+  publish:
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    environment: maven-central
+    outputs:
+      deployment_id: ${{ steps.central.outputs.deployment_id }}
+      deployment_state: ${{ steps.central.outputs.deployment_state }}
+    env:
+      QR_REQUIRE_PHOTOS: '1'
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind library sources to the stable release
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/verify-registry-source.py "$RELEASE_TAG" maven
+      - name: Check publication configuration before building
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          for key in ['CENTRAL_USERNAME', 'CENTRAL_PASSWORD', 'MAVEN_GPG_PRIVATE_KEY', 'MAVEN_GPG_PASSPHRASE']:
+              assert os.environ.get(key), f'Missing maven-central environment secret: {key}'
+          assert Path('kotlin/signing-key.asc').is_file(), 'Missing reviewed release public key'
+          PY
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '24'
+      - name: Import the reviewed public verification key
+        run: |
+          keyring=$(mktemp -d "$RUNNER_TEMP/qr-maven-gpg.XXXXXX")
+          chmod 700 "$keyring"
+          echo "GNUPGHOME=$keyring" >> "$GITHUB_ENV"
+          gpg --homedir "$keyring" --batch --import kotlin/signing-key.asc
+      - run: npm run fetch-photos
+      - name: Test, sign and stage publication
+        env:
+          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: ./kotlin/gradlew --project-dir kotlin --no-daemon --max-workers=2 --console=plain test publishAllPublicationsToStagingRepository
+      - run: python3 scripts/check-maven.py
+      - name: Verify signatures, upload once, validate and publish
+        id: central
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+        run: python3 scripts/publish-maven.py --publish
+      - name: Verify public artefacts and Maven Central consumer
+        run: python3 scripts/verify-maven-publication.py
+      - name: Retain signed bundle and deployment identity even after failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: maven-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            kotlin/build/staging-deploy/
+            kotlin/build/central-publication/
+            kotlin/core/build/reports/tests/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Remove temporary verification keyring
+        if: always()
+        run: |
+          if [[ -n "${GNUPGHOME:-}" && "$GNUPGHOME" == "$RUNNER_TEMP"/qr-maven-gpg.* ]]; then
+            gpgconf --homedir "$GNUPGHOME" --kill all || true
+            rm -rf -- "$GNUPGHOME"
+          fi

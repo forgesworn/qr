@@ -71,6 +71,18 @@ ESM only (`import`, not `require`). Node.js 22.13 or later, or any browser
 with ES2022 modules. Types are included. The API is still pre-1.0, so pin
 the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
+JSR uses the same TypeScript API, including the optional WASM entry point:
+
+```ts
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.0'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.0/wasm'
+```
+
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.0` adds the package to your
+configuration. Continue to use npm for the ordinary Node/bundler installation.
+See [distribution](docs/DISTRIBUTION.md) for registry publication status and
+verification.
+
 ## Recipes: making codes
 
 The recipes show the imports and operations needed for each integration.
@@ -696,6 +708,16 @@ package `dev.forgesworn.qr`, JVM 17, no dependencies beyond the Kotlin standard
 library). It is checked against the same vectors and frames as the TypeScript
 library, and gives the same results. The sources are in
 `kotlin/core/src/main/kotlin` and are written to be vendored as they stand.
+
+For the Maven Central distribution, configure Gradle with:
+
+```kotlin
+repositories { mavenCentral() }
+dependencies { implementation("io.github.forgesworn:qr:0.3.0") }
+```
+
+See [distribution](docs/DISTRIBUTION.md) for publication status. The Maven group
+is `io.github.forgesworn`; the Kotlin import package remains `dev.forgesworn.qr`.
 
 ```kotlin
 import dev.forgesworn.qr.*

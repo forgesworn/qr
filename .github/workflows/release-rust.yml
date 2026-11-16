@@ -11,6 +11,10 @@ on:
         description: First publication using the temporary environment secret
         type: boolean
         default: false
+      verify_only:
+        description: Verify trusted publishing authentication without uploading a version
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -52,25 +56,36 @@ jobs:
           assert not release['isDraft'] and not release['isPrerelease']
           PY
       - run: rustup toolchain install 1.96.0 --profile minimal
+        if: ${{ !inputs.verify_only }}
       - run: rustup override set 1.96.0
+        if: ${{ !inputs.verify_only }}
       - run: cargo test --locked --all-features
+        if: ${{ !inputs.verify_only }}
       - name: Verify the standalone crate
+        if: ${{ !inputs.verify_only }}
         run: |
           cargo package --locked
           version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')
           cargo test --locked --lib --manifest-path "target/package/forgesworn-qr-$version/Cargo.toml" --target-dir "$PWD/target"
           cargo test --locked --doc --manifest-path "target/package/forgesworn-qr-$version/Cargo.toml" --target-dir "$PWD/target"
       - name: Obtain a short-lived publishing token
-        if: ${{ !inputs.bootstrap }}
+        if: ${{ !inputs.bootstrap || inputs.verify_only }}
         id: auth
         uses: rust-lang/crates-io-auth-action@3268eb413133e2960fa4ae0e963ca76380c54cd9 # v1.0.6
       - name: Publish through trusted publishing
-        if: ${{ !inputs.bootstrap }}
+        if: ${{ !inputs.bootstrap && !inputs.verify_only }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
         run: cargo publish --locked
       - name: Publish the first version
-        if: ${{ inputs.bootstrap }}
+        if: ${{ inputs.bootstrap && !inputs.verify_only }}
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         run: cargo publish --locked
+      - name: Confirm trusted publishing authentication
+        if: ${{ inputs.verify_only }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: |
+          test -n "$CARGO_REGISTRY_TOKEN"
+          echo "crates.io issued a short-lived publishing token for this workflow and environment; no version uploaded"
