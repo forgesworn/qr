@@ -401,7 +401,8 @@ planes; reduction sums remain integers until the specified final rounding.
 This representation does not change luminance values, stage results or work
 counts.
 
-Kotlin uses five local integer counters per cross-check and reuses the
+TypeScript and Kotlin use five local counters per cross-check, retaining
+each port's number type and arithmetic order. Kotlin reuses the
 module-sampling buffer within each picture-size search. The active module
 region is reset before every use. This buffer is local to the decode call;
 returned payloads and retained retry locations do not refer to it.

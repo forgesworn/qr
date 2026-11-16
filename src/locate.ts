@@ -103,11 +103,10 @@ function distance(a: Point, b: Point): number {
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
 function finderRatio(counts: readonly number[], tolerance = 0.5): boolean {
-  const c0 = counts[0]!
-  const c1 = counts[1]!
-  const c2 = counts[2]!
-  const c3 = counts[3]!
-  const c4 = counts[4]!
+  return finderRatioScalars(counts[0]!, counts[1]!, counts[2]!, counts[3]!, counts[4]!, tolerance)
+}
+
+function finderRatioScalars(c0: number, c1: number, c2: number, c3: number, c4: number, tolerance: number): boolean {
   if (c0 === 0 || c1 === 0 || c2 === 0 || c3 === 0 || c4 === 0) return false
   const total = c0 + c1 + c2 + c3 + c4
   if (total < 7) return false
@@ -140,82 +139,68 @@ function crossCheck(
   tolerance = 0.5,
   work?: Work,
 ): number {
-  const counts = [0, 0, 0, 0, 0]
+  let c0 = 0, c1 = 0, c2 = 0, c3 = 0, c4 = 0
   try {
-    return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+    const { width, height } = image
+    const inside = (px: number, py: number) => px >= 0 && py >= 0 && px < width && py < height
+    // A centre run past these lengths could not pass the checks below, so
+    // stopping there loses nothing and keeps a long dark stripe from costing its
+    // length. Back along the row or down the column, the total would be more
+    // than twice the row's. On the diagonal, whose four outer runs stop at
+    // maxCount, a centre in proportion is under 29 times maxCount (at the
+    // loosest tolerance, 1.05).
+    const longest = dx && dy ? 32 * (maxCount + 1) : 2 * originalTotal
+    let px = x
+    let py = y
+    while (inside(px, py) && dark(image, px, py)) {
+      if (++c2 > longest) return NaN
+      px -= dx
+      py -= dy
+    }
+    while (inside(px, py) && !dark(image, px, py) && c1 <= maxCount) {
+      c1++
+      px -= dx
+      py -= dy
+    }
+    if (!inside(px, py) || c1 > maxCount) return NaN
+    while (inside(px, py) && dark(image, px, py) && c0 <= maxCount) {
+      c0++
+      px -= dx
+      py -= dy
+    }
+    if (c0 > maxCount) return NaN
+    px = x + dx
+    py = y + dy
+    while (inside(px, py) && dark(image, px, py)) {
+      if (++c2 > longest) return NaN
+      px += dx
+      py += dy
+    }
+    while (inside(px, py) && !dark(image, px, py) && c3 < maxCount) {
+      c3++
+      px += dx
+      py += dy
+    }
+    if (!inside(px, py) || c3 >= maxCount) return NaN
+    while (inside(px, py) && dark(image, px, py) && c4 < maxCount) {
+      c4++
+      px += dx
+      py += dy
+    }
+    if (c4 >= maxCount) return NaN
+    const total = c0 + c1 + c2 + c3 + c4
+    // A diagonal crosses the pattern at a longer stretch, so only straight lines
+    // compare totals. Back along the row the stretch must match; down the column,
+    // perspective can make the pattern up to twice as tall as wide, or half.
+    if (dx && !dy && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
+    if (dy && !dx && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return NaN
+    if (!finderRatioScalars(c0, c1, c2, c3, c4, tolerance)) return NaN
+    // Position along the line, measured in steps from the start point.
+    const end = dx !== 0 ? px - x : py - y
+    return end * (dx + dy > 0 ? 1 : -1) - c4 - c3 - c2 / 2
   } finally {
-    if (work) work.steps += counts[0]! + counts[1]! + counts[2]! + counts[3]! + counts[4]!
+    if (work) work.steps += c0 + c1 + c2 + c3 + c4
   }
-}
-
-function runs(
-  image: BitImage,
-  x: number,
-  y: number,
-  dx: number,
-  dy: number,
-  maxCount: number,
-  originalTotal: number,
-  tolerance: number,
-  counts: number[],
-): number {
-  const { width, height } = image
-  const inside = (px: number, py: number) => px >= 0 && py >= 0 && px < width && py < height
-  // A centre run past these lengths could not pass the checks below, so
-  // stopping there loses nothing and keeps a long dark stripe from costing its
-  // length. Back along the row or down the column, the total would be more
-  // than twice the row's. On the diagonal, whose four outer runs stop at
-  // maxCount, a centre in proportion is under 29 times maxCount (at the
-  // loosest tolerance, 1.05).
-  const longest = dx && dy ? 32 * (maxCount + 1) : 2 * originalTotal
-  let px = x
-  let py = y
-  while (inside(px, py) && dark(image, px, py)) {
-    if (++counts[2]! > longest) return NaN
-    px -= dx
-    py -= dy
-  }
-  while (inside(px, py) && !dark(image, px, py) && counts[1]! <= maxCount) {
-    counts[1]!++
-    px -= dx
-    py -= dy
-  }
-  if (!inside(px, py) || counts[1]! > maxCount) return NaN
-  while (inside(px, py) && dark(image, px, py) && counts[0]! <= maxCount) {
-    counts[0]!++
-    px -= dx
-    py -= dy
-  }
-  if (counts[0]! > maxCount) return NaN
-  px = x + dx
-  py = y + dy
-  while (inside(px, py) && dark(image, px, py)) {
-    if (++counts[2]! > longest) return NaN
-    px += dx
-    py += dy
-  }
-  while (inside(px, py) && !dark(image, px, py) && counts[3]! < maxCount) {
-    counts[3]!++
-    px += dx
-    py += dy
-  }
-  if (!inside(px, py) || counts[3]! >= maxCount) return NaN
-  while (inside(px, py) && dark(image, px, py) && counts[4]! < maxCount) {
-    counts[4]!++
-    px += dx
-    py += dy
-  }
-  if (counts[4]! >= maxCount) return NaN
-  const total = counts[0]! + counts[1]! + counts[2]! + counts[3]! + counts[4]!
-  // A diagonal crosses the pattern at a longer stretch, so only straight lines
-  // compare totals. Back along the row the stretch must match; down the column,
-  // perspective can make the pattern up to twice as tall as wide, or half.
-  if (dx && !dy && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
-  if (dy && !dx && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return NaN
-  if (!finderRatio(counts, tolerance)) return NaN
-  // Position along the line, measured in steps from the start point.
-  const end = dx !== 0 ? px - x : py - y
-  return centreFromEnd(counts, end * (dx + dy > 0 ? 1 : -1))
 }
 
 /**
