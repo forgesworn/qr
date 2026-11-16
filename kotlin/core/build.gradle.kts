@@ -46,3 +46,20 @@ tasks.register<JavaExec>("compareZxing") {
         args(providers.gradleProperty("qrBenchmarkOutput").get())
     }
 }
+
+// Development only: paired reads of two explicitly supplied library jars.
+tasks.register<JavaExec>("compareQrJars") {
+    dependsOn(tasks.testClasses)
+    mainClass.set("dev.forgesworn.qr.PairedPerformanceMainKt")
+    classpath = sourceSets.test.get().runtimeClasspath
+    workingDir(rootProject.projectDir.parentFile)
+    minHeapSize = "512m"
+    maxHeapSize = "512m"
+    doFirst {
+        args(
+            providers.gradleProperty("qrBaselineJar").get(),
+            providers.gradleProperty("qrCurrentJar").get(),
+            providers.gradleProperty("qrBenchmarkOutput").get(),
+        )
+    }
+}

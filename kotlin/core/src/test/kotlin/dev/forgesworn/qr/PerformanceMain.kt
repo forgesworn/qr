@@ -16,9 +16,9 @@ import java.util.jar.JarFile
 import kotlin.math.ceil
 
 /** Paired JVM measurements, separate from unit tests and the published library. */
-private data class BenchFrame(val name: String, val data: ByteArray, val width: Int, val height: Int, val expected: String? = null, val byteSegments: List<ByteArray> = emptyList())
+internal data class BenchFrame(val name: String, val data: ByteArray, val width: Int, val height: Int, val expected: String? = null, val byteSegments: List<ByteArray> = emptyList())
 
-private fun frames(): List<BenchFrame> {
+internal fun frames(): List<BenchFrame> {
     val width = 1280
     val height = 720
     val text = "https://example.com/performance/0123456789"
@@ -64,16 +64,16 @@ private fun reference(frame: BenchFrame): Result? {
     return null
 }
 
-private fun hash(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+internal fun hash(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
 
-private fun command(vararg args: String): String {
+internal fun command(vararg args: String): String {
     val process = ProcessBuilder(*args).redirectErrorStream(true).start()
     val result = process.inputStream.bufferedReader().readText().trim()
     check(process.waitFor() == 0) { "Command failed: ${args.first()}" }
     return result
 }
 
-private fun json(value: Any?): String = when (value) {
+internal fun json(value: Any?): String = when (value) {
     null -> "null"
     is String -> buildString {
         append('"')
