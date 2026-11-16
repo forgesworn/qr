@@ -48,9 +48,13 @@ impl Default for TerminalOptions {
 
 /// Renders a code as a standalone SVG document, one module per user unit and
 /// one path for all dark modules.
+///
+/// # Panics
+/// Panics if the side including margins cannot be represented by `usize`.
+/// `qr` must be an unmodified code returned by the encoder.
 pub fn to_svg(qr: &QrCode, options: &SvgOptions) -> String {
     let margin = options.margin;
-    let side = qr.size + margin.saturating_mul(2);
+    let side = render_side(qr.size, margin);
     let dark = escape(&options.dark);
     let mut path = String::new();
     for y in 0..qr.size {
@@ -104,10 +108,15 @@ const BLOCKS: [char; 4] = [' ', '\u{2580}', '\u{2584}', '\u{2588}']; // none, up
 
 /// Renders a code as text, two module rows per line with half-block
 /// characters, one line per row pair and no trailing newline.
+///
+/// # Panics
+/// Panics if the side including margins cannot be represented by `usize`.
+/// Output grows with the square of that side; callers must bound margins
+/// from untrusted input. `qr` must be an unmodified code from the encoder.
 pub fn to_terminal(qr: &QrCode, options: &TerminalOptions) -> String {
     let margin = options.margin;
     let ink_is_light = options.ink == Ink::Light;
-    let side = qr.size + margin.saturating_mul(2);
+    let side = render_side(qr.size, margin);
     let inked = |x: usize, y: usize| -> bool {
         let dark = x >= margin && y >= margin && x - margin < qr.size && y - margin < qr.size && qr.modules[(y - margin) * qr.size + (x - margin)] == 1;
         dark != ink_is_light
@@ -125,4 +134,30 @@ pub fn to_terminal(qr: &QrCode, options: &TerminalOptions) -> String {
         y += 2;
     }
     lines.join("\n")
+}
+
+fn render_side(size: usize, margin: usize) -> usize {
+    margin.checked_mul(2).and_then(|quiet| size.checked_add(quiet))
+        .expect("QR render dimensions overflow usize")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::encode::{encode, Options};
+
+    #[test]
+    fn checked_side_accepts_the_last_representable_dimension() {
+        assert_eq!(render_side(21, 4), 29);
+        assert_eq!(render_side(21, (usize::MAX - 21) / 2), usize::MAX);
+    }
+
+    #[test]
+    fn both_renderers_reject_multiplication_and_addition_overflow() {
+        let qr = encode("A", &Options::default()).unwrap();
+        for margin in [usize::MAX, (usize::MAX - qr.size) / 2 + 1] {
+            assert!(std::panic::catch_unwind(|| to_svg(&qr, &SvgOptions { margin, ..Default::default() })).is_err());
+            assert!(std::panic::catch_unwind(|| to_terminal(&qr, &TerminalOptions { margin, ..Default::default() })).is_err());
+        }
+    }
 }

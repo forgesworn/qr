@@ -1,0 +1,15 @@
+{
+  "revision": "fabe7f295c6ceffecb96f62d4585a59784838c8c",
+  "patchSha256": "6d91c107fb6099be48ca21254bd75555eabbff31116d492f673b6d1fd07ac34b",
+  "kotlinSourceSha256": "7ad036bf05709d5fd2d64962bd5a4e9454f076b2d8f478a1ade3e6d593becf43",
+  "jarSha256": "cbc265e1473039d32cfc21080249689a8ce23bdfa0a4062750831a861924268e",
+  "tests": {
+    "tests": 118,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "photoReport": "photographs: Kotlin 179/184, reference decoder 159/184, TypeScript baseline 179\ns1-qrcode-4-13\ns1-qrcode-4-30\ns1-qrcode-4-33\ns2-qrcode-2-_940\ns2-qrcode-2-high-res-1\n",
+  "javaHome": "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home",
+  "build": "QR_REQUIRE_PHOTOS=1 ./gradlew :core:test :core:jar --console=plain --no-daemon --max-workers=2"
+}

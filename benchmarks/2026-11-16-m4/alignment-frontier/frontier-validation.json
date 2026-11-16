@@ -1,0 +1,1723 @@
+{
+  "revision": "60cf67acd180f0a5968856cb9e0fd2f518d63322",
+  "dirty": true,
+  "cpu": "Apple M4 Max",
+  "arch": "arm64",
+  "node": "v24.21.0",
+  "loadBefore": [
+    1.72998046875,
+    1.56982421875,
+    1.611328125
+  ],
+  "versions": {
+    "qrcode": "1.5.4",
+    "zxing": "3.1.7"
+  },
+  "options": {
+    "formats": [
+      "QRCode"
+    ],
+    "maxNumberOfSymbols": 1,
+    "tryHarder": true,
+    "tryRotate": true,
+    "tryInvert": true,
+    "tryDownscale": true,
+    "textMode": "Plain"
+  },
+  "javascriptSha256": "3b43bbf7f6f4ebe260a3b1c2ea1b413e7546401363d3b04e526663b76a8410c5",
+  "baselineJavascriptSha256": "3b43bbf7f6f4ebe260a3b1c2ea1b413e7546401363d3b04e526663b76a8410c5",
+  "wasmSha256": "d41c7e06bd693c51cb4c3f7fbb4df1a79ae6853aa58b2160b1817fb739fc427d",
+  "baselineWasmSha256": "33a95f2de8d70d61eeef76b8c23eb251e1f748d15f43fa30e6ff90546f983115",
+  "zxingWasmSha256": "33c8c50be17d0bb05454b4fd3ffb5b5ab9a8e8d1c0ebeb21a1adf4a89c1a8b59",
+  "externalLockSha256": "d6e21adcd75706590fccca3640a5e3abe8f7952981b4cc382ab334ed7f123c69",
+  "seed": "0x6d3a217b",
+  "count": 192,
+  "rgbaSha256": "3b29578ad06498c0721cb76ae0725ae216d8f61005a6eabc35b09e01aa107ccf",
+  "scores": {
+    "baselineTypescript": {
+      "correct": 172,
+      "missed": [
+        "validation-11",
+        "validation-15",
+        "validation-32",
+        "validation-33",
+        "validation-47",
+        "validation-51",
+        "validation-59",
+        "validation-71",
+        "validation-105",
+        "validation-107",
+        "validation-119",
+        "validation-123",
+        "validation-128",
+        "validation-131",
+        "validation-143",
+        "validation-155",
+        "validation-167",
+        "validation-179",
+        "validation-183",
+        "validation-184"
+      ],
+      "wrong": [],
+      "totalMs": 1045.2368770000003
+    },
+    "baselineWasm": {
+      "correct": 172,
+      "missed": [
+        "validation-11",
+        "validation-15",
+        "validation-32",
+        "validation-33",
+        "validation-47",
+        "validation-51",
+        "validation-59",
+        "validation-71",
+        "validation-105",
+        "validation-107",
+        "validation-119",
+        "validation-123",
+        "validation-128",
+        "validation-131",
+        "validation-143",
+        "validation-155",
+        "validation-167",
+        "validation-179",
+        "validation-183",
+        "validation-184"
+      ],
+      "wrong": [],
+      "totalMs": 386.65462699999864
+    },
+    "typescript": {
+      "correct": 172,
+      "missed": [
+        "validation-11",
+        "validation-15",
+        "validation-32",
+        "validation-33",
+        "validation-47",
+        "validation-51",
+        "validation-59",
+        "validation-71",
+        "validation-105",
+        "validation-107",
+        "validation-119",
+        "validation-123",
+        "validation-128",
+        "validation-131",
+        "validation-143",
+        "validation-155",
+        "validation-167",
+        "validation-179",
+        "validation-183",
+        "validation-184"
+      ],
+      "wrong": [],
+      "totalMs": 1034.0619190000016
+    },
+    "wasm": {
+      "correct": 172,
+      "missed": [
+        "validation-11",
+        "validation-15",
+        "validation-32",
+        "validation-33",
+        "validation-47",
+        "validation-51",
+        "validation-59",
+        "validation-71",
+        "validation-105",
+        "validation-107",
+        "validation-119",
+        "validation-123",
+        "validation-128",
+        "validation-131",
+        "validation-143",
+        "validation-155",
+        "validation-167",
+        "validation-179",
+        "validation-183",
+        "validation-184"
+      ],
+      "wrong": [],
+      "totalMs": 387.50958099999866
+    },
+    "zxing": {
+      "correct": 169,
+      "missed": [
+        "validation-11",
+        "validation-15",
+        "validation-23",
+        "validation-40",
+        "validation-47",
+        "validation-51",
+        "validation-59",
+        "validation-71",
+        "validation-80",
+        "validation-100",
+        "validation-107",
+        "validation-119",
+        "validation-123",
+        "validation-131",
+        "validation-143",
+        "validation-155",
+        "validation-156",
+        "validation-159",
+        "validation-164",
+        "validation-167",
+        "validation-179",
+        "validation-183",
+        "validation-191"
+      ],
+      "wrong": [],
+      "totalMs": 133.68421399999818
+    }
+  },
+  "regressions": {
+    "typescript": [],
+    "wasm": []
+  },
+  "outcomes": [
+    {
+      "name": "validation-0",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-1",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-2",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-3",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-4",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-5",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-6",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-7",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-8",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-9",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-10",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-11",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed"
+    },
+    {
+      "name": "validation-12",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-13",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-14",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-15",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed"
+    },
+    {
+      "name": "validation-16",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-17",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-18",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-19",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-20",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-21",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-22",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-23",
+      "wasm": "correct",
+      "zxing": "missed",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-24",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-25",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-26",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-27",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-28",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-29",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-30",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-31",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-32",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "correct",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed"
+    },
+    {
+      "name": "validation-33",
+      "wasm": "missed",
+      "zxing": "correct",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed"
+    },
+    {
+      "name": "validation-34",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-35",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-36",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-37",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-38",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-39",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-40",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "missed"
+    },
+    {
+      "name": "validation-41",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-42",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-43",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-44",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-45",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-46",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-47",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed"
+    },
+    {
+      "name": "validation-48",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-49",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-50",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-51",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed"
+    },
+    {
+      "name": "validation-52",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-53",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-54",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-55",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-56",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-57",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-58",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-59",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed"
+    },
+    {
+      "name": "validation-60",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-61",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-62",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-63",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-64",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-65",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-66",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-67",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-68",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-69",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-70",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-71",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed"
+    },
+    {
+      "name": "validation-72",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-73",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-74",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-75",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-76",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-77",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-78",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-79",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-80",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "missed"
+    },
+    {
+      "name": "validation-81",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-82",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-83",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-84",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-85",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-86",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-87",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-88",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-89",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-90",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-91",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-92",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-93",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-94",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-95",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-96",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-97",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-98",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-99",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-100",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "missed"
+    },
+    {
+      "name": "validation-101",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-102",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-103",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-104",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-105",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-106",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-107",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed"
+    },
+    {
+      "name": "validation-108",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-109",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-110",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-111",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-112",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-113",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-114",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-115",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-116",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-117",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-118",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-119",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed"
+    },
+    {
+      "name": "validation-120",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-121",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-122",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-123",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed"
+    },
+    {
+      "name": "validation-124",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-125",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-126",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-127",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-128",
+      "wasm": "missed",
+      "zxing": "correct",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed"
+    },
+    {
+      "name": "validation-129",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-130",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-131",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed"
+    },
+    {
+      "name": "validation-132",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-133",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-134",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-135",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-136",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-137",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-138",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-139",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-140",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-141",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-142",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-143",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed"
+    },
+    {
+      "name": "validation-144",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-145",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-146",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-147",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-148",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-149",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-150",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-151",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-152",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-153",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-154",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-155",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed"
+    },
+    {
+      "name": "validation-156",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "missed",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-157",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-158",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-159",
+      "zxing": "missed",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-160",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-161",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-162",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-163",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-164",
+      "zxing": "missed",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-165",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-166",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-167",
+      "typescript": "missed",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed"
+    },
+    {
+      "name": "validation-168",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-169",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-170",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-171",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-172",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-173",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-174",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-175",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-176",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-177",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-178",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-179",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed"
+    },
+    {
+      "name": "validation-180",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-181",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-182",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-183",
+      "wasm": "missed",
+      "zxing": "missed",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed"
+    },
+    {
+      "name": "validation-184",
+      "zxing": "correct",
+      "baselineTypescript": "missed",
+      "baselineWasm": "missed",
+      "typescript": "missed",
+      "wasm": "missed"
+    },
+    {
+      "name": "validation-185",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-186",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct"
+    },
+    {
+      "name": "validation-187",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct"
+    },
+    {
+      "name": "validation-188",
+      "wasm": "correct",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct"
+    },
+    {
+      "name": "validation-189",
+      "zxing": "correct",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct"
+    },
+    {
+      "name": "validation-190",
+      "baselineTypescript": "correct",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "correct"
+    },
+    {
+      "name": "validation-191",
+      "baselineWasm": "correct",
+      "typescript": "correct",
+      "wasm": "correct",
+      "zxing": "missed",
+      "baselineTypescript": "correct"
+    }
+  ],
+  "loadAfter": [
+    1.75146484375,
+    1.57666015625,
+    1.61328125
+  ]
+}

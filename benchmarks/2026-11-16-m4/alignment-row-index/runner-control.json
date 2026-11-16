@@ -1,0 +1,117 @@
+{
+  "revision": "497d12a91742899fe8ed2801c81bd720398cb94c",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "cpu": "Apple M1",
+  "loadBefore": [
+    95.27294921875,
+    56.38232421875,
+    38.740234375
+  ],
+  "hashes": {
+    "before": "33a95f2de8d70d61eeef76b8c23eb251e1f748d15f43fa30e6ff90546f983115",
+    "after": "33a95f2de8d70d61eeef76b8c23eb251e1f748d15f43fa30e6ff90546f983115"
+  },
+  "bytes": {
+    "before": 212269,
+    "after": 212269
+  },
+  "harnessSha256": "30ede7adec5c860cc0f7c9fd006318ad035c55bc2606e49759f105849c400b58",
+  "fixturesSha256": "7509f3755638a46be75c777b223ffe4be8520ac323b761ed3dd664fe3faddf55",
+  "minimumWarmup": 20,
+  "minimumWarmupMs": 1000,
+  "rounds": 60,
+  "validation": "Complete results and unchanged frame bytes; outside timing",
+  "rows": [
+    {
+      "name": "clean",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "fa11541828a9cd172d3d08c9f9a0c4588dd69dcffafa21cc92b53e02bd0e3e8a",
+      "warmupRounds": 44
+    },
+    {
+      "name": "blank",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "86c54487903d6066f37a9f1436221ebb267ad66a861dcd892dd5d20aa456c971",
+      "warmupRounds": 41
+    },
+    {
+      "name": "noise",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "a8f45cdbc1cf37281e9dcc8da4f65db2f662778802cbee394208d97bbe31889f",
+      "warmupRounds": 20
+    },
+    {
+      "name": "noise-512x512-49ad7e32",
+      "width": 512,
+      "height": 512,
+      "rgbaSha256": "036353788335ddea525b9f4446059dcf7bf7d87b795cc01aca969058580da096",
+      "warmupRounds": 20
+    },
+    {
+      "name": "noise-512x512-fe13bc9",
+      "width": 512,
+      "height": 512,
+      "rgbaSha256": "ceb6becaf24df3462d2f66a366666ac271b328f9ec27f48e2b7798de81956b94",
+      "warmupRounds": 20
+    },
+    {
+      "name": "noise-1280x720-49ad7e32",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "8a02a8dabf9c41d3ed587f2d53b190ca1071b1a18466ff39844db8f94610b284",
+      "warmupRounds": 20
+    },
+    {
+      "name": "noise-1280x720-fe13bc9",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "9a1f6520e67bb76ce34c74f41af70b705fadfef2e620a1e857e217cecb35f4fd",
+      "warmupRounds": 20
+    },
+    {
+      "name": "noise-1920x1080-49ad7e32",
+      "width": 1920,
+      "height": 1080,
+      "rgbaSha256": "0e7c5a3831fbf8a17c8126059f4f5cb88bcc7295ecb8113d4f02aefecfec8896",
+      "warmupRounds": 20
+    },
+    {
+      "name": "noise-1920x1080-fe13bc9",
+      "width": 1920,
+      "height": 1080,
+      "rgbaSha256": "6ee26f29907eca0f7bf2fe9f9abbceeacbbfa23cf4af51ef900366c6f7353c18",
+      "warmupRounds": 20
+    },
+    {
+      "name": "stripes",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "c8d9d09985a6bd5112cf6560a6d4b5445b17e8585703d63b2e24e4aff42f781c",
+      "warmupRounds": 20
+    },
+    {
+      "name": "checkerboard",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "12acd994d2e149df516768d452d6cb0b60113bba817490ee84d2580224ac900a",
+      "warmupRounds": 20
+    },
+    {
+      "name": "gradient",
+      "width": 1280,
+      "height": 720,
+      "rgbaSha256": "64c3ffda32e8027a979b968f6cc9101ab3fc7eab0ddedd6a1d743dceb11a982c",
+      "warmupRounds": 20
+    }
+  ],
+  "loadAfter": [
+    148.3876953125,
+    92.51708984375,
+    56.150390625
+  ],
+  "purpose": "Local same-binary harness control; no comparative performance claim. All full results and input hashes matched. Frame hashes also match ts-scalar-paired1.json."
+}

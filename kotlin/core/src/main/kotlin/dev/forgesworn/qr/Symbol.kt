@@ -138,6 +138,22 @@ internal fun readVersion(read: ModuleReader, size: Int): Int? {
     return nearest(VERSIONS, { it.bits }, intArrayOf(bottomLeft, topRight))?.version
 }
 
+/** Both version copies must independently decode to the same version. */
+internal fun agreedVersion(read: ModuleReader, size: Int): Int? {
+    if (size < 45) return null
+    var bottomLeft = 0
+    var topRight = 0
+    for (k in 17 downTo 0) {
+        val i = k / 3
+        val j = k % 3
+        bottomLeft = (bottomLeft shl 1) or (if (read.read(i, size - 11 + j)) 1 else 0)
+        topRight = (topRight shl 1) or (if (read.read(size - 11 + j, i)) 1 else 0)
+    }
+    val first = nearest(VERSIONS, { it.bits }, intArrayOf(bottomLeft))?.version ?: return null
+    val second = nearest(VERSIONS, { it.bits }, intArrayOf(topRight))?.version ?: return null
+    return if (first == second) first else null
+}
+
 /**
  * The errors a block of this symbol may have had corrected: half of its check
  * codewords once the p of Table 9 is withheld to catch a misdecode. Only
@@ -187,35 +203,33 @@ internal fun readSymbol(read: ModuleReader, size: Int): Payload? {
     val d1 = blocksInfo[2]
     val g2 = blocksInfo[3]
     val blockCount = g1 + g2
-    val total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
-    val stream = IntArray(total)
+    val dataCount = g1 * d1 + g2 * (d1 + 1)
     val places = placement(version)
-    val bits = minOf(places.size, total * 8)
-    for (bit in 0 until bits) {
-        val x = places[bit] and 255
-        val y = places[bit] shr 8
-        if (read.read(x, y) != maskBit(format.mask, x, y)) stream[bit ushr 3] = stream[bit ushr 3] or (0x80 ushr (bit and 7))
+    fun word(index: Int): Int {
+        var value = 0
+        for (bit in index * 8 until minOf((index + 1) * 8, places.size)) {
+            val x = places[bit] and 255
+            val y = places[bit] shr 8
+            if (read.read(x, y) != maskBit(format.mask, x, y)) value = value or (0x80 ushr (bit and 7))
+        }
+        return value
     }
-
-    val blocks = ArrayList<IntArray>()
-    for (b in 0 until blockCount) blocks.add(IntArray((if (b < g1) d1 else d1 + 1) + ecPerBlock))
-    var k = 0
-    for (i in 0..d1) {
-        for (b in 0 until blockCount) if (i < (if (b < g1) d1 else d1 + 1)) blocks[b][i] = stream[k++]
-    }
-    for (i in 0 until ecPerBlock) {
-        for (b in 0 until blockCount) blocks[b][(if (b < g1) d1 else d1 + 1) + i] = stream[k++]
-    }
-    val data = IntArray(g1 * d1 + g2 * (d1 + 1))
+    // Read interleaved blocks on demand: a failed block rejects the symbol,
+    // so later blocks need neither sampling nor allocating.
+    val data = IntArray(dataCount)
     var corrected = 0
     var offset = 0
     val limit = correctable(version, format.ecc)
     for (b in 0 until blockCount) {
-        val fixed = correct(blocks[b], ecPerBlock)
+        val length = if (b < g1) d1 else d1 + 1
+        val block = IntArray(length + ecPerBlock)
+        for (i in 0 until d1) block[i] = word(i * blockCount + b)
+        if (b >= g1) block[d1] = word(d1 * blockCount + b - g1)
+        for (i in 0 until ecPerBlock) block[length + i] = word(dataCount + i * blockCount + b)
+        val fixed = correct(block, ecPerBlock)
         if (fixed < 0 || fixed > limit) return null
         corrected += fixed
-        val length = if (b < g1) d1 else d1 + 1
-        System.arraycopy(blocks[b], 0, data, offset, length)
+        System.arraycopy(block, 0, data, offset, length)
         offset += length
     }
 

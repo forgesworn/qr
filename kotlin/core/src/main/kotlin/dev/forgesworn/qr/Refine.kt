@@ -29,10 +29,14 @@ internal class Retry(val location: Placement, val inverted: Boolean, val agreed:
  * both lie within AGREEMENT bits of it; straight before mirrored, and within
  * each the first word in level and mask order.
  */
-internal fun agreement(modules: ByteArray, size: Int): Agreement? {
+internal fun agreement(modules: ByteArray, size: Int): Agreement? =
+    agreementRead(ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }, size)
+
+/** The same agreement check over a lazy module reader. */
+internal fun agreementRead(read: ModuleReader, size: Int): Agreement? {
     var best: Agreement? = null
     for (mirrored in booleanArrayOf(false, true)) {
-        fun at(x: Int, y: Int): Boolean = (if (mirrored) modules[x * size + y] else modules[y * size + x]).toInt() == 1
+        fun at(x: Int, y: Int): Boolean = if (mirrored) read.read(y, x) else read.read(x, y)
         var first = 0
         var second = 0
         for (i in 14 downTo 0) {
@@ -106,8 +110,8 @@ private class Probe(private val image: Luminance, private val t: Thresholds, pri
         val y1 = minOf(height - 1, y0 + 1)
         val ax = maxOf(0.0, minOf(1.0, fx - x0))
         val ay = maxOf(0.0, minOf(1.0, fy - y0))
-        val top = data[y0 * width + x0] * (1 - ax) + data[y0 * width + x1] * ax
-        val bottom = data[y1 * width + x0] * (1 - ax) + data[y1 * width + x1] * ax
+        val top = (data[y0 * width + x0].toInt() and 0xff) * (1 - ax) + (data[y0 * width + x1].toInt() and 0xff) * ax
+        val bottom = (data[y1 * width + x0].toInt() and 0xff) * (1 - ax) + (data[y1 * width + x1].toInt() and 0xff) * ax
         val grey = top * (1 - ay) + bottom * ay
         val d = thresholdAt(t, width, height, floor(x).toInt(), floor(y).toInt()) - grey
         return if (inverted) -d else d

@@ -1,0 +1,107 @@
+{
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+  "worker": true,
+  "native": "https://example.com/browser",
+  "formats": [
+    "aztec",
+    "code_128",
+    "code_39",
+    "code_93",
+    "data_matrix",
+    "ean_13",
+    "ean_8",
+    "itf",
+    "pdf417",
+    "qr_code",
+    "upc_e"
+  ],
+  "rounds": 25,
+  "warmup": 5,
+  "timings": [
+    {
+      "name": "clean",
+      "typescript": {
+        "medianMs": 5.799999952316284,
+        "p95Ms": 6.200000047683716
+      },
+      "wasm": {
+        "medianMs": 3.100000023841858,
+        "p95Ms": 3.700000047683716
+      },
+      "native": {
+        "medianMs": 14,
+        "p95Ms": 15.399999976158142
+      }
+    },
+    {
+      "name": "blank",
+      "typescript": {
+        "medianMs": 8.899999976158142,
+        "p95Ms": 9.099999904632568
+      },
+      "wasm": {
+        "medianMs": 4.5,
+        "p95Ms": 4.600000023841858
+      },
+      "native": {
+        "medianMs": 9.399999976158142,
+        "p95Ms": 10.200000047683716
+      }
+    },
+    {
+      "name": "noise",
+      "typescript": {
+        "medianMs": 111.20000004768372,
+        "p95Ms": 123
+      },
+      "wasm": {
+        "medianMs": 53.39999997615814,
+        "p95Ms": 55.10000002384186
+      },
+      "native": {
+        "medianMs": 9.899999976158142,
+        "p95Ms": 11.799999952316284
+      }
+    }
+  ],
+  "revision": "dae49138c0fe25ba2272c94ca565baf533c61d9e",
+  "wasmSha256": "5b90b952df9e892d1fcc39e6d65b470078302991b5162c077353dd0bdc383623",
+  "loadBefore": [
+    9.48193359375,
+    11.60302734375,
+    18.14794921875
+  ],
+  "loadAfter": [
+    14.50634765625,
+    12.6044921875,
+    18.42626953125
+  ],
+  "requests": [
+    "/",
+    "/dist/wasm.js",
+    "/favicon.ico",
+    "/dist/errors.js",
+    "/dist/image.js",
+    "/dist/qr.wasm",
+    "/dist/wasm.js",
+    "/dist/errors.js",
+    "/dist/image.js",
+    "/dist/qr.wasm",
+    "/dist/index.js",
+    "/dist/encode.js",
+    "/dist/svg.js",
+    "/dist/canvas.js",
+    "/dist/terminal.js",
+    "/dist/decode.js",
+    "/dist/scanner.js",
+    "/dist/tables.js",
+    "/dist/binarise.js",
+    "/dist/locate.js",
+    "/dist/refine.js",
+    "/dist/symbol.js",
+    "/dist/rs.js",
+    "/dist/text.js",
+    "/scripts/comparison-fixtures.mjs",
+    "/done"
+  ]
+}

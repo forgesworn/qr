@@ -1,0 +1,60 @@
+--- a/src/decode.ts
++++ b/src/decode.ts
+@@ -168,6 +168,7 @@
+   for (const tolerance of [0.5, 0.8]) {
+     const triples = finderTriples(image, findFinders(image, tolerance, work, edges)).slice(0, MAX_TRIPLES)
+     for (const triple of triples) {
++      globalThis.__formatObs.pass(strict, f, inverted)
+       const first = locate(image, triple, undefined, work, edges)
+       // An estimate past version 40 by no more than the retries reach still
+       // tries the sizes of 177 or less among them.
+@@ -177,6 +178,7 @@
+       for (const delta of [0, -4, 4, -8, 8]) {
+         for (const location of delta === 0 ? first : locate(image, triple, size + delta, work, edges)) {
+           if (budget.maps === 0 || budget.here === 0) return undefined
++          globalThis.__formatObs.readMap()
+           budget.maps--
+           budget.here--
+           if (work) {
+--- a/src/locate.ts
++++ b/src/locate.ts
+@@ -443,12 +443,14 @@
+   const top = Math.max(0, Math.floor(estimate.y - radius))
+   const bottom = Math.min(image.height - 1, Math.ceil(estimate.y + radius))
+   if (right - left < moduleSize * 3 || bottom - top < moduleSize * 3) return []
++  globalThis.__formatObs.window((right - left + 1) * (bottom - top + 1))
+   if (work) work.scanned += (right - left + 1) * (bottom - top + 1)
+   const data = image.data
+   const width = image.width
+   const slack = wide * 0.6
+   const slackDown = tall * 0.6
+   const vertical = (x: number, y: number): number => {
++    globalThis.__formatObs.vertical()
+     // Light, dark, light runs through (x, y) going up and down from the dark centre.
+     let up = y
+     while (up >= top && data[up * width + x] === 1) up--
+@@ -484,6 +486,7 @@
+       const darkStart = changes[k]!
+       const darkEnd = changes[k + 1]!
+       const end = k + 2 < n && changes[k + 2]! <= right ? changes[k + 2]! : right + 1
++      globalThis.__formatObs.run()
+       const before = darkStart - start
+       const middle = darkEnd - darkStart
+       const after = end - darkEnd
+@@ -611,6 +614,7 @@
+  * `sizeHint` overrides the estimated module count.
+  */
+ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, work?: Work, edges: Edges = edgesOf(image)): Location[] {
++  globalThis.__formatObs.enter(image)
+   const [topLeft, topRight, bottomLeft] = triple
+   const acrossSize = runModuleSize(image, topLeft, topRight)
+   const downSize = runModuleSize(image, topLeft, bottomLeft)
+@@ -695,5 +699,7 @@
+     const project = projective(matrix)
+     return { topLeft, topRight, bottomLeft, alignment, size, project: (x, y) => project(x + 0.5, y + 0.5), matrix }
+   }
+-  return [...alignments.map((a) => map(a, corner)), ...corners.map((c) => map(undefined, c))]
++  const observed = [...alignments.map((a) => map(a, corner)), ...corners.map((c) => map(undefined, c))]
++  globalThis.__formatObs.exit(observed)
++  return observed
+ }

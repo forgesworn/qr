@@ -61,19 +61,24 @@ export function edgesOf(image: BitImage): Edges {
   const { data, width, height } = image
   const rows: (Int32Array | undefined)[] = new Array<Int32Array | undefined>(height)
   const scratch = new Int32Array(width)
+  const words = new DataView(data.buffer, data.byteOffset, data.byteLength)
   return {
     row: (y) => {
       let edges = rows[y]
       if (edges === undefined) {
         const start = y * width
         let n = 0
-        let ink = data[start]!
-        for (let x = 1; x < width; x++) {
-          const v = data[start + x]!
-          if (v !== ink) {
-            scratch[n++] = x
-            ink = v
+        let x = 1
+        for (; x + 4 <= width; x += 4) {
+          let changed = words.getUint32(start + x - 1, true) ^ words.getUint32(start + x, true)
+          while (changed !== 0) {
+            const byte = (31 - Math.clz32(changed & -changed)) >>> 3
+            scratch[n++] = x + byte
+            changed &= ~(255 << (byte * 8))
           }
+        }
+        for (; x < width; x++) {
+          if (data[start + x] !== data[start + x - 1]) scratch[n++] = x
         }
         edges = scratch.slice(0, n)
         rows[y] = edges
@@ -98,11 +103,10 @@ function distance(a: Point, b: Point): number {
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
 function finderRatio(counts: readonly number[], tolerance = 0.5): boolean {
-  const c0 = counts[0]!
-  const c1 = counts[1]!
-  const c2 = counts[2]!
-  const c3 = counts[3]!
-  const c4 = counts[4]!
+  return finderRatioScalars(counts[0]!, counts[1]!, counts[2]!, counts[3]!, counts[4]!, tolerance)
+}
+
+function finderRatioScalars(c0: number, c1: number, c2: number, c3: number, c4: number, tolerance: number): boolean {
   if (c0 === 0 || c1 === 0 || c2 === 0 || c3 === 0 || c4 === 0) return false
   const total = c0 + c1 + c2 + c3 + c4
   if (total < 7) return false
@@ -135,82 +139,68 @@ function crossCheck(
   tolerance = 0.5,
   work?: Work,
 ): number {
-  const counts = [0, 0, 0, 0, 0]
+  let c0 = 0, c1 = 0, c2 = 0, c3 = 0, c4 = 0
   try {
-    return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+    const { width, height } = image
+    const inside = (px: number, py: number) => px >= 0 && py >= 0 && px < width && py < height
+    // A centre run past these lengths could not pass the checks below, so
+    // stopping there loses nothing and keeps a long dark stripe from costing its
+    // length. Back along the row or down the column, the total would be more
+    // than twice the row's. On the diagonal, whose four outer runs stop at
+    // maxCount, a centre in proportion is under 29 times maxCount (at the
+    // loosest tolerance, 1.05).
+    const longest = dx && dy ? 32 * (maxCount + 1) : 2 * originalTotal
+    let px = x
+    let py = y
+    while (inside(px, py) && dark(image, px, py)) {
+      if (++c2 > longest) return NaN
+      px -= dx
+      py -= dy
+    }
+    while (inside(px, py) && !dark(image, px, py) && c1 <= maxCount) {
+      c1++
+      px -= dx
+      py -= dy
+    }
+    if (!inside(px, py) || c1 > maxCount) return NaN
+    while (inside(px, py) && dark(image, px, py) && c0 <= maxCount) {
+      c0++
+      px -= dx
+      py -= dy
+    }
+    if (c0 > maxCount) return NaN
+    px = x + dx
+    py = y + dy
+    while (inside(px, py) && dark(image, px, py)) {
+      if (++c2 > longest) return NaN
+      px += dx
+      py += dy
+    }
+    while (inside(px, py) && !dark(image, px, py) && c3 < maxCount) {
+      c3++
+      px += dx
+      py += dy
+    }
+    if (!inside(px, py) || c3 >= maxCount) return NaN
+    while (inside(px, py) && dark(image, px, py) && c4 < maxCount) {
+      c4++
+      px += dx
+      py += dy
+    }
+    if (c4 >= maxCount) return NaN
+    const total = c0 + c1 + c2 + c3 + c4
+    // A diagonal crosses the pattern at a longer stretch, so only straight lines
+    // compare totals. Back along the row the stretch must match; down the column,
+    // perspective can make the pattern up to twice as tall as wide, or half.
+    if (dx && !dy && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
+    if (dy && !dx && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return NaN
+    if (!finderRatioScalars(c0, c1, c2, c3, c4, tolerance)) return NaN
+    // Position along the line, measured in steps from the start point.
+    const end = dx !== 0 ? px - x : py - y
+    return end * (dx + dy > 0 ? 1 : -1) - c4 - c3 - c2 / 2
   } finally {
-    if (work) work.steps += counts[0]! + counts[1]! + counts[2]! + counts[3]! + counts[4]!
+    if (work) work.steps += c0 + c1 + c2 + c3 + c4
   }
-}
-
-function runs(
-  image: BitImage,
-  x: number,
-  y: number,
-  dx: number,
-  dy: number,
-  maxCount: number,
-  originalTotal: number,
-  tolerance: number,
-  counts: number[],
-): number {
-  const { width, height } = image
-  const inside = (px: number, py: number) => px >= 0 && py >= 0 && px < width && py < height
-  // A centre run past these lengths could not pass the checks below, so
-  // stopping there loses nothing and keeps a long dark stripe from costing its
-  // length. Back along the row or down the column, the total would be more
-  // than twice the row's. On the diagonal, whose four outer runs stop at
-  // maxCount, a centre in proportion is under 29 times maxCount (at the
-  // loosest tolerance, 1.05).
-  const longest = dx && dy ? 32 * (maxCount + 1) : 2 * originalTotal
-  let px = x
-  let py = y
-  while (inside(px, py) && dark(image, px, py)) {
-    if (++counts[2]! > longest) return NaN
-    px -= dx
-    py -= dy
-  }
-  while (inside(px, py) && !dark(image, px, py) && counts[1]! <= maxCount) {
-    counts[1]!++
-    px -= dx
-    py -= dy
-  }
-  if (!inside(px, py) || counts[1]! > maxCount) return NaN
-  while (inside(px, py) && dark(image, px, py) && counts[0]! <= maxCount) {
-    counts[0]!++
-    px -= dx
-    py -= dy
-  }
-  if (counts[0]! > maxCount) return NaN
-  px = x + dx
-  py = y + dy
-  while (inside(px, py) && dark(image, px, py)) {
-    if (++counts[2]! > longest) return NaN
-    px += dx
-    py += dy
-  }
-  while (inside(px, py) && !dark(image, px, py) && counts[3]! < maxCount) {
-    counts[3]!++
-    px += dx
-    py += dy
-  }
-  if (!inside(px, py) || counts[3]! >= maxCount) return NaN
-  while (inside(px, py) && dark(image, px, py) && counts[4]! < maxCount) {
-    counts[4]!++
-    px += dx
-    py += dy
-  }
-  if (counts[4]! >= maxCount) return NaN
-  const total = counts.reduce((a, b) => a + b, 0)
-  // A diagonal crosses the pattern at a longer stretch, so only straight lines
-  // compare totals. Back along the row the stretch must match; down the column,
-  // perspective can make the pattern up to twice as tall as wide, or half.
-  if (dx && !dy && 5 * Math.abs(total - originalTotal) >= 2 * originalTotal) return NaN
-  if (dy && !dx && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return NaN
-  if (!finderRatio(counts, tolerance)) return NaN
-  // Position along the line, measured in steps from the start point.
-  const end = dx !== 0 ? px - x : py - y
-  return centreFromEnd(counts, end * (dx + dy > 0 ? 1 : -1))
 }
 
 /**
@@ -236,7 +226,7 @@ export function findFinders(image: BitImage, tolerance = 0.5, work?: Work, edges
     return key
   }
   const consider = (counts: readonly number[], y: number, end: number) => {
-    const total = counts.reduce((a, b) => a + b, 0)
+    const total = counts[0]! + counts[1]! + counts[2]! + counts[3]! + counts[4]!
     let cx = centreFromEnd(counts, end)
     const maxCount = counts[2]!
     const dy = crossCheck(image, Math.floor(cx), y, 0, 1, maxCount, total, tolerance, work)
@@ -288,42 +278,25 @@ export function findFinders(image: BitImage, tolerance = 0.5, work?: Work, edges
   const skip = Math.max(1, Math.min(3, Math.floor(height / 200)))
   const counts = [0, 0, 0, 0, 0]
   for (let y = skip - 1; y < height; y += skip) {
-    // Run by run, as a walk along the row pixel by pixel would count them:
-    // dark runs into the even places, light runs into the odd ones.
-    counts.fill(0)
-    let state = 0
     const changes = edges.row(y)
-    let ink = data[y * width] === 1
-    let x = 0
-    for (let k = 0; k <= changes.length; k++) {
+    // Each eligible window ends at a dark run. After a successful match,
+    // three new dark runs are needed before another candidate can end.
+    let k = (data[y * width] === 1 ? 0 : 1) + 4
+    while (k <= changes.length) {
+      const start = k - 4
+      const a = start === 0 ? 0 : changes[start - 1]!
+      const b = changes[start]!
+      const c = changes[start + 1]!
+      const d = changes[start + 2]!
+      const e = changes[start + 3]!
       const end = k < changes.length ? changes[k]! : width
-      const length = end - x
-      if (ink) {
-        if (state & 1) state++
-        counts[state]! += length
-      } else if (state !== 4) {
-        state++
-        counts[state]! += length
-      } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-        // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
-        counts.fill(0)
-        state = 0
-        if (length > 1) {
-          state = 1
-          counts[1] = length - 1
-        }
-      } else {
-        counts[0] = counts[2]!
-        counts[1] = counts[3]!
-        counts[2] = counts[4]!
-        counts[3] = length
-        counts[4] = 0
-        state = 3
-      }
-      x = end
-      ink = !ink
+      counts[0] = b - a
+      counts[1] = c - b
+      counts[2] = d - c
+      counts[3] = e - d
+      counts[4] = end - e
+      k += finderRatio(counts, tolerance) && consider(counts, y, end) ? 6 : 2
     }
-    if (state === 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
   }
   return found.sort((a, b) => b.count - a.count)
 }
@@ -470,9 +443,10 @@ function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: nu
     if (!(Math.abs(middle - tall) < slackDown)) return NaN
     let above = 0
     for (let yy = up; yy >= top && data[yy * width + x] !== 1; yy--) above++
+    if (!(Math.abs(above - tall) < slackDown)) return NaN
     let below = 0
     for (let yy = down; yy <= bottom && data[yy * width + x] !== 1; yy++) below++
-    if (!(Math.abs(above - tall) < slackDown) || !(Math.abs(below - tall) < slackDown)) return NaN
+    if (!(Math.abs(below - tall) < slackDown)) return NaN
     return (up + 1 + down) / 2
   }
   const found: { x: number; y: number; count: number }[] = []
@@ -488,19 +462,18 @@ function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: nu
     }
     let x = left
     if (data[y * width + left] === 1) x = k < n && changes[k]! <= right ? changes[k++]! : right + 1 // skip a dark run cut by the window
-    // Runs alternate light, dark, light ...: the last two are kept, and the
-    // run that ends a light, dark, light three is checked with them.
+    // Enumerate each light, dark, light window. The final light run may
+    // be clipped by the window's right edge.
     let start = x
-    let count = 0
-    let before = 0
-    let last = 0
-    for (;;) {
-      x = k < n && changes[k]! <= right ? changes[k++]! : right + 1
-      const run = x - start
-      start = x
-      count++
-      if (count >= 3 && (count & 1) === 1 && Math.abs(before - wide) < slack && Math.abs(last - wide) < slack && Math.abs(run - wide) < slack) {
-        const cx = x - run - last / 2
+    while (k + 1 < n && changes[k + 1]! <= right) {
+      const darkStart = changes[k]!
+      const darkEnd = changes[k + 1]!
+      const end = k + 2 < n && changes[k + 2]! <= right ? changes[k + 2]! : right + 1
+      const before = darkStart - start
+      const middle = darkEnd - darkStart
+      const after = end - darkEnd
+      if (Math.abs(before - wide) < slack && Math.abs(middle - wide) < slack && Math.abs(after - wide) < slack) {
+        const cx = end - after - middle / 2
         const cy = vertical(Math.floor(cx), y)
         if (!Number.isNaN(cy)) {
           const same = found.find((f) => Math.abs(f.x - cx) <= moduleSize && Math.abs(f.y - cy) <= moduleSize)
@@ -513,9 +486,8 @@ function findAlignments(image: BitImage, edges: Edges, estimate: Point, wide: nu
           }
         }
       }
-      if (x > right) break
-      before = last
-      last = run
+      start = darkEnd
+      k += 2
     }
   }
   // A candidate seen on one row only counts as three modules further away.
@@ -578,9 +550,9 @@ function projective(m: readonly number[]): (x: number, y: number) => Point {
  * (dark centre, light ring, dark ring), stepping by `u` across and `v` down.
  * Perspective changes the local module size, so three scales are tried.
  */
-function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): number {
-  let best = 0
+function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point, best = 0): number {
   for (const scale of [0.85, 1, 1.15]) {
+    if (best === 25) break
     let score = 0
     for (let j = -2; j <= 2; j++) {
       for (let i = -2; i <= 2; i++) {
@@ -590,6 +562,8 @@ function alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): num
         const got = x >= 0 && y >= 0 && x < image.width && y < image.height && dark(image, x, y)
         if (got === want) score++
       }
+      // Even perfect remaining rows cannot improve the best score.
+      if (score + (2 - j) * 5 <= best) break
     }
     best = Math.max(best, score)
   }
@@ -681,8 +655,11 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
     for (const reach of [4, 8, 16]) {
       for (const estimate of estimates) {
         for (const p of findAlignments(image, edges, estimate, wide, tall, reach, work)) {
-          if (scored.some((a) => distance(a.p, p) <= moduleSize / 2)) continue
-          const score = Math.max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
+          // A point outside the enclosing square cannot be within the circle.
+          const radius = moduleSize / 2
+          if (scored.some((a) => Math.abs(a.p.x - p.x) <= radius && Math.abs(a.p.y - p.y) <= radius && distance(a.p, p) <= radius)) continue
+          // Scores below 20 are discarded, but their points still suppress duplicates.
+          const score = alignmentScore(image, p, u0, v0, alignmentScore(image, p, u, v, 19))
           scored.push({ p, score, away: near(p) })
         }
       }

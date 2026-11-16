@@ -1,5 +1,5 @@
 // Times the whole decoder, TypeScript `decode` against the WebAssembly
-// `decode` (the copy into WebAssembly memory included), and the native build
+// `decodeFull` (input copy and complete result extraction included), and the native build
 // for reference, interleaved in one Node process.
 //
 //   node rust/bench/decode.mjs --real <dir of .grey files> [--rounds 15]
@@ -10,6 +10,7 @@
 // fourth real frame by name. The real frames are read, never copied: int32
 // big-endian width, int32 big-endian height, then one grey byte a pixel.
 
+import { deepStrictEqual } from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
@@ -73,10 +74,17 @@ if (realDir) {
 
 const median = (xs) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
 const sum = (xs) => xs.reduce((a, b) => a + b, 0)
-const { decode: wasmDecode } = await loadFront(wasmPath)
+const { decodeFull: wasmDecode } = await loadFront(wasmPath)
 const typescript = (f) => {
-  const r = decode({ data: f.data, width: f.width, height: f.height }, { channels: f.channels })
-  return r === undefined ? 0 : r.bytes.length + 1
+  return decode({ data: f.data, width: f.width, height: f.height }, { channels: f.channels })
+}
+
+// The TypeScript finder objects may carry internal count/moduleSize fields.
+// Compare the complete public contract: its points consist of x and y only.
+const publicResult = (result) => {
+  if (result === undefined) return undefined
+  const point = (p) => p === undefined ? undefined : { x: p.x, y: p.y }
+  return { ...result, location: Object.fromEntries(Object.entries(result.location).map(([key, p]) => [key, point(p)])) }
 }
 
 const run = (cmd, argv) => {
@@ -124,16 +132,20 @@ for (const f of frames) {
   const wasm = []
   let tsLength = 0
   let wasmLength = 0
+  let tsResult
+  let wasmResult
   for (let r = -2; r < rounds; r++) {
     const runTs = () => {
       const t = performance.now()
-      tsLength = typescript(f)
+      tsResult = typescript(f)
       if (r >= 0) ts.push(performance.now() - t)
+      tsLength = tsResult === undefined ? 0 : tsResult.bytes.length + 1
     }
     const runWasm = () => {
       const t = performance.now()
-      wasmLength = wasmDecode(f.data, f.width, f.height, f.channels)
+      wasmResult = wasmDecode(f.data, f.width, f.height, { channels: f.channels })
       if (r >= 0) wasm.push(performance.now() - t)
+      wasmLength = wasmResult === undefined ? 0 : wasmResult.bytes.length + 1
     }
     if (r % 2 === 0) {
       runTs()
@@ -143,6 +155,9 @@ for (const f of frames) {
       runTs()
     }
   }
+  // Compare complete results, including text. Unsupported character sets must
+  // be benchmarked separately and must not silently pass this comparison.
+  deepStrictEqual(publicResult(wasmResult), publicResult(tsResult), `${f.name}: full decoded result differs`)
   const nat = native.get(f.name)
   const agree = tsLength === wasmLength && (nat === undefined || nat.length === tsLength)
   if (!agree) mismatches++

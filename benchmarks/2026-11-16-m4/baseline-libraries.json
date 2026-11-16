@@ -1,0 +1,420 @@
+{
+  "revision": "a4f78ffcf3ad264f0a8fa914dc2836eafd7ccb6c",
+  "dirty": true,
+  "javascriptSha256": "36ae22acdff56795d71e93e0421c8a2b2df850b2d72f28d7f74cd22323cacf11",
+  "wasmSha256": "5b90b952df9e892d1fcc39e6d65b470078302991b5162c077353dd0bdc383623",
+  "node": "v24.21.0",
+  "cpu": "Apple M4 Max",
+  "loadBefore": [
+    1.453125,
+    1.875,
+    1.88623046875
+  ],
+  "versions": {
+    "jsqr": "1.4.0",
+    "qrcode": "1.5.4",
+    "zxing": "3.1.7"
+  },
+  "zxingWasmSha256": "33c8c50be17d0bb05454b4fd3ffb5b5ab9a8e8d1c0ebeb21a1adf4a89c1a8b59",
+  "externalLockSha256": "d6e21adcd75706590fccca3640a5e3abe8f7952981b4cc382ab334ed7f123c69",
+  "options": {
+    "formats": [
+      "QRCode"
+    ],
+    "maxNumberOfSymbols": 1,
+    "tryHarder": true,
+    "tryRotate": true,
+    "tryInvert": true,
+    "tryDownscale": true,
+    "textMode": "Plain"
+  },
+  "rounds": 25,
+  "warmup": 5,
+  "startupMs": {
+    "wasm": 0.4923339999999996,
+    "zxing": 3.2079999999999984
+  },
+  "decode": [
+    {
+      "name": "clean",
+      "rgbaSha256": "fa11541828a9cd172d3d08c9f9a0c4588dd69dcffafa21cc92b53e02bd0e3e8a",
+      "typescript": {
+        "medianMs": 4.184958999999992,
+        "p95Ms": 6.605292000000077
+      },
+      "wasm": {
+        "medianMs": 1.6584589999999935,
+        "p95Ms": 1.7280420000000163
+      },
+      "jsqr": {
+        "medianMs": 11.528374999999983,
+        "p95Ms": 21.995333000000073
+      },
+      "zxing": {
+        "medianMs": 1.948582999999985,
+        "p95Ms": 2.738125000000025
+      }
+    },
+    {
+      "name": "blank",
+      "rgbaSha256": "86c54487903d6066f37a9f1436221ebb267ad66a861dcd892dd5d20aa456c971",
+      "typescript": {
+        "medianMs": 5.7722499999999854,
+        "p95Ms": 7.871124999999893
+      },
+      "wasm": {
+        "medianMs": 2.4517499999999472,
+        "p95Ms": 2.5023329999999078
+      },
+      "jsqr": {
+        "medianMs": 15.58962500000007,
+        "p95Ms": 25.854250000000093
+      },
+      "zxing": {
+        "medianMs": 1.9838750000001255,
+        "p95Ms": 2.0710419999998066
+      }
+    },
+    {
+      "name": "noise",
+      "rgbaSha256": "a8f45cdbc1cf37281e9dcc8da4f65db2f662778802cbee394208d97bbe31889f",
+      "typescript": {
+        "medianMs": 70.90862500000003,
+        "p95Ms": 75.22466699999859
+      },
+      "wasm": {
+        "medianMs": 31.863291999998182,
+        "p95Ms": 32.52100000000064
+      },
+      "jsqr": {
+        "medianMs": 1058.7927080000009,
+        "p95Ms": 1119.974374999998
+      },
+      "zxing": {
+        "medianMs": 7.19524999999885,
+        "p95Ms": 7.506916000002093
+      }
+    }
+  ],
+  "encode": [
+    {
+      "name": "url",
+      "shapes": {
+        "typescript": {
+          "version": 3,
+          "size": 29,
+          "mask": 6
+        },
+        "wasm": {
+          "version": 3,
+          "size": 29,
+          "mask": 6
+        },
+        "qrcode": {
+          "version": 3,
+          "size": 29,
+          "mask": 6
+        }
+      },
+      "typescript": {
+        "medianMs": 0.05085000000035507,
+        "p95Ms": 0.057800000000133876
+      },
+      "wasm": {
+        "medianMs": 0.031783400000131225,
+        "p95Ms": 0.03632920000018203
+      },
+      "qrcode": {
+        "medianMs": 0.12127079999991111,
+        "p95Ms": 0.13278339999960737
+      }
+    },
+    {
+      "name": "mixed",
+      "shapes": {
+        "typescript": {
+          "version": 10,
+          "size": 57,
+          "mask": 0
+        },
+        "wasm": {
+          "version": 10,
+          "size": 57,
+          "mask": 0
+        },
+        "qrcode": {
+          "version": 10,
+          "size": 57,
+          "mask": 0
+        }
+      },
+      "typescript": {
+        "medianMs": 0.26964159999988624,
+        "p95Ms": 0.31061249999984286
+      },
+      "wasm": {
+        "medianMs": 0.15273749999978464,
+        "p95Ms": 0.187766699999338
+      },
+      "qrcode": {
+        "medianMs": 0.5482624999996915,
+        "p95Ms": 0.5831375000001572
+      }
+    },
+    {
+      "name": "numeric",
+      "shapes": {
+        "typescript": {
+          "version": 16,
+          "size": 81,
+          "mask": 1
+        },
+        "wasm": {
+          "version": 16,
+          "size": 81,
+          "mask": 1
+        },
+        "qrcode": {
+          "version": 16,
+          "size": 81,
+          "mask": 1
+        }
+      },
+      "typescript": {
+        "medianMs": 0.6362499999995634,
+        "p95Ms": 0.6843458999996074
+      },
+      "wasm": {
+        "medianMs": 0.4095667000001413,
+        "p95Ms": 0.43360000000029686
+      },
+      "qrcode": {
+        "medianMs": 1.0983875000005354,
+        "p95Ms": 1.1264667000003101
+      }
+    },
+    {
+      "name": "bytes-v40",
+      "shapes": {
+        "typescript": {
+          "version": 40,
+          "size": 177,
+          "mask": 2
+        },
+        "wasm": {
+          "version": 40,
+          "size": 177,
+          "mask": 2
+        },
+        "qrcode": {
+          "version": 40,
+          "size": 177,
+          "mask": 2
+        }
+      },
+      "typescript": {
+        "medianMs": 2.3845291999998155,
+        "p95Ms": 2.4932708000000274
+      },
+      "wasm": {
+        "medianMs": 1.6068916999996872,
+        "p95Ms": 1.6315582999995968
+      },
+      "qrcode": {
+        "medianMs": 4.94205409999995,
+        "p95Ms": 5.051116600000387
+      }
+    }
+  ],
+  "accuracy": {
+    "existing-photos": {
+      "count": 184,
+      "rgbaSha256": "c7286393637f3efa594f10f0d5786da7353cc4f9bac4b500f384da599e4e16bc",
+      "scores": {
+        "typescript": {
+          "correct": 179,
+          "missed": [
+            "s1-qrcode-4-13",
+            "s1-qrcode-4-30",
+            "s1-qrcode-4-33",
+            "s2-qrcode-2-_940",
+            "s2-qrcode-2-high-res-1"
+          ],
+          "wrong": [],
+          "totalMs": 239.40258000001631
+        },
+        "wasm": {
+          "correct": 166,
+          "missed": [
+            "s1-qrcode-2-33",
+            "s1-qrcode-4-13",
+            "s1-qrcode-4-30",
+            "s1-qrcode-4-33",
+            "s2-qrcode-2-_940",
+            "s2-qrcode-2-high-res-1"
+          ],
+          "wrong": [
+            "s1-qrcode-2-10",
+            "s1-qrcode-2-16",
+            "s1-qrcode-2-17",
+            "s1-qrcode-2-18",
+            "s1-qrcode-2-19",
+            "s1-qrcode-2-20",
+            "s1-qrcode-2-21",
+            "s1-qrcode-2-24",
+            "s1-qrcode-2-26",
+            "s1-qrcode-2-27",
+            "s1-qrcode-2-29",
+            "s1-qrcode-2-31"
+          ],
+          "totalMs": 91.94167399993603
+        },
+        "jsqr": {
+          "correct": 155,
+          "missed": [
+            "s1-qrcode-2-12",
+            "s1-qrcode-2-33",
+            "s1-qrcode-4-05",
+            "s1-qrcode-4-06",
+            "s1-qrcode-4-08",
+            "s1-qrcode-4-09",
+            "s1-qrcode-4-13",
+            "s1-qrcode-4-30",
+            "s1-qrcode-4-31",
+            "s1-qrcode-4-32",
+            "s1-qrcode-4-33",
+            "s1-qrcode-4-34",
+            "s1-qrcode-6-7",
+            "s1-qrcode-6-13",
+            "s2-qrcode-2-_199b",
+            "s2-qrcode-2-_940",
+            "s2-qrcode-2-estimate-tilt",
+            "s2-qrcode-2-high-res-1"
+          ],
+          "wrong": [
+            "s1-qrcode-2-10",
+            "s1-qrcode-2-16",
+            "s1-qrcode-2-17",
+            "s1-qrcode-2-18",
+            "s1-qrcode-2-19",
+            "s1-qrcode-2-20",
+            "s1-qrcode-2-21",
+            "s1-qrcode-2-24",
+            "s1-qrcode-2-26",
+            "s1-qrcode-2-27",
+            "s1-qrcode-2-29"
+          ],
+          "totalMs": 666.2597059999825
+        },
+        "zxing": {
+          "correct": 171,
+          "missed": [
+            "s1-qrcode-2-12",
+            "s1-qrcode-2-28",
+            "s1-qrcode-4-05",
+            "s1-qrcode-4-06",
+            "s1-qrcode-4-08",
+            "s1-qrcode-4-09",
+            "s1-qrcode-4-13",
+            "s1-qrcode-4-30",
+            "s1-qrcode-4-31",
+            "s1-qrcode-4-32",
+            "s1-qrcode-4-33",
+            "s1-qrcode-4-34"
+          ],
+          "wrong": [
+            "s1-qrcode-2-16"
+          ],
+          "totalMs": 68.61911699999473
+        }
+      }
+    },
+    "held-out-synthetic": {
+      "count": 96,
+      "rgbaSha256": "f9bbe831b86c3f0d6886635114805586d50534712d2dcae074446782eabd720b",
+      "scores": {
+        "typescript": {
+          "correct": 84,
+          "missed": [
+            "held-out-0",
+            "held-out-15",
+            "held-out-20",
+            "held-out-25",
+            "held-out-39",
+            "held-out-40",
+            "held-out-47",
+            "held-out-57",
+            "held-out-60",
+            "held-out-70",
+            "held-out-80",
+            "held-out-95"
+          ],
+          "wrong": [],
+          "totalMs": 441.26937700004055
+        },
+        "wasm": {
+          "correct": 84,
+          "missed": [
+            "held-out-0",
+            "held-out-15",
+            "held-out-20",
+            "held-out-25",
+            "held-out-39",
+            "held-out-40",
+            "held-out-47",
+            "held-out-57",
+            "held-out-60",
+            "held-out-70",
+            "held-out-80",
+            "held-out-95"
+          ],
+          "wrong": [],
+          "totalMs": 208.8790369999988
+        },
+        "jsqr": {
+          "correct": 80,
+          "missed": [
+            "held-out-0",
+            "held-out-6",
+            "held-out-9",
+            "held-out-15",
+            "held-out-20",
+            "held-out-25",
+            "held-out-33",
+            "held-out-39",
+            "held-out-40",
+            "held-out-47",
+            "held-out-52",
+            "held-out-57",
+            "held-out-60",
+            "held-out-69",
+            "held-out-70",
+            "held-out-80"
+          ],
+          "wrong": [],
+          "totalMs": 2225.6588289999927
+        },
+        "zxing": {
+          "correct": 89,
+          "missed": [
+            "held-out-15",
+            "held-out-35",
+            "held-out-39",
+            "held-out-47",
+            "held-out-65",
+            "held-out-83",
+            "held-out-95"
+          ],
+          "wrong": [],
+          "totalMs": 57.91708299997845
+        }
+      }
+    }
+  },
+  "memoryBytes": 14352384,
+  "loadAfter": [
+    1.68212890625,
+    1.88623046875,
+    1.890625
+  ]
+}

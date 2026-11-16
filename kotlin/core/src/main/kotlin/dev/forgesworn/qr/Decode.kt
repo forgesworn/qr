@@ -115,13 +115,17 @@ private const val MIN_REDUCED = 21
 /** Maps each reduced size may take, out of what the frame has left. */
 private const val REDUCED_MAPS = 30
 
+private class VersionHint(val triple: Array<Finder>, val size: Int, val inverted: Boolean)
 /** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
-private class Budget(var maps: Int, var second: Int, var here: Int)
+private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
+    val hints = ArrayList<VersionHint>(4)
+}
 
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
     val budget = Budget(MAX_MAPS, SECOND_LOOKS, MAX_MAPS)
     val found = look(luminance, inversion, 1, budget, work)
     if (found != null) return found
+    if (budget.uniform) return null
     // Nothing read at full size: the picture shrunk, coarse to fine, for codes
     // whose modules are large or carry texture or scan lines (decoder step 9).
     val shrunk = Reductions(luminance)
@@ -133,7 +137,26 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
         val reduced = look(shrunk.by(f), inversion, f, budget, work)
         if (reduced != null) return reduced
     }
-    return null
+    if (inversion != Inversion.NORMAL && budget.maps > 0 && budget.invertedFallback) {
+        budget.here = REDUCED_MAPS
+        val inverse = invertLuminance(luminance)
+        val fallback = look(inverse, Inversion.NORMAL, 1, budget, work, true)
+        if (fallback != null) return DecodeResult(
+            fallback.text, fallback.bytes, fallback.version, fallback.ecc, fallback.mask, fallback.eci,
+            fallback.corrected, fallback.mirrored, true, fallback.location, fallback.structuredAppend, fallback.fnc1,
+        )
+        val inverseShrunk = Reductions(inverse)
+        for (f in REDUCTIONS) {
+            if (budget.maps == 0 || budget.here == 0) break
+            if (luminance.width / f < MIN_REDUCED || luminance.height / f < MIN_REDUCED) continue
+            val reduced = look(inverseShrunk.by(f), Inversion.NORMAL, f, budget, work, true)
+            if (reduced != null) return DecodeResult(
+                reduced.text, reduced.bytes, reduced.version, reduced.ecc, reduced.mask, reduced.eci,
+                reduced.corrected, reduced.mirrored, true, reduced.location, reduced.structuredAppend, reduced.fnc1,
+            )
+        }
+    }
+    return recoverVersions(luminance, budget, work)
 }
 
 /**
@@ -142,19 +165,25 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?): DecodeResult? {
+private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false): DecodeResult? {
     val levels = thresholds(luminance)
+    if (f == 1 && !strictOverride) {
+        budget.invertedFallback = levels.invertedFallback
+        budget.uniform = levels.uniform
+    }
+    if (levels.uniform) return null
     val bits = binarise(luminance, levels)
     // The inverse changes colour where the picture does, so one set of edges serves both.
     val edges = Edges(bits)
-    val strict = f > 1
+    val strict = f > 1 || strictOverride
     val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
+    val scratch = ReadScratch()
     if (inversion != Inversion.INVERTED) {
-        val found = search(bits, edges, false, candidates, budget, strict, f, work)
+        val found = search(bits, edges, false, candidates, budget, strict, f, work, scratch)
         if (found != null) return found
     }
     if (inversion != Inversion.NORMAL) {
-        val found = search(invert(bits), edges, true, candidates, budget, strict, f, work)
+        val found = search(invert(bits), edges, true, candidates, budget, strict, f, work, scratch)
         if (found != null) return found
     }
     // Nothing read: look again at the few maps whose format copies agreed.
@@ -188,7 +217,9 @@ private fun search(
     strict: Boolean,
     f: Int,
     work: Work?,
+    scratch: ReadScratch,
 ): DecodeResult? {
+    if (budget.maps == 0 || budget.here == 0) return null
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
         val triples = finderTriples(image, findFinders(image, tolerance, work, edges)).take(MAX_TRIPLES)
@@ -207,8 +238,10 @@ private fun search(
                         work.maps++
                         if (f > 1) work.reduced++
                     }
-                    val result = read(image, location, inverted, candidates, strict, f)
+                    val result = read(image, location, inverted, candidates, strict, f, scratch,
+                        if (f == 1 && !strict) triple else null, budget)
                     if (result != null) return result
+                    if (budget.maps == 0 || budget.here == 0) return null
                 }
             }
         }
@@ -222,6 +255,10 @@ private fun over(image: BitImage, triple: Array<Finder>): Int? {
     return if (size > 177 && size <= 177 + 8) size else null
 }
 
+private class ReadScratch {
+    var modules = ByteArray(0)
+}
+
 private fun read(
     image: BitImage,
     location: Placement,
@@ -229,16 +266,22 @@ private fun read(
     candidates: MutableList<Retry>,
     strict: Boolean,
     f: Int,
+    scratch: ReadScratch,
+    triple: Array<Finder>? = null,
+    budget: Budget? = null,
 ): DecodeResult? {
     val size = location.size
-    val modules = ByteArray(size * size)
+    val length = size * size
+    if (scratch.modules.size < length) scratch.modules = ByteArray(length)
+    val modules = scratch.modules
+    modules.fill(2, 0, length) // Unsampled, then 0 for light or 1 for dark.
     val m = location.matrix
-    for (y in 0 until size) {
-        for (x in 0 until size) {
+    val sample = ModuleReader { x, y ->
+        val index = y * size + x
+        if (modules[index].toInt() != 2) modules[index].toInt() == 1 else {
             val px: Double
             val py: Double
             if (m != null) {
-                // project(x, y), written out so that no point is made for each module.
                 val u = x + 0.5
                 val v = y + 0.5
                 val w = m[6] * u + m[7] * v + m[8]
@@ -249,26 +292,83 @@ private fun read(
                 px = floor(p.x)
                 py = floor(p.y)
             }
-            if (px >= 0 && py >= 0 && px < image.width && py < image.height) {
-                modules[y * size + x] = image.data[py.toInt() * image.width + px.toInt()]
-            }
+            val value = if (px >= 0 && py >= 0 && px < image.width && py < image.height)
+                image.data[py.toInt() * image.width + px.toInt()] else 0
+            modules[index] = value
+            value.toInt() == 1
         }
     }
-    val straightRead = ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
+    // A strict read needs two agreeing copies in one orientation; sample only
+    // those format modules before attempting either full symbol read.
+    if (strict && agreementRead(sample, size) == null) return null
+    val straightRead = sample
     val straight = readSymbol(straightRead, size)
     if (straight != null) {
         // At reduced size, a read whose format copies do not agree on its level and mask is no read.
         if (strict && !formatAgrees(straightRead, size, straight.ecc, straight.mask)) return null
         return result(straight, mirrored = false, inverted = inverted, location = where(location, f))
     }
-    val mirroredRead = ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
+    val mirroredRead = ModuleReader { x, y -> sample.read(y, x) }
     val mirrored = readSymbol(mirroredRead, size)
     if (mirrored != null) {
         if (strict && !formatAgrees(mirroredRead, size, mirrored.ecc, mirrored.mask)) return null
         return result(mirrored, mirrored = true, inverted = inverted, location = where(location, f))
     }
+    // A version mismatch may have stopped either read before its format.
+    for (i in 0 until 15) {
+        val x = FORMAT_COORDS[i][0]
+        val y = FORMAT_COORDS[i][1]
+        sample.read(x, y); sample.read(y, x)
+        val sx = if (i < 8) size - 1 - i else 8
+        val sy = if (i < 8) 8 else size - 7 + (i - 8)
+        sample.read(sx, sy); sample.read(sy, sx)
+    }
     val agreed = agreement(modules, size)
-    if (agreed != null && sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
+    if (agreed != null) {
+        // Preserve the existing candidate decision before sampling additional version modules.
+        if (sized(modules, size, agreed.mirrored)) keep(candidates, Retry(location, inverted, agreed))
+        if (triple != null && budget != null && budget.hints.size < 4) {
+            val reader = if (agreed.mirrored) mirroredRead else straightRead
+            val version = agreedVersion(reader, size)
+            val target = if (version == null) size else 17 + 4 * version
+            if (target != size && budget.hints.none { hint ->
+                hint.size == target && hint.inverted == inverted &&
+                    (0..2).all { hint.triple[it].x == triple[it].x && hint.triple[it].y == triple[it].y }
+            }) budget.hints.add(VersionHint(triple, target, inverted))
+        }
+    }
+    return null
+}
+
+/** Revisit only full-size triples supported by both version copies, after all ordinary paths. */
+private fun recoverVersions(luminance: Luminance, budget: Budget, work: Work?): DecodeResult? {
+    if (budget.hints.isEmpty() || budget.maps == 0) return null
+    val levels = thresholds(luminance)
+    val bits = binarise(luminance, levels)
+    val edges = Edges(bits)
+    val inverse = if (budget.hints.any { it.inverted }) invert(bits) else bits
+    val candidates = ArrayList<Retry>(SECOND_LOOKS + 1)
+    val scratch = ReadScratch()
+    budget.here = REDUCED_MAPS
+    for (hint in budget.hints) {
+        if (budget.maps == 0 || budget.here == 0) break
+        val image = if (hint.inverted) inverse else bits
+        for (location in locate(image, hint.triple, hint.size, work, edges)) {
+            if (budget.maps == 0 || budget.here == 0) break
+            budget.maps--
+            budget.here--
+            if (work != null) work.maps++
+            val found = read(image, location, hint.inverted, candidates, true, 1, scratch)
+            if (found != null) return found
+        }
+    }
+    for (candidate in candidates) {
+        if (budget.second == 0) break
+        budget.second--
+        if (work != null) work.second++
+        val payload = secondLook(luminance, levels, candidate, work, true) ?: continue
+        return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
+    }
     return null
 }
 

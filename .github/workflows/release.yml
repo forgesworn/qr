@@ -19,4 +19,5 @@ jobs:
     uses: forgesworn/anvil/.github/workflows/release.yml@v0
     with:
       tag: ${{ inputs.tag || '' }}
-      test-command: npm run check
+      test-command: npm run fetch-photos && QR_REQUIRE_PHOTOS=1 npm run check && npm run check:package && npm run check:docs
+      lifecycle-scripts-policy: strict

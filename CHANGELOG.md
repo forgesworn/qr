@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.3.0
+
+- Optional `@forgesworn/qr/wasm` backend with a bundled module, complete
+  decoded results and platform character-set support. Load it explicitly;
+  ordinary TypeScript imports require no WebAssembly setup.
+- `createDecoder()` sessions for repeated camera frames in TypeScript and WASM.
+  Sessions read fresh pixels, search the previous region first, and fall back
+  to the full frame in the same call. Reset and disposal are explicit.
+- Improved inverted-image recovery and faster encoding and decoding across
+  TypeScript, Kotlin and Rust. Lazy sampling, earlier format/error-correction
+  rejection, reusable storage and exhausted-search guards reduce avoidable work.
+- Version-directed recovery for misestimated large symbols: agreeing format
+  and version copies can trigger a final bounded retry. This recovers the
+  previously missed blurred version-40 regression image in all three ports
+  without increasing map or second-look budgets.
+- Reproducible WASM builds with pinned Rust 1.96.0 and an independent Linux
+  byte comparison. Published npm tarballs must match across two independent
+  release builds, with trusted publishing and provenance.
+- Published accuracy and performance evidence against pinned independent
+  readers, including per-photograph regression checks and a frozen stress set.
+  Accuracy preservation takes priority over faster rejection; unsuccessful
+  strict-finder experiments are documented and excluded from the decoder.
+- Fixed a native Rust invalid-size overflow in `decode_modules`; invalid QR
+  dimensions now return `None` before multiplying the supplied size.
+- Native `forgesworn-qr` crate with registry metadata, standalone package tests,
+  Rust API documentation and checked renderer dimensions.
+- Public static documentation, a library-selection guide, updated integration
+  examples, security reporting, and generated full plain-text documentation.
+  CI checks documentation links and generated text for drift.
+
 ## 0.2.0
 
 - CI downloads and verifies the real-photograph set for both TypeScript

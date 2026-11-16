@@ -295,7 +295,9 @@ function factorsWithTriples(frame: Frame): number {
 const counter = (): Work => ({ steps: 0, compared: 0, scanned: 0, maps: 0, second: 0, meshes: 0, probed: 0, reduced: 0 })
 
 /** Maps sampled at reduced size a frame, at most: three factors, 30 each. */
-const REDUCED_MAPS = 3 * 30
+// Three original reduced sizes, plus the inverse-luminance fallback's one
+// shared allowance (which may all be used at reduced size).
+const REDUCED_MAPS = 3 * 30 + 30
 
 /**
  * Frames with no symbol whose sides sit at the smallest reduced size: 21

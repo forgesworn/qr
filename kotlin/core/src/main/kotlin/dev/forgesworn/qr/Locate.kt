@@ -103,20 +103,20 @@ private fun distance(a: Point, b: Point): Double = length(a.x - b.x, a.y - b.y)
 private fun distance(a: Finder, b: Finder): Double = length(a.x - b.x, a.y - b.y)
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
-private fun finderRatio(counts: IntArray, tolerance: Double = 0.5): Boolean {
-    var total = 0
-    for (c in counts) {
-        if (c == 0) return false
-        total += c
-    }
+private fun finderRatio(counts: IntArray, tolerance: Double = 0.5): Boolean =
+    finderRatio(counts[0], counts[1], counts[2], counts[3], counts[4], tolerance)
+
+private fun finderRatio(c0: Int, c1: Int, c2: Int, c3: Int, c4: Int, tolerance: Double): Boolean {
+    if (c0 == 0 || c1 == 0 || c2 == 0 || c3 == 0 || c4 == 0) return false
+    val total = c0 + c1 + c2 + c3 + c4
     if (total < 7) return false
     val module = total / 7.0
     val slack = module * tolerance
-    return abs(module - counts[0]) < slack &&
-        abs(module - counts[1]) < slack &&
-        abs(3 * module - counts[2]) < 3 * slack &&
-        abs(module - counts[3]) < slack &&
-        abs(module - counts[4]) < slack
+    return abs(module - c0) < slack &&
+        abs(module - c1) < slack &&
+        abs(3 * module - c2) < 3 * slack &&
+        abs(module - c3) < slack &&
+        abs(module - c4) < slack
 }
 
 private fun centreFromEnd(counts: IntArray, end: Double): Double =
@@ -137,83 +137,73 @@ private fun crossCheck(
     tolerance: Double = 0.5,
     work: Work? = null,
 ): Double {
-    val counts = intArrayOf(0, 0, 0, 0, 0)
+    var c0 = 0
+    var c1 = 0
+    var c2 = 0
+    var c3 = 0
+    var c4 = 0
     try {
-        return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+        val width = image.width
+        val height = image.height
+        fun inside(px: Int, py: Int) = px >= 0 && py >= 0 && px < width && py < height
+        // A centre run past these lengths could not pass the checks below, so
+        // stopping there loses nothing and keeps a long dark stripe from costing its
+        // length. Back along the row or down the column, the total would be more
+        // than twice the row's. On the diagonal, whose four outer runs stop at
+        // maxCount, a centre in proportion is under 29 times maxCount (at the
+        // loosest tolerance, 1.05).
+        val longest = if (dx != 0 && dy != 0) 32 * (maxCount + 1) else 2 * originalTotal
+        var px = x
+        var py = y
+        while (inside(px, py) && dark(image, px, py)) {
+            if (++c2 > longest) return Double.NaN
+            px -= dx
+            py -= dy
+        }
+        while (inside(px, py) && !dark(image, px, py) && c1 <= maxCount) {
+            c1++
+            px -= dx
+            py -= dy
+        }
+        if (!inside(px, py) || c1 > maxCount) return Double.NaN
+        while (inside(px, py) && dark(image, px, py) && c0 <= maxCount) {
+            c0++
+            px -= dx
+            py -= dy
+        }
+        if (c0 > maxCount) return Double.NaN
+        px = x + dx
+        py = y + dy
+        while (inside(px, py) && dark(image, px, py)) {
+            if (++c2 > longest) return Double.NaN
+            px += dx
+            py += dy
+        }
+        while (inside(px, py) && !dark(image, px, py) && c3 < maxCount) {
+            c3++
+            px += dx
+            py += dy
+        }
+        if (!inside(px, py) || c3 >= maxCount) return Double.NaN
+        while (inside(px, py) && dark(image, px, py) && c4 < maxCount) {
+            c4++
+            px += dx
+            py += dy
+        }
+        if (c4 >= maxCount) return Double.NaN
+        val total = c0 + c1 + c2 + c3 + c4
+        // A diagonal crosses the pattern at a longer stretch, so only straight lines
+        // compare totals. Back along the row the stretch must match; down the column,
+        // perspective can make the pattern up to twice as tall as wide, or half.
+        if (dx != 0 && dy == 0 && 5 * abs(total - originalTotal) >= 2 * originalTotal) return Double.NaN
+        if (dy != 0 && dx == 0 && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return Double.NaN
+        if (!finderRatio(c0, c1, c2, c3, c4, tolerance)) return Double.NaN
+        // Position along the line, measured in steps from the start point.
+        val end = if (dx != 0) px - x else py - y
+        return (end * (if (dx + dy > 0) 1 else -1)).toDouble() - c4 - c3 - c2 / 2.0
     } finally {
-        if (work != null) work.steps += counts.sum()
+        if (work != null) work.steps += c0 + c1 + c2 + c3 + c4
     }
-}
-
-private fun runs(
-    image: BitImage,
-    x: Int,
-    y: Int,
-    dx: Int,
-    dy: Int,
-    maxCount: Int,
-    originalTotal: Int,
-    tolerance: Double,
-    counts: IntArray,
-): Double {
-    val width = image.width
-    val height = image.height
-    fun inside(px: Int, py: Int) = px >= 0 && py >= 0 && px < width && py < height
-    // A centre run past these lengths could not pass the checks below, so
-    // stopping there loses nothing and keeps a long dark stripe from costing its
-    // length. Back along the row or down the column, the total would be more
-    // than twice the row's. On the diagonal, whose four outer runs stop at
-    // maxCount, a centre in proportion is under 29 times maxCount (at the
-    // loosest tolerance, 1.05).
-    val longest = if (dx != 0 && dy != 0) 32 * (maxCount + 1) else 2 * originalTotal
-    var px = x
-    var py = y
-    while (inside(px, py) && dark(image, px, py)) {
-        if (++counts[2] > longest) return Double.NaN
-        px -= dx
-        py -= dy
-    }
-    while (inside(px, py) && !dark(image, px, py) && counts[1] <= maxCount) {
-        counts[1]++
-        px -= dx
-        py -= dy
-    }
-    if (!inside(px, py) || counts[1] > maxCount) return Double.NaN
-    while (inside(px, py) && dark(image, px, py) && counts[0] <= maxCount) {
-        counts[0]++
-        px -= dx
-        py -= dy
-    }
-    if (counts[0] > maxCount) return Double.NaN
-    px = x + dx
-    py = y + dy
-    while (inside(px, py) && dark(image, px, py)) {
-        if (++counts[2] > longest) return Double.NaN
-        px += dx
-        py += dy
-    }
-    while (inside(px, py) && !dark(image, px, py) && counts[3] < maxCount) {
-        counts[3]++
-        px += dx
-        py += dy
-    }
-    if (!inside(px, py) || counts[3] >= maxCount) return Double.NaN
-    while (inside(px, py) && dark(image, px, py) && counts[4] < maxCount) {
-        counts[4]++
-        px += dx
-        py += dy
-    }
-    if (counts[4] >= maxCount) return Double.NaN
-    val total = counts.sum()
-    // A diagonal crosses the pattern at a longer stretch, so only straight lines
-    // compare totals. Back along the row the stretch must match; down the column,
-    // perspective can make the pattern up to twice as tall as wide, or half.
-    if (dx != 0 && dy == 0 && 5 * abs(total - originalTotal) >= 2 * originalTotal) return Double.NaN
-    if (dy != 0 && dx == 0 && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return Double.NaN
-    if (!finderRatio(counts, tolerance)) return Double.NaN
-    // Position along the line, measured in steps from the start point.
-    val end = if (dx != 0) px - x else py - y
-    return centreFromEnd(counts, (end * (if (dx + dy > 0) 1 else -1)).toDouble())
 }
 
 /**
@@ -287,42 +277,27 @@ internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? =
     val counts = intArrayOf(0, 0, 0, 0, 0)
     var y = skip - 1
     while (y < height) {
-        // Run by run, as a walk along the row pixel by pixel would count them:
-        // dark runs into the even places, light runs into the odd ones.
-        counts.fill(0)
-        var state = 0
+        // Enumerate five alternating runs ending in dark, in row order.
+        // A successful pattern consumes its last dark run, so the next
+        // candidate needs three new dark runs; otherwise slide by two runs.
         val changes = edges.row(y)
-        var ink = image.data[y * width].toInt() == 1
-        var x = 0
-        for (k in 0..changes.size) {
+        val firstDark = if (image.data[y * width].toInt() == 1) 0 else 1
+        var k = firstDark + 4
+        while (k <= changes.size) {
+            val start = k - 4
+            val a = if (start == 0) 0 else changes[start - 1]
+            val b = changes[start]
+            val c = changes[start + 1]
+            val d = changes[start + 2]
+            val e = changes[start + 3]
             val end = if (k < changes.size) changes[k] else width
-            val length = end - x
-            if (ink) {
-                if (state and 1 != 0) state++
-                counts[state] += length
-            } else if (state != 4) {
-                state++
-                counts[state] += length
-            } else if (finderRatio(counts, tolerance) && consider(counts, y, x)) {
-                // A pattern ends here. Its last light pixel starts nothing; the rest of the run does.
-                counts.fill(0)
-                state = 0
-                if (length > 1) {
-                    state = 1
-                    counts[1] = length - 1
-                }
-            } else {
-                counts[0] = counts[2]
-                counts[1] = counts[3]
-                counts[2] = counts[4]
-                counts[3] = length
-                counts[4] = 0
-                state = 3
-            }
-            x = end
-            ink = !ink
+            counts[0] = b - a
+            counts[1] = c - b
+            counts[2] = d - c
+            counts[3] = e - d
+            counts[4] = end - e
+            k += if (finderRatio(counts, tolerance) && consider(counts, y, end)) 6 else 2
         }
-        if (state == 4 && finderRatio(counts, tolerance)) consider(counts, y, width)
         y += skip
     }
     return found.sortedWith { a, b -> b.count - a.count }
@@ -457,6 +432,26 @@ private fun blackWhiteBlack(image: BitImage, from: Point, to: Point): Double {
 
 private class Candidate(var x: Double, var y: Double, var count: Int)
 
+// Keep the complete history; the active IDs retain insertion order. A retired
+// centre cannot match a later observation, and so cannot move back into range.
+private fun retireAlignmentCandidates(found: List<Candidate>, active: IntArray, activeCount: Int, lower: Double, moduleSize: Double): Int {
+    var kept = 0
+    for (i in 0 until activeCount) {
+        val id = active[i]
+        val candidate = found[id]
+        if (!(candidate.y < lower && abs(candidate.y - lower) > moduleSize)) active[kept++] = id
+    }
+    return kept
+}
+
+private fun findAlignmentCandidate(found: List<Candidate>, active: IntArray, activeCount: Int, cx: Double, cy: Double, moduleSize: Double): Candidate? {
+    for (i in 0 until activeCount) {
+        val candidate = found[active[i]]
+        if (abs(candidate.x - cx) <= moduleSize && abs(candidate.y - cy) <= moduleSize) return candidate
+    }
+    return null
+}
+
 /**
  * Searches near [estimate] for alignment pattern centres, whose modules span
  * [wide] pixels along a row and [tall] down a column. Candidates seen on two
@@ -489,17 +484,21 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
             above++
             yy--
         }
+        if (!(abs(above - tall) < slackDown)) return Double.NaN
         var below = 0
         yy = down
         while (yy <= bottom && data[yy * width + x].toInt() != 1) {
             below++
             yy++
         }
-        if (!(abs(above - tall) < slackDown) || !(abs(below - tall) < slackDown)) return Double.NaN
+        if (!(abs(below - tall) < slackDown)) return Double.NaN
         return (up + 1 + down) / 2.0
     }
     val found = ArrayList<Candidate>()
+    var active = IntArray(16)
+    var activeCount = 0
     for (y in top..bottom) {
+        var retiredForRow = false
         val changes = edges.row(y)
         val n = changes.size
         // The first change of colour past the window's left edge.
@@ -512,34 +511,47 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
         var x = left
         // Skip a dark run cut by the window.
         if (data[y * width + left].toInt() == 1) x = if (k < n && changes[k] <= right) changes[k++] else right + 1
-        // Runs alternate light, dark, light ...: the last two are kept, and the
-        // run that ends a light, dark, light three is checked with them.
+        // Each candidate is a light, dark, light triple. The first two
+        // runs must end inside the window; the final light run may be cut off.
         var start = x
-        var count = 0
-        var before = 0
-        var last = 0
+        if (k >= n || changes[k] > right) continue
+        var lightEnd = changes[k++]
+        if (k >= n || changes[k] > right) continue
+        var darkEnd = changes[k++]
         while (true) {
             x = if (k < n && changes[k] <= right) changes[k++] else right + 1
-            val run = x - start
-            start = x
-            count++
-            if (count >= 3 && count and 1 == 1 && abs(before - wide) < slack && abs(last - wide) < slack && abs(run - wide) < slack) {
+            val before = lightEnd - start
+            val last = darkEnd - lightEnd
+            val run = x - darkEnd
+            if (abs(before - wide) < slack && abs(last - wide) < slack && abs(run - wide) < slack) {
                 val cx = x - run - last / 2.0
                 val cy = vertical(floor(cx).toInt(), y)
                 if (!cy.isNaN()) {
-                    val same = found.firstOrNull { abs(it.x - cx) <= moduleSize && abs(it.y - cy) <= moduleSize }
+                    if (!retiredForRow) {
+                        // A passing middle run is shorter than 2 * ceil(tall), so
+                        // this and every later accepted centre has cy >= lower.
+                        val lower = y.toDouble() - ceil(tall)
+                        activeCount = retireAlignmentCandidates(found, active, activeCount, lower, moduleSize)
+                        retiredForRow = true
+                    }
+                    val same = findAlignmentCandidate(found, active, activeCount, cx, cy, moduleSize)
                     if (same != null) {
                         same.x = (same.x * same.count + cx) / (same.count + 1)
                         same.y = (same.y * same.count + cy) / (same.count + 1)
                         same.count++
                     } else {
+                        if (activeCount == active.size) active = active.copyOf(active.size * 2)
+                        active[activeCount++] = found.size
                         found.add(Candidate(cx, cy, 1))
                     }
                 }
             }
             if (x > right) break
-            before = last
-            last = run
+            // The trailing light run becomes the first of the next triple.
+            start = darkEnd
+            lightEnd = x
+            if (k >= n || changes[k] > right) break
+            darkEnd = changes[k++]
         }
     }
     // A candidate seen on one row only counts as three modules further away.
@@ -605,9 +617,10 @@ private fun projective(m: DoubleArray): (Double, Double) -> Point {
  * (dark centre, light ring, dark ring), stepping by [u] across and [v] down.
  * Perspective changes the local module size, so three scales are tried.
  */
-private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): Int {
-    var best = 0
+private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point, initialBest: Int = 0): Int {
+    var best = initialBest
     for (scale in doubleArrayOf(0.85, 1.0, 1.15)) {
+        if (best == 25) break
         var score = 0
         for (j in -2..2) {
             for (i in -2..2) {
@@ -617,6 +630,8 @@ private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): 
                 val got = x >= 0 && y >= 0 && x < image.width && y < image.height && dark(image, x.toInt(), y.toInt())
                 if (got == want) score++
             }
+            // Even perfect remaining rows cannot improve the best score.
+            if (score + (2 - j) * 5 <= best) break
         }
         best = max(best, score)
     }
@@ -724,8 +739,11 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
         for (reach in intArrayOf(4, 8, 16)) {
             for (estimate in estimates) {
                 for (p in findAlignments(image, edges, estimate, wide, tall, reach, work)) {
-                    if (scored.any { distance(it.p, p) <= moduleSize / 2 }) continue
-                    val score = max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
+                    // A point outside the enclosing square cannot be within the circle.
+                    val radius = moduleSize / 2
+                    if (scored.any { abs(it.p.x - p.x) <= radius && abs(it.p.y - p.y) <= radius && distance(it.p, p) <= radius }) continue
+                    // Scores below 20 are discarded, but their points still suppress duplicates.
+                    val score = alignmentScore(image, p, u0, v0, alignmentScore(image, p, u, v, 19))
                     scored.add(Scored(p, score, near(p)))
                 }
             }

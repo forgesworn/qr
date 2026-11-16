@@ -14,8 +14,9 @@ import { blocksFor, encode, FORMAT_COORDS, Grid, type ErrorCorrection } from '..
 import { ALIGNMENT_CENTRES, EC_BLOCKS } from '../src/tables.js'
 import { estimateSize, findFinders, finderTriples, locate, type Work } from '../src/locate.js'
 import { seg, symbol } from './builder.js'
-import { bent, prng } from './photo.js'
+import { bent, photograph, prng } from './photo.js'
 import { readPng, writePng } from './png.js'
+import { versionHintPicture } from './version-hint-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -272,6 +273,21 @@ function build(write: boolean): Pack {
   const nothing = new Grid(2)
   nothing.placeData(new Uint8Array(44))
   own('zero-codewords', straight(nothing.render('M', 0), nothing.size, 6))
+  // Flat-block thresholds depend on polarity. These used to miss despite
+  // the luminance inverse being readable; the small frame needs reduction.
+  const inverted = encode('https://example.com/inverted/0123456789')
+  for (const [name, scale, angle, mirror] of [
+    ['inverted-flat-blocks', 3, 17, false],
+    ['inverted-flat-blocks-mirrored', 3, 17, true],
+    ['inverted-flat-blocks-small', 2, 0, false],
+  ] as const) {
+    const image = photograph(inverted.modules, inverted.size, { scale, angle, mirror, invert: true, shade: 0.7 })
+    image.data = Uint8Array.from(image.data, (v) => Math.round(90 + v / 3))
+    own(name, image)
+  }
+  // New recovery coverage: both BCH version copies identify 40 although the
+  // original module-size estimate is 165; the hinted map needs a second look.
+  own('version-hint-blur-40', versionHintPicture())
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

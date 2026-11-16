@@ -135,6 +135,22 @@ export function readVersion(read: ModuleReader, size: number): number | undefine
   return nearest(VERSIONS, [bottomLeft, topRight])?.version
 }
 
+/** A version hint only when both BCH copies independently decode to the same version. */
+export function agreedVersion(read: ModuleReader, size: number): number | undefined {
+  if (size < 45) return undefined
+  let bottomLeft = 0
+  let topRight = 0
+  for (let k = 17; k >= 0; k--) {
+    const i = Math.floor(k / 3)
+    const j = k % 3
+    bottomLeft = (bottomLeft << 1) | (read(i, size - 11 + j) ? 1 : 0)
+    topRight = (topRight << 1) | (read(size - 11 + j, i) ? 1 : 0)
+  }
+  const first = nearest(VERSIONS, [bottomLeft])?.version
+  const second = nearest(VERSIONS, [topRight])?.version
+  return first !== undefined && first === second ? first : undefined
+}
+
 /**
  * The errors a block of this symbol may have had corrected: half of its check
  * codewords once the p of Table 9 is withheld to catch a misdecode. Only
@@ -170,34 +186,33 @@ export function readSymbol(read: ModuleReader, size: number): Payload | undefine
 
   const [ecPerBlock, g1, d1, g2] = blocksFor(version, format.ecc)
   const blockCount = g1 + g2
-  const total = g1 * d1 + g2 * (d1 + 1) + blockCount * ecPerBlock
-  const stream = new Uint8Array(total)
+  const dataCount = g1 * d1 + g2 * (d1 + 1)
   const places = placement(version)
-  const bits = Math.min(places.length, total * 8)
-  for (let bit = 0; bit < bits; bit++) {
-    const x = places[bit]! & 255
-    const y = places[bit]! >> 8
-    if (read(x, y) !== maskBit(format.mask, x, y)) stream[bit >>> 3]! |= 0x80 >>> (bit & 7)
+  const word = (index: number): number => {
+    let value = 0
+    const end = Math.min((index + 1) * 8, places.length)
+    for (let bit = index * 8; bit < end; bit++) {
+      const x = places[bit]! & 255
+      const y = places[bit]! >> 8
+      if (read(x, y) !== maskBit(format.mask, x, y)) value |= 0x80 >>> (bit & 7)
+    }
+    return value
   }
-
-  const blocks: Uint8Array[] = []
-  for (let b = 0; b < blockCount; b++) blocks.push(new Uint8Array((b < g1 ? d1 : d1 + 1) + ecPerBlock))
-  let k = 0
-  for (let i = 0; i <= d1; i++) {
-    for (let b = 0; b < blockCount; b++) if (i < (b < g1 ? d1 : d1 + 1)) blocks[b]![i] = stream[k++]!
-  }
-  for (let i = 0; i < ecPerBlock; i++) {
-    for (let b = 0; b < blockCount; b++) blocks[b]![(b < g1 ? d1 : d1 + 1) + i] = stream[k++]!
-  }
-  const data = new Uint8Array(g1 * d1 + g2 * (d1 + 1))
+  // Extract a block directly from its interleaved positions. A failed block
+  // rejects the symbol, so no later blocks need sampling or allocating.
+  const data = new Uint8Array(dataCount)
   let corrected = 0
   const limit = correctable(version, format.ecc)
   for (let b = 0, offset = 0; b < blockCount; b++) {
-    const fixed = correct(blocks[b]!, ecPerBlock)
+    const length = b < g1 ? d1 : d1 + 1
+    const block = new Uint8Array(length + ecPerBlock)
+    for (let i = 0; i < d1; i++) block[i] = word(i * blockCount + b)
+    if (b >= g1) block[d1] = word(d1 * blockCount + b - g1)
+    for (let i = 0; i < ecPerBlock; i++) block[length + i] = word(dataCount + i * blockCount + b)
+    const fixed = correct(block, ecPerBlock)
     if (fixed < 0 || fixed > limit) return undefined
     corrected += fixed
-    const length = b < g1 ? d1 : d1 + 1
-    data.set(blocks[b]!.subarray(0, length), offset)
+    data.set(block.subarray(0, length), offset)
     offset += length
   }
 

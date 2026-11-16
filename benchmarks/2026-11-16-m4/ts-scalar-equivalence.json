@@ -1,0 +1,679 @@
+{
+  "conformance": 61,
+  "damaged": 4,
+  "patterns": 18,
+  "frames": [
+    {
+      "name": "decode-frames/frame-01.png",
+      "width": 200,
+      "height": 200,
+      "sha256": "9ca5fffbbad2b1a4e734cefcbfe063859f54b999811687d1d9a61a0972466cc8",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-02.png",
+      "width": 594,
+      "height": 594,
+      "sha256": "a213c387adbc710bdaae8a35bef43755219e1e3aa199d4ccf0d7e58725374509",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-03.png",
+      "width": 412,
+      "height": 412,
+      "sha256": "57c31d5f7a2bf3a21e4faa6834c22e6d8db4ed6fe773ba3b8d304c61c8571302",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-04.png",
+      "width": 662,
+      "height": 662,
+      "sha256": "fb18fdc5e37bc3867cc9fbd2a29d7c257d0462baa567b264674b20646dcae063",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-05.png",
+      "width": 242,
+      "height": 242,
+      "sha256": "61d3de106d00aac76d010a012a8ac2b5583612f28800d4c55f4d283bae4b54cb",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-06.png",
+      "width": 490,
+      "height": 490,
+      "sha256": "3c3f8fbe7755d74b95ea1e8d9370079ab1e95972cd8f9aaf84e85a799754f51a",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-07.png",
+      "width": 194,
+      "height": 194,
+      "sha256": "26c53d19b8973c0f282297f1c625508a01933619a33e182e9e021ef764dbcfbf",
+      "read": false,
+      "maps": 206
+    },
+    {
+      "name": "decode-frames/frame-08.png",
+      "width": 420,
+      "height": 420,
+      "sha256": "ff021bc90fe80838464a5305556a6e15e9fe7427d1057f54c46e622e3acb3709",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-09.png",
+      "width": 382,
+      "height": 382,
+      "sha256": "16266414fa69cd9375b7d78e47be10b72c6bdf22901d8f2633ac80486a2645fd",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-10.png",
+      "width": 668,
+      "height": 668,
+      "sha256": "fde96957f7456eb48d2a941163abe48caead51fc6eed68a56accd630da372a99",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-11.png",
+      "width": 220,
+      "height": 220,
+      "sha256": "bc18390b871a0aee5ab77d9b30b30908064e1be9ad4df41c88f63f3573294b19",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-12.png",
+      "width": 730,
+      "height": 730,
+      "sha256": "868d90c3070423a7410062222afcb2a97c126004a2d931e92797187b74a58f1e",
+      "read": true,
+      "maps": 7
+    },
+    {
+      "name": "decode-frames/frame-13.png",
+      "width": 308,
+      "height": 308,
+      "sha256": "98156f313c4c9e6fb618bb7c95a3f22d1fd511c356b68d48addd358789771024",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-14.png",
+      "width": 248,
+      "height": 248,
+      "sha256": "a367c4c3964db5a4ad9c7c88328849f863f47c7e2061d3b45e567f943690feec",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-15.png",
+      "width": 476,
+      "height": 476,
+      "sha256": "526637acc9d057dd49a83ee2e13f5cbefeac8e67b40b669b9b307112d613173a",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-16.png",
+      "width": 448,
+      "height": 448,
+      "sha256": "6babc313078447c8f954ed97b87ea0f82d497025dcc5cb9b9daeac0c8f6bfcde",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-17.png",
+      "width": 232,
+      "height": 232,
+      "sha256": "3de2c7031eda267857aa966682126e1cd599f736a33c01fb20909f3460591a5a",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-18.png",
+      "width": 398,
+      "height": 398,
+      "sha256": "61b3f2128bc6adc7394ad36752c457bf683cb5423a3262f504731d81857ce659",
+      "read": true,
+      "maps": 9
+    },
+    {
+      "name": "decode-frames/frame-19.png",
+      "width": 170,
+      "height": 170,
+      "sha256": "420694a76bd9e27eee88300b372cceb38216ae388fa6aa31127e2cccf12b6864",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-20.png",
+      "width": 504,
+      "height": 504,
+      "sha256": "8fb13166c8e5999806a9fa6eed8d5eac3e320419eb6e79f4feaa2fcb1e4085f6",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-21.png",
+      "width": 398,
+      "height": 398,
+      "sha256": "fd8eaaeb420849083339c8abc449ab8ef2d4bce45030578cacd8f92242202214",
+      "read": true,
+      "maps": 53
+    },
+    {
+      "name": "decode-frames/frame-22.png",
+      "width": 466,
+      "height": 466,
+      "sha256": "35b2830e45b0e0280f62142fa7fc010f1e98712f7b52b567fbe876e73a914864",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-23.png",
+      "width": 132,
+      "height": 132,
+      "sha256": "b2b06ccbeae4a7b61f7ae89eadbdfeccaba9bf9dd88e0e264c01e380866c554d",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-24.png",
+      "width": 498,
+      "height": 498,
+      "sha256": "f3ddebd05e3bb26d280dbfcec50893453874162243886189c740dac5f9bbc489",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-25.png",
+      "width": 300,
+      "height": 300,
+      "sha256": "7655ab4aa042fbcd16fca045e234393cb2764e37a9c83fe8cae7522aef451136",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-26.png",
+      "width": 422,
+      "height": 422,
+      "sha256": "1b526a45e35f9f2884f502df3e84450a04659c28d46094ef64323cf75c0b07e6",
+      "read": true,
+      "maps": 68
+    },
+    {
+      "name": "decode-frames/frame-27.png",
+      "width": 470,
+      "height": 470,
+      "sha256": "1e2c282b19c016529bb4952444ccbcc484225fb9cf0297f620aa36eaf7db2946",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-28.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "73d13731ef6211dc63c48c918a71d6e1eb96788b435e7e3b0bcec42dbc23a511",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-29.png",
+      "width": 148,
+      "height": 148,
+      "sha256": "14a4f2d61e7abbdd25242312c463916e28891664b7e07aa8df5b42f9f2e6d9aa",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-30.png",
+      "width": 208,
+      "height": 208,
+      "sha256": "ab93bf08239ddac93695a3caf89b1f8578c88e5122bc4294ad677a59e09a4fb8",
+      "read": true,
+      "maps": 7
+    },
+    {
+      "name": "decode-frames/frame-31.png",
+      "width": 200,
+      "height": 200,
+      "sha256": "16f862393492291e8294d265bef3667e4b96fdd6301ca389761200aabd57db3c",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-32.png",
+      "width": 350,
+      "height": 350,
+      "sha256": "7b5505f2c07f955cb1b754d32e567cf5a9af3a3944540e839b4ef5dfdc45e2c0",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-33.png",
+      "width": 374,
+      "height": 374,
+      "sha256": "51c1343c26b04cc2d735de2d104e2711dac4792e8b59323de1fb9f3ca8ae5009",
+      "read": true,
+      "maps": 42
+    },
+    {
+      "name": "decode-frames/frame-34.png",
+      "width": 250,
+      "height": 250,
+      "sha256": "fe7a4cffef6584b9534956fcfb4bacb7ea2d4a3430c1d9f2080214afcb92fc6a",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-35.png",
+      "width": 222,
+      "height": 222,
+      "sha256": "4363e6468a920982794a4399e9a03f2a616351c73cefd3c7fd10f589f37b4e66",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-36.png",
+      "width": 528,
+      "height": 528,
+      "sha256": "28da1434890d84fcad3efd9e8bf1a4f23020e3cd582a78f9a547d862f7227c1b",
+      "read": true,
+      "maps": 118
+    },
+    {
+      "name": "decode-frames/frame-37.png",
+      "width": 354,
+      "height": 354,
+      "sha256": "b784f891d29de8e2be41c3db1af06acb57726518cdc655aa2433cbb0b438eb41",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-38.png",
+      "width": 314,
+      "height": 314,
+      "sha256": "ee82891a1eb4a1e09424c90d28826858c5a7740944f3b68bbe3465978b22de4b",
+      "read": true,
+      "maps": 7
+    },
+    {
+      "name": "decode-frames/frame-39.png",
+      "width": 302,
+      "height": 302,
+      "sha256": "d692279849f0a062b96237cf2801758f6b719325157ede4b59fc36c35ff8e44a",
+      "read": false,
+      "maps": 268
+    },
+    {
+      "name": "decode-frames/frame-40.png",
+      "width": 358,
+      "height": 358,
+      "sha256": "ad8bc5e224c9c1de60975a045941bf87e6c09a182f56c5a49b010800c794b063",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-41.png",
+      "width": 210,
+      "height": 210,
+      "sha256": "c84d958c003b60a88bebfbecbc769888061fa4b85d052b87352e0d4856d9b37e",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-42.png",
+      "width": 628,
+      "height": 628,
+      "sha256": "6a91262f24f6b1ccb8ad8b6d7b703ca43d8dbcf5d3613bb1015dd123c569dce5",
+      "read": true,
+      "maps": 9
+    },
+    {
+      "name": "decode-frames/frame-43.png",
+      "width": 314,
+      "height": 314,
+      "sha256": "e31b96194a6e6c661b2921b612b503f6ea84f26f005fe55c22ceae4a056f4235",
+      "read": true,
+      "maps": 18
+    },
+    {
+      "name": "decode-frames/frame-44.png",
+      "width": 430,
+      "height": 430,
+      "sha256": "9f53415e4e8c9890f63b5d1b162614f4f206d9756b5ecedeb95ef4f70dc11539",
+      "read": true,
+      "maps": 154
+    },
+    {
+      "name": "decode-frames/frame-45.png",
+      "width": 472,
+      "height": 472,
+      "sha256": "7a6f0c3af6a9623356149acd46e5ebbb02f9c4d2610614aae77a65855fe6ae90",
+      "read": true,
+      "maps": 11
+    },
+    {
+      "name": "decode-frames/frame-46.png",
+      "width": 530,
+      "height": 530,
+      "sha256": "c0b62b360b6af2c9f560bf3c29a2d192d3372c78a3d2ac3697893d2103baa077",
+      "read": true,
+      "maps": 9
+    },
+    {
+      "name": "decode-frames/frame-47.png",
+      "width": 204,
+      "height": 204,
+      "sha256": "21bf24ce1a033e2e4031eed7b68cf9c349ada37cd4673800edbb183bf6cca21f",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "decode-frames/frame-48.png",
+      "width": 276,
+      "height": 276,
+      "sha256": "91de32d67c9d0948e4f7654831e611f0c4f0157a703f4ec74bfc46e6c7ed8a13",
+      "read": true,
+      "maps": 7
+    },
+    {
+      "name": "conformance/blank.png",
+      "width": 96,
+      "height": 64,
+      "sha256": "33f6dd77e31cc41eb25ee76db7080692170b1d820f50daa92d71d514f59a1c0a",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "conformance/gradient.png",
+      "width": 120,
+      "height": 90,
+      "sha256": "09f3163c0ed76fc2ecb3d4e4d1f391f7acbb462c80649ae4e9fb0dbb30a427cb",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "conformance/noise.png",
+      "width": 160,
+      "height": 120,
+      "sha256": "133d194178be3cb9ad2bd7adf69179753928ff07f94ccbe8a20e004c1b15d52a",
+      "read": false,
+      "maps": 271
+    },
+    {
+      "name": "conformance/finder-tiles.png",
+      "width": 200,
+      "height": 160,
+      "sha256": "cbe32e952a9f9f98a20d5ee188b66b05a0d49b4a794368eeecccd2e7da2696da",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "conformance/under-40-pixels.png",
+      "width": 29,
+      "height": 29,
+      "sha256": "43cddb7ec86823dee8ac5c5acf58af33092c8aeca039a1140a692467f25ef28a",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "conformance/close-up-scan-lines.png",
+      "width": 888,
+      "height": 888,
+      "sha256": "1b44210d5ccbcae8d37238f00a8ace2238aaa30efef7b46997bc43864c84ac81",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "conformance/close-up-format-damaged.png",
+      "width": 888,
+      "height": 888,
+      "sha256": "59cace6146e121d5196858938c6eb472904c4b71fd49be5f121554178647ea77",
+      "read": false,
+      "maps": 18
+    },
+    {
+      "name": "conformance/bent-version-12.png",
+      "width": 292,
+      "height": 292,
+      "sha256": "f3f49e879e1dfbd6d2b39fbfc6dd7a878735c0aa7bc6fcd2468ab55af4960da6",
+      "read": true,
+      "maps": 165
+    },
+    {
+      "name": "conformance/bent-version-4.png",
+      "width": 164,
+      "height": 164,
+      "sha256": "7b74e2252f9723357bc54b560fa938b8d53edc879e3d70cf738ea18704be1b72",
+      "read": true,
+      "maps": 20
+    },
+    {
+      "name": "conformance/zero-codewords.png",
+      "width": 198,
+      "height": 198,
+      "sha256": "f269b76d11b5e51d694c1e43a575199266447868998c41924af37d63f574c720",
+      "read": false,
+      "maps": 58
+    },
+    {
+      "name": "conformance/inverted-flat-blocks.png",
+      "width": 166,
+      "height": 166,
+      "sha256": "74f0063e6a405c8b9963a8f571c27c404b0f212cd29f90e536901e7168975ad3",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "conformance/inverted-flat-blocks-mirrored.png",
+      "width": 166,
+      "height": 166,
+      "sha256": "cb17e87bbc31acdbdad64ab556f4675e1cd387185500daca3788044868cc9b10",
+      "read": true,
+      "maps": 13
+    },
+    {
+      "name": "conformance/inverted-flat-blocks-small.png",
+      "width": 114,
+      "height": 114,
+      "sha256": "10ca129a552add977a40fcced112fea3c13171d4189b78cfbafa01ede86f7fbb",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "damaged-5-10-0",
+      "width": 264,
+      "height": 264,
+      "sha256": "43e7574af5a04f540649eaddcba34bbee1a875eb839628aed6a4d69b0723fa6f",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "damaged-4-11-0",
+      "width": 264,
+      "height": 264,
+      "sha256": "bb316ec9251f87a2a20345363b27498647b906c443d224ff573859ecb0048ddf",
+      "read": true,
+      "maps": 9
+    },
+    {
+      "name": "damaged-4-12-0",
+      "width": 264,
+      "height": 264,
+      "sha256": "029d04d6d19a97f7521f722edcd689a81a9f7442671000af4277b2e27f50f4ec",
+      "read": true,
+      "maps": 9
+    },
+    {
+      "name": "damaged-5-10-10",
+      "width": 264,
+      "height": 264,
+      "sha256": "c3b997f7253fb9476ed28530812fa8d62e90e82b1af3f867182a159ef3078462",
+      "read": true,
+      "maps": 1
+    },
+    {
+      "name": "noise-320x240-1",
+      "width": 320,
+      "height": 240,
+      "sha256": "d0667383e17bffd31cacc23d1dee99675ad9b46f9e504ec8d128dbfac0987e4e",
+      "read": false,
+      "maps": 368
+    },
+    {
+      "name": "noise-320x240-2",
+      "width": 320,
+      "height": 240,
+      "sha256": "33c61252821e95f4511715c512e8e484ccbee3f5e8606d9534c0dc51318a1395",
+      "read": false,
+      "maps": 355
+    },
+    {
+      "name": "noise-320x240-3",
+      "width": 320,
+      "height": 240,
+      "sha256": "d5cc07652b36a9b4f389bb2d4fdcf6deac4ee6620cb8f97d1a0c4ef2c5c39255",
+      "read": false,
+      "maps": 342
+    },
+    {
+      "name": "stripes-320x240-1",
+      "width": 320,
+      "height": 240,
+      "sha256": "d12d38f9d85fc0665e84004e3c07d4d1997eb0c9f11c2b07024f7b597dcc0cc9",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "stripes-320x240-2",
+      "width": 320,
+      "height": 240,
+      "sha256": "d12d38f9d85fc0665e84004e3c07d4d1997eb0c9f11c2b07024f7b597dcc0cc9",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "stripes-320x240-3",
+      "width": 320,
+      "height": 240,
+      "sha256": "d12d38f9d85fc0665e84004e3c07d4d1997eb0c9f11c2b07024f7b597dcc0cc9",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "checkerboard-320x240-1",
+      "width": 320,
+      "height": 240,
+      "sha256": "84de03b7c1098481445032cf5ab74f64a7672fa55106fcb6e4bd55c0bc2b4ec2",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "checkerboard-320x240-2",
+      "width": 320,
+      "height": 240,
+      "sha256": "84de03b7c1098481445032cf5ab74f64a7672fa55106fcb6e4bd55c0bc2b4ec2",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "checkerboard-320x240-3",
+      "width": 320,
+      "height": 240,
+      "sha256": "84de03b7c1098481445032cf5ab74f64a7672fa55106fcb6e4bd55c0bc2b4ec2",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "noise-640x480-1",
+      "width": 640,
+      "height": 480,
+      "sha256": "7c1c8e42428aed179c19d6155baf9ee5ea9a62f99bd163270ecd74cdba72639e",
+      "read": false,
+      "maps": 224
+    },
+    {
+      "name": "noise-640x480-2",
+      "width": 640,
+      "height": 480,
+      "sha256": "8f52ede42b058810814371f8b260faa10965f8e615b446839c735618ef839137",
+      "read": false,
+      "maps": 443
+    },
+    {
+      "name": "noise-640x480-3",
+      "width": 640,
+      "height": 480,
+      "sha256": "e3aef560faaaff87adae95b7d0da93b6506eb2024b6e11a363b5701dd0488496",
+      "read": false,
+      "maps": 178
+    },
+    {
+      "name": "stripes-640x480-1",
+      "width": 640,
+      "height": 480,
+      "sha256": "5c6e8a4d414822d16c14a605a975d1353e9d58ceade027faff3af1c3875eee9e",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "stripes-640x480-2",
+      "width": 640,
+      "height": 480,
+      "sha256": "5c6e8a4d414822d16c14a605a975d1353e9d58ceade027faff3af1c3875eee9e",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "stripes-640x480-3",
+      "width": 640,
+      "height": 480,
+      "sha256": "5c6e8a4d414822d16c14a605a975d1353e9d58ceade027faff3af1c3875eee9e",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "checkerboard-640x480-1",
+      "width": 640,
+      "height": 480,
+      "sha256": "96e52970f31b9c48252be136efbf8afc9802ffb37918448da95f26f7e2a22271",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "checkerboard-640x480-2",
+      "width": 640,
+      "height": 480,
+      "sha256": "96e52970f31b9c48252be136efbf8afc9802ffb37918448da95f26f7e2a22271",
+      "read": false,
+      "maps": 0
+    },
+    {
+      "name": "checkerboard-640x480-3",
+      "width": 640,
+      "height": 480,
+      "sha256": "96e52970f31b9c48252be136efbf8afc9802ffb37918448da95f26f7e2a22271",
+      "read": false,
+      "maps": 0
+    }
+  ],
+  "baselineRevision": "cbc54dbb07e0864fc5b3796a9e0b2e1830d87ba3",
+  "comparison": "Complete result and work counters; conformance also checked against recorded golden results/work",
+  "hashes": {
+    "baseLocateSha256": "2351047e1506b9e5ad6e5dd8f17beeaa0ec32154f9c5aafa7a63954675279329",
+    "candidateLocateSha256": "a33c41f2b04532e7c36d87617b9855dcff52a2687912dbc8625297560fdd6d6a",
+    "baseBundleSha256": "930e4f3687962968966fdf8a67bba8bbccbb6ba7c3c2166e94db2050f95e83ef",
+    "candidateBundleSha256": "d9439c17781163dadd421e96506030cd23f642b64d22ca3a65f8ef245749ca17"
+  }
+}

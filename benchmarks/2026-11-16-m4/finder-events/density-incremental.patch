@@ -1,0 +1,169 @@
+--- a/rust/src/locate.rs
++++ b/rust/src/locate.rs
+@@ -323,7 +323,11 @@
+ #[inline]
+ fn scan_row<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, dark_first: bool, tolerance: f64, mut consider: F) {
+     let first_dark = if dark_first { 0 } else { 1 };
+-    let mut k = first_dark + 4;
++    scan_row_from(changes, width, first_dark + 4, tolerance, &mut consider);
++}
++
++#[inline]
++fn scan_row_from<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, mut k: usize, tolerance: f64, mut consider: F) {
+     while k <= changes.len() {
+         let start = k - 4;
+         let a = if start == 0 { 0 } else { changes[start - 1] as usize };
+@@ -339,8 +343,11 @@
+ 
+ // Scratch prototype: only the loose eligibility is retained, per image and
+ // polarity. A populated empty span is distinct from a row never scanned.
+-struct EventSpan { first: usize, begin: usize, end: usize }
+-pub(crate) struct FinderEvents { rows: Vec<EventSpan>, words: Vec<u32>, ready: bool }
++enum RowEvents {
++    Direct { first: usize },
++    Events { first: usize, begin: usize, end: usize },
++}
++pub(crate) struct FinderEvents { rows: Vec<RowEvents>, words: Vec<u32>, ready: bool }
+ impl FinderEvents {
+     pub(crate) fn new() -> Self { Self { rows: Vec::new(), words: Vec::new(), ready: false } }
+ }
+@@ -379,9 +386,10 @@
+ 
+ // Strict consumes the original schedule immediately. Even windows skipped by a
+ // successful strict sighting are classified, for a later loose pass.
+-fn scan_joint<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, first: usize, words: &mut Vec<u32>, mut consider: F) {
++fn scan_joint<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, first: usize, words: &mut Vec<u32>, mut consider: F) -> bool {
+     let count = if first <= changes.len() { (changes.len() - first) / 2 + 1 } else { 0 };
+-    let begin = words.len(); words.resize(begin + (count + 31) / 32, 0);
++    let begin = words.len();
++    if count > 0 { words.push(0); }
+     let mut resume = first;
+     for index in 0..count {
+         let k = first + 2 * index;
+@@ -391,7 +399,16 @@
+         if k >= resume && strict {
+             resume = if consider(&counts, end) { k + 6 } else { k + 2 };
+         }
+-    }
++        if index == 31 {
++            if words[begin].count_ones() >= 16 {
++                words.truncate(begin);
++                scan_row_from(changes, width, (first + 64).max(resume), 0.5, &mut consider);
++                return true;
++            }
++            words.resize(begin + (count + 31) / 32, 0);
++        }
++    }
++    false
+ }
+ 
+ // Bits are visited in ascending order. The guard preserves the successful
+@@ -442,12 +459,15 @@
+         let first = if dark_first { 4 } else { 5 };
+         if tolerance == 0.5 {
+             let begin = events.words.len();
+-            scan_joint(changes, width, first, &mut events.words, |counts, end| scan.consider(counts, y, end));
+-            events.rows.push(EventSpan { first, begin, end: events.words.len() });
++            let direct = scan_joint(changes, width, first, &mut events.words, |counts, end| scan.consider(counts, y, end));
++            events.rows.push(if direct { RowEvents::Direct { first } } else { RowEvents::Events { first, begin, end: events.words.len() } });
+         } else if tolerance == 0.8 && events.ready {
+-            match events.rows.get((y + 1) / skip - 1).filter(|row| row.first == first) {
+-                Some(row) => scan_loose(changes, width, first, &events.words[row.begin..row.end], |counts, end| scan.consider(counts, y, end)),
+-                None => scan_row(changes, width, dark_first, tolerance, |counts, end| scan.consider(counts, y, end)),
++            match events.rows.get((y + 1) / skip - 1) {
++                Some(RowEvents::Events { first: row_first, begin, end }) if *row_first == first =>
++                    scan_loose(changes, width, first, &events.words[*begin..*end], |counts, end| scan.consider(counts, y, end)),
++                Some(RowEvents::Direct { first: row_first }) if *row_first == first =>
++                    scan_row(changes, width, dark_first, tolerance, |counts, end| scan.consider(counts, y, end)),
++                _ => scan_row(changes, width, dark_first, tolerance, |counts, end| scan.consider(counts, y, end)),
+             }
+         } else {
+             scan_row(changes, width, dark_first, tolerance, |counts, end| scan.consider(counts, y, end));
+@@ -558,10 +578,10 @@
+         let first=if data[0]==1 {4} else {5};let mut words=Vec::new();
+         let accept=|counts: &[i64;5],end:usize,n:usize| match pattern {0=>false,1=>true,2=>n%2==0,_=>(end+counts[0] as usize+counts[2] as usize)%3==0};
+         let mut strict_reference=Vec::new();reference_row(&changes,width,data[0]==1,0.5,|counts,end|{let yes=accept(counts,end,strict_reference.len());strict_reference.push((*counts,end,yes));yes});
+-        let mut strict=Vec::new();scan_joint(&changes,width,first,&mut words,|counts,end|{let yes=accept(counts,end,strict.len());strict.push((*counts,end,yes));yes});
++        let mut strict=Vec::new();let direct=scan_joint(&changes,width,first,&mut words,|counts,end|{let yes=accept(counts,end,strict.len());strict.push((*counts,end,yes));yes});
+         assert_eq!(strict,strict_reference,"strict {data:?} pattern={pattern}");
+         let mut loose_reference=Vec::new();reference_row(&changes,width,data[0]==1,0.8,|counts,end|{let yes=accept(counts,end,loose_reference.len());loose_reference.push((*counts,end,yes));yes});
+-        for _ in 0..2 { let mut loose=Vec::new();scan_loose(&changes,width,first,&words,|counts,end|{let yes=accept(counts,end,loose.len());loose.push((*counts,end,yes));yes});assert_eq!(loose,loose_reference,"loose {data:?} pattern={pattern}"); }
++        for _ in 0..2 { let mut loose=Vec::new();let mut consider=|counts: &[i64;5],end|{let yes=accept(counts,end,loose.len());loose.push((*counts,end,yes));yes};if direct {scan_row(&changes,width,data[0]==1,0.8,&mut consider)} else {scan_loose(&changes,width,first,&words,&mut consider)};assert_eq!(loose,loose_reference,"loose {data:?} pattern={pattern}"); }
+     }
+     #[test]
+     fn event_rows_match_independent_original_schedule() {
+@@ -625,6 +645,74 @@
+                 assert_eq!(actual,expected,"tolerance={tolerance}");assert_eq!(a,b);
+             }
+             assert!(cache.ready && !cache.rows.is_empty());
++        }
++    }
++
++    // Search bounded deterministic run-length fixtures, then assert their
++    // density and schedule explicitly before comparing either path.
++    fn density_fixture(count: usize, dark_first: bool, target: usize, force: Option<usize>, tail: Option<bool>) -> Vec<u8> {
++        let lead = usize::from(!dark_first);
++        let mut seed=0x6132_9d21u32.wrapping_add(count as u32*719).wrapping_add(target as u32*53).wrapping_add(force.unwrap_or(0) as u32*97).wrapping_add(lead as u32);
++        for _ in 0..250_000 {
++            let mut runs=vec![0usize;lead+2*count+3];
++            for r in &mut runs {seed=seed.wrapping_mul(1664525).wrapping_add(1013904223);*r=1+((seed>>16)%3) as usize;}
++            if let Some(ordinal)=force { let base=lead+ordinal*2; runs[base..base+5].copy_from_slice(&[2,2,6,2,2]); let resumed=lead+(ordinal+3)*2; runs[resumed..resumed+5].copy_from_slice(&[2,2,6,2,2]); }
++            if let Some(dense)=tail { for r in runs.iter_mut().skip(lead+67) {*r=if dense {2} else {1};} }
++            let mut data=Vec::new();for (i,n) in runs.into_iter().enumerate(){data.extend(std::iter::repeat_n(((i+lead)%2==0) as u8,n));}
++            let changes:Vec<i32>=(1..data.len()).filter(|&x|data[x]!=data[x-1]).map(|x|x as i32).collect();let first=if dark_first {4}else{5};
++            let actual=if first<=changes.len(){(changes.len()-first)/2+1}else{0};
++            if actual!=count {continue}
++            let density=(0..count.min(32)).filter(|&n|finder_ratio(&window(&changes,data.len(),first+2*n).0,0.8)).count();
++            if density!=target {continue}
++            if let Some(n)=force {if !finder_ratio(&window(&changes,data.len(),first+2*n).0,0.5) {continue}}
++            if let Some(dense)=tail {let hits=(32..count).filter(|&n|finder_ratio(&window(&changes,data.len(),first+2*n).0,0.8)).count();if (dense && hits<16)||(!dense && hits>3){continue}}
++            return data;
++        }
++        panic!("no density fixture count={count} dark_first={dark_first} target={target} force={force:?} tail={tail:?}");
++    }
++    fn check_density_fixture(data: &[u8], count: usize, density: usize, force: Option<usize>, tail: Option<bool>) {
++        let changes:Vec<i32>=(1..data.len()).filter(|&x|data[x]!=data[x-1]).map(|x|x as i32).collect();let first=if data[0]==1 {4}else{5};
++        assert_eq!((changes.len()-first)/2+1,count);
++        assert_eq!((0..count.min(32)).filter(|&n|finder_ratio(&window(&changes,data.len(),first+2*n).0,0.8)).count(),density);
++        if let Some(dense)=tail {let hits=(32..count).filter(|&n|finder_ratio(&window(&changes,data.len(),first+2*n).0,0.8)).count();if dense {assert!(hits>=16)} else {assert!(hits<=3)}}
++        let target_end=force.map(|n|{let (counts,end)=window(&changes,data.len(),first+2*n);assert!(finder_ratio(&counts,0.5));end});
++        let accept=|end:usize|target_end.is_some_and(|target|end==target);
++        let mut old=Vec::new();reference_row(&changes,data.len(),data[0]==1,0.5,|c,end|{let yes=accept(end);old.push((*c,end,yes));yes});
++        if let Some(end)=target_end {assert!(old.iter().any(|entry|entry.1==end && entry.2));}
++        let mut words=vec![0x1234_5678];let mut strict=Vec::new();
++        let direct=scan_joint(&changes,data.len(),first,&mut words,|c,end|{let yes=accept(end);strict.push((*c,end,yes));yes});
++        assert_eq!(direct,count>=32&&density>=16);assert_eq!(words[0],0x1234_5678);if direct {assert_eq!(words.len(),1)}
++        assert_eq!(strict,old);
++        if let Some(n)=force {for skipped in [n+1,n+2] {let end=window(&changes,data.len(),first+2*skipped).1;assert!(!strict.iter().any(|x|x.1==end),"accepted candidate must skip subsequent windows");}let after=n+3;assert!(after<count);let (resumed,end)=window(&changes,data.len(),first+2*after);assert!(finder_ratio(&resumed,0.5));assert!(strict.iter().any(|x|x.1==end),"resume candidate must be checked");}
++        let mut expected=Vec::new();reference_row(&changes,data.len(),data[0]==1,0.8,|c,end|{let yes=accept(end);expected.push((*c,end,yes));yes});
++        for _ in 0..2 {let mut actual=Vec::new();let mut consider=|c: &[i64;5],end|{let yes=accept(end);actual.push((*c,end,yes));yes};if direct {scan_row(&changes,data.len(),data[0]==1,0.8,&mut consider)} else {scan_loose(&changes,data.len(),first,&words[1..],&mut consider)};assert_eq!(actual,expected);}
++    }
++    #[test]
++    fn density_boundaries_and_skips_match_original_row_schedule() {
++        for dark in [false,true] {for count in [31,32,33] {for density in [15,16,17] {
++            let data=density_fixture(count,dark,density,None,None);assert_eq!(data[0]==1,dark);check_density_fixture(&data,count,density,None,None);
++        }}}
++        for dark in [false,true] {for ordinal in [30,31] {
++            let data=density_fixture(35,dark,16,Some(ordinal),None);check_density_fixture(&data,35,16,Some(ordinal),None);
++        }}
++        for dark in [false,true] {for (density,tail) in [(16,false),(15,true)] {
++            let data=density_fixture(64,dark,density,None,Some(tail));check_density_fixture(&data,64,density,None,Some(tail));
++        }}
++    }
++
++    #[test]
++    fn cached_zero_and_direct_rows_remain_distinct_on_repeated_loose_passes() {
++        let (width,height)=(180usize,7usize);
++        for run_width in [1usize,2] {
++            let data=(0..width*height).map(|i|(((i%width)/run_width)%2==0) as u8).collect();
++            let image=BitImage {data,width,height};let mut cache=FinderEvents::new();let mut edges=Edges::new(&image);
++            let mut strict_work=Work::default();let strict=find_finders_cached(&image,0.5,Some(&mut strict_work),&mut edges,&mut cache);
++            let mut ref_work=Work::default();assert_eq!(strict,reference_find_finders(&image,0.5,Some(&mut ref_work),&mut Edges::new(&image)));assert_eq!(strict_work,ref_work);
++            if run_width==1 {assert!(cache.rows.iter().all(|r|matches!(r,RowEvents::Events { .. })));assert!(cache.words.iter().all(|&w|w==0));}
++            else {assert!(cache.rows.iter().all(|r|matches!(r,RowEvents::Direct { .. })));assert!(cache.words.is_empty());}
++            for _ in 0..2 {let (mut a,mut b)=(Work::default(),Work::default());
++                assert_eq!(find_finders_cached(&image,0.8,Some(&mut a),&mut edges,&mut cache),reference_find_finders(&image,0.8,Some(&mut b),&mut Edges::new(&image)));assert_eq!(a,b);
++            }
+         }
+     }
+ 

@@ -155,6 +155,14 @@ module `i` at `round(i * width / side)`); a terminal renderer packs two
 module rows per line with U+2580 (upper half), U+2584 (lower half), U+2588
 (full) and space, inking light modules by default.
 
+The native Rust SVG and terminal renderers require an unmodified code from
+the encoder. They check `2 * margin + size` before rendering and panic with
+an explicit dimension-overflow error if it cannot be represented by `usize`;
+neither multiplication nor addition may wrap. This does not impose a new
+margin cap or alter representable renderings. Terminal output grows
+quadratically with the side, so callers must bound untrusted margins and
+account for normal allocation limits.
+
 ## Vectors
 
 `vectors/encode-vectors.json` holds 148 symbols produced with an
@@ -317,6 +325,77 @@ pipeline:
    polarity. See below.
 9. Reduced size: only when the second look has found nothing too, the
    picture shrunk and searched again. See below.
+10. Inverted luminance: after all those attempts fail, and only when the
+    requested polarity includes light modules on dark, re-threshold the
+    luminance inverse when flat local blocks may have hidden the code.
+    See "Inverted luminance fallback" below.
+11. Version-directed recovery: after all earlier attempts fail, relocalise
+    saved full-resolution triples whose agreeing format and version copies
+    identify a different size. Strict reads use only the remaining budgets.
+    See "Version-directed recovery" below.
+
+### Reusable camera decoder
+
+The TypeScript `createDecoder()` helper returns an independent synchronous
+`Decoder` with `decode(image, options?)` and `reset()`. Its input validation,
+options and result fields are those of `decode`. Every call validates the
+whole input and reads its current pixels. It keeps its own luminance working
+buffer and a rectangle, never caller buffers or a cached payload. Returned
+payloads remain valid after subsequent calls and reset.
+
+After a successful read, a following frame of the same dimensions first
+searches a padded rectangle around the previous symbol, provided that rectangle
+covers at most half the frame. Coordinates in the returned location refer to
+the full input image. If the rectangle does not read, the whole frame is
+searched in the same call. A failed full-frame read forgets the rectangle;
+changed dimensions also discard it. Options, including polarity, apply anew
+on every call. `reset()` forgets the rectangle and releases references to
+working storage; it is safe to call repeatedly.
+
+This opt-in helper favours a code near the last successful location when a
+frame contains several codes. Cropping can change local thresholds and finder
+estimates, so its location and chosen code need not equal a fresh `decode`
+call. Each crop uses the same decoding and correction rules; a previous result
+is never evidence that the current frame is readable. The stateless pipeline
+and its conformance work counters are unchanged. The additional cropped search
+has the same work caps as an ordinary call on that smaller picture.
+
+### Optional WebAssembly adapter
+
+The separate `@forgesworn/qr/wasm` entry exports `wasmUrl`, the bundled asset's
+URL, and `loadWasm(bytes)`, which asynchronously instantiates caller-supplied
+`Uint8Array` or `ArrayBuffer` bytes without fetching anything. The module must
+implement ABI version 2, including the `qr_text.decode` host import. The default TypeScript entry does not import it.
+
+Each instance exposes synchronous `encode`, `decode` and `decodeModules` with
+the corresponding TypeScript input shapes, options and public result fields.
+Encoding follows the same segmentation, version and mask rules. Decoding
+uses the host character sets with the same rules as TypeScript. The packaged
+Rust `host-text` feature asks the host during each kanji/hanzi character or
+non-native ECI run, before accepting the symbol. This preserves segment
+boundaries, ECI changes and rejection of invalid hanzi cells; raw bytes remain
+unchanged. The callback receives borrowed input and a bounded Rust-owned
+UTF-8 output buffer, never calls back into the module and retains no memory
+views. Unsupported host character sets follow the platform fallback below.
+Standalone Rust and its default WASM build retain their table-free contract
+and ABI 1; they are distinct from the packaged ABI 2 module.
+
+Input bytes are copied to private reusable linear memory. Native result handles
+are freed on success or JavaScript extraction failure. Returned byte and module
+arrays are independent copies. `reset()` frees reusable input storage and leaves
+the instance usable; it need not shrink linear memory. `dispose()` frees input
+storage and releases references to the instance; subsequent encoding, decoding
+and reset throw. Disposal is idempotent. `memoryBytes` reports the current
+linear-memory size, or zero after disposal, not a guarantee about when garbage
+collection occurs. Instances share no mutable state. The adapter applies the
+stateless decoder pipeline for `decode`. Its `createDecoder()` method returns
+an opt-in tracked `Decoder` following the camera rules above. Sessions have
+independent rectangles and share their parent's reusable native input storage;
+strided crops copy only their visible pixels into that storage. Session reset
+forgets only that session's rectangle. Parent reset frees input storage and
+invalidates every session's rectangle before its next read. Parent disposal
+invalidates all sessions: their `decode` and `reset` methods then throw. Session
+creation also throws after disposal. No session retains a previous payload.
 
 ### Arithmetic
 
@@ -324,6 +403,21 @@ Real numbers are IEEE 754 doubles, and each expression is evaluated in the
 order written. A length is `sqrt(dx * dx + dy * dy)`, never a library
 `hypot`, whose last place differs between platforms. Rounding to a whole
 number is `floor(x + 0.5)`. Sorts keep the order of equal items.
+
+The Kotlin port stores luminance in bytes, read as unsigned values from 0
+to 255. An exactly sized, packed greyscale input is borrowed for the
+synchronous decode call without modification or retention afterwards.
+Padded rows and inputs with unused trailing bytes are copied into a packed
+plane. ARGB conversion, inversion and reduced pictures also produce byte
+planes; reduction sums remain integers until the specified final rounding.
+This representation does not change luminance values, stage results or work
+counts.
+
+TypeScript and Kotlin use five local counters per cross-check, retaining
+each port's number type and arithmetic order. Kotlin reuses the
+module-sampling buffer within each picture-size search. The active module
+region is reset before every use. This buffer is local to the decode call;
+returned payloads and retained retry locations do not refer to it.
 
 ### Binarisation, exactly
 
@@ -348,6 +442,11 @@ Step 2, as `vectors/conformance.json` checks it (`bits`).
 5. A pixel is dark when it is at or below its block's threshold. Where
    blocks overlap, the later block in the order of 3 decides.
 
+A picture whose luminance values are all identical cannot contain a finder
+pattern at any reduction. The decoder may stop immediately after recognising
+that case, before constructing the binary picture. This applies after RGBA
+conversion and alpha blending, and is recomputed for every call.
+
 ### Finder scan, exactly
 
 Step 3, as `vectors/conformance.json` checks it (`finders`), run once with
@@ -366,6 +465,15 @@ tolerance 0.5 and once with 0.8 in each polarity.
    first count. If they fail, the third, fourth and fifth counts become the
    first, second and third, and the light run the fourth. A row that ends
    with the fifth count in hand is tested with `end = width`.
+   Equivalently, complete dark/light/dark/light/dark windows can be read
+   directly from row boundaries. Their starting run advances by two after
+   rejection or six after acceptance; initial light runs cannot begin a
+   candidate, and a final dark run still ends at `width`.
+   TypeScript and Rust find the same row boundaries four and eight adjacent
+   byte comparisons at a time respectively, using two little-endian words
+   and XOR. Each non-zero byte emits one boundary in left-to-right order,
+   then is cleared in full; remaining pixels are compared individually.
+   Row boundaries and work counts are unchanged.
 3. Ratio test with a tolerance: all five counts non-zero and their total at
    least 7; with `module = total / 7` and `slack = module * tolerance`, each
    outer count is under `slack` from `module` and the centre count under
@@ -511,6 +619,16 @@ Step 5, as `vectors/conformance.json` checks it (`triples[].size` and
    with count 1. The candidates are returned in order of their distance
    from E in units of `m`, with 3 added for a count of 1, equal values in
    the order stored.
+   These overlapping triples may be read directly from row boundaries,
+   advancing by two runs each time and retaining the clipped first and
+   last light runs.
+   Rust and Kotlin may omit a stored candidate from later merge lookup when, at the
+   first accepted observation on row `y`, `lower = y - ceil(tall)`, its
+   centre `f.y` is below `lower`, and `abs(f.y - lower) > m`. Accepted
+   centres on that row and later rows cannot match it, so it cannot move
+   back into range. The complete candidate vector, insertion order, running
+   means, returned order and work counts are retained; equality at the
+   distance boundary is retained in lookup.
 8. The score of a centre along steps `u` and `v` is the most, over the
    scales 0.85, 1 and 1.15, of the 25 modules (i, j) from -2 to 2 each
    that match: the pixel at `floor(centre + (i u + j v) * scale)` is dark
@@ -553,11 +671,15 @@ Steps 3 to 6 as one loop, which fixes `result` and `work`.
    each in turn is sampled and read.
 4. Before a map is sampled, one is taken from the frame's 720 and from the
    size's own allowance (the whole 720 at full size, 30 at a reduced
-   size), and `maps` is counted, and `reduced` at a reduced size. With
+   size; step 10 shares a further allowance of 30 across its sizes), and
+   `maps` is counted, and `reduced` at a reduced size. With
    either at nothing, the search of that polarity ends there, whatever
    maps and triples were left.
 5. Sampling: each module (x, y) of the size is the pixel at the floor of
    its sample point, light when that point is outside the picture.
+   Sampling may be deferred until a module is requested and its value
+   retained for subsequent requests, including transposed reads and the
+   format and version checks for keeping a second-look candidate.
 6. The grid is read as below; if it does not read, it is read transposed,
    module (x, y) taken from (y, x), and a read then is `mirrored`. The
    first read ends the search, with the three finder centres and the
@@ -567,6 +689,11 @@ Steps 3 to 6 as one loop, which fixes `result` and `work`.
 
 What `decodeModules` does to a grid, and step 6 to each sampled one;
 `vectors/conformance.json` checks it (`symbols`).
+
+The native Rust `decode_modules` entry returns `None` for an illegal grid
+size or a buffer shorter than the grid. It checks the legal size range and
+step before multiplying the size, including for values near `usize::MAX`;
+invalid dimensions must not overflow or panic.
 
 1. The size is 21 to 177 and 1 (mod 4). The version is as "Version
    information" says. Its two blocks are read most significant bit first:
@@ -604,6 +731,9 @@ What `decodeModules` does to a grid, and step 6 to each sampled one;
    most one, and the block becomes it. With none the grid does not read,
    and it does not read when e is past the block's capacity under step 6
    of the pipeline. `corrected` is the sum of e over the blocks.
+   Implementations may extract and correct each block directly from its
+   interleaved positions and stop at the first failing block; this changes
+   neither acceptance nor the resulting data and correction count.
 6. The data codewords of the blocks, in block order, are the data. All
    zero, the grid does not read.
 7. Segments are parsed from the first bit while 4 bits or more remain; the
@@ -808,10 +938,67 @@ full one; the first read ends the search.
    mask. Format words are at least 7 bits apart, so no other word is as
    near. A read that fails the gate is no read, and no transposed read and
    no candidate follow from that map.
+   Before ordinary symbol reading wherever this gate applies, the two
+   format copies are checked in both orientations. If neither orientation
+   has a shared format word within 2 bits, the map is rejected before
+   sampling data or correcting codewords: it could neither pass the gate
+   nor become a second-look candidate. If either orientation agrees, the
+   original read order and post-read gate still apply. This does not apply
+   to ordinary full-size reads, and does not change map or work counts.
 5. The `inversion` option holds as at full size. The location returned is
    in full-picture coordinates: coordinates are continuous, pixel i covering
    `[i, i + 1)`, so a point `(x, y)` in the reduced picture is `(x f, y f)`
    in the full one.
+
+### Inverted luminance fallback
+
+Step 10 runs only after steps 2 to 9 return no result, when `inversion` is
+`both` or `inverted`, and the shared map allowance is not exhausted. It
+requires a full-size picture of at least 40 pixels on both sides, at least
+one flat 8 x 8 block under the binarisation rule, and an overall luminance
+range greater than 24. Uniform and near-uniform pictures, and pictures with
+no flat blocks, skip this pass.
+
+The flat-block level assumes light background. Simply flipping the binary
+picture cannot reverse that assumption. The fallback instead replaces each
+luminance value v with `255 - v` and computes fresh thresholds. It searches
+normal polarity on this inverse at full size, then factors 8, 4 and 2 under
+the reduced-size rules. Every size, including full size, requires both
+format copies to agree under the gate in Reduced size, rule 4.
+
+The entire fallback shares one allowance of 30 maps across its sizes, taken
+from the same remaining frame allowance of 720; second looks use whatever
+remains of the frame's four. It stops when either map allowance is exhausted.
+Candidates and second-look sampling use the inverse luminance consistently.
+Returned locations refer to the original full picture, `mirrored` retains
+the sampled orientation, and `inverted` is true. Earlier successful results
+take priority and remain unchanged. `reduced` counts maps sampled at reduced
+size in this fallback too.
+
+### Version-directed recovery
+
+Step 11 runs only after every earlier search and second look has failed.
+During the original full-resolution binary search, a failed map may provide
+a size hint when both format copies agree under the existing agreement rule,
+and, in that orientation, both version blocks independently decode within
+three bit errors to the same version, different from the map's size. Neither
+reduced pictures nor the inverted-luminance fallback supply hints.
+
+Keep at most four hints in first-seen order. Hints with the same three ordered
+finder centres, target size and polarity are duplicates. After the earlier
+passes fail, rebuild the original full-resolution binary picture and locate
+each saved triple at exactly `17 + 4 * version`, without neighbouring size
+retries. Both normal and inverted binary hints retain their original polarity.
+Each map read requires the strict format agreement used at reduced sizes.
+Failed eligible maps enter the existing second-look queue, with its normal
+distance ordering; second looks also require strict format agreement.
+
+This pass uses at most 30 maps from the frame's remaining allowance and only
+its remaining second looks. A queued second look remains eligible after the
+map allowance is exhausted. It collects no further hints and increases
+neither frame cap. Earlier successful results therefore keep priority. Grid
+decoding and symbol parsing still reject a mismatching version; this pass
+creates new picture maps rather than resizing a sampled grid.
 
 ### Bounded work
 
@@ -833,7 +1020,9 @@ among them.
 - Each triple is tried at 5 sizes, each giving at most 4 alignment maps and
   2 corner maps: at most 720 maps for the whole search, each sampling at
   most size x size modules, straight and transposed. The reduced sizes of
-  step 9 take theirs from the same 720, at most 30 each. Only sizes from 21 to
+  step 9 take theirs from the same 720, at most 30 each; step 10 takes at most
+  30 more from what remains, shared by its sizes. Step 11 takes at most
+  30 remaining maps across all saved version hints. Only sizes from 21 to
   177 give maps. An estimate of 181 or 185, past 177 by no more than the
   retries reach, still has its retries tried, and those of 177 or less
   give maps; any other estimate outside 21 to 177 gives none.
@@ -849,12 +1038,26 @@ among them.
   at most 2,875,000 points a frame, each interpolating four pixels, whatever
   the picture's size.
 
-The caps on maps and second looks are the same with step 9 as without it,
+When the global or current per-look map allowance is exhausted, that search
+stops before further finder, triple or location work. A successful final map
+still returns first, and the existing queue remains available for second looks.
+Ordinary reduced sizes reset their allowance as specified above; the inverted
+luminance fallback keeps its shared allowance. Search steps, candidate
+comparisons and alignment-window areas are counted only for searches actually
+performed; maps and second-look work keep their existing accounting.
+
+The caps on maps and second looks are the same with steps 9 to 11 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
-pixels in all), so such a frame costs more than it did.
+pixels in all), so such a frame costs more than it did. A frame qualifying
+for step 10 may additionally search its inverse luminance and up to three
+reductions; the uniform/near-uniform and no-flat-block gates avoid that work
+when the polarity-sensitive flat-block rule cannot help.
+Step 11 only rebuilds the original binary picture when a retained version
+hint and remaining map allowance exist; its additional location work is
+counted like ordinary location work, and its maps are full-resolution maps.
 
-Both ports count this work for their tests (pixels stepped in
+All three ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,
 maps sampled, maps read again by the second look, those read through a
 mesh, points the mesh probed, maps sampled at reduced size) without exposing the
@@ -870,8 +1073,10 @@ Below version 7 the size alone gives the version. From version 7 the two
 within three bit errors, trying both copies and taking the closer (on a
 tie the bottom-left copy, tried first, wins). When a
 copy decodes, its version is the symbol's, and it must agree with the size
-(`17 + 4 * version`); a disagreement makes the symbol unreadable, never a
-resize. When neither copy decodes, the version is the one the size implies.
+(`17 + 4 * version`); a disagreement makes that sampled grid unreadable,
+never an in-place resize. Step 11 may separately locate a new picture map
+from stronger, agreeing two-copy evidence. When neither copy decodes, the
+version is the one the size implies.
 Reed-Solomon, format information and the data's own structure still have to
 pass, so a grid of the wrong size does not yield text this way.
 
@@ -1051,7 +1256,7 @@ correct; each must read as nothing as modules and in a picture, straight
 and mirrored, dark on light and light on dark, while an empty payload and
 payloads of zero bytes that leave whole blocks zero must read back.
 
-The reduced-size pass has tests of its own in both ports, from seeds of
+The reduced-size pass has dedicated TypeScript and Kotlin tests, from seeds of
 their own. 200 symbols of versions 1 to 4, one block one to three
 codewords past what Table 9 lets it correct, and 100 with 4 to 16% of modules flipped anywhere, drawn at
 16, 24 or 32 pixels a module with noise, some mirrored or inverted: each

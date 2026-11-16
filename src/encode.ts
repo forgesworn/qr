@@ -1,3 +1,5 @@
+import { QrCapacityError } from './errors.js'
+export { QrCapacityError } from './errors.js'
 import { ALIGNMENT_CENTRES, EC_BLOCKS } from './tables.js'
 
 /** Error correction level: about 7, 15, 25 or 30 per cent of codewords recoverable. */
@@ -51,11 +53,6 @@ export interface QrCode {
   readonly size: number
   /** Row-major modules, `size * size` entries, 1 for dark. */
   readonly modules: Uint8Array
-}
-
-/** Thrown when the data does not fit the requested or any version. */
-export class QrCapacityError extends RangeError {
-  override readonly name = 'QrCapacityError'
 }
 
 /** True if the module at column `x`, row `y` is dark; false outside the symbol (the quiet zone is light). */
@@ -172,7 +169,7 @@ export function encode(data: string | Uint8Array, options: EncodeOptions | null 
     let bestModules: Uint8Array = new Uint8Array(0)
     for (let m = 0; m < 8; m++) {
       const candidate = grid.render(ecc, m)
-      const score = penalty(candidate, grid.size)
+      const score = penalty(candidate, grid.size, best)
       if (score < best) {
         best = score
         chosen = m
@@ -634,13 +631,19 @@ export function versionBits(version: number): number {
   return (version << 12) | rem
 }
 
-/** Mask penalty per ISO/IEC 18004 section 7.8.3, scoring the finished symbol. */
-export function penalty(modules: Uint8Array, size: number): number {
+/**
+ * Mask penalty per ISO/IEC 18004 section 7.8.3, scoring the finished symbol.
+ * At `limit` the candidate cannot win: remaining penalties are non-negative.
+ * Without a limit this returns the exact score.
+ */
+export function penalty(modules: Uint8Array, size: number, limit = Infinity): number {
   let score = 0
   let dark = 0
   for (let y = 0; y < size; y++) {
     let rowRun = 0
     let colRun = 0
+    let rowBits = 0
+    let colBits = 0
     for (let x = 0; x < size; x++) {
       const here = modules[y * size + x]!
       dark += here
@@ -655,43 +658,27 @@ export function penalty(modules: Uint8Array, size: number): number {
         if (colRun >= 5) score += colRun - 2
         colRun = 1
       }
-      if (x < size - 1 && y < size - 1) {
-        if (
+      if (x < size - 1 && y < size - 1 &&
           here === modules[y * size + x + 1] &&
           here === modules[(y + 1) * size + x] &&
-          here === modules[(y + 1) * size + x + 1]
-        ) score += 3
+          here === modules[(y + 1) * size + x + 1]) score += 3
+      rowBits = (rowBits << 1) | here
+      colBits = (colBits << 1) | down
+      // 00001011101 or 10111010000. If both quiet runs exist, count the
+      // core once, when its leading quiet run was seen four steps earlier.
+      // Only in-symbol pixels count; no implied quiet zone at an edge.
+      if (x >= 10) {
+        if ((rowBits & 0x7ff) === 0x05d) score += 40
+        if ((colBits & 0x7ff) === 0x05d) score += 40
+        if ((rowBits & 0x7ff) === 0x5d0 && (x < 14 || (rowBits & 0x7800) !== 0)) score += 40
+        if ((colBits & 0x7ff) === 0x5d0 && (x < 14 || (colBits & 0x7800) !== 0)) score += 40
       }
-      if (x + 6 < size && finderLike(modules, size, x, y, 1, 0)) score += 40
-      if (x + 6 < size && finderLike(modules, size, y, x, 0, 1)) score += 40
     }
     if (rowRun >= 5) score += rowRun - 2
     if (colRun >= 5) score += colRun - 2
+    if (score >= limit) return score
   }
   const total = size * size
   score += Math.floor((Math.abs(dark * 2 - total) * 10) / total) * 10
   return score
-}
-
-const FINDER_RUN = [1, 0, 1, 1, 1, 0, 1]
-
-/** 1:1:3:1:1 starting at (x, y) along (dx, dy), with four light modules on one side. */
-function finderLike(m: Uint8Array, size: number, x: number, y: number, dx: number, dy: number): boolean {
-  for (let i = 0; i < 7; i++) if (m[(y + i * dy) * size + x + i * dx] !== FINDER_RUN[i]) return false
-  return lightRun(m, size, x, y, dx, dy, -4) || lightRun(m, size, x, y, dx, dy, 7)
-}
-
-/**
- * Four modules from offset `from` along the line are light. A run that would
- * leave the symbol does not count: the quiet zone is not scored. The reference
- * encoder scores it the same way, which keeps mask choice identical to it.
- */
-function lightRun(m: Uint8Array, size: number, x: number, y: number, dx: number, dy: number, from: number): boolean {
-  for (let i = from; i < from + 4; i++) {
-    const px = x + i * dx
-    const py = y + i * dy
-    if (px < 0 || py < 0 || px >= size || py >= size) return false
-    if (m[py * size + px] === 1) return false
-  }
-  return true
 }

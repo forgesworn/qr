@@ -1,0 +1,460 @@
+{
+  "revision": "bd23ee348e9f70fe8365c41ebcd3c54d165741f5",
+  "dirty": "",
+  "sourceSha256": "a43edbf3ef64068394fc5b055b4c161354a4868a68eef78ebf49c3f73466d7fa",
+  "beforeCompiler": {
+    "verbose": "rustc 1.94.1 (e408947bf 2026-03-25)\nbinary: rustc\ncommit-hash: e408947bfd200af42db322daf0fadfe7e26d3bd1\ncommit-date: 2026-03-25\nhost: x86_64-apple-darwin\nrelease: 1.94.1\nLLVM version: 21.1.8\n",
+    "cfg": [
+      "target_feature=\"bulk-memory\"",
+      "target_feature=\"multivalue\"",
+      "target_feature=\"mutable-globals\"",
+      "target_feature=\"nontrapping-fptoint\"",
+      "target_feature=\"reference-types\"",
+      "target_feature=\"sign-ext\""
+    ]
+  },
+  "afterCompiler": {
+    "verbose": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "cfg": [
+      "target_feature=\"bulk-memory\"",
+      "target_feature=\"multivalue\"",
+      "target_feature=\"mutable-globals\"",
+      "target_feature=\"nontrapping-fptoint\"",
+      "target_feature=\"reference-types\"",
+      "target_feature=\"sign-ext\""
+    ]
+  },
+  "before": {
+    "bytes": 212865,
+    "sha256": "d41c7e06bd693c51cb4c3f7fbb4df1a79ae6853aa58b2160b1817fb739fc427d",
+    "imports": [
+      {
+        "module": "qr_text",
+        "name": "decode",
+        "kind": "function"
+      }
+    ],
+    "exports": [
+      {
+        "name": "memory",
+        "kind": "memory"
+      },
+      {
+        "name": "alloc",
+        "kind": "function"
+      },
+      {
+        "name": "decode",
+        "kind": "function"
+      },
+      {
+        "name": "encode_bytes",
+        "kind": "function"
+      },
+      {
+        "name": "encode_error",
+        "kind": "function"
+      },
+      {
+        "name": "encode_text",
+        "kind": "function"
+      },
+      {
+        "name": "free",
+        "kind": "function"
+      },
+      {
+        "name": "front",
+        "kind": "function"
+      },
+      {
+        "name": "qr_abi_version",
+        "kind": "function"
+      },
+      {
+        "name": "qr_free",
+        "kind": "function"
+      },
+      {
+        "name": "qr_level",
+        "kind": "function"
+      },
+      {
+        "name": "qr_mask",
+        "kind": "function"
+      },
+      {
+        "name": "qr_mode",
+        "kind": "function"
+      },
+      {
+        "name": "qr_modules",
+        "kind": "function"
+      },
+      {
+        "name": "qr_segment_count",
+        "kind": "function"
+      },
+      {
+        "name": "qr_segment_mode",
+        "kind": "function"
+      },
+      {
+        "name": "qr_segments",
+        "kind": "function"
+      },
+      {
+        "name": "qr_size",
+        "kind": "function"
+      },
+      {
+        "name": "qr_version",
+        "kind": "function"
+      },
+      {
+        "name": "read_bytes_len",
+        "kind": "function"
+      },
+      {
+        "name": "read_bytes_ptr",
+        "kind": "function"
+      },
+      {
+        "name": "read_corrected",
+        "kind": "function"
+      },
+      {
+        "name": "read_eci",
+        "kind": "function"
+      },
+      {
+        "name": "read_eci_count",
+        "kind": "function"
+      },
+      {
+        "name": "read_error",
+        "kind": "function"
+      },
+      {
+        "name": "read_fnc1",
+        "kind": "function"
+      },
+      {
+        "name": "read_fnc1_len",
+        "kind": "function"
+      },
+      {
+        "name": "read_fnc1_ptr",
+        "kind": "function"
+      },
+      {
+        "name": "read_free",
+        "kind": "function"
+      },
+      {
+        "name": "read_grid",
+        "kind": "function"
+      },
+      {
+        "name": "read_has_alignment",
+        "kind": "function"
+      },
+      {
+        "name": "read_inverted",
+        "kind": "function"
+      },
+      {
+        "name": "read_level",
+        "kind": "function"
+      },
+      {
+        "name": "read_located",
+        "kind": "function"
+      },
+      {
+        "name": "read_mask",
+        "kind": "function"
+      },
+      {
+        "name": "read_mirrored",
+        "kind": "function"
+      },
+      {
+        "name": "read_picture",
+        "kind": "function"
+      },
+      {
+        "name": "read_point_x",
+        "kind": "function"
+      },
+      {
+        "name": "read_point_y",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_index",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_parity",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_present",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_total",
+        "kind": "function"
+      },
+      {
+        "name": "read_text_len",
+        "kind": "function"
+      },
+      {
+        "name": "read_text_ptr",
+        "kind": "function"
+      },
+      {
+        "name": "read_version",
+        "kind": "function"
+      },
+      {
+        "name": "work_high",
+        "kind": "function"
+      },
+      {
+        "name": "work_low",
+        "kind": "function"
+      },
+      {
+        "name": "__data_end",
+        "kind": "global"
+      },
+      {
+        "name": "__heap_base",
+        "kind": "global"
+      }
+    ],
+    "targetFeaturesSectionsHex": []
+  },
+  "after": {
+    "bytes": 207272,
+    "sha256": "af724c2b9c47a9ad3286cf179e70404236e1bc285f04754a821881219b12d1d6",
+    "imports": [
+      {
+        "module": "qr_text",
+        "name": "decode",
+        "kind": "function"
+      }
+    ],
+    "exports": [
+      {
+        "name": "memory",
+        "kind": "memory"
+      },
+      {
+        "name": "alloc",
+        "kind": "function"
+      },
+      {
+        "name": "decode",
+        "kind": "function"
+      },
+      {
+        "name": "encode_bytes",
+        "kind": "function"
+      },
+      {
+        "name": "encode_error",
+        "kind": "function"
+      },
+      {
+        "name": "encode_text",
+        "kind": "function"
+      },
+      {
+        "name": "free",
+        "kind": "function"
+      },
+      {
+        "name": "front",
+        "kind": "function"
+      },
+      {
+        "name": "qr_abi_version",
+        "kind": "function"
+      },
+      {
+        "name": "qr_free",
+        "kind": "function"
+      },
+      {
+        "name": "qr_level",
+        "kind": "function"
+      },
+      {
+        "name": "qr_mask",
+        "kind": "function"
+      },
+      {
+        "name": "qr_mode",
+        "kind": "function"
+      },
+      {
+        "name": "qr_modules",
+        "kind": "function"
+      },
+      {
+        "name": "qr_segment_count",
+        "kind": "function"
+      },
+      {
+        "name": "qr_segment_mode",
+        "kind": "function"
+      },
+      {
+        "name": "qr_segments",
+        "kind": "function"
+      },
+      {
+        "name": "qr_size",
+        "kind": "function"
+      },
+      {
+        "name": "qr_version",
+        "kind": "function"
+      },
+      {
+        "name": "read_bytes_len",
+        "kind": "function"
+      },
+      {
+        "name": "read_bytes_ptr",
+        "kind": "function"
+      },
+      {
+        "name": "read_corrected",
+        "kind": "function"
+      },
+      {
+        "name": "read_eci",
+        "kind": "function"
+      },
+      {
+        "name": "read_eci_count",
+        "kind": "function"
+      },
+      {
+        "name": "read_error",
+        "kind": "function"
+      },
+      {
+        "name": "read_fnc1",
+        "kind": "function"
+      },
+      {
+        "name": "read_fnc1_len",
+        "kind": "function"
+      },
+      {
+        "name": "read_fnc1_ptr",
+        "kind": "function"
+      },
+      {
+        "name": "read_free",
+        "kind": "function"
+      },
+      {
+        "name": "read_grid",
+        "kind": "function"
+      },
+      {
+        "name": "read_has_alignment",
+        "kind": "function"
+      },
+      {
+        "name": "read_inverted",
+        "kind": "function"
+      },
+      {
+        "name": "read_level",
+        "kind": "function"
+      },
+      {
+        "name": "read_located",
+        "kind": "function"
+      },
+      {
+        "name": "read_mask",
+        "kind": "function"
+      },
+      {
+        "name": "read_mirrored",
+        "kind": "function"
+      },
+      {
+        "name": "read_picture",
+        "kind": "function"
+      },
+      {
+        "name": "read_point_x",
+        "kind": "function"
+      },
+      {
+        "name": "read_point_y",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_index",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_parity",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_present",
+        "kind": "function"
+      },
+      {
+        "name": "read_sa_total",
+        "kind": "function"
+      },
+      {
+        "name": "read_text_len",
+        "kind": "function"
+      },
+      {
+        "name": "read_text_ptr",
+        "kind": "function"
+      },
+      {
+        "name": "read_version",
+        "kind": "function"
+      },
+      {
+        "name": "work_high",
+        "kind": "function"
+      },
+      {
+        "name": "work_low",
+        "kind": "function"
+      },
+      {
+        "name": "__data_end",
+        "kind": "global"
+      },
+      {
+        "name": "__heap_base",
+        "kind": "global"
+      }
+    ],
+    "targetFeaturesSectionsHex": []
+  },
+  "nativeTests": {
+    "passed": 37,
+    "failed": 0
+  },
+  "flags": "--locked --release --features host-text --target wasm32-unknown-unknown -j 1; RUSTFLAGS=--remap-path-prefix=/private/tmp/qr-next-20261116/repo/=. -C strip=symbols"
+}

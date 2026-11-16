@@ -1,0 +1,11 @@
+--- a/rust/src/lib.rs
++++ b/rust/src/lib.rs
+@@ -225,7 +225,7 @@
+         }
+         let pixels = std::slice::from_raw_parts(ptr, len);
+         let mut work = Work::default();
+-        let found = decode_picture(pixels, width as usize, height as usize, channels as usize, row_stride as usize, inversion, Some(&mut work));
++        let found = decode_picture(pixels, width as usize, height as usize, channels as usize, row_stride as usize, inversion, None);
+         set_work([work.steps, work.compared, work.scanned, work.maps, work.second, work.meshes, work.probed, work.reduced]);
+         match found {
+             Some(r) => handle(Read { payload: r.payload, mirrored: r.mirrored, inverted: r.inverted, location: Some(r.location) }),

@@ -1,0 +1,66 @@
+{
+  "revision": "a4f78ffcf3ad264f0a8fa914dc2836eafd7ccb6c",
+  "dirty": true,
+  "currentSha256": "36ae22acdff56795d71e93e0421c8a2b2df850b2d72f28d7f74cd22323cacf11",
+  "cpu": "Apple M4 Max",
+  "platform": "darwin",
+  "node": "v24.21.0",
+  "rounds": 25,
+  "suite": "decode",
+  "warmupRounds": 5,
+  "loadBefore": [
+    2.244140625,
+    2.15625,
+    1.9697265625
+  ],
+  "loadAfter": [
+    2.244140625,
+    2.15625,
+    1.9697265625
+  ],
+  "consumed": 180,
+  "rows": [
+    {
+      "name": "decode/clean/grey",
+      "current": {
+        "medianMs": 1.7954160000000456,
+        "p95Ms": 1.885541000000046
+      }
+    },
+    {
+      "name": "decode/clean/rgba",
+      "current": {
+        "medianMs": 3.6885410000000434,
+        "p95Ms": 3.8039999999999736
+      }
+    },
+    {
+      "name": "decode/blank/grey",
+      "current": {
+        "medianMs": 3.2627499999999827,
+        "p95Ms": 3.365000000000009
+      }
+    },
+    {
+      "name": "decode/blank/rgba",
+      "current": {
+        "medianMs": 5.035124999999994,
+        "p95Ms": 5.587084000000004
+      }
+    },
+    {
+      "name": "decode/noise/grey",
+      "current": {
+        "medianMs": 58.71950000000015,
+        "p95Ms": 60.286625000000186
+      }
+    },
+    {
+      "name": "decode/noise/rgba",
+      "current": {
+        "medianMs": 60.62350000000015,
+        "p95Ms": 65.04833299999973
+      }
+    }
+  ]
+}

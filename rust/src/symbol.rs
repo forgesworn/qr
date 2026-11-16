@@ -2,10 +2,10 @@
 //! unmasking, de-interleaving, Reed-Solomon, and the segments (SPEC.md decoder
 //! steps 6 and 7).
 //!
-//! Text follows "Text for kanji and other ECIs" in SPEC.md for a platform with
-//! no character-set decoders, which this port is: ECI 26, 1, 3, 27, 170 and 23
-//! are done by hand, and kanji, hanzi and every other ECI behave as for a
-//! platform lacking the set. `bytes` never depends on a character set.
+//! Native/default builds follow SPEC.md for a platform without character-set
+//! decoders: ECI 26, 1, 3, 27, 170 and 23 are handled here. Packaged WASM uses
+//! the `host-text` feature to ask its host during segment parsing. `bytes`
+//! never depends on a character set.
 
 use crate::tables::{ALIGNMENT_CENTRES, EC_BLOCKS};
 use std::sync::OnceLock;
@@ -114,6 +114,24 @@ const fn log_table() -> [u8; 256] {
 pub(crate) const EXP: [u8; 512] = exp_table();
 const LOG: [u8; 256] = log_table();
 
+// QR's error-correction blocks use at most 30 syndrome roots. Each row
+// multiplies every byte by EXP[j], so the syndrome loop needs one lookup.
+const fn syndrome_table() -> [[u8; 256]; 30] {
+    let mut table = [[0u8; 256]; 30];
+    let mut j = 0;
+    while j < 30 {
+        let mut value = 1;
+        while value < 256 {
+            table[j][value] = EXP[LOG[value] as usize + j];
+            value += 1;
+        }
+        j += 1;
+    }
+    table
+}
+
+static SYNDROME_MUL: [[u8; 256]; 30] = syndrome_table();
+
 pub(crate) fn gf_mul(a: u8, b: u8) -> u8 {
     if a == 0 || b == 0 {
         0
@@ -141,6 +159,22 @@ fn evaluate(poly: &[u8], x: u8) -> u8 {
     y
 }
 
+/// Evaluates one syndrome, with the generic field operation beyond QR's roots.
+#[inline]
+fn syndrome(block: &[u8], j: usize) -> u8 {
+    let mut s = 0u8;
+    let x = EXP[j];
+    if j == 0 {
+        for &b in block { s ^= b; }
+    } else if j < SYNDROME_MUL.len() {
+        let row = &SYNDROME_MUL[j];
+        for &b in block { s = row[s as usize] ^ b; }
+    } else {
+        for &b in block { s = gf_mul(s, x) ^ b; }
+    }
+    s
+}
+
 /// Corrects `block` (data codewords then `ec_count` check codewords) in
 /// place. Returns the number of codewords corrected, or `None` when the block
 /// has more errors than the code can correct.
@@ -149,11 +183,7 @@ pub fn correct(block: &mut [u8], ec_count: usize) -> Option<usize> {
     let mut syndromes: Vec<u8> = Vec::with_capacity(ec_count);
     let mut clean = true;
     for j in 0..ec_count {
-        let mut s = 0u8;
-        let x = EXP[j];
-        for &b in block.iter() {
-            s = gf_mul(s, x) ^ b;
-        }
+        let s = syndrome(block, j);
         syndromes.push(s);
         if s != 0 {
             clean = false;
@@ -455,6 +485,23 @@ pub fn read_version<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Optio
     nearest(&VERSIONS, &[bottom_left, top_right]).map(|i| i + 7)
 }
 
+/// A version independently supported by both version-information copies.
+/// Unlike `read_version`, this does not accept a single readable copy.
+pub(crate) fn agreed_version<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<usize> {
+    if size < 45 { return None; }
+    let mut bottom_left = 0u32;
+    let mut top_right = 0u32;
+    for k in (0..=17).rev() {
+        let i = k / 3;
+        let j = k % 3;
+        bottom_left = (bottom_left << 1) | read(i, size - 11 + j) as u32;
+        top_right = (top_right << 1) | read(size - 11 + j, i) as u32;
+    }
+    let a = nearest(&VERSIONS, &[bottom_left])?;
+    let b = nearest(&VERSIONS, &[top_right])?;
+    (a == b).then_some(a + 7)
+}
+
 /// The errors a block of this symbol may have had corrected: half of its check
 /// codewords once the p of Table 9 is withheld to catch a misdecode. Only
 /// versions 1 to 3 withhold any.
@@ -497,45 +544,36 @@ pub fn read_symbol<R: Fn(usize, usize) -> bool>(read: R, size: usize) -> Option<
 
     let [ec_per_block, g1, d1, g2] = blocks_for(version, ecc);
     let block_count = g1 + g2;
-    let total = g1 * d1 + g2 * (d1 + 1) + block_count * ec_per_block;
-    let mut stream = vec![0u8; total];
+    let data_count = g1 * d1 + g2 * (d1 + 1);
     let places = placement(version);
-    let bits = places.len().min(total * 8);
-    for bit in 0..bits {
-        let x = (places[bit] & 255) as usize;
-        let y = (places[bit] >> 8) as usize;
-        if read(x, y) != mask_bit(mask, x, y) {
-            stream[bit >> 3] |= 0x80 >> (bit & 7);
-        }
-    }
-
-    let data_len = |b: usize| if b < g1 { d1 } else { d1 + 1 };
-    let mut blocks: Vec<Vec<u8>> = (0..block_count).map(|b| vec![0u8; data_len(b) + ec_per_block]).collect();
-    let mut k = 0;
-    for i in 0..=d1 {
-        for (b, block) in blocks.iter_mut().enumerate() {
-            if i < data_len(b) {
-                block[i] = stream[k];
-                k += 1;
+    let word = |index: usize| {
+        let mut value = 0u8;
+        for bit in index * 8..((index + 1) * 8).min(places.len()) {
+            let x = (places[bit] & 255) as usize;
+            let y = (places[bit] >> 8) as usize;
+            if read(x, y) != mask_bit(mask, x, y) {
+                value |= 0x80 >> (bit & 7);
             }
         }
-    }
-    for i in 0..ec_per_block {
-        for (b, block) in blocks.iter_mut().enumerate() {
-            block[data_len(b) + i] = stream[k];
-            k += 1;
-        }
-    }
-    let mut data: Vec<u8> = Vec::with_capacity(g1 * d1 + g2 * (d1 + 1));
+        value
+    };
+    // Read interleaved blocks on demand: a failed block rejects the symbol,
+    // so later blocks need neither sampling nor allocating.
+    let mut data: Vec<u8> = Vec::with_capacity(data_count);
     let mut corrected = 0;
     let limit = correctable(version, ecc);
-    for (b, block) in blocks.iter_mut().enumerate() {
-        let fixed = correct(block, ec_per_block)?;
+    for b in 0..block_count {
+        let length = if b < g1 { d1 } else { d1 + 1 };
+        let mut block = vec![0u8; length + ec_per_block];
+        for i in 0..d1 { block[i] = word(i * block_count + b); }
+        if b >= g1 { block[d1] = word(d1 * block_count + b - g1); }
+        for i in 0..ec_per_block { block[length + i] = word(data_count + i * block_count + b); }
+        let fixed = correct(&mut block, ec_per_block)?;
         if fixed > limit {
             return None;
         }
         corrected += fixed;
-        data.extend_from_slice(&block[..data_len(b)]);
+        data.extend_from_slice(&block[..length]);
     }
 
     // Zero in every data codeword is what a texture matching the mask pattern
@@ -706,7 +744,7 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
             }
             8 => {
                 // Kanji: kept as its Shift_JIS bytes; each character's text is the platform's
-                // Shift_JIS, and this port has none, so each is a single U+FFFD (SPEC.md).
+                // Shift_JIS, or a single U+FFFD without host support (SPEC.md).
                 let count = bits.read(KANJI_COUNT_BITS[band])?;
                 for _ in 0..count {
                     let v = bits.read(13)?;
@@ -715,7 +753,7 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
                     out.push((sjis >> 8) as u8);
                     out.push((sjis & 0xff) as u8);
                     let current = runs.last().unwrap().eci;
-                    runs.push(Run { eci: current, bytes: Vec::new(), fixed: Some(kanji_text()) });
+                    runs.push(Run { eci: current, bytes: Vec::new(), fixed: Some(kanji_text(sjis)) });
                     runs.push(Run { eci: current, bytes: Vec::new(), fixed: None });
                 }
             }
@@ -788,17 +826,43 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
     Some(Parsed { text, bytes: out, eci, structured_append, fnc1 })
 }
 
-// Text, by hand. No character-set tables are bundled but the 32 bytes of Windows 1252.
+// Native/default builds have no character-set tables beyond Windows 1252.
+// The packaged WASM feature asks its host while parsing each individual run.
+#[cfg(all(target_arch = "wasm32", feature = "host-text"))]
+#[link(wasm_import_module = "qr_text")]
+extern "C" {
+    #[link_name = "decode"]
+    fn import_text(kind: u32, value: u32, input: *const u8, length: usize, output: *mut u8, capacity: usize) -> i32;
+}
+
+fn host_text(kind: u32, value: u32, bytes: &[u8]) -> Option<String> {
+    #[cfg(all(target_arch = "wasm32", feature = "host-text"))]
+    {
+        // Every input byte can become at most one Unicode scalar (four UTF-8
+        // bytes). Kanji/hanzi pass a packed pair instead and need four bytes.
+        let capacity = bytes.len().checked_mul(4)?.checked_add(4)?;
+        let mut output = vec![0u8; capacity];
+        let count = unsafe { import_text(kind, value, bytes.as_ptr(), bytes.len(), output.as_mut_ptr(), capacity) };
+        if count < 0 || count as usize > capacity { return None; }
+        output.truncate(count as usize);
+        String::from_utf8(output).ok()
+    }
+    #[cfg(not(all(target_arch = "wasm32", feature = "host-text")))]
+    {
+        let _ = (kind, value, bytes);
+        None
+    }
+}
 
 /// Whether hanzi-mode symbols are read at all. Off: without a GB 18030 decoder
 /// an empty GB2312 cell cannot be told from a character, and the reference
 /// ports refuse a symbol that holds one. A host that can check the pairs may
 /// turn this on once the port gives it the means.
-const HANZI: bool = false;
+const HANZI: bool = cfg!(all(target_arch = "wasm32", feature = "host-text"));
 
-/// A kanji-mode character on a platform with no Shift_JIS: a single U+FFFD.
-fn kanji_text() -> String {
-    "\u{fffd}".to_string()
+/// A kanji-mode character through the host, or U+FFFD without Shift_JIS.
+fn kanji_text(sjis: u32) -> String {
+    host_text(1, sjis, &[]).unwrap_or_else(|| "\u{fffd}".to_string())
 }
 
 /// Whether a hanzi pair names a character on a platform with a GB 18030
@@ -812,6 +876,7 @@ fn hanzi_text(lead: u32, low: u32) -> Option<String> {
     if edition_dependent(lead, low) {
         return None;
     }
+    if HANZI { return host_text(2, (lead << 8) | low, &[]); }
     Some("\u{fffd}".to_string())
 }
 
@@ -914,7 +979,7 @@ const WINDOWS_1252: [u32; 32] = [
 ];
 
 /// Text for a run under an ECI the hand-written sets cover (27, 170 and 23),
-/// or `None`: every other ECI is, here, a set the platform lacks.
+/// or a host-supported set. Without host support, the other sets are absent.
 fn from_eci(eci: u32, bytes: &[u8]) -> Option<String> {
     match eci {
         27 | 170 => Some(bytes.iter().map(|&b| if b < 0x80 { b as char } else { '\u{fffd}' }).collect()),
@@ -931,7 +996,7 @@ fn from_eci(eci: u32, bytes: &[u8]) -> Option<String> {
                 })
                 .collect(),
         ),
-        _ => None,
+        _ => host_text(0, eci, bytes),
     }
 }
 
@@ -967,7 +1032,7 @@ fn decode_run(run: &Run) -> String {
     if is_utf8(bytes) {
         return from_utf8(bytes);
     }
-    latin1(bytes)
+    host_text(3, 0, bytes).unwrap_or_else(|| latin1(bytes))
 }
 
 /// A symbol read from a module grid, with whether the grid was read transposed.
@@ -982,6 +1047,10 @@ pub struct Decoded {
 /// symbol cannot be read, or when `modules` holds fewer than `size * size`
 /// (the TypeScript throws a RangeError there).
 pub fn decode_modules(modules: &[u8], size: usize) -> Option<Decoded> {
+    // Bound the product before checking the caller's module buffer.
+    if !(21..=177).contains(&size) || (size - 17) % 4 != 0 {
+        return None;
+    }
     if modules.len() < size * size {
         return None;
     }
@@ -994,6 +1063,47 @@ pub fn decode_modules(modules: &[u8], size: usize) -> Option<Decoded> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn module_grid_sizes_are_bounded_before_buffer_arithmetic() {
+        for size in [0, 20, 22, 176, 178, usize::MAX / 2 + 1, usize::MAX] {
+            assert!(decode_modules(&[], size).is_none(), "size {size}");
+        }
+        for version in [1, 40] {
+            let qr = crate::encode::encode("A", &crate::encode::Options {
+                version: Some(version), mask: Some(0), ..Default::default()
+            }).unwrap();
+            assert!(decode_modules(&qr.modules[..qr.modules.len() - 1], qr.size).is_none());
+            let decoded = decode_modules(&qr.modules, qr.size).unwrap();
+            assert_eq!(decoded.payload.bytes, b"A");
+            assert_eq!(decoded.payload.version, version);
+        }
+    }
+
+    #[test]
+    fn syndrome_table_matches_field_multiplication() {
+        for j in 0..SYNDROME_MUL.len() {
+            for value in 0..=u8::MAX {
+                assert_eq!(SYNDROME_MUL[j][value as usize], gf_mul(value, EXP[j]));
+            }
+        }
+    }
+
+    #[test]
+    fn syndrome_folds_match_the_reference_for_qr_and_larger_blocks() {
+        let mut seed = 0x6841_ba53u32;
+        for len in [0, 1, 2, 7, 31, 255] {
+            let block: Vec<u8> = (0..len).map(|_| {
+                seed = seed.wrapping_mul(1664525).wrapping_add(1013904223);
+                (seed >> 24) as u8
+            }).collect();
+            for j in 0..EXP.len() {
+                let expected = block.iter().fold(0, |s, &b| gf_mul(s, EXP[j]) ^ b);
+                let actual = syndrome(&block, j);
+                assert_eq!(actual, expected, "length {len}, syndrome {j}");
+            }
+        }
+    }
 
     /// Builds data codewords from (value, bit count) pairs, zero padded to a whole byte.
     fn words(fields: &[(u32, usize)]) -> Vec<u8> {
@@ -1047,5 +1157,36 @@ mod tests {
         assert_eq!(from_utf8(&[0x41, 0xe2, 0x82, 0x41]), "A\u{fffd}\u{fffd}A");
         assert_eq!(from_utf8("\u{20ac}".as_bytes()), "\u{20ac}");
         assert!(!is_utf8(&[0xc0, 0x80]));
+    }
+}
+
+#[cfg(test)]
+mod agreed_version_tests {
+    use super::{agreed_version, read_version, version_bits_of};
+
+    fn read_copies(size: usize, a: u32, b: u32) -> impl Fn(usize, usize) -> bool {
+        move |x, y| {
+            if x < 6 && (size - 11..size - 8).contains(&y) {
+                (a >> (x * 3 + y - (size - 11))) & 1 != 0
+            } else if y < 6 && (size - 11..size - 8).contains(&x) {
+                (b >> (y * 3 + x - (size - 11))) & 1 != 0
+            } else { false }
+        }
+    }
+
+    #[test]
+    fn copies_must_independently_decode_to_the_same_version() {
+        let forty = version_bits_of(40);
+        let thirty_nine = version_bits_of(39);
+        let matching = read_copies(165, forty ^ 0b111, forty ^ 0b111000);
+        assert_eq!(agreed_version(&matching, 165), Some(40));
+        assert_eq!(read_version(&matching, 165), Some(40));
+        let disagree = read_copies(165, forty, thirty_nine);
+        assert_eq!(agreed_version(&disagree, 165), None);
+        assert_eq!(read_version(&disagree, 165), Some(40));
+        let unreadable = read_copies(165, forty, forty ^ 0b1111);
+        assert_eq!(agreed_version(&unreadable, 165), None);
+        assert_eq!(read_version(&unreadable, 165), Some(40));
+        assert_eq!(agreed_version(&matching, 41), None);
     }
 }

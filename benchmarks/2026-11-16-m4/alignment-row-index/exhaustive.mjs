@@ -1,0 +1,6 @@
+import {deepStrictEqual} from 'node:assert/strict';let cases=0;
+for(let n=1;n<=8;n++)for(let bits=0;bits<(1<<n);bits++){const a=Array.from({length:n},(_,i)=>(bits>>i)&1),changes=[];for(let x=1;x<n;x++)if(a[x]!==a[x-1])changes.push(x);
+ for(let left=0;left<n;left++)for(let right=left;right<n;right++)for(const wide of [.5,1,1.25,2,3,5]){
+  let k=changes.findIndex(x=>x>left);if(k<0)k=changes.length;let x=left;if(a[left]===1)x=k<changes.length&&changes[k]<=right?changes[k++]:right+1;let start=x,actual=[];while(k+1<changes.length&&changes[k+1]<=right){let ds=changes[k],de=changes[k+1],end=k+2<changes.length&&changes[k+2]<=right?changes[k+2]:right+1;actual.push([start,ds,de,end]);start=de;k+=2}
+  let expected=[];for(let ds=left+1;ds<=right;ds++)if(a[ds]===1&&a[ds-1]===0){let de=ds;while(de<n&&a[de]===1)de++;if(de>right)continue;let st=ds-1;while(st>=left&&a[st]===0)st--;let end=de;while(end<=right&&a[end]===0)end++;expected.push([st+1,ds,de,end])}deepStrictEqual(actual,expected);const eligible=t=>{const [s,d,e,z]=t;return [d-s,e-d,z-e].every(c=>Math.abs(c-wide)<wide*.6)};deepStrictEqual(actual.filter(eligible),expected.filter(eligible));cases++
+ }}console.log(JSON.stringify({cases,widthMax:8}));

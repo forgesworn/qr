@@ -1,23 +1,10 @@
-import { binarise, invert, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
+import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
+export type { ImageLike, DecodeOptions } from './image.js'
+import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
-import { agreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
-import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
-
-/** Pixels to read: RGBA (4 bytes a pixel, as ImageData gives) or greyscale (1 byte a pixel). */
-export interface ImageLike {
-  readonly data: Uint8Array | Uint8ClampedArray
-  readonly width: number
-  readonly height: number
-}
-
-export interface DecodeOptions {
-  /** Pixels from the start of one row to the next, for padded camera planes. Default: width. */
-  readonly rowStride?: number
-  /** Bytes a pixel. Default: worked out from the data length. */
-  readonly channels?: 1 | 4
-  /** Which way round to look for dark modules. Default 'both': dark on light first, then light on dark. */
-  readonly inversion?: 'normal' | 'inverted' | 'both'
-}
+import { agreement, agreementRead, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
+import { agreedVersion, readSymbol, type ModuleReader, type Payload } from './symbol.js'
+import { FORMAT_COORDS } from './encode.js'
 
 /** A symbol found in a picture. */
 export interface DecodeResult extends Payload {
@@ -36,19 +23,6 @@ export interface DecodeResult extends Payload {
 
 const MAX_TRIPLES = 6
 
-function channelsFor(image: ImageLike, stride: number, given: 1 | 4 | undefined): 1 | 4 {
-  const { data, width, height } = image
-  const last = stride * (height - 1) + width
-  if (given !== undefined && given !== 1 && given !== 4) throw new RangeError('channels must be 1 or 4')
-  // Three bytes a pixel would otherwise be read as greyscale and find nothing.
-  if (given === undefined && data.length >= last * 3 && data.length < last * 4) {
-    throw new RangeError('The data looks like three bytes a pixel: pass RGBA or greyscale, or name channels')
-  }
-  const channels = given ?? (data.length >= last * 4 ? 4 : 1)
-  if (data.length < last * channels) throw new RangeError(`The data is too short for a ${width}x${height} picture`)
-  return channels
-}
-
 /**
  * Finds and reads one QR code in a picture. Returns undefined when no
  * readable code is found.
@@ -57,29 +31,24 @@ export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeRes
   return decodeCounted(image, options)
 }
 
-/** As decode(), counting the search's work into `work`; for tests, not exported from the package. */
-export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, work?: Work): DecodeResult | undefined {
-  if (image === null || typeof image !== 'object') throw new TypeError('decode needs { data, width, height }')
-  const kind = Object.prototype.toString.call(image.data).slice(8, -1)
-  if (kind !== 'Uint8Array' && kind !== 'Uint8ClampedArray') {
-    throw new TypeError(`data must be a Uint8Array or Uint8ClampedArray, not ${kind}`)
+/** Working storage owned by one decoder session, never the caller's data. */
+export interface DecodeWorkspace {
+  luminance?: Uint8Array | undefined
+}
+
+/** Counts search work for tests; optional internal storage leaves ordinary decode() stateless. */
+export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, work?: Work, workspace?: DecodeWorkspace): DecodeResult | undefined {
+  const { width, height, stride, channels, inversion } = imageLayout(image, options)
+  let storage: Uint8Array | undefined
+  if (workspace) {
+    if (!workspace.luminance || workspace.luminance.length < width * height) workspace.luminance = new Uint8Array(width * height)
+    storage = workspace.luminance.subarray(0, width * height)
   }
-  options ??= {}
-  const inversion = options.inversion ?? 'both'
-  if (inversion !== 'both' && inversion !== 'normal' && inversion !== 'inverted') {
-    throw new RangeError("inversion must be 'normal', 'inverted' or 'both'")
-  }
-  const { width, height } = image
-  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1) {
-    throw new RangeError('Width and height must be positive integers')
-  }
-  const stride = options.rowStride ?? width
-  if (!Number.isInteger(stride) || stride < width) throw new RangeError('rowStride must be an integer of at least width')
-  const channels = channelsFor(image, stride, options.channels)
-  const luminance = toLuminance(image.data, width, height, channels, stride)
-  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS }
+  const luminance = toLuminance(image.data, width, height, channels, stride, storage)
+  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false, hints: [] }
   const found = look(luminance, inversion, 1, budget, work)
   if (found) return found
+  if (budget.uniform) return undefined
   // Nothing read at full size: the picture shrunk, coarse to fine, for codes
   // whose modules are large or carry texture or scan lines (decoder step 9).
   const shrunk = reductions(luminance)
@@ -91,7 +60,20 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     const reduced = look(shrunk(f), inversion, f, budget, work)
     if (reduced) return reduced
   }
-  return undefined
+  if (inversion !== 'normal' && budget.maps > 0 && budget.invertedFallback) {
+    budget.here = REDUCED_MAPS
+    const inverse = invertLuminance(luminance)
+    const fallback = look(inverse, 'normal', 1, budget, work, true)
+    if (fallback) return { ...fallback, inverted: true }
+    const inverseShrunk = reductions(inverse)
+    for (const f of REDUCTIONS) {
+      if (budget.maps === 0 || budget.here === 0) break
+      if (Math.floor(width / f) < MIN_REDUCED || Math.floor(height / f) < MIN_REDUCED) continue
+      const reduced = look(inverseShrunk(f), 'normal', f, budget, work, true)
+      if (reduced) return { ...reduced, inverted: true }
+    }
+  }
+  return recoverVersion(luminance, budget, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -108,6 +90,15 @@ interface Budget {
   maps: number
   second: number
   here: number
+  invertedFallback: boolean
+  uniform: boolean
+  hints: VersionHint[]
+}
+
+interface VersionHint {
+  readonly triple: readonly [Finder, Finder, Finder]
+  readonly size: number
+  readonly inverted: boolean
 }
 
 /**
@@ -116,19 +107,24 @@ interface Budget {
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work): DecodeResult | undefined {
+function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false): DecodeResult | undefined {
   const levels = thresholds(luminance)
+  if (f === 1 && !strictOverride) {
+    budget.invertedFallback = levels.invertedFallback
+    budget.uniform = levels.uniform
+  }
+  if (levels.uniform) return undefined
   const bits = binarise(luminance, levels)
-  const strict = f > 1
+  const strict = f > 1 || strictOverride
   const candidates: Candidate[] = []
   // The inverse changes colour where the picture does, so one set of edges serves both.
   const edges = edgesOf(bits)
   if (inversion !== 'inverted') {
-    const found = search(bits, edges, false, candidates, budget, strict, f, work)
+    const found = search(bits, edges, false, candidates, budget, strict, f, work, f === 1 && !strictOverride)
     if (found) return found
   }
   if (inversion !== 'normal') {
-    const found = search(invert(bits), edges, true, candidates, budget, strict, f, work)
+    const found = search(invert(bits), edges, true, candidates, budget, strict, f, work, f === 1 && !strictOverride)
     if (found) return found
   }
   // Nothing read: look again at the few maps whose format copies agreed.
@@ -174,7 +170,9 @@ function search(
   strict: boolean,
   f: number,
   work?: Work,
+  collectHints = false,
 ): DecodeResult | undefined {
+  if (budget.maps === 0 || budget.here === 0) return undefined
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
     const triples = finderTriples(image, findFinders(image, tolerance, work, edges)).slice(0, MAX_TRIPLES)
@@ -194,8 +192,9 @@ function search(
             work.maps++
             if (f > 1) work.reduced = (work.reduced ?? 0) + 1
           }
-          const result = read(image, location, inverted, candidates, strict, f)
+          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple)
           if (result) return result
+          if (budget.maps === 0 || budget.here === 0) return undefined
         }
       }
     }
@@ -216,48 +215,107 @@ function read(
   candidates: Candidate[],
   strict: boolean,
   f: number,
+  hints?: VersionHint[],
+  triple?: readonly [Finder, Finder, Finder],
 ): DecodeResult | undefined {
   const { size, project, matrix } = location
   const modules = new Uint8Array(size * size)
+  modules.fill(2) // Unsampled; projected light and dark modules are 0 and 1.
+  let sample: ModuleReader
   if (matrix) {
     // project(x, y), written out so that no point is made for each module.
     const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = matrix as [number, number, number, number, number, number, number, number, number]
     const { data, width, height } = image
-    for (let y = 0; y < size; y++) {
+    sample = (x, y) => {
+      const index = y * size + x
+      if (modules[index] !== 2) return modules[index] === 1
       const v = y + 0.5
-      for (let x = 0; x < size; x++) {
-        const u = x + 0.5
-        const w = m6 * u + m7 * v + m8
-        const px = Math.floor((m0 * u + m1 * v + m2) / w)
-        const py = Math.floor((m3 * u + m4 * v + m5) / w)
-        if (px >= 0 && py >= 0 && px < width && py < height) modules[y * size + x] = data[py * width + px]!
-      }
+      const u = x + 0.5
+      const w = m6 * u + m7 * v + m8
+      const px = Math.floor((m0 * u + m1 * v + m2) / w)
+      const py = Math.floor((m3 * u + m4 * v + m5) / w)
+      const value = px >= 0 && py >= 0 && px < width && py < height ? data[py * width + px]! : 0
+      modules[index] = value
+      return value === 1
     }
   } else {
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const p = project(x, y)
-        const px = Math.floor(p.x)
-        const py = Math.floor(p.y)
-        if (px >= 0 && py >= 0 && px < image.width && py < image.height) modules[y * size + x] = image.data[py * image.width + px]!
-      }
+    sample = (x, y) => {
+      const index = y * size + x
+      if (modules[index] !== 2) return modules[index] === 1
+      const p = project(x, y)
+      const px = Math.floor(p.x)
+      const py = Math.floor(p.y)
+      const value = px >= 0 && py >= 0 && px < image.width && py < image.height ? image.data[py * image.width + px]! : 0
+      modules[index] = value
+      return value === 1
     }
   }
-  const straightRead: ModuleReader = (x, y) => modules[y * size + x] === 1
+  if (strict && !agreementRead(sample, size)) return undefined
+  const straightRead = sample
   const straight = readSymbol(straightRead, size)
   if (straight) {
     // At reduced size, a read whose format copies do not agree on its level and mask is no read.
     if (strict && !formatAgrees(straightRead, size, straight.ecc, straight.mask)) return undefined
     return { ...straight, mirrored: false, inverted, location: where(location, f) }
   }
-  const mirroredRead: ModuleReader = (x, y) => modules[x * size + y] === 1
+  const mirroredRead: ModuleReader = (x, y) => sample(y, x)
   const mirrored = readSymbol(mirroredRead, size)
   if (mirrored) {
     if (strict && !formatAgrees(mirroredRead, size, mirrored.ecc, mirrored.mask)) return undefined
     return { ...mirrored, mirrored: true, inverted, location: where(location, f) }
   }
+  // A version mismatch can stop either symbol read before its format is read.
+  // Populate both orientations before checking the candidate for a second look.
+  for (let i = 0; i < 15; i++) {
+    const [x, y] = FORMAT_COORDS[i]!
+    sample(x, y); sample(y, x)
+    const sx = i < 8 ? size - 1 - i : 8
+    const sy = i < 8 ? 8 : size - 7 + (i - 8)
+    sample(sx, sy); sample(sy, sx)
+  }
   const agreed = agreement(modules, size)
   if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
+  if (agreed && hints && triple && hints.length < SECOND_LOOKS) {
+    const version = agreedVersion(agreed.mirrored ? mirroredRead : straightRead, size)
+    if (version !== undefined && 17 + 4 * version !== size) {
+      const target = 17 + 4 * version
+      const duplicate = hints.some(h => h.size === target && h.inverted === inverted &&
+        h.triple.every((p, i) => p.x === triple[i]!.x && p.y === triple[i]!.y))
+      if (!duplicate) hints.push({ triple, size: target, inverted })
+    }
+  }
+  return undefined
+}
+
+/** Evidence-directed retries run only after every existing search and second look has failed. */
+function recoverVersion(luminance: Luminance, budget: Budget, work?: Work): DecodeResult | undefined {
+  if (budget.hints.length === 0 || budget.maps === 0) return undefined
+  const levels = thresholds(luminance)
+  const bits = binarise(luminance, levels)
+  const edges = edgesOf(bits)
+  let inverse: BitImage | undefined
+  const candidates: Candidate[] = []
+  let remaining = REDUCED_MAPS
+  for (const hint of budget.hints) {
+    if (budget.maps === 0 || remaining === 0) break
+    const image = hint.inverted ? (inverse ??= invert(bits)) : bits
+    for (const location of locate(image, hint.triple, hint.size, work, edges)) {
+      if (budget.maps === 0 || remaining === 0) break
+      budget.maps--
+      remaining--
+      if (work) work.maps++
+      const result = read(image, location, hint.inverted, candidates, true, 1)
+      if (result) return result
+    }
+  }
+  // A queued map can still recover after the ordinary map allowance runs out.
+  for (const candidate of candidates) {
+    if (budget.second === 0) break
+    budget.second--
+    if (work) work.second++
+    const result = secondLook(luminance, levels, candidate, work, true)
+    if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
+  }
   return undefined
 }
 

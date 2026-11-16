@@ -201,7 +201,7 @@ private fun encodeData(text: String?, bytes: ByteArray?, options: EncodeOptions)
         var bestModules = ByteArray(0)
         for (m in 0 until 8) {
             val candidate = grid.render(ecc, m)
-            val score = penalty(candidate, grid.size)
+            val score = penalty(candidate, grid.size, best)
             if (score < best) {
                 best = score
                 chosen = m
@@ -668,12 +668,14 @@ internal fun versionBits(version: Int): Int {
 }
 
 /** Mask penalty per ISO/IEC 18004 section 7.8.3, scoring the finished symbol. */
-internal fun penalty(modules: ByteArray, size: Int): Int {
+internal fun penalty(modules: ByteArray, size: Int, limit: Int = Int.MAX_VALUE): Int {
     var score = 0
     var dark = 0
     for (y in 0 until size) {
         var rowRun = 0
         var colRun = 0
+        var rowBits = 0
+        var colBits = 0
         for (x in 0 until size) {
             val here = modules[y * size + x]
             dark += here
@@ -694,36 +696,22 @@ internal fun penalty(modules: ByteArray, size: Int): Int {
                     here == modules[(y + 1) * size + x + 1]
                 ) score += 3
             }
-            if (x + 6 < size && finderLike(modules, size, x, y, 1, 0)) score += 40
-            if (x + 6 < size && finderLike(modules, size, y, x, 0, 1)) score += 40
+            rowBits = (rowBits shl 1) or here.toInt()
+            colBits = (colBits shl 1) or down.toInt()
+            // Count each finder-like core once, even with quiet runs on both sides.
+            if (x >= 10) {
+                if ((rowBits and 0x7ff) == 0x05d) score += 40
+                if ((colBits and 0x7ff) == 0x05d) score += 40
+                if ((rowBits and 0x7ff) == 0x5d0 && (x < 14 || (rowBits and 0x7800) != 0)) score += 40
+                if ((colBits and 0x7ff) == 0x5d0 && (x < 14 || (colBits and 0x7800) != 0)) score += 40
+            }
         }
         if (rowRun >= 5) score += rowRun - 2
         if (colRun >= 5) score += colRun - 2
+        // Every remaining penalty is non-negative; ties keep the earlier mask.
+        if (score >= limit) return score
     }
     val total = size * size
     score += (abs(dark * 2 - total) * 10 / total) * 10
     return score
-}
-
-private val FINDER_RUN = intArrayOf(1, 0, 1, 1, 1, 0, 1)
-
-/** 1:1:3:1:1 starting at (x, y) along (dx, dy), with four light modules on one side. */
-private fun finderLike(m: ByteArray, size: Int, x: Int, y: Int, dx: Int, dy: Int): Boolean {
-    for (i in 0 until 7) if (m[(y + i * dy) * size + x + i * dx].toInt() != FINDER_RUN[i]) return false
-    return lightRun(m, size, x, y, dx, dy, -4) || lightRun(m, size, x, y, dx, dy, 7)
-}
-
-/**
- * Four modules from offset [from] along the line are light. A run that would
- * leave the symbol does not count: the quiet zone is not scored. The reference
- * encoder scores it the same way, which keeps mask choice identical to it.
- */
-private fun lightRun(m: ByteArray, size: Int, x: Int, y: Int, dx: Int, dy: Int, from: Int): Boolean {
-    for (i in from until from + 4) {
-        val px = x + i * dx
-        val py = y + i * dy
-        if (px < 0 || py < 0 || px >= size || py >= size) return false
-        if (m[py * size + px].toInt() == 1) return false
-    }
-    return true
 }

@@ -1,0 +1,289 @@
+--- a/rust/src/locate.rs
++++ b/rust/src/locate.rs
+@@ -337,9 +337,106 @@
+     }
+ }
+ 
++// Scratch prototype: only the loose eligibility is retained, per image and
++// polarity. A populated empty span is distinct from a row never scanned.
++struct EventSpan { first: usize, begin: usize, end: usize }
++pub(crate) struct FinderEvents { rows: Vec<EventSpan>, words: Vec<u32>, ready: bool }
++impl FinderEvents {
++    pub(crate) fn new() -> Self { Self { rows: Vec::new(), words: Vec::new(), ready: false } }
++}
++
++// One shared error per term. The exact multiplication grouping and term order
++// are those of finder_ratio, and a failed loose term also excludes strict.
++fn joint_ratio(counts: &[i64; 5]) -> (bool, bool) {
++    if counts.iter().any(|&c| c == 0) { return (false, false); }
++    let total: i64 = counts.iter().sum();
++    if total < 7 { return (false, false); }
++    // For five equal positive runs r, total >= 7 implies r >= 2. Their
++    // centre error is 8r/7: above the strict 15r/14 limit and below the
++    // loose 12r/7 limit. The outer errors satisfy both. Each margin is at
++    // least r/14, well above f64 rounding throughout the valid i64 domain.
++    if counts[0] == counts[1] && counts[0] == counts[2] && counts[0] == counts[3] && counts[0] == counts[4] {
++        return (false, true);
++    }
++    let module = total as f64 / 7.0;
++    let strict_slack = module * 0.5;
++    let loose_slack = module * 0.8;
++    let mut strict = true;
++    for (i, &count) in counts.iter().enumerate() {
++        let centre = i == 2;
++        let error = (if centre { 3.0 * module } else { module } - count as f64).abs();
++        let loose = if centre { 3.0 * loose_slack } else { loose_slack };
++        if !(error < loose) { return (false, false); }
++        let narrow = if centre { 3.0 * strict_slack } else { strict_slack };
++        if strict && !(error < narrow) { strict = false; }
++    }
++    (strict, true)
++}
++
++fn window(changes: &[i32], width: usize, k: usize) -> ([i64; 5], usize) {
++    let start = k - 4;
++    let a = if start == 0 { 0 } else { changes[start - 1] as usize };
++    let b = changes[start] as usize;
++    let c = changes[start + 1] as usize;
++    let d = changes[start + 2] as usize;
++    let e = changes[start + 3] as usize;
++    let end = if k < changes.len() { changes[k] as usize } else { width };
++    ([(b-a) as i64, (c-b) as i64, (d-c) as i64, (e-d) as i64, (end-e) as i64], end)
++}
++
++// Strict consumes the original schedule immediately. Even windows skipped by a
++// successful strict sighting are classified, for a later loose pass.
++fn scan_joint<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, first: usize, words: &mut Vec<u32>, mut consider: F) {
++    let count = if first <= changes.len() { (changes.len() - first) / 2 + 1 } else { 0 };
++    let begin = words.len(); words.resize(begin + (count + 31) / 32, 0);
++    let mut resume = first;
++    for index in 0..count {
++        let k = first + 2 * index;
++        let (counts, end) = window(changes, width, k);
++        let (strict, loose) = joint_ratio(&counts);
++        if loose { words[begin + index / 32] |= 1u32 << (index % 32); }
++        if k >= resume && strict {
++            resume = if consider(&counts, end) { k + 6 } else { k + 2 };
++        }
++    }
++}
++
++// Bits are visited in ascending order. The guard preserves the successful
++// consider skip, even when eligible bits lie inside the skipped interval.
++fn scan_loose<F: FnMut(&[i64; 5], usize) -> bool>(changes: &[i32], width: usize, first: usize, words: &[u32], mut consider: F) {
++    let mut resume = first;
++    for (word_index, &word) in words.iter().enumerate() {
++        let mut bits = word;
++        while bits != 0 {
++            let bit = bits.trailing_zeros() as usize;
++            bits &= bits - 1;
++            let k = first + 2 * (word_index * 32 + bit);
++            if k < resume { continue; }
++            let (counts, end) = window(changes, width, k);
++            resume = if consider(&counts, end) { k + 6 } else { k + 2 };
++        }
++    }
++}
++
+ /// Finds finder pattern candidates, most often confirmed first. `tolerance` is
+ /// how far a run may stray from its share, in modules.
+ pub fn find_finders(image: &BitImage, tolerance: f64, work: Option<&mut Work>, edges: &mut Edges) -> Vec<Finder> {
++    let (width, height) = (image.width, image.height);
++    let columns = width / CELL + 1;
++    let mut scan = Scan { image, tolerance, work, found: Vec::new(), columns, cells: Vec::new() };
++    let skip = (height / 200).clamp(1, 3);
++    let mut y = skip - 1;
++    while y < height {
++        let changes = edges.row(y);
++        scan_row(changes, width, image.data[y * width] == 1, tolerance, |counts, end| scan.consider(counts, y, end));
++        y += skip;
++    }
++    let mut found = scan.found;
++    found.sort_by(|a, b| b.count.cmp(&a.count));
++    found
++}
++pub(crate) fn find_finders_cached(image: &BitImage, tolerance: f64, work: Option<&mut Work>, edges: &mut Edges, events: &mut FinderEvents) -> Vec<Finder> {
++    if tolerance == 0.5 { events.ready = false; events.rows.clear(); events.words.clear(); }
+     let (width, height) = (image.width, image.height);
+     let columns = width / CELL + 1;
+     let mut scan = Scan { image, tolerance, work, found: Vec::new(), columns, cells: Vec::new() };
+@@ -348,9 +445,23 @@
+     let mut y = skip - 1;
+     while y < height {
+         let changes = edges.row(y);
+-        scan_row(changes, width, data[y * width] == 1, tolerance, |counts, end| scan.consider(counts, y, end));
++        let dark_first = data[y * width] == 1;
++        let first = if dark_first { 4 } else { 5 };
++        if tolerance == 0.5 {
++            let begin = events.words.len();
++            scan_joint(changes, width, first, &mut events.words, |counts, end| scan.consider(counts, y, end));
++            events.rows.push(EventSpan { first, begin, end: events.words.len() });
++        } else if tolerance == 0.8 && events.ready {
++            match events.rows.get((y + 1) / skip - 1).filter(|row| row.first == first) {
++                Some(row) => scan_loose(changes, width, first, &events.words[row.begin..row.end], |counts, end| scan.consider(counts, y, end)),
++                None => scan_row(changes, width, dark_first, tolerance, |counts, end| scan.consider(counts, y, end)),
++            }
++        } else {
++            scan_row(changes, width, dark_first, tolerance, |counts, end| scan.consider(counts, y, end));
++        }
+         y += skip;
+     }
++    if tolerance == 0.5 { events.ready = true; }
+     let mut found = scan.found;
+     found.sort_by(|a, b| b.count.cmp(&a.count));
+     found
+@@ -443,6 +554,109 @@
+     }
+ 
+     #[test]
++    fn joint_ratios_match_both_original_predicates() {
++        for a in 0..=8 { for b in 0..=8 { for c in 0..=8 { for d in 0..=8 { for e in 0..=8 {
++            let counts=[a,b,c,d,e];
++            assert_eq!(joint_ratio(&counts),(finder_ratio(&counts,0.5),finder_ratio(&counts,0.8)),"{counts:?}");
++        }}}}}
++    }
++    fn compare_event_row(data: &[u8], pattern: usize) {
++        let width=data.len();let changes:Vec<i32>=(1..width).filter(|&x|data[x]!=data[x-1]).map(|x|x as i32).collect();
++        let first=if data[0]==1 {4} else {5};let mut words=Vec::new();
++        let accept=|counts: &[i64;5],end:usize,n:usize| match pattern {0=>false,1=>true,2=>n%2==0,_=>(end+counts[0] as usize+counts[2] as usize)%3==0};
++        let mut strict_reference=Vec::new();reference_row(&changes,width,data[0]==1,0.5,|counts,end|{let yes=accept(counts,end,strict_reference.len());strict_reference.push((*counts,end,yes));yes});
++        let mut strict=Vec::new();scan_joint(&changes,width,first,&mut words,|counts,end|{let yes=accept(counts,end,strict.len());strict.push((*counts,end,yes));yes});
++        assert_eq!(strict,strict_reference,"strict {data:?} pattern={pattern}");
++        let mut loose_reference=Vec::new();reference_row(&changes,width,data[0]==1,0.8,|counts,end|{let yes=accept(counts,end,loose_reference.len());loose_reference.push((*counts,end,yes));yes});
++        for _ in 0..2 { let mut loose=Vec::new();scan_loose(&changes,width,first,&words,|counts,end|{let yes=accept(counts,end,loose.len());loose.push((*counts,end,yes));yes});assert_eq!(loose,loose_reference,"loose {data:?} pattern={pattern}"); }
++    }
++    #[test]
++    fn equal_run_shortcut_and_near_equal_fallback_match_original() {
++        let max=i64::MAX/5;
++        let mut values:Vec<i64>=(0..=4096).collect();
++        for power in 1..=60 {let n=1i64<<power;for delta in [-1i64,0,1] {let r=n+delta;if r>=0 && r<=max {values.push(r);}}}
++        values.extend([max-2,max-1,max]);
++        let mut seed=0x3eab_780c_139fu64;
++        for _ in 0..2048 {seed=seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);values.push((seed%(max as u64+1)) as i64);}
++        for r in values {
++            let equal=[r;5];let expected=(finder_ratio(&equal,0.5),finder_ratio(&equal,0.8));
++            assert_eq!(joint_ratio(&equal),expected,"equal {r}");
++            assert_eq!(expected,if r>=2 {(false,true)} else {(false,false)},"equal {r}");
++            for i in 0..5 {for delta in [-2i64,-1,1,2] {
++                let Some(value)=r.checked_add(delta) else {continue};if value<0 {continue}
++                let mut nearby=equal;nearby[i]=value;
++                if nearby.iter().try_fold(0i64,|sum,&n|sum.checked_add(n)).is_none() {continue}
++                assert_eq!(joint_ratio(&nearby),(finder_ratio(&nearby,0.5),finder_ratio(&nearby,0.8)),"nearby {nearby:?}");
++            }}
++        }
++    }
++
++    #[test]
++    fn event_rows_match_independent_original_schedule() {
++        for width in 1..=12usize { for mask in 0..(1usize<<width) {
++            let data:Vec<u8>=(0..width).map(|x|((mask>>x)&1) as u8).collect();for pattern in 0..4 {compare_event_row(&data,pattern);}
++        }}
++        let mut seed=0x1020_30abu32;
++        for width in [63,64,65,127,128,129,257,511] { for _ in 0..20 {
++            let mut data=Vec::with_capacity(width);for _ in 0..width {seed=seed.wrapping_mul(1664525).wrapping_add(1013904223);data.push((seed>>31) as u8)}
++            for pattern in 0..4 {compare_event_row(&data,pattern);}
++            for x in &mut data {*x^=1;} for pattern in 0..4 {compare_event_row(&data,pattern);}
++        }}
++        // Strict accepts the first window, skipping the second, but the latter
++        // is loose-eligible and must be present in the retained event bits.
++        let lengths=[4,4,11,5,6,11,11]; let mut data=Vec::new();
++        for (i,n) in lengths.into_iter().enumerate() {data.extend(std::iter::repeat_n((i%2==0) as u8,n));}
++        let changes:Vec<i32>=(1..data.len()).filter(|&x|data[x]!=data[x-1]).map(|x|x as i32).collect();
++        let mut words=Vec::new();let mut strict=Vec::new();scan_joint(&changes,data.len(),4,&mut words,|_,end|{strict.push(end);true});
++        let mut loose=Vec::new();scan_loose(&changes,data.len(),4,&words,|_,end|{loose.push(end);false});
++        assert_eq!(strict.first(),Some(&30));assert!(loose.contains(&52));assert!(!strict.contains(&52));
++    }
++    #[test]
++    fn shared_cache_preserves_finders_and_work_for_both_polarities() {
++        let mut seed=0x192a_45efu32;
++        for (width,height) in [(1,1),(63,31),(65,31),(129,61),(320,220)] {
++            for inverse in [false,true] {
++                let mut data=Vec::with_capacity(width*height);
++                for _ in 0..width*height {seed=seed.wrapping_mul(1664525).wrapping_add(1013904223);data.push(((seed>>31) as u8)^u8::from(inverse));}
++                let image=BitImage {data,width,height};let mut edges=Edges::new(&image);let mut cache=FinderEvents::new();
++                // Missing strict population must use the ordinary path.
++                let mut empty=FinderEvents::new();let mut fallback=Work::default();let mut expected_work=Work::default();
++                let expected=reference_find_finders(&image,0.8,Some(&mut expected_work),&mut Edges::new(&image));
++                assert_eq!(find_finders_cached(&image,0.8,Some(&mut fallback),&mut edges,&mut empty),expected);assert_eq!(fallback,expected_work);
++                for tolerance in [0.5,0.8,0.8] {let (mut a,mut b)=(Work::default(),Work::default());
++                    let expected=reference_find_finders(&image,tolerance,Some(&mut a),&mut Edges::new(&image));
++                    let actual=find_finders_cached(&image,tolerance,Some(&mut b),&mut edges,&mut cache);
++                    assert_eq!(actual,expected,"{width}x{height} inverse={inverse} tolerance={tolerance}");assert_eq!(a,b);
++                }
++                assert!(cache.ready);assert!(!cache.rows.is_empty());
++            }
++        }
++    }
++
++    #[test]
++    fn opposite_polarity_uses_shared_edges_but_separate_event_cache() {
++        let (width,height)=(129usize,83usize);let mut seed=0x18fe_12cau32;
++        let mut data=Vec::with_capacity(width*height);
++        for _ in 0..width*height {seed=seed.wrapping_mul(1664525).wrapping_add(1013904223);data.push((seed>>31) as u8);}
++        // Include a regular finder pattern so successful considers can alter
++        // the schedule as well as the random background.
++        for y in 0..14 {for x in 0..14 {let mx=x/2;let my=y/2;data[(12+y)*width+15+x]=((mx as i32-3).abs().max((my as i32-3).abs())!=2) as u8;}}
++        let normal=BitImage {data,width,height};
++        let inverse=BitImage {data:normal.data.iter().map(|&b|b^1).collect(),width,height};
++        let mut shared_edges=Edges::new(&normal);
++        for image in [&normal,&inverse] {
++            let mut cache=FinderEvents::new();
++            for tolerance in [0.5,0.8,0.8] {
++                let (mut a,mut b)=(Work::default(),Work::default());
++                let expected=reference_find_finders(image,tolerance,Some(&mut a),&mut Edges::new(image));
++                let actual=find_finders_cached(image,tolerance,Some(&mut b),&mut shared_edges,&mut cache);
++                assert_eq!(actual,expected,"tolerance={tolerance}");assert_eq!(a,b);
++            }
++            assert!(cache.ready && !cache.rows.is_empty());
++        }
++    }
++
++    #[test]
+     fn row_calls_and_success_resets_match_exhaustively() {
+         for width in 1..=16usize {
+             for mask in 0..(1usize << width) {
+--- a/rust/src/decode.rs
++++ b/rust/src/decode.rs
+@@ -2,7 +2,7 @@
+ //! 7), the second look (step 8) and the reduced-size pass (step 9).
+ 
+ use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
+-use crate::locate::{find_finders, Edges, Finder, Work};
++use crate::locate::{find_finders_cached, Edges, Finder, FinderEvents, Work};
+ use crate::place::{estimate_size, finder_triples, locate, Location, Point};
+ use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
+ use crate::symbol::{read_symbol, Payload, FORMAT_COORDS};
+@@ -194,8 +194,9 @@
+     mut work: Option<&mut Work>,
+ ) -> Option<Reading> {
+     // A strict pass first; a looser one for blurred or small codes.
++    let mut finder_events = FinderEvents::new();
+     for tolerance in TOLERANCES {
+-        let found = find_finders(image, tolerance, work.as_deref_mut(), edges);
++        let found = find_finders_cached(image, tolerance, work.as_deref_mut(), edges, &mut finder_events);
+         let triples = finder_triples(image, &found);
+         for ids in triples.iter().take(MAX_TRIPLES) {
+             let triple: [Finder; 3] = ids.map(|i| found[i]);
+@@ -299,6 +300,22 @@
+ 
+ #[cfg(test)]
+ mod strict_format_tests {
++    #[test]
++    fn decodes_thin_finder_centres_at_both_quiet_margins() {
++        let qr=crate::encode::encode("A",&crate::encode::Options {version:Some(1),ecc:crate::symbol::Ecc::H,..Default::default()}).unwrap();
++        for centre in [1,2] { for pad in [4,5] {
++            let side=qr.size+2*pad; let mut data=vec![235u8;side*side];
++            for y in 0..qr.size { for x in 0..qr.size { if qr.modules[y*qr.size+x]!=0 {data[(y+pad)*side+x+pad]=20;} }}
++            for (ox,oy) in [(0,0),(qr.size-7,0),(0,qr.size-7)] {
++                for y in [2,4] {for x in 2..=4 {data[(pad+oy+y)*side+pad+ox+x]=235;}}
++                if centre==2 {data[(pad+oy+2)*side+pad+ox+3]=20;}
++                for x in 0..=6 {data[(pad+oy+7)*side+pad+ox+x]=20;}
++            }
++            let reading=super::decode(&data,side,side,1,side,super::Inversion::Both,None).expect("thin finder reading");
++            assert_eq!(reading.payload.text,"A");assert_eq!(reading.payload.bytes,b"A");
++        }}
++    }
++
+     use super::*;
+     use crate::encode::{encode, Options};
+     use crate::symbol::Ecc;

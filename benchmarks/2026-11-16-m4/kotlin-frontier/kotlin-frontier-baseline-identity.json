@@ -1,0 +1,11 @@
+{
+  "revision": "fabe7f295c6ceffecb96f62d4585a59784838c8c",
+  "dirty": false,
+  "kotlinSourceSha256": "542cdbb5d79b5714ff80d0c890bd1103752d6f25113ea9554b5599cac062c76f",
+  "sourceHashMethod": "Sorted Kotlin paths relative to kotlin/core/src/main/kotlin, UTF-8 path immediately followed by file bytes",
+  "jar": "qr-kotlin-before-frontier.jar",
+  "jarSha256": "cd569c6f27434a5aad9ff9f661a68931e67e995ef01091ea07c1f631e3fb9d24",
+  "javaVersion": "21.0.11",
+  "javaHome": "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home",
+  "build": "./gradlew :core:jar --console=plain --no-daemon --max-workers=2"
+}

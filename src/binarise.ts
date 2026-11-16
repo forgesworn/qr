@@ -23,8 +23,9 @@ export function toLuminance(
   height: number,
   channels: 1 | 4,
   rowStride = width,
+  storage?: Uint8Array,
 ): Luminance {
-  const out = new Uint8Array(width * height)
+  const out = storage ?? new Uint8Array(width * height)
   if (channels === 1) {
     for (let y = 0; y < height; y++) out.set(data.subarray(y * rowStride, y * rowStride + width), y * width)
     return { data: out, width, height }
@@ -52,6 +53,10 @@ export interface Thresholds {
   readonly across: number
   readonly down: number
   readonly values: Float64Array
+  /** Flat local blocks in a picture with enough overall contrast to justify re-thresholding its inverse. */
+  readonly invertedFallback: boolean
+  /** Every luminance value is identical, so neither this picture nor its reductions can contain a symbol. */
+  readonly uniform: boolean
 }
 
 /**
@@ -69,11 +74,14 @@ export function thresholds(image: Luminance): Thresholds {
       if (v < min) min = v
       if (v > max) max = v
     }
-    return { across: 1, down: 1, values: Float64Array.of(max - min < MIN_DYNAMIC_RANGE ? -1 : (min + max) / 2) }
+    return { across: 1, down: 1, values: Float64Array.of(max - min < MIN_DYNAMIC_RANGE ? -1 : (min + max) / 2), invertedFallback: false, uniform: min === max }
   }
   const across = Math.ceil(width / BLOCK)
   const down = Math.ceil(height / BLOCK)
   const levels = new Float64Array(across * down)
+  let flat = false
+  let pictureMin = 255
+  let pictureMax = 0
   for (let by = 0; by < down; by++) {
     const top = Math.min(by * BLOCK, height - BLOCK)
     for (let bx = 0; bx < across; bx++) {
@@ -85,6 +93,12 @@ export function thresholds(image: Luminance): Thresholds {
       // is negative and its sign fills the mask, so min takes the difference.
       for (let y = top; y < top + BLOCK; y++) {
         const row = y * width + left
+        // Once the range is wide enough it cannot become flat again. Only
+        // the sum affects this block's threshold from here on.
+        if (max - min > MIN_DYNAMIC_RANGE) {
+          for (let i = row; i < row + BLOCK; i++) sum = (sum + data[i]!) | 0
+          continue
+        }
         for (let i = row; i < row + BLOCK; i++) {
           const v = data[i]!
           sum = (sum + v) | 0
@@ -95,7 +109,10 @@ export function thresholds(image: Luminance): Thresholds {
         }
       }
       let level = sum / (BLOCK * BLOCK)
+      pictureMin = Math.min(pictureMin, min)
+      pictureMax = Math.max(pictureMax, max)
       if (max - min <= MIN_DYNAMIC_RANGE) {
+        flat = true
         // A flat block: assume it is background unless its neighbours say otherwise.
         level = min / 2
         if (bx > 0 && by > 0) {
@@ -121,7 +138,14 @@ export function thresholds(image: Luminance): Thresholds {
       values[by * across + bx] = sum / 25
     }
   }
-  return { across, down, values }
+  return { across, down, values, invertedFallback: flat && pictureMax - pictureMin > MIN_DYNAMIC_RANGE, uniform: pictureMin === pictureMax }
+}
+
+/** Invert luminance before thresholding: flat-block background estimates depend on polarity. */
+export function invertLuminance(image: Luminance): Luminance {
+  const data = new Uint8Array(image.data.length)
+  for (let i = 0; i < data.length; i++) data[i] = 255 - image.data[i]!
+  return { data, width: image.width, height: image.height }
 }
 
 /**

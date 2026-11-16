@@ -1,0 +1,631 @@
+{
+  "baselineWasmSha256": "33a95f2de8d70d61eeef76b8c23eb251e1f748d15f43fa30e6ff90546f983115",
+  "candidateWasmSha256": "a3d464b698cee9d2fbca780bac3fc640a03cb80a6473cffb1b44a8be06d674a6",
+  "validation": "Complete public results and unchanged input; no work-counter comparison through this ABI",
+  "cases": 89,
+  "rows": [
+    {
+      "name": "noise-5-1280x720",
+      "width": 1280,
+      "height": 720,
+      "frameSha256": "7b6261f2cb3c1228f414adf9602b36c6a8763d020f2e4ab564e386e1d1dae00c",
+      "result": null
+    },
+    {
+      "name": "noise-5-640x360",
+      "width": 640,
+      "height": 360,
+      "frameSha256": "7806c7b2303453f193634a4696146eeb399d99f0cb1931f3fac233c93e1d98a0",
+      "result": null
+    },
+    {
+      "name": "noise-42-640x360",
+      "width": 640,
+      "height": 360,
+      "frameSha256": "bc5f4eae06805b1ba116e7a874076b7254a0f375cd369073b702ca17c0b80cdc",
+      "result": null
+    },
+    {
+      "name": "clean",
+      "width": 1280,
+      "height": 720,
+      "frameSha256": "0afcbadee3f95e050a73df547f4e61d973e8085109b0f3f48c901333942e0b22",
+      "result": "https://example.com/performance/0123456789"
+    },
+    {
+      "name": "stripes",
+      "width": 640,
+      "height": 360,
+      "frameSha256": "97f62719c546f8f6ccad1462dfd37e15cd3a5824fe44a500e1bb4a527e302e17",
+      "result": null
+    },
+    {
+      "name": "noise",
+      "width": 160,
+      "height": 120,
+      "frameSha256": "133d194178be3cb9ad2bd7adf69179753928ff07f94ccbe8a20e004c1b15d52a",
+      "result": null
+    },
+    {
+      "name": "gradient",
+      "width": 120,
+      "height": 90,
+      "frameSha256": "09f3163c0ed76fc2ecb3d4e4d1f391f7acbb462c80649ae4e9fb0dbb30a427cb",
+      "result": null
+    },
+    {
+      "name": "finder-tiles",
+      "width": 200,
+      "height": 160,
+      "frameSha256": "cbe32e952a9f9f98a20d5ee188b66b05a0d49b4a794368eeecccd2e7da2696da",
+      "result": null
+    },
+    {
+      "name": "bent-version-4",
+      "width": 164,
+      "height": 164,
+      "frameSha256": "7b74e2252f9723357bc54b560fa938b8d53edc879e3d70cf738ea18704be1b72",
+      "result": "https://example.com/s4"
+    },
+    {
+      "name": "bent-version-12",
+      "width": 292,
+      "height": 292,
+      "frameSha256": "f3f49e879e1dfbd6d2b39fbfc6dd7a878735c0aa7bc6fcd2468ab55af4960da6",
+      "result": "https://example.com/m/conformance0123456789abcdefghijklmnopqrs"
+    },
+    {
+      "name": "close-up-format-damaged",
+      "width": 888,
+      "height": 888,
+      "frameSha256": "59cace6146e121d5196858938c6eb472904c4b71fd49be5f121554178647ea77",
+      "result": null
+    },
+    {
+      "name": "inverted-flat-blocks-mirrored",
+      "width": 166,
+      "height": 166,
+      "frameSha256": "cb17e87bbc31acdbdad64ab556f4675e1cd387185500daca3788044868cc9b10",
+      "result": "https://example.com/inverted/0123456789"
+    },
+    {
+      "name": "finder-damage-5-10-0",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "43e7574af5a04f540649eaddcba34bbee1a875eb839628aed6a4d69b0723fa6f",
+      "result": "https://example.com/finder-damage/0123456789"
+    },
+    {
+      "name": "finder-damage-4-11-0",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "bb316ec9251f87a2a20345363b27498647b906c443d224ff573859ecb0048ddf",
+      "result": "https://example.com/finder-damage/0123456789"
+    },
+    {
+      "name": "finder-damage-4-12-0",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "029d04d6d19a97f7521f722edcd689a81a9f7442671000af4277b2e27f50f4ec",
+      "result": "https://example.com/finder-damage/0123456789"
+    },
+    {
+      "name": "finder-damage-5-10-10",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "c3b997f7253fb9476ed28530812fa8d62e90e82b1af3f867182a159ef3078462",
+      "result": "https://example.com/finder-damage/0123456789"
+    },
+    {
+      "name": "module-1-720",
+      "width": 1280,
+      "height": 720,
+      "frameSha256": "9a384e643546906765f7b0eb6b18a9a8b12e9f204bda5a6101cd1cbcd60fc996",
+      "result": "hello"
+    },
+    {
+      "name": "module-2-720",
+      "width": 1280,
+      "height": 720,
+      "frameSha256": "78485a96e5daf1ab220528a5a9887936559ad2ed4b7d3c9ade34c2617c9d190f",
+      "result": "hello"
+    },
+    {
+      "name": "rotated45-scale2-blur0",
+      "width": 114,
+      "height": 114,
+      "frameSha256": "8bd00371fef2ed1be195a3b4f36e551e1cf57d66d1f53b071ab5dcd7f00f8d4d",
+      "result": "rotation-fine-module"
+    },
+    {
+      "name": "rotated45-scale2-blur0.4",
+      "width": 114,
+      "height": 114,
+      "frameSha256": "d367797b1f6717844797a88e1c1bf8ff6cc1b2743c2bf4b1c3e52ce1e3f3894f",
+      "result": null
+    },
+    {
+      "name": "rotated45-scale3-blur0.7",
+      "width": 166,
+      "height": 166,
+      "frameSha256": "5bb78f315df731a87b8904536353d3be95e48d0c6159b157cf05ed8dd350068c",
+      "result": null
+    },
+    {
+      "name": "rotated45-scale3-blur1",
+      "width": 166,
+      "height": 166,
+      "frameSha256": "8430b6ab5a202b5b401d07957ee79b91cdb71f0f2b99c85088cb7db86453dfdf",
+      "result": "rotation-fine-module"
+    },
+    {
+      "name": "rotated45-scale4-blur1",
+      "width": 218,
+      "height": 218,
+      "frameSha256": "3db6fd823071365acee00d516e1cbbdbd6de131cc87ee117ccaf6f585c7edaec",
+      "result": "rotation-fine-module"
+    },
+    {
+      "name": "rotated45-scale5-blur1",
+      "width": 270,
+      "height": 270,
+      "frameSha256": "6ebc963a7fe06dd8a76c6ab9dba83bbe5c79d389672d32cccd4ca4612efa08ab",
+      "result": "rotation-fine-module"
+    },
+    {
+      "name": "thin-1-pad-4",
+      "width": 29,
+      "height": 29,
+      "frameSha256": "4cbf089a21c28ae8f5caacc14d9820cc47ce0fa432c92247675371510a843b84",
+      "result": "A"
+    },
+    {
+      "name": "thin-1-pad-5",
+      "width": 31,
+      "height": 31,
+      "frameSha256": "efd973028ec11e0104ec813c4e49c37eed3a4c576fb862cac49066f0d2771673",
+      "result": "A"
+    },
+    {
+      "name": "thin-2-pad-4",
+      "width": 29,
+      "height": 29,
+      "frameSha256": "03f21d6fb26990b4a2ccee57d1f4381738797d3f93ad9fedba1a9c910035469c",
+      "result": "A"
+    },
+    {
+      "name": "thin-2-pad-5",
+      "width": 31,
+      "height": 31,
+      "frameSha256": "3dca56314b0874bc71e349068114e332ccd110278ef1780e795c28114a33cec1",
+      "result": "A"
+    },
+    {
+      "name": "pack/decode-frames/frame-01.png",
+      "width": 200,
+      "height": 200,
+      "frameSha256": "9ca5fffbbad2b1a4e734cefcbfe063859f54b999811687d1d9a61a0972466cc8",
+      "result": "https://example.com/r/00aa79c2f02b?k=Rm0_GUQq1Sh3XOtNz1TC7E"
+    },
+    {
+      "name": "pack/decode-frames/frame-02.png",
+      "width": 594,
+      "height": 594,
+      "frameSha256": "a213c387adbc710bdaae8a35bef43755219e1e3aa199d4ccf0d7e58725374509",
+      "result": "bunker://91b051c79416ff06a298e7c2bfba7cc4c7e99d524cbcaeee00cf11c07505c2d9?relay=wss%3A%2F%2Frelay.example.com&secret=4e1513e57a1f339b"
+    },
+    {
+      "name": "pack/decode-frames/frame-03.png",
+      "width": 412,
+      "height": 412,
+      "frameSha256": "57c31d5f7a2bf3a21e4faa6834c22e6d8db4ed6fe773ba3b8d304c61c8571302",
+      "result": "nostrconnect://236e1c45486595bf4a5a782428a1d69f65b5e70ddd4d171309d44278ab0464ea?relay=wss%3A%2F%2Frelay.example.com&secret=70534fdd&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-04.png",
+      "width": 662,
+      "height": 662,
+      "frameSha256": "fb18fdc5e37bc3867cc9fbd2a29d7c257d0462baa567b264674b20646dcae063",
+      "result": "LIGHTNING:LNBC35MJR3REJ4AZKKDP4EL7YRQ1CZCM4CX95GEX9CD3XE7M7UXGVPD48K90WG9RMPJ6D91DQTN61F56L74LWSFZ9RK04UYDHKEF740W0JWF6X9QFVK4E7TEV1G090ADQW2J62D4DC6K1PU9D33ML50N1XUZ15CRV19HJSPF3ZF6PL2AHNW0C95PXS4TFE1N4L0RFH0YNXA0MK7CMJDQNWS5SRNAVZGKEHL611XEMJ6JQNM4544L8TZJ"
+    },
+    {
+      "name": "pack/decode-frames/frame-05.png",
+      "width": 242,
+      "height": 242,
+      "frameSha256": "61d3de106d00aac76d010a012a8ac2b5583612f28800d4c55f4d283bae4b54cb",
+      "result": "906526156318738632106559819785534336428767492338"
+    },
+    {
+      "name": "pack/decode-frames/frame-06.png",
+      "width": 490,
+      "height": 490,
+      "frameSha256": "3c3f8fbe7755d74b95ea1e8d9370079ab1e95972cd8f9aaf84e85a799754f51a",
+      "result": "https://example.com/r/a6e6bef48661?k=zY86wTRZStTR7SIkk57wyK&h=qRUmy0hFf5qoCfVNnNp5vUBuihFAFvOMuvs5s6Di9OZxAM41jeIP-bydsoT0oNgZ3wzzvv6GUAgXqqIcnfYCAnJINEOasqCRG71Sufxfk21-UccI8iCE2WQ2edYZIL9lOxWaag1vA5Hu1xRzf"
+    },
+    {
+      "name": "pack/decode-frames/frame-07.png",
+      "width": 194,
+      "height": 194,
+      "frameSha256": "26c53d19b8973c0f282297f1c625508a01933619a33e182e9e021ef764dbcfbf",
+      "result": null
+    },
+    {
+      "name": "pack/decode-frames/frame-08.png",
+      "width": 420,
+      "height": 420,
+      "frameSha256": "ff021bc90fe80838464a5305556a6e15e9fe7427d1057f54c46e622e3acb3709",
+      "result": "bunker://0701e38f666f4954f4c293fd53f56629ba06d39a90bee8fce402cb484740d971?relay=wss%3A%2F%2Frelay.example.com&secret=d5618494e184939a"
+    },
+    {
+      "name": "pack/decode-frames/frame-09.png",
+      "width": 382,
+      "height": 382,
+      "frameSha256": "16266414fa69cd9375b7d78e47be10b72c6bdf22901d8f2633ac80486a2645fd",
+      "result": "nostrconnect://78cee99fa422e39fc89f6afcafc03d6854fe56b610488a463e24908240716a6f?relay=wss%3A%2F%2Frelay.example.com&secret=6e84e5a8&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-10.png",
+      "width": 668,
+      "height": 668,
+      "frameSha256": "fde96957f7456eb48d2a941163abe48caead51fc6eed68a56accd630da372a99",
+      "result": "LIGHTNING:LNBCQKLGYH54S3CNQ8YGJKE3VWKQS4HP9001R6URKTLSLKMPF7XJC1AN6VD060RHY9Q977MDGX0P04PY5N8654S0HNNMMZFVP7UUMZR4MWZ9QQE372DDE9FV5FEXS5RLHUPTPJ9ZAJJJ0AKHWEUXNMA0XC8X4XG6EFJCDKM7CMAU11PCDY8QPVPP49E0UPDZDTSLUAKEZVL6G73JVEAPGD89G4L7R20Y82YRDU3AXR43U74RGUTR97ZH4N71EURZYSKXMNP19RDJ7PQF9RJUF15ARE5"
+    },
+    {
+      "name": "pack/decode-frames/frame-11.png",
+      "width": 220,
+      "height": 220,
+      "frameSha256": "bc18390b871a0aee5ab77d9b30b30908064e1be9ad4df41c88f63f3573294b19",
+      "result": "283993164723637978747133565601815628479695391914"
+    },
+    {
+      "name": "pack/decode-frames/frame-12.png",
+      "width": 730,
+      "height": 730,
+      "frameSha256": "868d90c3070423a7410062222afcb2a97c126004a2d931e92797187b74a58f1e",
+      "result": "https://example.com/r/87ba0a1c6b98?k=XndzqBY33PNqXxW4KuIZm3&h=EJ36kfZ92R9LjWc6DR_Vfb13rLqMrvKWkpodqSt6TjxAvscl6Aa7J7MH_i1fvkuDcto0TRBk1AMaUfjLLDXfbqmLZB7KUmrEVmdXTKAhPA9oWZDb8etuv1GndFJ_UH8WUsymLDkxQdRjC59DscYhK5-ZjrMgxPL0zcPTCV3zf71"
+    },
+    {
+      "name": "pack/decode-frames/frame-13.png",
+      "width": 308,
+      "height": 308,
+      "frameSha256": "98156f313c4c9e6fb618bb7c95a3f22d1fd511c356b68d48addd358789771024",
+      "result": "https://example.com/r/acf064edfd5a?k=VharwWiaf5p_oB9K_UWxUW"
+    },
+    {
+      "name": "pack/decode-frames/frame-14.png",
+      "width": 248,
+      "height": 248,
+      "frameSha256": "a367c4c3964db5a4ad9c7c88328849f863f47c7e2061d3b45e567f943690feec",
+      "result": "bunker://91e22b2d65e8e5f2189d2b6fb35eda47467690cc6614e602ceb86b6bfc1720d0?relay=wss%3A%2F%2Frelay.example.com&secret=85f628ac03182467"
+    },
+    {
+      "name": "pack/decode-frames/frame-15.png",
+      "width": 476,
+      "height": 476,
+      "frameSha256": "526637acc9d057dd49a83ee2e13f5cbefeac8e67b40b669b9b307112d613173a",
+      "result": "nostrconnect://0e541bbea5fb16e80d0b6747563a9eb3ba5b36ef091772115a0ba642b7f193f9?relay=wss%3A%2F%2Frelay.example.com&secret=359225da&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-16.png",
+      "width": 448,
+      "height": 448,
+      "frameSha256": "6babc313078447c8f954ed97b87ea0f82d497025dcc5cb9b9daeac0c8f6bfcde",
+      "result": "LIGHTNING:LNBC1D3V4ZX0RF879XK513GS4319X7LQLTTL07V7C4DSZTUUL8M3UCPUHPSWD7A314X8M1T8PD60CGL14R85QZ38CMLKXH1LDL7SVM47FF4HYWJCW4352WNCF93P9TTY9REVY72ZDT4XPL49TAE6J97Z1P1KZUYZGCSLEPPYUH7M4Y8HXF2SXWKM0J9996ALQCC902V3MFLYRA4M7SPNGW98N8VT6H1SS"
+    },
+    {
+      "name": "pack/decode-frames/frame-17.png",
+      "width": 232,
+      "height": 232,
+      "frameSha256": "3de2c7031eda267857aa966682126e1cd599f736a33c01fb20909f3460591a5a",
+      "result": "808737513840761445206494221553642494497346845236"
+    },
+    {
+      "name": "pack/decode-frames/frame-18.png",
+      "width": 398,
+      "height": 398,
+      "frameSha256": "61b3f2128bc6adc7394ad36752c457bf683cb5423a3262f504731d81857ce659",
+      "result": "https://example.com/r/314d0bbb642c?k=VTsnFbgcVujK5YybNOelcH&h=_f5P-fQ0rXwGfwGDpYDzbR3u37AtBLZUID1zKR-60BDCvBjRjUGaDEZxoSTd0c1kRSIdDQdumdxA38ncp9Bc7HKU55dez7ow5u-u"
+    },
+    {
+      "name": "pack/decode-frames/frame-19.png",
+      "width": 170,
+      "height": 170,
+      "frameSha256": "420694a76bd9e27eee88300b372cceb38216ae388fa6aa31127e2cccf12b6864",
+      "result": "https://example.com/r/51df979528cb?k=8iE6Uv6uJulfBTtMNCzXT7"
+    },
+    {
+      "name": "pack/decode-frames/frame-20.png",
+      "width": 504,
+      "height": 504,
+      "frameSha256": "8fb13166c8e5999806a9fa6eed8d5eac3e320419eb6e79f4feaa2fcb1e4085f6",
+      "result": "bunker://24d099776a6151d8099f31f21d07e7595bf6b7437845ba55798745861f3050e6?relay=wss%3A%2F%2Frelay.example.com&secret=58db25db234ed3f0"
+    },
+    {
+      "name": "pack/decode-frames/frame-21.png",
+      "width": 398,
+      "height": 398,
+      "frameSha256": "fd8eaaeb420849083339c8abc449ab8ef2d4bce45030578cacd8f92242202214",
+      "result": "nostrconnect://dc363f981d5223fe8165558d4230d98b84df87dc76c0ac06b49be20a796d3c8e?relay=wss%3A%2F%2Frelay.example.com&secret=61704833&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-22.png",
+      "width": 466,
+      "height": 466,
+      "frameSha256": "35b2830e45b0e0280f62142fa7fc010f1e98712f7b52b567fbe876e73a914864",
+      "result": "LIGHTNING:LNBCR6W0YG0VDCYKY59DC5YY37H2AT67E2JGAGJYVKA6UTK8HDM0NJ5JK0WYF5PF46TF8XUSXYRNU8EKH7RQM266T0V7REZFY5NJQR4W7P2DUPD0RFQCRKUNXV7KC8LDWMADZR7YDGP2251VY3JSPF8ZG0E51MT4WM6LPG6UE3HZFVX5TSDWDSYGFYCRCJSDWLPUH0FSR42SK69Q08HNW7RN8YNJF4EKSDCTE6N4C2GRRN924V6ZK5RDU5FA9SKWC6R6JDXPMAELYTUKQ8UTVKGQKQ"
+    },
+    {
+      "name": "pack/decode-frames/frame-23.png",
+      "width": 132,
+      "height": 132,
+      "frameSha256": "b2b06ccbeae4a7b61f7ae89eadbdfeccaba9bf9dd88e0e264c01e380866c554d",
+      "result": "692360079665554910795672127776392733844926115804"
+    },
+    {
+      "name": "pack/decode-frames/frame-24.png",
+      "width": 498,
+      "height": 498,
+      "frameSha256": "f3ddebd05e3bb26d280dbfcec50893453874162243886189c740dac5f9bbc489",
+      "result": "https://example.com/r/56d7931cdeae?k=mzJYPD3uabUzjNITKEdqKy&h=kb0Kw_0s3osRhTtisz1aaOVFGBEpDidLEbrJJVhPnxh-VAl3uel2t7vXCZlFQqydh9MdDtJ_vBUQT3OtDQ2XJEAEr-qUX57OZv5kxlI9QUqrlj_q7U9rYpAjCZ6ZIu8tJ8W-1ARXpcuSD4DJfRRhRU8ekJi4Cwq8JHNL7"
+    },
+    {
+      "name": "pack/decode-frames/frame-25.png",
+      "width": 300,
+      "height": 300,
+      "frameSha256": "7655ab4aa042fbcd16fca045e234393cb2764e37a9c83fe8cae7522aef451136",
+      "result": "https://example.com/r/d13ae65b395d?k=RyxrvKOs_F54X7f0lYA_HK"
+    },
+    {
+      "name": "pack/decode-frames/frame-26.png",
+      "width": 422,
+      "height": 422,
+      "frameSha256": "1b526a45e35f9f2884f502df3e84450a04659c28d46094ef64323cf75c0b07e6",
+      "result": "bunker://67b51a3f1ed47ff897907853969ae8fd87fefea57b61e0f4dd5cc2f98a588375?relay=wss%3A%2F%2Frelay.example.com&secret=4891c0f55ceedc35"
+    },
+    {
+      "name": "pack/decode-frames/frame-27.png",
+      "width": 470,
+      "height": 470,
+      "frameSha256": "1e2c282b19c016529bb4952444ccbcc484225fb9cf0297f620aa36eaf7db2946",
+      "result": "nostrconnect://63f08ed3f24f28a9b3b7a7ebd3acfaa55b97c264ea37b13b802a94b0751b9bcd?relay=wss%3A%2F%2Frelay.example.com&secret=a086e544&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-28.png",
+      "width": 512,
+      "height": 512,
+      "frameSha256": "73d13731ef6211dc63c48c918a71d6e1eb96788b435e7e3b0bcec42dbc23a511",
+      "result": "LIGHTNING:LNBC7NUECDAJNX5CFQQMAXTNGMXWGPEE2EQAS4AFFU53JQLT70UGGY0M52T0ZSF54NV33QQ6R5SRUR7UR0LQ770GJFVYYA95SAAG9LTE3P362YHWS2JMQ0V0GTG73LXA5VCRXNGJ0QF9THCRC343HAUXN5FG82WSR03W4GTYUJHWKPGJUCTNRU9QLJV96EF273PFJCYTM8D0XZ4NSKRA1XQQET"
+    },
+    {
+      "name": "pack/decode-frames/frame-29.png",
+      "width": 148,
+      "height": 148,
+      "frameSha256": "14a4f2d61e7abbdd25242312c463916e28891664b7e07aa8df5b42f9f2e6d9aa",
+      "result": "428424654154486150812969838777727518014372256631"
+    },
+    {
+      "name": "pack/decode-frames/frame-30.png",
+      "width": 208,
+      "height": 208,
+      "frameSha256": "ab93bf08239ddac93695a3caf89b1f8578c88e5122bc4294ad677a59e09a4fb8",
+      "result": "https://example.com/r/3010372c3934?k=tjFLWIWjR-3SASGfiJBdxF&h=3GuBH2ijV5NH0s5Vkfgxzj4OsgPr1Omy-BzQSwVk4QWzpUJvb_hKOAPT2Y_6R2N6li2QUzCGjczT7v7PwsGCosC"
+    },
+    {
+      "name": "pack/decode-frames/frame-31.png",
+      "width": 200,
+      "height": 200,
+      "frameSha256": "16f862393492291e8294d265bef3667e4b96fdd6301ca389761200aabd57db3c",
+      "result": "https://example.com/r/3773d552be51?k=BhdLfy2WuekH60luqxdguz"
+    },
+    {
+      "name": "pack/decode-frames/frame-32.png",
+      "width": 350,
+      "height": 350,
+      "frameSha256": "7b5505f2c07f955cb1b754d32e567cf5a9af3a3944540e839b4ef5dfdc45e2c0",
+      "result": "bunker://37f11b6f8467162fbe9eb25270ede143feecbc2fb39133e7c2faeb7c11792cf3?relay=wss%3A%2F%2Frelay.example.com&secret=42af5d61de6bd7b1"
+    },
+    {
+      "name": "pack/decode-frames/frame-33.png",
+      "width": 374,
+      "height": 374,
+      "frameSha256": "51c1343c26b04cc2d735de2d104e2711dac4792e8b59323de1fb9f3ca8ae5009",
+      "result": "nostrconnect://64bb7351f60ac8c36d20c300a3192a2428c2e784e16e07db476edfe01c01db2d?relay=wss%3A%2F%2Frelay.example.com&secret=227a1a10&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-34.png",
+      "width": 250,
+      "height": 250,
+      "frameSha256": "fe7a4cffef6584b9534956fcfb4bacb7ea2d4a3430c1d9f2080214afcb92fc6a",
+      "result": "LIGHTNING:LNBC3A9SYMMEP0DJ4Z379M01QCREHHRJEV10ZVLMF1JTF40ELLP8SFKFFD44GJYNKTVYK4XTS9C86AA2NE1PWH57S1LZ5KVMC0EJS8C7NU00M3H4R3UR3E961WKR1TA66J1S8RA5NVZ1MVM0SLPVN2RML3Z1T804XH708FHD706Z2VG7YP7Q9PJAJDA27WD1P39RMHS5QL4734L4XF53GV1EW2KV6CKL3LQNWCC4EGST0JA2RU43AGSMM160T6KD49XN"
+    },
+    {
+      "name": "pack/decode-frames/frame-35.png",
+      "width": 222,
+      "height": 222,
+      "frameSha256": "4363e6468a920982794a4399e9a03f2a616351c73cefd3c7fd10f589f37b4e66",
+      "result": "674637143486275575212079851024115171355542178961"
+    },
+    {
+      "name": "pack/decode-frames/frame-36.png",
+      "width": 528,
+      "height": 528,
+      "frameSha256": "28da1434890d84fcad3efd9e8bf1a4f23020e3cd582a78f9a547d862f7227c1b",
+      "result": "https://example.com/r/800d07dc113a?k=857DgYVpHpcKzJw80zZ8Yv&h=ehEXTPICnbbrQUK2EQxUUOKVdXpwtVZTaTKe5Er4Tbva2pB_XFIK0-Zum8bAm-emHtDvhPddAG-V11FX5Q2YtpdH6QRa61MyZJG71ve6AN1VSBMicdCpuJNG0l4ADMlK"
+    },
+    {
+      "name": "pack/decode-frames/frame-37.png",
+      "width": 354,
+      "height": 354,
+      "frameSha256": "b784f891d29de8e2be41c3db1af06acb57726518cdc655aa2433cbb0b438eb41",
+      "result": "https://example.com/r/f54deebfa2ef?k=_HjgvlC2CK3ubv3wrlGlGl"
+    },
+    {
+      "name": "pack/decode-frames/frame-38.png",
+      "width": 314,
+      "height": 314,
+      "frameSha256": "ee82891a1eb4a1e09424c90d28826858c5a7740944f3b68bbe3465978b22de4b",
+      "result": "bunker://af1223369d4f177c849525d6335e48a1a6b24fc4254106707e8718346eab70fa?relay=wss%3A%2F%2Frelay.example.com&secret=6f2126dce55c27e8"
+    },
+    {
+      "name": "pack/decode-frames/frame-39.png",
+      "width": 302,
+      "height": 302,
+      "frameSha256": "d692279849f0a062b96237cf2801758f6b719325157ede4b59fc36c35ff8e44a",
+      "result": null
+    },
+    {
+      "name": "pack/decode-frames/frame-40.png",
+      "width": 358,
+      "height": 358,
+      "frameSha256": "ad8bc5e224c9c1de60975a045941bf87e6c09a182f56c5a49b010800c794b063",
+      "result": "LIGHTNING:LNBCGG0W0U5Y0Q4T27P63JH083EGCA20SKVVN116K3E5F1ECQ6YFN2GW1XFENXVR6ND4QRQGTXWFMWJC58RVT5PQ6Z51GYZZKAGVGKXC8DGZ3CTTH6S2CALTWZPJKDMRT8AU8Z6K9818DNT8335FPHDT5C2AS37Q8FJP01TZ34D73Z8ZP9KCT9WDWAE812D4K16W78QNSF85ZK4U9E"
+    },
+    {
+      "name": "pack/decode-frames/frame-41.png",
+      "width": 210,
+      "height": 210,
+      "frameSha256": "c84d958c003b60a88bebfbecbc769888061fa4b85d052b87352e0d4856d9b37e",
+      "result": "950219424957992014196102284079000345978277920199"
+    },
+    {
+      "name": "pack/decode-frames/frame-42.png",
+      "width": 628,
+      "height": 628,
+      "frameSha256": "6a91262f24f6b1ccb8ad8b6d7b703ca43d8dbcf5d3613bb1015dd123c569dce5",
+      "result": "https://example.com/r/53a49022a69b?k=Oj6-HTfpOjThDo_2-RpFWN&h=z8MgZJ_Zv7xHd13_CH0Zw9OH2ayn5Vec_v6ZUDPxOYEiosYr3fdP6i-4ohN6p12F31qmvLOX_Sh8_35PZ_0pvbbJk_voBHFjfGHk1hgra17P0OWtAPcJSholmAR9dN"
+    },
+    {
+      "name": "pack/decode-frames/frame-43.png",
+      "width": 314,
+      "height": 314,
+      "frameSha256": "e31b96194a6e6c661b2921b612b503f6ea84f26f005fe55c22ceae4a056f4235",
+      "result": "https://example.com/r/28bd747b81e1?k=2_BC0PTbSQ70Yr0-pPWY_0"
+    },
+    {
+      "name": "pack/decode-frames/frame-44.png",
+      "width": 430,
+      "height": 430,
+      "frameSha256": "9f53415e4e8c9890f63b5d1b162614f4f206d9756b5ecedeb95ef4f70dc11539",
+      "result": "bunker://f096d2d7cb649c0f578da1bf70b559b62951a01a4ac175e1bb4d47859c2f4ef1?relay=wss%3A%2F%2Frelay.example.com&secret=0c1ecf471f01870d"
+    },
+    {
+      "name": "pack/decode-frames/frame-45.png",
+      "width": 472,
+      "height": 472,
+      "frameSha256": "7a6f0c3af6a9623356149acd46e5ebbb02f9c4d2610614aae77a65855fe6ae90",
+      "result": "nostrconnect://34f80b1f9e1067852301daaee3ccf3eccdad7b96e7cfb62b82b2251b35437bfe?relay=wss%3A%2F%2Frelay.example.com&secret=cf1bc006&name=Example"
+    },
+    {
+      "name": "pack/decode-frames/frame-46.png",
+      "width": 530,
+      "height": 530,
+      "frameSha256": "c0b62b360b6af2c9f560bf3c29a2d192d3372c78a3d2ac3697893d2103baa077",
+      "result": "LIGHTNING:LNBC1EXT3GHNQYGJ10D3RQSYVR8XFU73QF24UEEU9WWP7ZZC1SX3G19GP1FS292NV5GX7FM6CG8XHS17GHMAGS5CRNYD0XCH0EA7MH2UT90F9J9PW8AEFMQMEJP0JZSFYA31GJGCFRW6U22ATRPA4AJYDWXTF8RD8QCW9JQ2DF701NDTGFGHDKCRQADU52EDD7EKRGXV1"
+    },
+    {
+      "name": "pack/decode-frames/frame-47.png",
+      "width": 204,
+      "height": 204,
+      "frameSha256": "21bf24ce1a033e2e4031eed7b68cf9c349ada37cd4673800edbb183bf6cca21f",
+      "result": "622591144140293920910113086079005485187617602000"
+    },
+    {
+      "name": "pack/decode-frames/frame-48.png",
+      "width": 276,
+      "height": 276,
+      "frameSha256": "91de32d67c9d0948e4f7654831e611f0c4f0157a703f4ec74bfc46e6c7ed8a13",
+      "result": "https://example.com/r/bbb98975665a?k=JYAyZyGggz2P_UQUg5IULk&h=787cVH9EFQUA-cOKt-EPzfVEaArdBL-h62yLL1tbhZQYCxiM2zwaZqKcY8KAEyv9O2Oq3DL9319Uq1Fu"
+    },
+    {
+      "name": "pack/conformance/blank.png",
+      "width": 96,
+      "height": 64,
+      "frameSha256": "33f6dd77e31cc41eb25ee76db7080692170b1d820f50daa92d71d514f59a1c0a",
+      "result": null
+    },
+    {
+      "name": "pack/conformance/gradient.png",
+      "width": 120,
+      "height": 90,
+      "frameSha256": "09f3163c0ed76fc2ecb3d4e4d1f391f7acbb462c80649ae4e9fb0dbb30a427cb",
+      "result": null
+    },
+    {
+      "name": "pack/conformance/noise.png",
+      "width": 160,
+      "height": 120,
+      "frameSha256": "133d194178be3cb9ad2bd7adf69179753928ff07f94ccbe8a20e004c1b15d52a",
+      "result": null
+    },
+    {
+      "name": "pack/conformance/finder-tiles.png",
+      "width": 200,
+      "height": 160,
+      "frameSha256": "cbe32e952a9f9f98a20d5ee188b66b05a0d49b4a794368eeecccd2e7da2696da",
+      "result": null
+    },
+    {
+      "name": "pack/conformance/under-40-pixels.png",
+      "width": 29,
+      "height": 29,
+      "frameSha256": "43cddb7ec86823dee8ac5c5acf58af33092c8aeca039a1140a692467f25ef28a",
+      "result": "7"
+    },
+    {
+      "name": "pack/conformance/close-up-scan-lines.png",
+      "width": 888,
+      "height": 888,
+      "frameSha256": "1b44210d5ccbcae8d37238f00a8ace2238aaa30efef7b46997bc43864c84ac81",
+      "result": "https://example.com/close-up"
+    },
+    {
+      "name": "pack/conformance/close-up-format-damaged.png",
+      "width": 888,
+      "height": 888,
+      "frameSha256": "59cace6146e121d5196858938c6eb472904c4b71fd49be5f121554178647ea77",
+      "result": null
+    },
+    {
+      "name": "pack/conformance/bent-version-12.png",
+      "width": 292,
+      "height": 292,
+      "frameSha256": "f3f49e879e1dfbd6d2b39fbfc6dd7a878735c0aa7bc6fcd2468ab55af4960da6",
+      "result": "https://example.com/m/conformance0123456789abcdefghijklmnopqrs"
+    },
+    {
+      "name": "pack/conformance/bent-version-4.png",
+      "width": 164,
+      "height": 164,
+      "frameSha256": "7b74e2252f9723357bc54b560fa938b8d53edc879e3d70cf738ea18704be1b72",
+      "result": "https://example.com/s4"
+    },
+    {
+      "name": "pack/conformance/zero-codewords.png",
+      "width": 198,
+      "height": 198,
+      "frameSha256": "f269b76d11b5e51d694c1e43a575199266447868998c41924af37d63f574c720",
+      "result": null
+    },
+    {
+      "name": "pack/conformance/inverted-flat-blocks.png",
+      "width": 166,
+      "height": 166,
+      "frameSha256": "74f0063e6a405c8b9963a8f571c27c404b0f212cd29f90e536901e7168975ad3",
+      "result": "https://example.com/inverted/0123456789"
+    },
+    {
+      "name": "pack/conformance/inverted-flat-blocks-mirrored.png",
+      "width": 166,
+      "height": 166,
+      "frameSha256": "cb17e87bbc31acdbdad64ab556f4675e1cd387185500daca3788044868cc9b10",
+      "result": "https://example.com/inverted/0123456789"
+    },
+    {
+      "name": "pack/conformance/inverted-flat-blocks-small.png",
+      "width": 114,
+      "height": 114,
+      "frameSha256": "10ca129a552add977a40fcced112fea3c13171d4189b78cfbafa01ede86f7fbb",
+      "result": "https://example.com/inverted/0123456789"
+    }
+  ]
+}

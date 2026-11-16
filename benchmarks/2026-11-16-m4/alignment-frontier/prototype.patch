@@ -1,0 +1,286 @@
+--- a/rust/src/place.rs
++++ b/rust/src/place.rs
+@@ -254,6 +254,26 @@
+     count: f64,
+ }
+ 
++// Keep original insertion order and retain a boundary match inclusively.
++#[inline]
++fn retire_active(active: &mut Vec<usize>, found: &[Seen], lower: f64, module_size: f64) {
++    active.retain(|&i| !(found[i].y < lower && (found[i].y - lower).abs() > module_size));
++}
++
++#[inline]
++fn merge_seen(found: &mut Vec<Seen>, active: &mut Vec<usize>, cx: f64, cy: f64, module_size: f64) {
++    let same = active.iter().copied().find(|&i| (found[i].x - cx).abs() <= module_size && (found[i].y - cy).abs() <= module_size);
++    if let Some(i) = same {
++        let same = &mut found[i];
++        same.x = (same.x * same.count + cx) / (same.count + 1.0);
++        same.y = (same.y * same.count + cy) / (same.count + 1.0);
++        same.count += 1.0;
++    } else {
++        active.push(found.len());
++        found.push(Seen { x: cx, y: cy, count: 1.0 });
++    }
++}
++
+ /// Searches near `estimate` for alignment pattern centres, whose modules span
+ /// `wide` pixels along a row and `tall` down a column. Candidates seen on two
+ /// or more rows come first, then nearest the estimate.
+@@ -314,6 +334,8 @@
+         (up + 1 + down) as f64 / 2.0
+     };
+     let mut found: Vec<Seen> = Vec::new();
++    let mut active: Vec<usize> = Vec::new();
++    let mut last_accepted_row = None;
+     for y in top..=bottom {
+         let changes = edges.row(y as usize);
+         let n = changes.len();
+@@ -364,14 +386,14 @@
+                 let cx = x as f64 - run as f64 - last as f64 / 2.0;
+                 let cy = vertical(cx.floor() as i64, y);
+                 if !cy.is_nan() {
+-                    let same = found.iter_mut().find(|f| (f.x - cx).abs() <= module_size && (f.y - cy).abs() <= module_size);
+-                    if let Some(same) = same {
+-                        same.x = (same.x * same.count + cx) / (same.count + 1.0);
+-                        same.y = (same.y * same.count + cy) / (same.count + 1.0);
+-                        same.count += 1.0;
+-                    } else {
+-                        found.push(Seen { x: cx, y: cy, count: 1.0 });
++                    if last_accepted_row != Some(y) {
++                        // An accepted dark run is shorter than 2*ceil(tall),
++                        // so this and every later row have cy >= lower.
++                        let lower = y as f64 - tall.ceil();
++                        retire_active(&mut active, &found, lower, module_size);
++                        last_accepted_row = Some(y);
+                     }
++                    merge_seen(&mut found, &mut active, cx, cy, module_size);
+                 }
+             }
+             if x > right { break; }
+@@ -597,6 +619,127 @@
+ }
+ 
+ #[cfg(test)]
++fn locate_reference(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mut work: Option<&mut Work>, edges: &mut Edges) -> Vec<Location> {
++    let [top_left, top_right, bottom_left] = triple.map(|f| at(&f));
++    let across = run_module_size(image, top_left, top_right);
++    let down = run_module_size(image, top_left, bottom_left);
++    let module_size = (across + down) / 2.0;
++    if !(module_size >= 1.0) {
++        return Vec::new();
++    }
++    let size = match size_hint {
++        Some(s) => s,
++        None => match size_from(top_left, top_right, bottom_left, across, down) {
++            Some(s) => s,
++            None => return Vec::new(),
++        },
++    };
++    if !(21..=177).contains(&size) {
++        return Vec::new();
++    }
++    // A plane seen in perspective: along a side whose far end is w times as far
++    // from the camera, modules shrink by w squared. The finders' module sizes so
++    // give the weights of a projective map through the three centres, which
++    // places the rest of the symbol. Equal sizes give the parallelogram.
++    let weight = |from: Point, to: Point| -> f64 {
++        let w = (black_white_black(image, from, to) / black_white_black(image, to, from)).sqrt();
++        if w >= 0.5 && w <= 2.0 {
++            w
++        } else {
++            1.0
++        }
++    };
++    let wr = weight(top_left, top_right);
++    let wd = weight(top_left, bottom_left);
++    let steps = (size - 7) as f64;
++    // Picture point of module-space point (x, y), measured from the top-left finder centre.
++    let perspective = |x: f64, y: f64| -> Point {
++        let a = x / steps;
++        let b = y / steps;
++        let w = 1.0 + a * (wr - 1.0) + b * (wd - 1.0);
++        Point {
++            x: (top_left.x + a * (wr * top_right.x - top_left.x) + b * (wd * bottom_left.x - top_left.x)) / w,
++            y: (top_left.y + a * (wr * top_right.y - top_left.y) + b * (wd * bottom_left.y - top_left.y)) / w,
++        }
++    };
++    let parallelogram = Point { x: top_right.x - top_left.x + bottom_left.x, y: top_right.y - top_left.y + bottom_left.y };
++    let corner = perspective(steps, steps);
++    // Without an alignment pattern, the parallelogram's corner goes first, as for
++    // a code seen head-on; the map's corner is a later try. A corner moved by
++    // less than a pixel samples the same pixels, so it is not tried twice.
++    let corners: Vec<Point> = if distance(corner, parallelogram) >= 1.0 { vec![parallelogram, corner] } else { vec![parallelogram] };
++    let mut alignments: Vec<Point> = Vec::new();
++    if size > 21 {
++        // Guesses at the alignment centre, three modules in from the fourth
++        // corner: through the projective map, and on the parallelogram.
++        let guess = perspective(steps - 3.0, steps - 3.0);
++        let k = 1.0 - 3.0 / steps;
++        let flat = Point { x: top_left.x + k * (parallelogram.x - top_left.x), y: top_left.y + k * (parallelogram.y - top_left.y) };
++        let estimates: Vec<Point> = if distance(guess, flat) > module_size { vec![guess, flat] } else { vec![guess] };
++        // One module's steps across and down there, by the map and on the parallelogram.
++        let ua = perspective(steps - 2.0, steps - 3.0);
++        let u = Point { x: ua.x - guess.x, y: ua.y - guess.y };
++        let va = perspective(steps - 3.0, steps - 2.0);
++        let v = Point { x: va.x - guess.x, y: va.y - guess.y };
++        let u0 = Point { x: (top_right.x - top_left.x) / steps, y: (top_right.y - top_left.y) / steps };
++        let v0 = Point { x: (bottom_left.x - top_left.x) / steps, y: (bottom_left.y - top_left.y) / steps };
++        // A row or column crosses a turned module on the slant: at 45 degrees a
++        // module's run is the diagonal, root 2 times its side.
++        let det = (u.x * v.y - u.y * v.x).abs();
++        let wide = det / jmax(u.y.abs(), v.y.abs());
++        let tall = det / jmax(u.x.abs(), v.x.abs());
++        // Rank candidates by how well the 5x5 pattern around them matches, read
++        // along the code's own axes, then by nearness to a guess.
++        let near = |p: Point| -> f64 { estimates.iter().map(|e| distance(p, *e)).fold(f64::INFINITY, jmin) };
++        struct Scored {
++            p: Point,
++            score: u32,
++            away: f64,
++        }
++        let mut scored: Vec<Scored> = Vec::new();
++        for reach in [4.0, 8.0, 16.0] {
++            for estimate in &estimates {
++                for p in find_alignments_reference(image, edges, *estimate, wide, tall, reach, work.as_deref_mut()) {
++                    // A point outside the enclosing square cannot be within the circle.
++                    let radius = module_size / 2.0;
++                    if scored.iter().any(|a| (a.p.x - p.x).abs() <= radius && (a.p.y - p.y).abs() <= radius && distance(a.p, p) <= radius) {
++                        continue;
++                    }
++                    // Scores below 20 are discarded, but their points still suppress duplicates.
++                    let score = alignment_score(image, p, u0, v0, alignment_score(image, p, u, v, 19));
++                    scored.push(Scored { p, score, away: near(p) });
++                }
++            }
++            if scored.iter().any(|c| c.score >= 23) {
++                break;
++            }
++        }
++        let mut kept: Vec<Scored> = scored.into_iter().filter(|c| c.score >= 20).collect();
++        kept.sort_by(|a, b| b.score.cmp(&a.score).then(a.away.partial_cmp(&b.away).unwrap_or(std::cmp::Ordering::Equal)));
++        kept.truncate(4);
++        alignments = kept.into_iter().map(|c| c.p).collect();
++    }
++    let size_f = size as f64;
++    let far = size_f - 3.5;
++    let map = |alignment: Option<Point>, corner: Point| -> Location {
++        let matrix = quad_matrix(
++            &[
++                Point { x: 3.5, y: 3.5 },
++                Point { x: far, y: 3.5 },
++                if alignment.is_some() { Point { x: size_f - 6.5, y: size_f - 6.5 } } else { Point { x: far, y: far } },
++                Point { x: 3.5, y: far },
++            ],
++            &[top_left, top_right, alignment.unwrap_or(corner), bottom_left],
++        );
++        Location { top_left, top_right, bottom_left, alignment, size: size as usize, matrix }
++    };
++    let mut out: Vec<Location> = alignments.iter().map(|a| map(Some(*a), corner)).collect();
++    out.extend(corners.iter().map(|c| map(None, *c)));
++    out
++}
++
++
++#[cfg(test)]
+ fn find_alignments_reference(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f64, tall: f64, reach: f64, work: Option<&mut Work>) -> Vec<Point> {
+     let module_size = jmax(wide, tall);
+     let radius = (reach * module_size).ceil();
+@@ -738,6 +881,72 @@
+     use super::*;
+ 
+ 
++    // Independent historical full-vector scan, used after every observation.
++    fn historical_merge(found: &mut Vec<Seen>, cx: f64, cy: f64, size: f64) -> usize {
++        let same=found.iter_mut().position(|f|(f.x-cx).abs()<=size && (f.y-cy).abs()<=size);
++        if let Some(i)=same {let f=&mut found[i];f.x=(f.x*f.count+cx)/(f.count+1.0);f.y=(f.y*f.count+cy)/(f.count+1.0);f.count+=1.0;i}
++        else {let i=found.len();found.push(Seen{x:cx,y:cy,count:1.0});i}
++    }
++    fn compare_history(a: &[Seen], b: &[Seen]) {
++        assert_eq!(a.len(),b.len());for (x,y) in a.iter().zip(b) {assert_eq!(x.x.to_bits(),y.x.to_bits());assert_eq!(x.y.to_bits(),y.y.to_bits());assert_eq!(x.count.to_bits(),y.count.to_bits());}
++    }
++    #[test]
++    fn retirement_preserves_boundaries_drift_and_future_history() {
++        let mut history=Vec::new();let mut frontier=Vec::new();let mut active=Vec::new();let mut lower=f64::NEG_INFINITY;
++        let observations=[(0.0,0.0,0.0),(0.0,5.0,2.0),(0.0,5.0,2.5),(0.0,5.0,1.75),
++            (1.0,0.0,1.0),(2.0,0.0,2.0),(3.0,0.0,3.0),(4.0,0.0,4.0),(4.0,5.0,4.0)];
++        for (step,(next_lower,cx,cy)) in observations.into_iter().enumerate() {assert!(cy>=next_lower);if next_lower!=lower {assert!(next_lower>lower);lower=next_lower;retire_active(&mut active,&frontier,lower,1.0);}
++            let prior=history.len();let index=historical_merge(&mut history,cx,cy,1.0);
++            if index<prior {assert!(active.contains(&index),"historical match was retired");}
++            merge_seen(&mut frontier,&mut active,cx,cy,1.0);compare_history(&history,&frontier);
++            if step==2 {assert_eq!(index,1);assert_eq!(history[1].count,2.0);assert_eq!(history[1].y,2.25);}
++            if step==3 {assert_eq!(index,1);assert_eq!(history[1].count,3.0);assert_eq!(history[1].y,6.25/3.0);assert!(history[1].y<2.25);}
++        }
++        assert!(!active.contains(&1));assert_eq!(history[1].count,3.0);assert_eq!(history[1].y,6.25/3.0);
++        let mut boundary=vec![Seen{x:0.0,y:0.0,count:1.0},Seen{x:1.0,y:-0.0000001,count:1.0}];
++        let mut ids=vec![0,1];retire_active(&mut ids,&boundary,1.0,1.0);assert_eq!(ids,vec![0]);
++        let mut old=vec![Seen{x:0.0,y:0.0,count:1.0},Seen{x:1.0,y:-0.0000001,count:1.0}];
++        assert_eq!(historical_merge(&mut old,0.0,1.0,1.0),0);merge_seen(&mut boundary,&mut ids,0.0,1.0,1.0);compare_history(&old,&boundary);
++    }
++    #[test]
++    fn exhaustive_small_windows_and_nonfinite_geometry_match_reference() {
++        let (width,height)=(4usize,4usize);let mut nonempty=0usize;
++        for bits in 0..(1usize<<(width*height)) {
++            let data=(0..width*height).map(|i|((bits>>i)&1) as u8).collect();let image=BitImage {data,width,height};
++            for (wide,tall,reach) in [(1.0,1.0,4.0),(0.5,0.75,4.0),(1.2,1.8,8.0)] {
++                let estimate=Point{x:1.5,y:1.5};let (mut a,mut b)=(Work::default(),Work::default());
++                let expected=find_alignments_reference(&image,&mut Edges::new(&image),estimate,wide,tall,reach,Some(&mut a));
++                let actual=find_alignments(&image,&mut Edges::new(&image),estimate,wide,tall,reach,Some(&mut b));
++                assert_eq!(actual,expected,"bits={bits} wide={wide} tall={tall} reach={reach}");assert_eq!(a,b);
++                if wide==1.0 && tall==1.0 {assert!(a.scanned>0);if !expected.is_empty(){nonempty+=1;}}
++            }
++        }
++        assert!(nonempty>0,"the exhaustive cases must include accepted alignment observations");
++        let image=BitImage {data:vec![0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0],width,height};
++        for (wide,tall) in [(1.0,0.0),(1.0,-1.0),(f64::NAN,1.0),(1.0,f64::NAN),(1.0,f64::INFINITY),(f64::INFINITY,1.0)] {
++            let estimate=Point{x:1.5,y:1.5};let (mut a,mut b)=(Work::default(),Work::default());
++            let expected=find_alignments_reference(&image,&mut Edges::new(&image),estimate,wide,tall,4.0,Some(&mut a));
++            let actual=find_alignments(&image,&mut Edges::new(&image),estimate,wide,tall,4.0,Some(&mut b));
++            assert_eq!(actual,expected,"invalid wide={wide} tall={tall}");assert_eq!(a,b);
++        }
++    }
++    #[test]
++    fn repeated_size_hints_and_inverse_shared_edges_match_full_locate_reference() {
++        let qr=crate::encode::encode("alignment frontier",&crate::encode::Options {version:Some(5),..Default::default()}).unwrap();
++        let scale=3usize;let pad=4usize;let width=(qr.size+pad*2)*scale;let mut data=vec![0;width*width];
++        for y in 0..qr.size {for x in 0..qr.size {if qr.modules[y*qr.size+x]==1 {for dy in 0..scale {for dx in 0..scale {data[((y+pad)*scale+dy)*width+(x+pad)*scale+dx]=1;}}}}}
++        let normal=BitImage {data,width,height:width};let inverse=BitImage {data:normal.data.iter().map(|&b|b^1).collect(),width,height:width};
++        let low=(pad as f64+3.5)*scale as f64;let high=(pad as f64+qr.size as f64-3.5)*scale as f64;
++        let f=|x,y|Finder {x,y,module_size:scale as f64,count:1};let triple=[f(low,low),f(high,low),f(low,high)];let mut edges=Edges::new(&normal);
++        for image in [&normal,&inverse] {for hint in [None,Some(33),Some(41),Some(29),Some(45)] {
++            let (mut a,mut b)=(Work::default(),Work::default());let expected=locate_reference(image,&triple,hint,Some(&mut a),&mut Edges::new(image));
++            let actual=locate(image,&triple,hint,Some(&mut b),&mut edges);assert_eq!(actual.len(),expected.len(),"hint={hint:?}");
++            for (actual,expected) in actual.iter().zip(&expected) {assert_eq!(actual.top_left,expected.top_left);assert_eq!(actual.top_right,expected.top_right);assert_eq!(actual.bottom_left,expected.bottom_left);assert_eq!(actual.alignment,expected.alignment);assert_eq!(actual.size,expected.size);assert_eq!(actual.matrix,expected.matrix);}
++            assert_eq!(a,b);
++            if std::ptr::eq(image,&normal) {assert!(!actual.is_empty());}
++        }}
++    }
++
+     #[test]
+     fn alignment_windows_match_original_run_walk() {
+         let mut seed = 0x1cafeu32;
+--- a/rust/src/decode.rs
++++ b/rust/src/decode.rs
+@@ -299,6 +299,22 @@
+ 
+ #[cfg(test)]
+ mod strict_format_tests {
++    #[test]
++    fn decodes_thin_finder_centres_at_both_quiet_margins() {
++        let qr=crate::encode::encode("A",&crate::encode::Options {version:Some(1),ecc:crate::symbol::Ecc::H,..Default::default()}).unwrap();
++        for centre in [1,2] {for pad in [4,5] {
++            let side=qr.size+2*pad;let mut data=vec![235u8;side*side];
++            for y in 0..qr.size {for x in 0..qr.size {if qr.modules[y*qr.size+x]!=0 {data[(y+pad)*side+x+pad]=20;}}}
++            for (ox,oy) in [(0,0),(qr.size-7,0),(0,qr.size-7)] {
++                for y in [2,4] {for x in 2..=4 {data[(pad+oy+y)*side+pad+ox+x]=235;}}
++                if centre==2 {data[(pad+oy+2)*side+pad+ox+3]=20;}
++                for x in 0..=6 {data[(pad+oy+7)*side+pad+ox+x]=20;}
++            }
++            let reading=super::decode(&data,side,side,1,side,super::Inversion::Both,None).expect("thin finder reading");
++            assert_eq!(reading.payload.text,"A");assert_eq!(reading.payload.bytes,b"A");
++        }}
++    }
++
+     use super::*;
+     use crate::encode::{encode, Options};
+     use crate::symbol::Ecc;
