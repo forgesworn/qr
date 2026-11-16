@@ -14,7 +14,7 @@ const AGREEMENT: u32 = 2;
 /// Maps read again, at most, per decode.
 pub const SECOND_LOOKS: usize = 4;
 
-/// A map the ordinary read could not use, whose format copies agree.
+/// A map the ordinary read could not use, retained for a later read.
 #[derive(Clone, Debug)]
 pub struct Candidate {
     pub location: Location,
@@ -22,7 +22,7 @@ pub struct Candidate {
     pub mirrored: bool,
     pub ecc: Ecc,
     pub mask: u8,
-    /// The larger of the two copies' distances from the format word.
+    /// Ordinary candidates use the larger format distance; deferred candidates use the smaller.
     pub distance: u32,
 }
 
@@ -364,7 +364,7 @@ const FOUND: i32 = 24;
 
 /// The map bent onto the alignment patterns the picture shows (decoder step 8,
 /// the mesh). `None` below version 7, or when no pattern is found.
-fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>) -> Option<Map> {
+fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>, late: bool) -> Option<Map> {
     let size = location.size;
     let matrix = location.matrix;
     let version = (size - 17) / 4;
@@ -399,83 +399,114 @@ fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>) -> Option<M
     let mut found = 0;
     let mut probed = 0u64;
     let map = Map::Plain(matrix);
-    for &i in &order {
-        let q = i % n;
-        let r = (i - q) / n;
-        // The prediction: the mean offset of the neighbours already placed.
-        let mut px = 0.0f64;
-        let mut py = 0.0f64;
-        let mut k = 0u32;
-        for (a, b) in [(q as i64 - 1, r as i64), (q as i64 + 1, r as i64), (q as i64, r as i64 - 1), (q as i64, r as i64 + 1)] {
-            if a < 0 || b < 0 || a >= n as i64 || b >= n as i64 || state[b as usize * n + a as usize] == 0 {
-                continue;
+    for pass in 0..if late { 2 } else { 1 } {
+        let frozen = if pass == 1 { Some((state.clone(), ox.clone(), oy.clone())) } else { None };
+        for &i in &order {
+            if pass == 1 && state[i] != 3 { continue; }
+            let q = i % n;
+            let r = (i - q) / n;
+            // The prediction: the mean offset of the neighbours already placed.
+            let mut px = 0.0f64;
+            let mut py = 0.0f64;
+            let mut k = 0u32;
+            for (a, b) in [(q as i64 - 1, r as i64), (q as i64 + 1, r as i64), (q as i64, r as i64 - 1), (q as i64, r as i64 + 1)] {
+                if a < 0 || b < 0 || a >= n as i64 || b >= n as i64 || state[b as usize * n + a as usize] == 0 {
+                    continue;
+                }
+                px += ox[b as usize * n + a as usize];
+                py += oy[b as usize * n + a as usize];
+                k += 1;
             }
-            px += ox[b as usize * n + a as usize];
-            py += oy[b as usize * n + a as usize];
-            k += 1;
-        }
-        if k > 0 {
-            px /= k as f64;
-            py /= k as f64;
-        }
-        let cx = c[q] as f64 + px;
-        let cy = c[r] as f64 + py;
-        let mut best = -1i32;
-        let mut sx = 0.0f64;
-        let mut sy = 0.0f64;
-        let mut count = 0.0f64;
-        let mut low = 0i32;
-        let mut high = 0i32;
-        let mut low_y = 0i32;
-        let mut high_y = 0i32;
-        for j in -steps..=steps {
-            for s in -steps..=steps {
-                let u = s as f64 / QUARTER as f64;
-                let v = j as f64 / QUARTER as f64;
-                let mut score = 0i32;
-                for b in -2i32..=2 {
-                    for a in -2i32..=2 {
-                        let p = map.project(cx + u + a as f64, cy + v + b as f64);
-                        if (probe.at(p.x, p.y) > 0.0) == (a.abs().max(b.abs()) != 1) {
-                            score += 1;
+            if k > 0 {
+                px /= k as f64;
+                py /= k as f64;
+            }
+            if let Some((frozen_state, frozen_x, frozen_y)) = &frozen {
+                let mut nearest_distance = f64::INFINITY;
+                let mut second_distance = f64::INFINITY;
+                for (dq, dr) in [(-1i64, 0i64), (1, 0), (0, -1), (0, 1)] {
+                    let (mut a, mut b) = (q as i64 + dq, r as i64 + dr);
+                    let mut anchors = [0usize; 2];
+                    let mut count = 0;
+                    while a >= 0 && b >= 0 && a < n as i64 && b < n as i64 {
+                        let index = b as usize * n + a as usize;
+                        if frozen_state[index] == 2 { anchors[count] = index; count += 1; }
+                        if count == 2 { break; }
+                        a += dq; b += dr;
+                    }
+                    if count != 2 { continue; }
+                    let [first, second] = anchors;
+                    let axis = |j: usize| c[if dq != 0 { j % n } else { j / n }] as f64;
+                    let here = c[if dq != 0 { q } else { r }] as f64;
+                    let distance = (here - axis(first)).abs();
+                    let further = (here - axis(second)).abs();
+                    if distance > nearest_distance || (distance == nearest_distance && further >= second_distance) { continue; }
+                    nearest_distance = distance;
+                    second_distance = further;
+                    let ratio = (here - axis(first)) / (axis(first) - axis(second));
+                    px = frozen_x[first] + ratio * (frozen_x[first] - frozen_x[second]);
+                    py = frozen_y[first] + ratio * (frozen_y[first] - frozen_y[second]);
+                }
+                if nearest_distance == f64::INFINITY { continue; }
+            }
+            let cx = c[q] as f64 + px;
+            let cy = c[r] as f64 + py;
+            let mut best = -1i32;
+            let mut sx = 0.0f64;
+            let mut sy = 0.0f64;
+            let mut count = 0.0f64;
+            let mut low = 0i32;
+            let mut high = 0i32;
+            let mut low_y = 0i32;
+            let mut high_y = 0i32;
+            for j in -steps..=steps {
+                for s in -steps..=steps {
+                    let u = s as f64 / QUARTER as f64;
+                    let v = j as f64 / QUARTER as f64;
+                    let mut score = 0i32;
+                    for b in -2i32..=2 {
+                        for a in -2i32..=2 {
+                            let p = map.project(cx + u + a as f64, cy + v + b as f64);
+                            if (probe.at(p.x, p.y) > 0.0) == (a.abs().max(b.abs()) != 1) {
+                                score += 1;
+                            }
                         }
                     }
-                }
-                if score > best {
-                    best = score;
-                    sx = 0.0;
-                    sy = 0.0;
-                    count = 0.0;
-                    low = s;
-                    high = s;
-                    low_y = j;
-                    high_y = j;
-                }
-                if score == best {
-                    sx += s as f64;
-                    sy += j as f64;
-                    count += 1.0;
-                    low = low.min(s);
-                    high = high.max(s);
-                    low_y = low_y.min(j);
-                    high_y = high_y.max(j);
+                    if score > best {
+                        best = score;
+                        sx = 0.0;
+                        sy = 0.0;
+                        count = 0.0;
+                        low = s;
+                        high = s;
+                        low_y = j;
+                        high_y = j;
+                    }
+                    if score == best {
+                        sx += s as f64;
+                        sy += j as f64;
+                        count += 1.0;
+                        low = low.min(s);
+                        high = high.max(s);
+                        low_y = low_y.min(j);
+                        high_y = high_y.max(j);
+                    }
                 }
             }
-        }
-        probed += ((2 * steps + 1) * (2 * steps + 1) * 25) as u64;
-        // In quarter modules: the best offsets' centre, and how far they spread from it.
-        let mx = sx / count;
-        let my = sy / count;
-        let spread = (mx - low as f64).max(high as f64 - mx).max(my - low_y as f64).max(high_y as f64 - my);
-        if best >= FOUND && spread <= 3.0 && mx.abs() <= (steps - 1) as f64 && my.abs() <= (steps - 1) as f64 {
-            ox[i] = px + mx / QUARTER as f64;
-            oy[i] = py + my / QUARTER as f64;
-            state[i] = 2;
-            found += 1;
-        } else {
-            ox[i] = px;
-            oy[i] = py;
-            state[i] = 3;
+            probed += ((2 * steps + 1) * (2 * steps + 1) * 25) as u64;
+            // In quarter modules: the best offsets' centre, and how far they spread from it.
+            let mx = sx / count;
+            let my = sy / count;
+            let spread = (mx - low as f64).max(high as f64 - mx).max(my - low_y as f64).max(high_y as f64 - my);
+            if best >= FOUND && spread <= 3.0 && mx.abs() <= (steps - 1) as f64 && my.abs() <= (steps - 1) as f64 {
+                ox[i] = px + mx / QUARTER as f64;
+                oy[i] = py + my / QUARTER as f64;
+                state[i] = 2;
+                found += 1;
+            } else {
+                if pass == 0 { ox[i] = px; oy[i] = py; }
+                state[i] = 3;
+            }
         }
     }
     if let Some(w) = work {
@@ -490,14 +521,18 @@ fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>) -> Option<M
     Some(Map::Bent { matrix, c, n, ox, oy })
 }
 
-/// Reads one candidate again; the result must keep the level and mask its
-/// format copies agreed on. With `strict`, the format copies of the modules
-/// read again must also agree on them, as every read at reduced size must.
+/// Reads one candidate again; the result must keep its selected level and mask.
+/// Ordinary candidates already have agreeing format copies. With `strict`, the
+/// newly sampled copies must also agree, including for deferred candidates.
 pub fn second_look(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool) -> Option<Payload> {
+    second_look_with_late(image, t, candidate, work, strict, false)
+}
+
+pub(crate) fn second_look_with_late(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool) -> Option<Payload> {
     let (inverted, mirrored) = (candidate.inverted, candidate.mirrored);
     let probe = Probe { image, t, inverted };
     // 0. From version 7, the map bent onto the alignment patterns it can find.
-    let map = mesh(&candidate.location, &probe, work).unwrap_or(Map::Plain(candidate.location.matrix));
+    let map = mesh(&candidate.location, &probe, work, late).unwrap_or(Map::Plain(candidate.location.matrix));
     let size = candidate.location.size;
     // 1. The timing patterns: shift whole columns and rows by what they show.
     let cols = walk(size, |k| map.project(k as f64, 6.0), |k| map.project((k + 1) as f64, 6.0), &probe);

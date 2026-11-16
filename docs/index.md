@@ -42,8 +42,8 @@ Your application supplies pixels and decides what to do with the result.
 
 ## Accuracy is the priority
 
-The recorded WASM comparison correctly reads **179 of 184 photographs**, against
-ZXing-WASM's 171, and **171 of 224 synthetic stress frames**, against 150.
+The recorded WASM comparison correctly reads **180 of 184 photographs**, against
+ZXing-WASM's 171, and **172 of 224 synthetic stress frames**, against 150.
 The latter set reports no wrong payloads and no false reads on 32 negative
 controls. These results describe the named datasets; they are not a guarantee
 for every image or device. [Read the comparison and its limitations](CHOOSING.md).

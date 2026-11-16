@@ -1,0 +1,114 @@
+{
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+  "worker": true,
+  "charsetCases": 6,
+  "wasmSession": true,
+  "native": "https://example.com/browser",
+  "formats": [
+    "aztec",
+    "code_128",
+    "code_39",
+    "code_93",
+    "data_matrix",
+    "ean_13",
+    "ean_8",
+    "itf",
+    "pdf417",
+    "qr_code",
+    "upc_e"
+  ],
+  "rounds": 25,
+  "warmup": 5,
+  "timings": [
+    {
+      "name": "clean",
+      "typescript": {
+        "medianMs": 3.199999988079071,
+        "p95Ms": 3.800000011920929
+      },
+      "wasm": {
+        "medianMs": 1.600000023841858,
+        "p95Ms": 2
+      },
+      "native": {
+        "medianMs": 7.5,
+        "p95Ms": 8.5
+      }
+    },
+    {
+      "name": "blank",
+      "typescript": {
+        "medianMs": 2.300000011920929,
+        "p95Ms": 2.599999964237213
+      },
+      "wasm": {
+        "medianMs": 1.2000000476837158,
+        "p95Ms": 1.5
+      },
+      "native": {
+        "medianMs": 5.399999976158142,
+        "p95Ms": 5.800000011920929
+      }
+    },
+    {
+      "name": "noise",
+      "typescript": {
+        "medianMs": 48.19999998807907,
+        "p95Ms": 50.39999997615814
+      },
+      "wasm": {
+        "medianMs": 19.899999976158142,
+        "p95Ms": 20.5
+      },
+      "native": {
+        "medianMs": 6.699999988079071,
+        "p95Ms": 8.100000023841858
+      }
+    }
+  ],
+  "revision": "b1cf94d31c196ce996c7eb723cb37aa4575af660",
+  "wasmSha256": "f63d7f09a377f3107cf5c9e0693f546b26585a117e302fa1ec9a53d953c107ba",
+  "loadBefore": [
+    3.88671875,
+    3.296875,
+    3.2236328125
+  ],
+  "loadAfter": [
+    4.2158203125,
+    3.37451171875,
+    3.25146484375
+  ],
+  "requests": [
+    "/",
+    "/dist/wasm.js",
+    "/dist/wasm-text.js",
+    "/dist/session.js",
+    "/dist/errors.js",
+    "/dist/image.js",
+    "/favicon.ico",
+    "/dist/text.js",
+    "/dist/qr.wasm",
+    "/dist/wasm.js",
+    "/dist/wasm-text.js",
+    "/dist/session.js",
+    "/dist/errors.js",
+    "/dist/image.js",
+    "/dist/text.js",
+    "/dist/qr.wasm",
+    "/dist/index.js",
+    "/dist/encode.js",
+    "/dist/svg.js",
+    "/dist/canvas.js",
+    "/dist/terminal.js",
+    "/dist/decode.js",
+    "/dist/scanner.js",
+    "/dist/tables.js",
+    "/dist/binarise.js",
+    "/dist/locate.js",
+    "/dist/refine.js",
+    "/dist/symbol.js",
+    "/dist/rs.js",
+    "/scripts/comparison-fixtures.mjs",
+    "/done"
+  ]
+}

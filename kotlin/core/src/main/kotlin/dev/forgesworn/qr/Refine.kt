@@ -4,9 +4,9 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 // The second look (SPEC.md, decoder step 8): when the ordinary search finds
-// nothing, a few maps whose format information already agrees are read again
-// with their module centres moved onto the edges the picture shows, sampling
-// grey rather than black and white.
+// nothing, a few maps with format evidence are read again with their module
+// centres moved onto the edges the picture shows, sampling grey rather than
+// black and white.
 
 /** Both format copies within this many bits of the same format word. */
 private const val AGREEMENT = 2
@@ -18,10 +18,10 @@ private class Format(val bits: Int, val ecc: ErrorCorrection, val mask: Int)
 
 private val FORMAT_WORDS: List<Format> = EC_ORDER.flatMap { ecc -> (0..7).map { mask -> Format(formatBits(ecc, mask), ecc, mask) } }
 
-/** How a map's format copies agree. */
+/** Header evidence: distance is the maximum for ordinary retries, the minimum for curved-map recovery. */
 internal class Agreement(val mirrored: Boolean, val ecc: ErrorCorrection, val mask: Int, val distance: Int)
 
-/** A map the ordinary read could not use, whose format copies agree. */
+/** A failed map retained for refinement, with its header evidence and polarity. */
 internal class Retry(val location: Placement, val inverted: Boolean, val agreed: Agreement)
 
 /**
@@ -261,7 +261,7 @@ private const val FOUND = 24
  * points are interpolated bilinearly, and held at the outermost row and
  * column beyond them. Null below version 7, or when no pattern is found.
  */
-private fun mesh(location: Placement, probe: Probe, work: Work?): Placement? {
+private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean): Placement? {
     val size = location.size
     val version = (size - 17) / 4
     if (version < 1 || version > 40) return null
@@ -284,79 +284,117 @@ private fun mesh(location: Placement, probe: Probe, work: Work?): Placement? {
     val order = (0 until n * n).filter { state[it] == 0 }.sortedWith(compareBy<Int>({ away(it) }, { it }))
     val steps = REACH * QUARTER
     var found = 0
-    for (i in order) {
-        val q = i % n
-        val r = i / n
-        // The prediction: the mean offset of the neighbours already placed.
-        var px = 0.0
-        var py = 0.0
-        var k = 0
-        for ((a, b) in arrayOf(intArrayOf(q - 1, r), intArrayOf(q + 1, r), intArrayOf(q, r - 1), intArrayOf(q, r + 1))) {
-            if (a < 0 || b < 0 || a >= n || b >= n || state[b * n + a] == 0) continue
-            px += ox[b * n + a]
-            py += oy[b * n + a]
-            k++
-        }
-        if (k > 0) {
-            px /= k
-            py /= k
-        }
-        val cx = c[q] + px
-        val cy = c[r] + py
-        var best = -1
-        var sx = 0
-        var sy = 0
-        var count = 0
-        var low = 0
-        var high = 0
-        var lowY = 0
-        var highY = 0
-        for (j in -steps..steps) {
-            for (s in -steps..steps) {
-                val u = s.toDouble() / QUARTER
-                val v = j.toDouble() / QUARTER
-                var score = 0
-                for (b in -2..2) {
-                    for (a in -2..2) {
-                        val p = location.at(cx + u + a, cy + v + b)
-                        if ((probe.at(p.x, p.y) > 0) == (maxOf(abs(a), abs(b)) != 1)) score++
+    for (pass in 0 until if (late) 2 else 1) {
+        // Later measurements never become anchors during this pass.
+        val frozenState = if (pass == 1) state.copyOf() else state
+        val frozenX = if (pass == 1) ox.copyOf() else ox
+        val frozenY = if (pass == 1) oy.copyOf() else oy
+        for (i in order) {
+            if (pass == 1 && state[i] != 3) continue
+            val q = i % n
+            val r = i / n
+            // The prediction: the mean offset of the neighbours already placed.
+            var px = 0.0
+            var py = 0.0
+            var k = 0
+            for ((a, b) in arrayOf(intArrayOf(q - 1, r), intArrayOf(q + 1, r), intArrayOf(q, r - 1), intArrayOf(q, r + 1))) {
+                if (a < 0 || b < 0 || a >= n || b >= n || state[b * n + a] == 0) continue
+                px += ox[b * n + a]
+                py += oy[b * n + a]
+                k++
+            }
+            if (k > 0) {
+                px /= k
+                py /= k
+            }
+            if (pass == 1) {
+                var nearestDistance = Double.POSITIVE_INFINITY
+                var secondDistance = Double.POSITIVE_INFINITY
+                for ((dq, dr) in arrayOf(intArrayOf(-1, 0), intArrayOf(1, 0), intArrayOf(0, -1), intArrayOf(0, 1))) {
+                    val anchors = ArrayList<Int>(2)
+                    var a = q + dq
+                    var b = r + dr
+                    while (a >= 0 && b >= 0 && a < n && b < n) {
+                        if (frozenState[b * n + a] == 2) anchors.add(b * n + a)
+                        if (anchors.size == 2) break
+                        a += dq
+                        b += dr
+                    }
+                    if (anchors.size != 2) continue
+                    val first = anchors[0]
+                    val second = anchors[1]
+                    fun axis(j: Int): Int = c[if (dq != 0) j % n else j / n]
+                    val here = c[if (dq != 0) q else r]
+                    val distance = abs(here - axis(first)).toDouble()
+                    val further = abs(here - axis(second)).toDouble()
+                    if (distance > nearestDistance || (distance == nearestDistance && further >= secondDistance)) continue
+                    nearestDistance = distance
+                    secondDistance = further
+                    val ratio = (here - axis(first)).toDouble() / (axis(first) - axis(second))
+                    px = frozenX[first] + ratio * (frozenX[first] - frozenX[second])
+                    py = frozenY[first] + ratio * (frozenY[first] - frozenY[second])
+                }
+                if (nearestDistance == Double.POSITIVE_INFINITY) continue
+            }
+            val cx = c[q] + px
+            val cy = c[r] + py
+            var best = -1
+            var sx = 0
+            var sy = 0
+            var count = 0
+            var low = 0
+            var high = 0
+            var lowY = 0
+            var highY = 0
+            for (j in -steps..steps) {
+                for (s in -steps..steps) {
+                    val u = s.toDouble() / QUARTER
+                    val v = j.toDouble() / QUARTER
+                    var score = 0
+                    for (b in -2..2) {
+                        for (a in -2..2) {
+                            val p = location.at(cx + u + a, cy + v + b)
+                            if ((probe.at(p.x, p.y) > 0) == (maxOf(abs(a), abs(b)) != 1)) score++
+                        }
+                    }
+                    if (score > best) {
+                        best = score
+                        sx = 0
+                        sy = 0
+                        count = 0
+                        low = s
+                        high = s
+                        lowY = j
+                        highY = j
+                    }
+                    if (score == best) {
+                        sx += s
+                        sy += j
+                        count++
+                        low = minOf(low, s)
+                        high = maxOf(high, s)
+                        lowY = minOf(lowY, j)
+                        highY = maxOf(highY, j)
                     }
                 }
-                if (score > best) {
-                    best = score
-                    sx = 0
-                    sy = 0
-                    count = 0
-                    low = s
-                    high = s
-                    lowY = j
-                    highY = j
-                }
-                if (score == best) {
-                    sx += s
-                    sy += j
-                    count++
-                    low = minOf(low, s)
-                    high = maxOf(high, s)
-                    lowY = minOf(lowY, j)
-                    highY = maxOf(highY, j)
-                }
             }
-        }
-        if (work != null) work.probed += ((2 * steps + 1) * (2 * steps + 1) * 25).toLong()
-        // In quarter modules: the best offsets' centre, and how far they spread from it.
-        val mx = sx.toDouble() / count
-        val my = sy.toDouble() / count
-        val spread = maxOf(maxOf(mx - low, high - mx), maxOf(my - lowY, highY - my))
-        if (best >= FOUND && spread <= 3 && abs(mx) <= steps - 1 && abs(my) <= steps - 1) {
-            ox[i] = px + mx / QUARTER
-            oy[i] = py + my / QUARTER
-            state[i] = 2
-            found++
-        } else {
-            ox[i] = px
-            oy[i] = py
-            state[i] = 3
+            if (work != null) work.probed += ((2 * steps + 1) * (2 * steps + 1) * 25).toLong()
+            // In quarter modules: the best offsets' centre, and how far they spread from it.
+            val mx = sx.toDouble() / count
+            val my = sy.toDouble() / count
+            val spread = maxOf(maxOf(mx - low, high - mx), maxOf(my - lowY, highY - my))
+            if (best >= FOUND && spread <= 3 && abs(mx) <= steps - 1 && abs(my) <= steps - 1) {
+                ox[i] = px + mx / QUARTER
+                oy[i] = py + my / QUARTER
+                state[i] = 2
+                found++
+            } else {
+                if (pass == 0) {
+                    ox[i] = px
+                    oy[i] = py
+                }
+                state[i] = 3
+            }
         }
     }
     if (found == 0) return null
@@ -379,15 +417,15 @@ private fun mesh(location: Placement, probe: Probe, work: Work?): Placement? {
 }
 
 /**
- * Reads one candidate again; the result must keep the level and mask its
- * format copies agreed on. With [strict], the format copies of the modules
+ * Reads one candidate again; the result must keep the level and mask indicated
+ * by its header evidence. With [strict], the format copies of the modules
  * read again must also agree on them, as every read at reduced size must.
  */
-internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false): Payload? {
+internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false): Payload? {
     val mirrored = candidate.agreed.mirrored
     val probe = Probe(image, t, candidate.inverted)
     // 0. From version 7, the map bent onto the alignment patterns it can find.
-    val location = mesh(candidate.location, probe, work) ?: candidate.location
+    val location = mesh(candidate.location, probe, work, late) ?: candidate.location
     val size = location.size
     // 1. The timing patterns: shift whole columns and rows by what they show.
     val cols = walk(size, { k -> location.project(k, 6) }, { k -> location.project(k + 1, 6) }, probe)

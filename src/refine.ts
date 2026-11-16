@@ -1,5 +1,5 @@
-// The second look (SPEC.md, decoder step 8): when the ordinary search finds
-// nothing, a few maps whose format information already agrees are read again
+// The second look (SPEC.md, decoder steps 8 and 13): when earlier searches
+// find nothing, a few maps admitted by header evidence are read again
 // with their module centres moved onto the edges the picture shows, sampling
 // grey rather than black and white.
 import { thresholdAt, type Luminance, type Thresholds } from './binarise.js'
@@ -23,14 +23,14 @@ function popcount(n: number): number {
   return c
 }
 
-/** A map the ordinary read could not use, whose format copies agree. */
+/** A failed map retained for refinement, with its header evidence and polarity. */
 export interface Candidate {
   readonly location: Location
   readonly inverted: boolean
   readonly mirrored: boolean
   readonly ecc: ErrorCorrection
   readonly mask: number
-  /** The larger of the two copies' distances from the format word. */
+  /** Header distance: maximum for the ordinary queue, minimum for curved-map recovery. */
   readonly distance: number
 }
 
@@ -258,8 +258,10 @@ const FOUND = 24
  * doubtful and takes its neighbours' prediction. Offsets between lattice
  * points are interpolated bilinearly, and held at the outermost row and
  * column beyond them. Undefined below version 7, or when no pattern is found.
+ * With `late`, predicted nodes get one further search using a frozen pair of
+ * accepted anchors; ordinary second looks retain their original single pass.
  */
-function mesh(location: Location, probe: Probe, work?: Work): Location | undefined {
+function mesh(location: Location, probe: Probe, work?: Work, late = false): Location | undefined {
   const { size, project } = location
   const version = (size - 17) / 4
   const c = ALIGNMENT_CENTRES[version - 1]
@@ -281,75 +283,110 @@ function mesh(location: Location, probe: Probe, work?: Work): Location | undefin
   order.sort((a, b) => away(a) - away(b) || a - b)
   const steps = REACH * QUARTER
   let found = 0
-  for (const i of order) {
-    const q = i % n
-    const r = (i - q) / n
-    // The prediction: the mean offset of the neighbours already placed.
-    let px = 0
-    let py = 0
-    let k = 0
-    for (const [a, b] of [[q - 1, r], [q + 1, r], [q, r - 1], [q, r + 1]] as const) {
-      if (a < 0 || b < 0 || a >= n || b >= n || state[b * n + a] === 0) continue
-      px += ox[b * n + a]!
-      py += oy[b * n + a]!
-      k++
-    }
-    if (k > 0) {
-      px /= k
-      py /= k
-    }
-    const cx = c[q]! + px
-    const cy = c[r]! + py
-    let best = -1
-    let sx = 0
-    let sy = 0
-    let count = 0
-    let low = 0
-    let high = 0
-    let lowY = 0
-    let highY = 0
-    for (let j = -steps; j <= steps; j++) {
-      for (let s = -steps; s <= steps; s++) {
-        const u = s / QUARTER
-        const v = j / QUARTER
-        let score = 0
-        for (let b = -2; b <= 2; b++) {
-          for (let a = -2; a <= 2; a++) {
-            const p = project(cx + u + a, cy + v + b)
-            if (probe(p.x, p.y) > 0 === (Math.max(Math.abs(a), Math.abs(b)) !== 1)) score++
+  for (let pass = 0; pass < (late ? 2 : 1); pass++) {
+    // Late measurements never become anchors during this pass.
+    const frozenState = pass === 1 ? state.slice() : state
+    const frozenX = pass === 1 ? ox.slice() : ox
+    const frozenY = pass === 1 ? oy.slice() : oy
+    for (const i of order) {
+      if (pass === 1 && state[i] !== 3) continue
+      const q = i % n
+      const r = (i - q) / n
+      // The prediction: the mean offset of the neighbours already placed.
+      let px = 0
+      let py = 0
+      let k = 0
+      for (const [a, b] of [[q - 1, r], [q + 1, r], [q, r - 1], [q, r + 1]] as const) {
+        if (a < 0 || b < 0 || a >= n || b >= n || state[b * n + a] === 0) continue
+        px += ox[b * n + a]!
+        py += oy[b * n + a]!
+        k++
+      }
+      if (k > 0) {
+        px /= k
+        py /= k
+      }
+      // One late search from two accepted measurements along an axis.
+      if (pass === 1) {
+        let nearestDistance = Infinity
+        let secondDistance = Infinity
+        for (const [dq, dr] of [[-1, 0], [1, 0], [0, -1], [0, 1]] as const) {
+          const anchors: number[] = []
+          for (let a = q + dq, b = r + dr; a >= 0 && b >= 0 && a < n && b < n; a += dq, b += dr) {
+            if (frozenState[b * n + a] === 2) anchors.push(b * n + a)
+            if (anchors.length === 2) break
+          }
+          if (anchors.length !== 2) continue
+          const first = anchors[0]!, second = anchors[1]!
+          const axis = (j: number) => c[dq !== 0 ? j % n : Math.floor(j / n)]!
+          const here = c[dq !== 0 ? q : r]!
+          const distance = Math.abs(here - axis(first))
+          const further = Math.abs(here - axis(second))
+          if (distance > nearestDistance || (distance === nearestDistance && further >= secondDistance)) continue
+          nearestDistance = distance
+          secondDistance = further
+          const ratio = (here - axis(first)) / (axis(first) - axis(second))
+          px = frozenX[first]! + ratio * (frozenX[first]! - frozenX[second]!)
+          py = frozenY[first]! + ratio * (frozenY[first]! - frozenY[second]!)
+        }
+        if (nearestDistance === Infinity) continue
+      }
+      const cx = c[q]! + px
+      const cy = c[r]! + py
+      let best = -1
+      let sx = 0
+      let sy = 0
+      let count = 0
+      let low = 0
+      let high = 0
+      let lowY = 0
+      let highY = 0
+      for (let j = -steps; j <= steps; j++) {
+        for (let s = -steps; s <= steps; s++) {
+          const u = s / QUARTER
+          const v = j / QUARTER
+          let score = 0
+          for (let b = -2; b <= 2; b++) {
+            for (let a = -2; a <= 2; a++) {
+              const p = project(cx + u + a, cy + v + b)
+              if (probe(p.x, p.y) > 0 === (Math.max(Math.abs(a), Math.abs(b)) !== 1)) score++
+            }
+          }
+          if (score > best) {
+            best = score
+            sx = sy = count = 0
+            low = high = s
+            lowY = highY = j
+          }
+          if (score === best) {
+            sx += s
+            sy += j
+            count++
+            low = Math.min(low, s)
+            high = Math.max(high, s)
+            lowY = Math.min(lowY, j)
+            highY = Math.max(highY, j)
           }
         }
-        if (score > best) {
-          best = score
-          sx = sy = count = 0
-          low = high = s
-          lowY = highY = j
-        }
-        if (score === best) {
-          sx += s
-          sy += j
-          count++
-          low = Math.min(low, s)
-          high = Math.max(high, s)
-          lowY = Math.min(lowY, j)
-          highY = Math.max(highY, j)
-        }
       }
-    }
-    if (work) work.probed += (2 * steps + 1) * (2 * steps + 1) * 25
-    // In quarter modules: the best offsets' centre, and how far they spread from it.
-    const mx = sx / count
-    const my = sy / count
-    const spread = Math.max(mx - low, high - mx, my - lowY, highY - my)
-    if (best >= FOUND && spread <= 3 && Math.abs(mx) <= steps - 1 && Math.abs(my) <= steps - 1) {
-      ox[i] = px + mx / QUARTER
-      oy[i] = py + my / QUARTER
-      state[i] = 2
-      found++
-    } else {
-      ox[i] = px
-      oy[i] = py
-      state[i] = 3
+      if (work) work.probed += (2 * steps + 1) * (2 * steps + 1) * 25
+      // In quarter modules: the best offsets' centre, and how far they spread from it.
+      const mx = sx / count
+      const my = sy / count
+      const spread = Math.max(mx - low, high - mx, my - lowY, highY - my)
+      if (best >= FOUND && spread <= 3 && Math.abs(mx) <= steps - 1 && Math.abs(my) <= steps - 1) {
+        ox[i] = px + mx / QUARTER
+        oy[i] = py + my / QUARTER
+        state[i] = 2
+        found++
+      } else {
+        // An unsuccessful late search preserves the first pass's prediction.
+        if (pass === 0) {
+          ox[i] = px
+          oy[i] = py
+        }
+        state[i] = 3
+      }
     }
   }
   if (found === 0) return undefined
@@ -375,12 +412,13 @@ function mesh(location: Location, probe: Probe, work?: Work): Location | undefin
  * Reads one candidate again; the result must keep the level and mask its
  * format copies agreed on. With `strict`, the format copies of the modules
  * read again must also agree on them, as every read at reduced size must.
+ * `late` enables the deferred recovery's extra alignment pass.
  */
-export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false): Payload | undefined {
+export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false): Payload | undefined {
   const { inverted, mirrored } = candidate
   const probe = probeFor(image, t, inverted)
   // 0. From version 7, the map bent onto the alignment patterns it can find.
-  const location = mesh(candidate.location, probe, work) ?? candidate.location
+  const location = mesh(candidate.location, probe, work, late) ?? candidate.location
   const { size, project } = location
   // 1. The timing patterns: shift whole columns and rows by what they show.
   const cols = walk(size, (k) => project(k, 6), (k) => project(k + 1, 6), probe)

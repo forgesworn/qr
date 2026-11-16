@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.3
+
+- Recover a dense curved QR photograph with a deferred alignment retry. One
+  exact version word anchors admission; final format, version, error-correction
+  and segment checks remain required. Existing successful paths retain priority.
+- Revisit missed alignment patterns once using frozen accepted neighbours,
+  retaining the four-second-look and 720-map limits. The conservative maximum
+  alignment-probe allowance doubles only for the deferred path.
+- Apply the same behaviour to TypeScript, Rust, packaged WASM and Kotlin. Raise
+  the photograph regression floor from 179/184 to 180/184; preserve all earlier
+  outcomes across 888 checked cases, including 64 negative controls.
+- Publish the limited curvature results and remaining failures alongside the
+  comparison evidence. No public API changes.
+
 ## 0.3.2
 
 - Recover additional difficult QR images when the correct finder triple ranks

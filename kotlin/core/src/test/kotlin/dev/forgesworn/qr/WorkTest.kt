@@ -9,8 +9,8 @@ import org.junit.Test
  * The search's work on frames built to be costly, counted rather than timed,
  * so the bounds hold on any machine. The counter is internal to the module.
  */
-/** The mesh's points probed a frame, at most: 4 second looks, 46 lattice points, 25 x 25 offsets, 25 modules. */
-internal const val MESH_PROBES = 4L * 46 * 25 * 25 * 25
+/** At most four second looks and two searches at each of 46 lattice points. */
+internal const val MESH_PROBES = 4L * 92 * 25 * 25 * 25
 
 class WorkTest {
     private class Frame(val data: ByteArray, val width: Int, val height: Int)
@@ -63,8 +63,8 @@ class WorkTest {
         assertTrue(work.maps <= 4 * 6 * 5 * 6)
         // The second look reads at most four of them again.
         assertTrue(work.second <= 4)
-        // Each of them bends at most 46 lattice points, each looked for at 25 x 25
-        // quarter-module offsets of 25 modules.
+        // Each may search 46 lattice points twice, at 25 x 25 quarter-module
+        // offsets of 25 modules each.
         assertTrue(work.probed <= MESH_PROBES)
         // Each of the 120 locates scans at most six windows, each no bigger than
         // the picture; in practice the windows cover it a few times over.

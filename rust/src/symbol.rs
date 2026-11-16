@@ -502,6 +502,38 @@ pub(crate) fn agreed_version<R: Fn(usize, usize) -> bool>(read: &R, size: usize)
     (a == b).then_some(a + 7)
 }
 
+/// Header evidence for a deferred curvature recovery.
+pub(crate) fn curvature_header<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<(Ecc, u8, u32)> {
+    if size < 45 { return None; }
+    let mut va = 0u32;
+    let mut vb = 0u32;
+    for k in (0..=17).rev() {
+        let i = k / 3;
+        let j = k % 3;
+        va = (va << 1) | read(i, size - 11 + j) as u32;
+        vb = (vb << 1) | read(size - 11 + j, i) as u32;
+    }
+    let version = (size - 17) / 4;
+    let expected = version_bits_of(version as u32);
+    if va != expected && vb != expected { return None; }
+    if nearest(&VERSIONS, &[va]).is_some_and(|i| i + 7 != version)
+        || nearest(&VERSIONS, &[vb]).is_some_and(|i| i + 7 != version) { return None; }
+    let mut a = 0u32;
+    let mut b = 0u32;
+    for i in (0..15).rev() {
+        let (x, y) = FORMAT_COORDS[i];
+        a = (a << 1) | read(x, y) as u32;
+        let (x, y) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + i - 8) };
+        b = (b << 1) | read(x, y) as u32;
+    }
+    let words = FORMATS.map(|f| f.0);
+    let first = nearest(&words, &[a]);
+    let second = nearest(&words, &[b]);
+    if first.is_some() && second.is_some() && first != second { return None; }
+    let (bits, ecc, mask) = FORMATS[first.or(second)?];
+    Some((ecc, mask, (bits ^ a).count_ones().min((bits ^ b).count_ones())))
+}
+
 /// The errors a block of this symbol may have had corrected: half of its check
 /// codewords once the p of Table 9 is withheld to catch a misdecode. Only
 /// versions 1 to 3 withhold any.
@@ -1188,5 +1220,47 @@ mod agreed_version_tests {
         assert_eq!(agreed_version(&unreadable, 165), None);
         assert_eq!(read_version(&unreadable, 165), Some(40));
         assert_eq!(agreed_version(&matching, 41), None);
+    }
+}
+
+#[cfg(test)]
+mod curvature_header_tests {
+    use super::{curvature_header, read_version, version_bits_of, Ecc, FORMATS, FORMAT_COORDS};
+
+    fn header(va: u32, vb: u32, fa: u32, fb: u32) -> Vec<u8> {
+        let size = 65usize;
+        let mut grid = vec![0u8; size * size];
+        for k in 0..18 {
+            let (i, j) = (k / 3, size - 11 + k % 3);
+            grid[j * size + i] = ((va >> k) & 1) as u8;
+            grid[i * size + j] = ((vb >> k) & 1) as u8;
+        }
+        for (i, &(x, y)) in FORMAT_COORDS.iter().enumerate() {
+            grid[y * size + x] = ((fa >> i) & 1) as u8;
+            let (x, y) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + i - 8) };
+            grid[y * size + x] = ((fb >> i) & 1) as u8;
+        }
+        grid
+    }
+
+    #[test]
+    fn exact_version_and_nonconflicting_independent_headers_are_required() {
+        let v12 = version_bits_of(12);
+        let v13 = version_bits_of(13);
+        let m3 = FORMATS.iter().find(|f| f.1 == Ecc::M && f.2 == 3).unwrap().0;
+        let q7 = FORMATS.iter().find(|f| f.1 == Ecc::Q && f.2 == 7).unwrap().0;
+        let check = |va, vb, fa, fb| {
+            let grid = header(va, vb, fa, fb);
+            curvature_header(&|x, y| grid[y * 65 + x] == 1, 65)
+        };
+        assert_eq!(check(v12, 0, 0, m3 ^ 1), Some((Ecc::M, 3, 1)));
+        let correctable = header(v12 ^ 1, v12 ^ 2, m3, m3);
+        assert_eq!(read_version(&|x, y| correctable[y * 65 + x] == 1, 65), Some(12));
+        assert_eq!(check(v12 ^ 1, v12 ^ 2, m3, m3), None);
+        assert_eq!(check(v12, v13 ^ 1, m3, m3), None);
+        assert_eq!(check(v12, v12, m3, q7 ^ 1), None);
+        assert_eq!(check(v12, v12, 0, 0), None);
+        assert_eq!(check(v13, 0, m3, m3), None);
+        assert_eq!(curvature_header(&|_, _| false, 41), None);
     }
 }

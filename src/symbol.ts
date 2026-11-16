@@ -416,3 +416,33 @@ function latin1(bytes: Uint8Array): string {
   for (const b of bytes) s += String.fromCharCode(b)
   return s
 }
+
+/**
+ * A deferred curved-map candidate needs an exact version word matching its size.
+ * Each independently readable peer must agree; at least one format copy must
+ * decode within the ordinary BCH radius. This admits a retry, never a result.
+ */
+export function curvatureHeader(read: ModuleReader, size: number): {ecc: ErrorCorrection; mask: number; distance: number} | undefined {
+  if (size < 45) return undefined
+  let va = 0, vb = 0
+  for (let k = 17; k >= 0; k--) {
+    const i = Math.floor(k / 3), j = k % 3
+    va = (va << 1) | +read(i, size - 11 + j)
+    vb = (vb << 1) | +read(size - 11 + j, i)
+  }
+  const version = (size - 17) / 4, expected = versionBits(version)
+  if (va !== expected && vb !== expected) return undefined
+  const firstVersion = nearest(VERSIONS, [va]), secondVersion = nearest(VERSIONS, [vb])
+  if (firstVersion && firstVersion.version !== version || secondVersion && secondVersion.version !== version) return undefined
+  let a = 0, b = 0
+  for (let i = 14; i >= 0; i--) {
+    const [x, y] = FORMAT_COORDS[i]!
+    a = (a << 1) | +read(x, y)
+    b = (b << 1) | +read(i < 8 ? size - 1 - i : 8, i < 8 ? 8 : size - 7 + i - 8)
+  }
+  const first = nearest(FORMATS, [a]), second = nearest(FORMATS, [b])
+  if (first && second && first.bits !== second.bits) return undefined
+  const format = first ?? second
+  if (!format) return undefined
+  return { ecc: format.ecc, mask: format.mask, distance: Math.min(popcount(format.bits ^ a), popcount(format.bits ^ b)) }
+}

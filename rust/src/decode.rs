@@ -4,8 +4,8 @@
 use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
-use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
-use crate::symbol::{agreed_version, read_symbol, Payload, FORMAT_COORDS};
+use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, second_look_with_late, sized, Candidate, SECOND_LOOKS};
+use crate::symbol::{agreed_version, curvature_header, read_symbol, Payload, FORMAT_COORDS};
 use std::cell::Cell;
 use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 
@@ -87,7 +87,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
-    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints), Some(&mut overflow)) {
+    let mut curvature = Vec::new();
+    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints), Some(&mut overflow), Some(&mut curvature)) {
         return Some(found);
     }
     if budget.uniform { return None; }
@@ -127,7 +128,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         }
     }
     if let Some(found) = recover(&luminance, &hints, &mut budget, work.as_deref_mut()) { return Some(found); }
-    recover_overflow(&luminance, &overflow, &mut budget, work.as_deref_mut())
+    if let Some(found) = recover_overflow(&luminance, &overflow, &mut budget, work.as_deref_mut()) { return Some(found); }
+    recover_curvature(&luminance, &curvature, &mut budget, work.as_deref_mut())
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -135,10 +137,10 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
 /// only if its format copies agree on its level and mask, and locations are
 /// given in full-picture coordinates.
 fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
-    look_with_hints(luminance, inversion, f, budget, work, strict_override, None, None)
+    look_with_hints(luminance, inversion, f, budget, work, strict_override, None, None, None)
 }
 
-fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>, mut overflow: Option<&mut Vec<Overflow>>) -> Option<Reading> {
+fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>, mut overflow: Option<&mut Vec<Overflow>>, mut curvature: Option<&mut Vec<Candidate>>) -> Option<Reading> {
     let levels = thresholds(luminance);
     if f == 1 && !strict_override {
         budget.inverted_fallback = levels.inverted_fallback;
@@ -152,13 +154,13 @@ fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget
     let mut edges = Edges::new(&bits);
     let mut modules: Vec<u8> = Vec::new();
     if inversion != Inversion::Inverted {
-        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut(), curvature.as_deref_mut()) {
             return Some(found);
         }
     }
     if inversion != Inversion::Normal {
         let inverse = invert(&bits);
-        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut(), curvature.as_deref_mut()) {
             return Some(found);
         }
     }
@@ -255,7 +257,7 @@ fn search(
     modules: &mut Vec<u8>,
     work: Option<&mut Work>,
 ) -> Option<Reading> {
-    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None, None)
+    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None, None, None)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -271,6 +273,7 @@ fn search_with_hints(
     mut work: Option<&mut Work>,
     mut hints: Option<&mut Vec<Hint>>,
     mut overflow: Option<&mut Vec<Overflow>>,
+    mut curvature: Option<&mut Vec<Candidate>>,
 ) -> Option<Reading> {
     // No map can be read, but the caller still owns the second-look queue.
     if budget.maps == 0 || budget.here == 0 { return None; }
@@ -311,7 +314,7 @@ fn search_with_hints(
                             w.reduced += 1;
                         }
                     }
-                    if let Some(result) = read(image, location, inverted, candidates, strict, f, modules) {
+                    if let Some(result) = read_with_curvature(image, location, inverted, candidates, strict, f, modules, curvature.as_deref_mut()) {
                         return Some(result);
                     }
                     if let Some(hints) = hints.as_deref_mut() {
@@ -521,10 +524,29 @@ fn recover_overflow(luminance: &Luminance, overflow: &[Overflow], budget: &mut B
     None
 }
 
+/// Try deferred curvature candidates only after all previous recovery paths.
+fn recover_curvature(luminance: &Luminance, candidates: &[Candidate], budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    if candidates.is_empty() || budget.second == 0 { return None; }
+    let levels = thresholds(luminance);
+    for candidate in candidates {
+        if budget.second == 0 { break; }
+        budget.second -= 1;
+        if let Some(w) = work.as_deref_mut() { w.second += 1; }
+        if let Some(payload) = second_look_with_late(luminance, &levels, candidate, work.as_deref_mut(), true, true) {
+            return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
+        }
+    }
+    None
+}
+
 /// Samples the module grid through the map and reads it, straight then
 /// mirrored. A map that reads neither way, whose format copies agree, is kept
 /// as a candidate for the second look.
 fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>) -> Option<Reading> {
+    read_with_curvature(image, location, inverted, candidates, strict, f, modules, None)
+}
+
+fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>, curvature: Option<&mut Vec<Candidate>>) -> Option<Reading> {
     let size = location.size;
     modules.clear();
     modules.resize(size * size, 2); // Unsampled; light and dark are 0 and 1.
@@ -568,6 +590,18 @@ fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut 
             sample(x, y); sample(y, x);
             let (sx, sy) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + (i - 8)) };
             sample(sx, sy); sample(sy, sx);
+        }
+        if let Some(curvature) = curvature {
+            for mirrored in [false, true] {
+                let oriented = |x, y| if mirrored { sample(y, x) } else { sample(x, y) };
+                let Some((ecc, mask, distance)) = curvature_header(&oriented, size) else { continue; };
+                let duplicate = curvature.iter().any(|c| c.inverted == inverted && c.mirrored == mirrored
+                    && c.ecc == ecc && c.mask == mask && c.location.size == size
+                    && c.location.matrix == location.matrix);
+                if !duplicate {
+                    keep(curvature, Candidate { location: location.clone(), inverted, mirrored, ecc, mask, distance });
+                }
+            }
         }
     }
     if let Some(agreed) = agreement(modules, size) {

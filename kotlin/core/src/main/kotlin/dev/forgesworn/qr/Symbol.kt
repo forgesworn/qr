@@ -154,6 +154,38 @@ internal fun agreedVersion(read: ModuleReader, size: Int): Int? {
     return if (first == second) first else null
 }
 
+/** Header evidence for a deferred curved-map retry; this does not admit a result. */
+internal fun curvatureHeader(read: ModuleReader, size: Int, mirrored: Boolean): Agreement? {
+    if (size < 45) return null
+    var va = 0
+    var vb = 0
+    for (k in 17 downTo 0) {
+        val i = k / 3
+        val j = k % 3
+        va = (va shl 1) or (if (read.read(i, size - 11 + j)) 1 else 0)
+        vb = (vb shl 1) or (if (read.read(size - 11 + j, i)) 1 else 0)
+    }
+    val version = (size - 17) / 4
+    val expected = versionBits(version)
+    if (va != expected && vb != expected) return null
+    val firstVersion = nearest(VERSIONS, { it.bits }, intArrayOf(va))
+    val secondVersion = nearest(VERSIONS, { it.bits }, intArrayOf(vb))
+    if ((firstVersion != null && firstVersion.version != version) || (secondVersion != null && secondVersion.version != version)) return null
+    var a = 0
+    var b = 0
+    for (i in 14 downTo 0) {
+        val x = FORMAT_COORDS[i][0]
+        val y = FORMAT_COORDS[i][1]
+        a = (a shl 1) or (if (read.read(x, y)) 1 else 0)
+        b = (b shl 1) or (if (read.read(if (i < 8) size - 1 - i else 8, if (i < 8) 8 else size - 7 + i - 8)) 1 else 0)
+    }
+    val first = nearest(FORMATS, { it.bits }, intArrayOf(a))
+    val second = nearest(FORMATS, { it.bits }, intArrayOf(b))
+    if (first != null && second != null && first.bits != second.bits) return null
+    val format = first ?: second ?: return null
+    return Agreement(mirrored, format.ecc, format.mask, minOf(popcount(format.bits xor a), popcount(format.bits xor b)))
+}
+
 /**
  * The errors a block of this symbol may have had corrected: half of its check
  * codewords once the p of Table 9 is withheld to catch a misdecode. Only
