@@ -13,9 +13,9 @@ ZXing-WASM 3.1.7 was still the registry's current version at baseline setup.
 The same pinned external rival packages and complete-result comparisons are
 used. Source/binary identities, workload hashes and load are retained in
 [the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
-experimental snapshots. The current TypeScript/Rust implementation is `22f3428`,
+experimental snapshots. The current Rust/WASM implementation is `22f3428`,
 with Kotlin byte planes, local cross-check counters and reusable module storage
-at `7419507`. The seventh candidate
+at `7419507`, and the TypeScript scalar-counter refinement at `8fd581b`. The seventh candidate
 applies the existing strict-format requirement before reading payload modules.
 Merge, publication and physical camera acceptance remain pending.
 
@@ -414,23 +414,81 @@ and run from `kotlin/` twice, with separate output files:
   -PqrBenchmarkOutput=/external/path/jvm-fork1.json
 ```
 
+### TypeScript scalar cross-checks
+
+The TypeScript fallback (`8fd581b`) now keeps the five cross-check counters in local
+variables, preserving Number arithmetic, operation order, early returns and
+finally-based work accounting. The removed per-call array follows the Kotlin
+optimisation, but its JavaScript benefit is measured independently. Two native
+arm64 M4 Node processes compare the baseline at `cbc54db` with the candidate:
+
+| Workload | Baseline median ms, fork 1 / 2 | Candidate median ms, fork 1 / 2 | Change |
+|---|---:|---:|---|
+| Clean 720p | 3.647 / 3.699 | 3.620 / 3.649 | 0.7–1.4% less time |
+| Blank 720p | 2.975 / 2.898 | 2.969 / 2.911 | Essentially unchanged |
+| Noise 720p, seed 5 | 47.101 / 47.300 | 47.230 / 47.200 | Essentially unchanged |
+| Stripes 720p | 19.618 / 19.226 | 17.005 / 16.511 | 13.3–14.1% less time |
+| Checkerboard 720p | 14.466 / 14.326 | 12.967 / 12.845 | 10.3–10.4% less time |
+| Gradient 720p | 8.950 / 8.956 | 8.979 / 8.960 | Essentially unchanged |
+
+Six additional noise cases at 512×512, 720p and 1080p take 0.1–2.1% less time.
+The change is accepted for its repeatable pattern improvement, not as a solution
+to the noise gap. There is no new rival comparison or browser timing claim in
+this experiment; WASM and Kotlin are unchanged. See the
+[first](benchmarks/2026-11-16-m4/ts-scalar-paired1.json) and
+[second](benchmarks/2026-11-16-m4/ts-scalar-paired2.json) receipts for p95, raw
+samples, workload/build/harness hashes and machine load.
+
+The [paired runner](scripts/compare-typescript.mjs) loads two distinct canonical
+build paths and checks that decoder functions differ. Each frame receives at
+least 20 warm-up pairs and one second of warm-up, then 60 alternating pairs.
+Full results and input hashes are checked outside the timer. Hashing adds
+symmetric untimed memory traffic; these are whole-frame Node measurements.
+
+The integrated production build matches every JavaScript byte in the timed
+candidate, SHA-256 `3b43bbf7f6f4ebe260a3b1c2ea1b413e7546401363d3b04e526663b76a8410c5`.
+A [differential check](benchmarks/2026-11-16-m4/ts-scalar-equivalence.json)
+preserves full results and work across 61 conformance frames, four damaged-finder
+regressions and 18 noise/pattern cases. The integrated source passes all 458
+JavaScript tests with required photographs, typechecking and packed-package
+consumer checks. No vectors changed.
+
+```sh
+node scripts/compare-typescript.mjs /path/to/baseline/dist /path/to/candidate/dist --negative
+```
+
 ### Next algorithm experiments
 
-The next priority is rejecting unsupported geometry before expensive alignment
-search. A diagnostic should bound format-cell pixels over every allowed map,
-mark ambiguous cells unknown, and reject only when no assignment can satisfy
-the existing format rules. Unstable geometry falls back to the original search.
-Measure avoided windows and whole-frame latency before adopting this complexity;
-provisional corner-map failure alone must never reject a damaged valid symbol.
+A conservative shared-bit format envelope was investigated and rejected before
+building interval geometry. The diagnostic unions format bits over every map
+actually emitted for a size hypothesis, including both corner fallbacks. Bits
+that differ are unknown. This is an optimistic bound: a sound pre-search
+envelope containing those maps cannot know more bits. The diagnostic still
+runs the complete original search and compares full results and work counts.
 
-If conservative bounds reject too little, investigate region-first finder
+On the main 720p noise frame, no ordinary hypothesis can be rejected. Two
+strict hypotheses could be rejected, but neither performs alignment search:
+the potential saving is zero of 984,380 alignment pixels and only two of 341
+read maps. On two 640×360 noise cases, potential alignment savings are at most
+1.4% and 0.1%, before envelope overhead. All 16 diagnostic cases retain their
+full results and work, including the four damaged-finder regressions. This
+rules out this shared-bit envelope approach as a useful noise optimisation;
+it does not rule out every possible format-based search strategy. See
+[the diagnostic receipt](benchmarks/2026-11-16-m4/format-envelope-upper-bound.json).
+Reproduce against `cbc54db` with the portable
+[builder](benchmarks/2026-11-16-m4/format-envelope-diagnostic/build.cjs)
+and [runner](benchmarks/2026-11-16-m4/format-envelope-diagnostic/run.mjs);
+both take an explicit checkout path and scratch directory. These tools only
+instrument a scratch build and never modify the checkout.
+
+The next experiment investigates region-first finder
 proposals from connected runs and nested or partial rings, followed by existing
 precise cross-checks. This changes detection policy and must preserve broken and
 occluded finder recovery. Compare proposals against every previously successful
 finder triple before changing decode. Retain all known successful reads, zero
 wrong payloads, and then freeze before evaluating a new untouched stress set.
-The current 184 photos and 192 synthetic cases are regression evidence. Neither
-proposal is implemented or has an established speedup.
+The current 184 photos and 192 synthetic cases are regression evidence. The region proposal
+is not implemented or qualified as a production change.
 
 ### Next acceptance targets
 

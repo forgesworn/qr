@@ -1,0 +1,1429 @@
+{
+  "method": "Optimistic diagnostic: union of known format bits across every actual emitted map, with ambiguous bits unknown. A necessary subset of any sound pre-search envelope; positive rejection is only an upper bound, not an implementable speedup. Original results and work counts compared exactly.",
+  "identity": {
+    "revision": "cbc54dbb07e0864fc5b3796a9e0b2e1830d87ba3",
+    "sourceSha256": "6da8bbb7f25e617d8945f4abb45d332a6396b806a6f9db3841d32ab105fcfc38"
+  },
+  "cases": [
+    {
+      "name": "noise-5-1280x720",
+      "width": 1280,
+      "height": 720,
+      "frameSha256": "7b6261f2cb3c1228f414adf9602b36c6a8763d020f2e4ab564e386e1d1dae00c",
+      "result": null,
+      "work": {
+        "steps": 454513,
+        "compared": 115,
+        "scanned": 984380,
+        "maps": 341,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 90
+      },
+      "obs": {
+        "all": {
+          "locates": 79,
+          "windows": 393,
+          "scanned": 984380,
+          "runs": 233369,
+          "vertical": 79009,
+          "emittedMaps": 367,
+          "readMaps": 341
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 4,
+          "windows": 12,
+          "scanned": 30504,
+          "runs": 7175,
+          "vertical": 1542,
+          "emittedMaps": 8,
+          "readMaps": 6
+        },
+        "actualUpper": {
+          "locates": 2,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 4,
+          "readMaps": 2
+        },
+        "ordinaryPasses": {
+          "locates": 50,
+          "windows": 287,
+          "scanned": 737780,
+          "runs": 175125,
+          "vertical": 61375,
+          "emittedMaps": 251,
+          "readMaps": 251
+        },
+        "strictPasses": {
+          "locates": 29,
+          "windows": 106,
+          "scanned": 246600,
+          "runs": 58244,
+          "vertical": 17634,
+          "emittedMaps": 116,
+          "readMaps": 90
+        },
+        "unknownBitRanges": [
+          [
+            4,
+            15
+          ],
+          [
+            4,
+            15
+          ],
+          [
+            4,
+            15
+          ],
+          [
+            4,
+            15
+          ]
+        ]
+      }
+    },
+    {
+      "name": "noise-5-640x360",
+      "width": 640,
+      "height": 360,
+      "frameSha256": "7806c7b2303453f193634a4696146eeb399d99f0cb1931f3fac233c93e1d98a0",
+      "result": null,
+      "work": {
+        "steps": 338062,
+        "compared": 219,
+        "scanned": 1328361,
+        "maps": 462,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 70
+      },
+      "obs": {
+        "all": {
+          "locates": 125,
+          "windows": 494,
+          "scanned": 1328361,
+          "runs": 314276,
+          "vertical": 85929,
+          "emittedMaps": 472,
+          "readMaps": 462
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 21,
+          "windows": 36,
+          "scanned": 83572,
+          "runs": 20219,
+          "vertical": 3409,
+          "emittedMaps": 42,
+          "readMaps": 39
+        },
+        "actualUpper": {
+          "locates": 7,
+          "windows": 19,
+          "scanned": 19138,
+          "runs": 4483,
+          "vertical": 1566,
+          "emittedMaps": 14,
+          "readMaps": 11
+        },
+        "ordinaryPasses": {
+          "locates": 99,
+          "windows": 390,
+          "scanned": 1194140,
+          "runs": 282887,
+          "vertical": 73236,
+          "emittedMaps": 392,
+          "readMaps": 392
+        },
+        "strictPasses": {
+          "locates": 26,
+          "windows": 104,
+          "scanned": 134221,
+          "runs": 31389,
+          "vertical": 12693,
+          "emittedMaps": 80,
+          "readMaps": 70
+        },
+        "unknownBitRanges": [
+          [
+            1,
+            15
+          ],
+          [
+            2,
+            15
+          ],
+          [
+            1,
+            15
+          ],
+          [
+            2,
+            15
+          ]
+        ]
+      }
+    },
+    {
+      "name": "noise-42-640x360",
+      "width": 640,
+      "height": 360,
+      "frameSha256": "bc5f4eae06805b1ba116e7a874076b7254a0f375cd369073b702ca17c0b80cdc",
+      "result": null,
+      "work": {
+        "steps": 337892,
+        "compared": 241,
+        "scanned": 1628406,
+        "maps": 424,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 80
+      },
+      "obs": {
+        "all": {
+          "locates": 109,
+          "windows": 515,
+          "scanned": 1628406,
+          "runs": 390133,
+          "vertical": 109703,
+          "emittedMaps": 437,
+          "readMaps": 424
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 10,
+          "windows": 21,
+          "scanned": 81054,
+          "runs": 19525,
+          "vertical": 3136,
+          "emittedMaps": 23,
+          "readMaps": 23
+        },
+        "actualUpper": {
+          "locates": 2,
+          "windows": 3,
+          "scanned": 1780,
+          "runs": 426,
+          "vertical": 182,
+          "emittedMaps": 3,
+          "readMaps": 3
+        },
+        "ordinaryPasses": {
+          "locates": 84,
+          "windows": 399,
+          "scanned": 1455060,
+          "runs": 349015,
+          "vertical": 90710,
+          "emittedMaps": 344,
+          "readMaps": 344
+        },
+        "strictPasses": {
+          "locates": 25,
+          "windows": 116,
+          "scanned": 173346,
+          "runs": 41118,
+          "vertical": 18993,
+          "emittedMaps": 93,
+          "readMaps": 80
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            15
+          ]
+        ]
+      }
+    },
+    {
+      "name": "clean",
+      "width": 1280,
+      "height": 720,
+      "frameSha256": "0afcbadee3f95e050a73df547f4e61d973e8085109b0f3f48c901333942e0b22",
+      "result": "https://example.com/performance/0123456789",
+      "work": {
+        "steps": 6615,
+        "compared": 24,
+        "scanned": 5476,
+        "maps": 1,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 5476,
+          "runs": 109,
+          "vertical": 21,
+          "emittedMaps": 2,
+          "readMaps": 1
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 5476,
+          "runs": 109,
+          "vertical": 21,
+          "emittedMaps": 2,
+          "readMaps": 1
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "name": "stripes",
+      "width": 640,
+      "height": 360,
+      "frameSha256": "97f62719c546f8f6ccad1462dfd37e15cd3a5824fe44a500e1bb4a527e302e17",
+      "result": null,
+      "work": {
+        "steps": 2645569,
+        "compared": 0,
+        "scanned": 0,
+        "maps": 0,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "name": "noise",
+      "width": 160,
+      "height": 120,
+      "frameSha256": "133d194178be3cb9ad2bd7adf69179753928ff07f94ccbe8a20e004c1b15d52a",
+      "result": null,
+      "work": {
+        "steps": 26193,
+        "compared": 22,
+        "scanned": 640562,
+        "maps": 271,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 14
+      },
+      "obs": {
+        "all": {
+          "locates": 56,
+          "windows": 314,
+          "scanned": 640562,
+          "runs": 153317,
+          "vertical": 69271,
+          "emittedMaps": 271,
+          "readMaps": 271
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 2,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 4,
+          "readMaps": 4
+        },
+        "actualUpper": {
+          "locates": 1,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 2,
+          "readMaps": 2
+        },
+        "ordinaryPasses": {
+          "locates": 53,
+          "windows": 302,
+          "scanned": 627653,
+          "runs": 150253,
+          "vertical": 67777,
+          "emittedMaps": 257,
+          "readMaps": 257
+        },
+        "strictPasses": {
+          "locates": 3,
+          "windows": 12,
+          "scanned": 12909,
+          "runs": 3064,
+          "vertical": 1494,
+          "emittedMaps": 14,
+          "readMaps": 14
+        },
+        "unknownBitRanges": [
+          [
+            4,
+            15
+          ],
+          [
+            5,
+            15
+          ],
+          [
+            4,
+            15
+          ],
+          [
+            5,
+            15
+          ]
+        ]
+      }
+    },
+    {
+      "name": "gradient",
+      "width": 120,
+      "height": 90,
+      "frameSha256": "09f3163c0ed76fc2ecb3d4e4d1f391f7acbb462c80649ae4e9fb0dbb30a427cb",
+      "result": null,
+      "work": {
+        "steps": 0,
+        "compared": 0,
+        "scanned": 0,
+        "maps": 0,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "name": "finder-tiles",
+      "width": 200,
+      "height": 160,
+      "frameSha256": "cbe32e952a9f9f98a20d5ee188b66b05a0d49b4a794368eeecccd2e7da2696da",
+      "result": null,
+      "work": {
+        "steps": 86638,
+        "compared": 1814,
+        "scanned": 0,
+        "maps": 0,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "name": "bent-version-4",
+      "width": 164,
+      "height": 164,
+      "frameSha256": "7b74e2252f9723357bc54b560fa938b8d53edc879e3d70cf738ea18704be1b72",
+      "result": "https://example.com/s4",
+      "work": {
+        "steps": 14496,
+        "compared": 60,
+        "scanned": 12088,
+        "maps": 20,
+        "second": 1,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 10,
+          "windows": 10,
+          "scanned": 12088,
+          "runs": 686,
+          "vertical": 210,
+          "emittedMaps": 20,
+          "readMaps": 20
+        },
+        "ordinaryUpper": {
+          "locates": 2,
+          "windows": 2,
+          "scanned": 1352,
+          "runs": 88,
+          "vertical": 16,
+          "emittedMaps": 4,
+          "readMaps": 4
+        },
+        "strictUpper": {
+          "locates": 4,
+          "windows": 4,
+          "scanned": 4240,
+          "runs": 240,
+          "vertical": 66,
+          "emittedMaps": 8,
+          "readMaps": 8
+        },
+        "actualUpper": {
+          "locates": 2,
+          "windows": 2,
+          "scanned": 1352,
+          "runs": 88,
+          "vertical": 16,
+          "emittedMaps": 4,
+          "readMaps": 4
+        },
+        "ordinaryPasses": {
+          "locates": 10,
+          "windows": 10,
+          "scanned": 12088,
+          "runs": 686,
+          "vertical": 210,
+          "emittedMaps": 20,
+          "readMaps": 20
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "name": "bent-version-12",
+      "width": 292,
+      "height": 292,
+      "frameSha256": "f3f49e879e1dfbd6d2b39fbfc6dd7a878735c0aa7bc6fcd2468ab55af4960da6",
+      "result": "https://example.com/m/conformance0123456789abcdefghijklmnopqrs",
+      "work": {
+        "steps": 73970,
+        "compared": 90,
+        "scanned": 1477509,
+        "maps": 165,
+        "second": 1,
+        "meshes": 1,
+        "probed": 93750,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 48,
+          "windows": 185,
+          "scanned": 1477509,
+          "runs": 76121,
+          "vertical": 19659,
+          "emittedMaps": 165,
+          "readMaps": 165
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 11,
+          "windows": 27,
+          "scanned": 94804,
+          "runs": 4817,
+          "vertical": 846,
+          "emittedMaps": 24,
+          "readMaps": 24
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 48,
+          "windows": 185,
+          "scanned": 1477509,
+          "runs": 76121,
+          "vertical": 19659,
+          "emittedMaps": 165,
+          "readMaps": 165
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            15
+          ]
+        ]
+      }
+    },
+    {
+      "name": "close-up-format-damaged",
+      "width": 888,
+      "height": 888,
+      "frameSha256": "59cace6146e121d5196858938c6eb472904c4b71fd49be5f121554178647ea77",
+      "result": null,
+      "work": {
+        "steps": 134423,
+        "compared": 113,
+        "scanned": 5352,
+        "maps": 18,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 18
+      },
+      "obs": {
+        "all": {
+          "locates": 10,
+          "windows": 8,
+          "scanned": 5352,
+          "runs": 334,
+          "vertical": 56,
+          "emittedMaps": 18,
+          "readMaps": 18
+        },
+        "ordinaryUpper": {
+          "locates": 4,
+          "windows": 4,
+          "scanned": 1952,
+          "runs": 88,
+          "vertical": 18,
+          "emittedMaps": 8,
+          "readMaps": 8
+        },
+        "strictUpper": {
+          "locates": 10,
+          "windows": 8,
+          "scanned": 5352,
+          "runs": 334,
+          "vertical": 56,
+          "emittedMaps": 18,
+          "readMaps": 18
+        },
+        "actualUpper": {
+          "locates": 10,
+          "windows": 8,
+          "scanned": 5352,
+          "runs": 334,
+          "vertical": 56,
+          "emittedMaps": 18,
+          "readMaps": 18
+        },
+        "ordinaryPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictPasses": {
+          "locates": 10,
+          "windows": 8,
+          "scanned": 5352,
+          "runs": 334,
+          "vertical": 56,
+          "emittedMaps": 18,
+          "readMaps": 18
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "inverted-flat-blocks-mirrored",
+      "width": 166,
+      "height": 166,
+      "frameSha256": "cb17e87bbc31acdbdad64ab556f4675e1cd387185500daca3788044868cc9b10",
+      "result": "https://example.com/inverted/0123456789",
+      "work": {
+        "steps": 10838,
+        "compared": 28,
+        "scanned": 101780,
+        "maps": 13,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 7,
+          "windows": 25,
+          "scanned": 101780,
+          "runs": 5114,
+          "vertical": 693,
+          "emittedMaps": 15,
+          "readMaps": 13
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 3,
+          "windows": 12,
+          "scanned": 32328,
+          "runs": 1845,
+          "vertical": 217,
+          "emittedMaps": 6,
+          "readMaps": 6
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 6,
+          "windows": 24,
+          "scanned": 100996,
+          "runs": 5053,
+          "vertical": 675,
+          "emittedMaps": 12,
+          "readMaps": 12
+        },
+        "strictPasses": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 784,
+          "runs": 61,
+          "vertical": 18,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            7
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            0,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "name": "finder-damage-5-10-0",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "43e7574af5a04f540649eaddcba34bbee1a875eb839628aed6a4d69b0723fa6f",
+      "result": "https://example.com/finder-damage/0123456789",
+      "work": {
+        "steps": 11675,
+        "compared": 11,
+        "scanned": 1296,
+        "maps": 1,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 1296,
+          "runs": 63,
+          "vertical": 11,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 1296,
+          "runs": 63,
+          "vertical": 11,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 1296,
+          "runs": 63,
+          "vertical": 11,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "name": "finder-damage-4-11-0",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "bb316ec9251f87a2a20345363b27498647b906c443d224ff573859ecb0048ddf",
+      "result": "https://example.com/finder-damage/0123456789",
+      "work": {
+        "steps": 3277,
+        "compared": 8,
+        "scanned": 64234,
+        "maps": 9,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 5,
+          "windows": 6,
+          "scanned": 64234,
+          "runs": 2716,
+          "vertical": 960,
+          "emittedMaps": 10,
+          "readMaps": 9
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 1,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 1,
+          "readMaps": 1
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 5,
+          "windows": 6,
+          "scanned": 64234,
+          "runs": 2716,
+          "vertical": 960,
+          "emittedMaps": 10,
+          "readMaps": 9
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "name": "finder-damage-4-12-0",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "029d04d6d19a97f7521f722edcd689a81a9f7442671000af4277b2e27f50f4ec",
+      "result": "https://example.com/finder-damage/0123456789",
+      "work": {
+        "steps": 11613,
+        "compared": 27,
+        "scanned": 63628,
+        "maps": 9,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 5,
+          "windows": 6,
+          "scanned": 63628,
+          "runs": 2689,
+          "vertical": 959,
+          "emittedMaps": 10,
+          "readMaps": 9
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 3,
+          "windows": 2,
+          "scanned": 4068,
+          "runs": 248,
+          "vertical": 83,
+          "emittedMaps": 6,
+          "readMaps": 6
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 5,
+          "windows": 6,
+          "scanned": 63628,
+          "runs": 2689,
+          "vertical": 959,
+          "emittedMaps": 10,
+          "readMaps": 9
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            0,
+            8
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            8
+          ],
+          [
+            0,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "name": "finder-damage-5-10-10",
+      "width": 264,
+      "height": 264,
+      "frameSha256": "c3b997f7253fb9476ed28530812fa8d62e90e82b1af3f867182a159ef3078462",
+      "result": "https://example.com/finder-damage/0123456789",
+      "work": {
+        "steps": 11774,
+        "compared": 10,
+        "scanned": 1296,
+        "maps": 1,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "obs": {
+        "all": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 1296,
+          "runs": 63,
+          "vertical": 11,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "ordinaryUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "strictUpper": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 1296,
+          "runs": 63,
+          "vertical": 11,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "actualUpper": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "ordinaryPasses": {
+          "locates": 1,
+          "windows": 1,
+          "scanned": 1296,
+          "runs": 63,
+          "vertical": 11,
+          "emittedMaps": 3,
+          "readMaps": 1
+        },
+        "strictPasses": {
+          "locates": 0,
+          "windows": 0,
+          "scanned": 0,
+          "runs": 0,
+          "vertical": 0,
+          "emittedMaps": 0,
+          "readMaps": 0
+        },
+        "unknownBitRanges": [
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ]
+        ]
+      }
+    }
+  ]
+}
