@@ -1,0 +1,53 @@
+--- a/src/decode.ts
++++ b/src/decode.ts
+@@ -164,6 +164,7 @@
+   f: number,
+   work?: Work,
+ ): DecodeResult | undefined {
++  if (budget.maps === 0 || budget.here === 0) return undefined
+   // A strict pass first; a looser one for blurred or small codes.
+   for (const tolerance of [0.5, 0.8]) {
+     const triples = finderTriples(image, findFinders(image, tolerance, work, edges)).slice(0, MAX_TRIPLES)
+@@ -185,6 +186,7 @@
+           }
+           const result = read(image, location, inverted, candidates, strict, f)
+           if (result) return result
++          if (budget.maps === 0 || budget.here === 0) return undefined
+         }
+       }
+     }
+--- a/kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt
++++ b/kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt
+@@ -216,6 +216,7 @@
+     work: Work?,
+     scratch: ReadScratch,
+ ): DecodeResult? {
++    if (budget.maps == 0 || budget.here == 0) return null
+     // A strict pass first; a looser one for blurred or small codes.
+     for (tolerance in doubleArrayOf(0.5, 0.8)) {
+         val triples = finderTriples(image, findFinders(image, tolerance, work, edges)).take(MAX_TRIPLES)
+@@ -236,6 +237,7 @@
+                     }
+                     val result = read(image, location, inverted, candidates, strict, f, scratch)
+                     if (result != null) return result
++                    if (budget.maps == 0 || budget.here == 0) return null
+                 }
+             }
+         }
+--- a/SPEC.md
++++ b/SPEC.md
+@@ -995,6 +995,14 @@
+   at most 2,875,000 points a frame, each interpolating four pixels, whatever
+   the picture's size.
+ 
++When the global or current per-look map allowance is exhausted, that search
++stops before further finder, triple or location work. A successful final map
++still returns first, and the existing queue remains available for second looks.
++Ordinary reduced sizes reset their allowance as specified above; the inverted
++luminance fallback keeps its shared allowance. Search steps, candidate
++comparisons and alignment-window areas are counted only for searches actually
++performed; maps and second-look work keep their existing accounting.
++
+ The caps on maps and second looks are the same with steps 9 and 10 as without them,
+ but a frame where nothing reads at full size goes on to be shrunk,
+ binarised and searched at up to three reduced sizes (at most a third more

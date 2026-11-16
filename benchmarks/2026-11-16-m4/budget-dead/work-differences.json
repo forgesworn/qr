@@ -1,0 +1,41 @@
+{
+  "fields": [
+    "steps",
+    "compared",
+    "scanned",
+    "maps",
+    "second",
+    "meshes",
+    "probed",
+    "reduced"
+  ],
+  "framesCompared": 61,
+  "resultAndLocationEqual": true,
+  "mapAndRecoveryCountersEqual": true,
+  "searchWorkNonIncreasing": true,
+  "changes": [
+    {
+      "after": [
+        94013,
+        88,
+        1535363,
+        268,
+        0,
+        0,
+        0,
+        30
+      ],
+      "before": [
+        103918,
+        91,
+        1583390,
+        268,
+        0,
+        0,
+        0,
+        30
+      ],
+      "file": "decode-frames/frame-39.png"
+    }
+  ]
+}

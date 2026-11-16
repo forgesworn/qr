@@ -44,49 +44,63 @@ increases modelled noise work by 3.9–4.9%. The
 [fixed-order diagnostic](benchmarks/2026-11-16-m4/ratio-order/README.md) is retained;
 no alternative permutation or production change is included.
 
-The packaged module now uses Rust 1.96.0 with unchanged Rust source. Two paired
-M4 forks of the final normalised module reduce clean-frame time by 10.5–11.0%,
-blank-frame time by 9.4–9.8% and gradient time by 10.7–11.1%; noise is effectively
-unchanged. The module is 5,697 bytes smaller at 207,168 bytes. The exact timed binary passes complete
-ABI/photo comparisons, Chrome page/worker/character-set/session checks and the
-packed consumer gate. [Compiler qualification](benchmarks/2026-11-16-m4/compiler196/README.md)
-records small mixed tail results and the final provenance.
-The initial Linux mismatch was traced to local Rust standard-library source
-paths. The build now canonicalises those paths; the final M4 module matches the
-captured Linux binary byte-for-byte. The unchanged strict Linux reproduction
-gate passes at `8aca1e4` in [CI run 43883912412](https://github.com/forgesworn/qr/actions/runs/43883912412).
+The Rust 1.96.0 compiler qualification used unchanged Rust source before the
+budget-guard change. Two paired M4 forks reduced clean-frame time by 10.5–11.0%,
+blank-frame time by 9.4–9.8% and gradient time by 10.7–11.1%; noise was effectively
+unchanged. That module was 207,168 bytes. [Compiler qualification](benchmarks/2026-11-16-m4/compiler196/README.md)
+records its exact identity, small mixed tail results and cross-host build fix.
+The compiler's local standard-library paths are canonicalised, and the strict
+Linux reproduction gate passed at `726f07d` in
+[CI run 43884790867](https://github.com/forgesworn/qr/actions/runs/43884790867).
 
-The [exact-module noise profile](benchmarks/2026-11-16-m4/compiler196/profile/README.md)
-places about 45% of sampled self time in finder scanning/cross-checks/row edges
-and 31% in placement/alignment scoring. Those are diagnostic proportions, not
-competitive latency measurements.
+The subsequent [noise profile](benchmarks/2026-11-16-m4/compiler196/profile/README.md)
+placed about 45% of sampled self time in finder processing and 31% in placement
+and alignment scoring. An exhausted-budget diagnostic found scans still running
+after they could no longer attempt a map. The decoder now stops that ordinary
+search immediately, while retaining successful final-map reads, queued second
+looks and later size allowance resets. The same guards are present in all
+three ports; SPEC and the officially regenerated conformance pack record lower
+search-work counts on one frame, with unchanged results and map/recovery counts.
 
-The latest matched run uses that Rust 1.96.0 WASM (median latency, lower is better):
+Two paired M4 WASM forks reduce main 720p noise latency by 6.8–7.5%, other 720p noise
+by 9.0–12.1%, 512² noise by 3.3–4.4% and 1080p noise by 6.8–7.7%. Every noise p95
+improves in both forks; clean, patterned and supplemental bent/damaged medians
+show no repeatable regression. The exact packaged module is 207,214 bytes,
+46 bytes larger than its baseline. [Budget-guard qualification](benchmarks/2026-11-16-m4/budget-dead/README.md)
+retains full timing samples, result comparisons and the deliberate work changes.
+
+The matching Kotlin guards separately reduce 720p noise by 3.9–5.5% and 1080p
+noise by 4.6–4.8% across two JVM forks. Checkerboard costs 0.053–0.065 ms more
+(0.9–1.0%) and its p95 rises 0.081–0.131 ms; stripe medians are mixed but p95
+rises 0.105–0.441 ms. These small pattern costs are retained alongside the
+larger noise gains; this is not an across-the-board Kotlin speedup.
+
+The latest matched run uses the guarded Rust 1.96.0 WASM (median latency, lower is better):
 
 | Measurement | Our packaged WASM | ZXing-WASM 3.1.7 |
 |---|---:|---:|
-| Clean 1280×720 RGBA, median ms | 1.588 | 2.050 |
-| Blank 1280×720 RGBA, median ms | 1.189 | 2.149 |
-| Random noise, median ms | 21.183 | 7.883 |
+| Clean 1280×720 RGBA, median ms | 1.605 | 2.112 |
+| Blank 1280×720 RGBA, median ms | 1.192 | 2.169 |
+| Random noise, median ms | 19.975 | 7.872 |
 | Existing photographs, exact text | 179/184 | 171/184 |
 | Existing synthetic development set, exact text | 91/96 | 89/96 |
 | Synthetic validation regression set, exact text and bytes | 172/192 | 169/192 |
-| Ten-frame moving/changing-payload sequence, median total ms | 6.867 | 19.053 |
+| Ten-frame moving/changing-payload sequence, median total ms | 6.844 | 19.203 |
 
-The current receipts are [library comparisons](benchmarks/2026-11-16-m4/compiler196/compiler196-final-libraries.json),
-[tracking sequences](benchmarks/2026-11-16-m4/compiler196/compiler196-final-sessions.json)
-and [192-case regression results](benchmarks/2026-11-16-m4/compiler196/compiler196-final-validation.json).
+The current receipts are [library comparisons](benchmarks/2026-11-16-m4/budget-dead/budget-dead-libraries.json),
+[tracking sequences](benchmarks/2026-11-16-m4/budget-dead/budget-dead-sessions.json)
+and [192-case regression results](benchmarks/2026-11-16-m4/budget-dead/budget-dead-validation.json).
 These use the same rival WASM and frame hashes as the earlier seventh-candidate
 run. Different-run absolute timings do not measure either the compiler's gain
 or the frontier's earlier gain: the separate paired runs establish those.
 Earlier `candidate7-*` and frontier receipts remain historical evidence.
-The final paired negative-frame matrix is retained with the frontier receipts.
+The latest paired negative-frame matrix is retained with the budget-guard receipts.
 Final Chrome page/worker, character-set and tracked-session checks also passed
-with the current binary; their receipt is retained with the compiler results.
+with the current binary; their receipt is retained with the budget-guard results.
 Earlier full rival negative-frame comparisons remain in the parent M4
 directory, bound to their recorded binaries and workloads.
 These headline wins use the optional WASM backend: TypeScript alone measured
-4.367 ms clean and 56.058 ms noise in the same run.
+4.538 ms clean and 54.842 ms noise in the same run.
 
 The sequence uses our new tracked WASM session and independently encoded
 synthetic frames. It includes initial acquisition, small movements, a changed
@@ -94,7 +108,7 @@ payload, a jump, a blank and reacquisition; it is not physical camera evidence.
 The old 96-frame set is now development data. A separate 192-frame synthetic
 validation seed and payload prefix were fixed before evaluating the candidate;
 the earlier decoder changes raised correct reads from 157 to 172 against ZXing's
-169. The frontier preserves all 172. The earlier comparison recorded
+169. The frontier and budget guards preserve all 172. The earlier comparison recorded
 zero wrong results from any of those implementations and no lost baseline
 successes. TypeScript and packaged WASM agree on every outcome. It uses fresh
 pixels and payloads from the same transformation family, so it is not a new

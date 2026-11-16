@@ -1,0 +1,29 @@
+{
+  "kotlinSourceSha256": "7df5a78615da361db84ae5e3851c4f026f217c12fb6d197225b17b1f1d3e0bf9",
+  "baselineJarSha256": "cbc265e1473039d32cfc21080249689a8ce23bdfa0a4062750831a861924268e",
+  "currentJarSha256": "2db05d2f84c4ec5e9c24da882a86e21e1fb96dce0b5598e55cb39e5493bae40b",
+  "kotlinTests": {
+    "tests": 118,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "javascriptTests": 462,
+  "standardRustTests": 40,
+  "additionalTemporaryDiagnosticTests": 9,
+  "manifest": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "ce1b3b2805d3ceb77755e0cbc60759c91c5a3cceef82b74f836d355b4b6989b1",
+    "sha256": "1b03677a443be96a4ebd73510b675e86fb8cdd668303d1d0355639160970343f",
+    "bytes": 207214
+  },
+  "logSha256": {
+    "budget-dead-native-final.log": "c9346ddb2651653a070d79d1508fecc7e0144b4aa8b61edd1dd57505862f61b3",
+    "budget-dead-js-check.log": "4099106953fda5f4c87934fe5f69c69e6f03171863df1dcba0ff2c1e18b23045",
+    "budget-dead-kotlin.log": "4580edf7ef122dfbeac43ce08cb998a1a45b52a2c8996201cb9f35d279dbee93",
+    "budget-dead-package-check.log": "be033cb6ffb1454ad1065e13060f636ef02bcde56599124b94d86517f6be049b",
+    "budget-dead-regenerate.log": "f8285b177db8bba732c1003343c1b5366e13287537b8135aa6d4eef58b2497c8"
+  }
+}

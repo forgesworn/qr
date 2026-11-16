@@ -164,6 +164,7 @@ function search(
   f: number,
   work?: Work,
 ): DecodeResult | undefined {
+  if (budget.maps === 0 || budget.here === 0) return undefined
   // A strict pass first; a looser one for blurred or small codes.
   for (const tolerance of [0.5, 0.8]) {
     const triples = finderTriples(image, findFinders(image, tolerance, work, edges)).slice(0, MAX_TRIPLES)
@@ -185,6 +186,7 @@ function search(
           }
           const result = read(image, location, inverted, candidates, strict, f)
           if (result) return result
+          if (budget.maps === 0 || budget.here === 0) return undefined
         }
       }
     }

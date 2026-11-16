@@ -1,0 +1,18 @@
+import { execFileSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { strict as assert } from 'node:assert';
+import { compiler, sha256, sourceHash } from './repo/scripts/wasm-source.mjs';
+const cwd = new URL('./repo/rust/', import.meta.url);
+const root = new URL('./repo/', import.meta.url).pathname;
+const run = args => execFileSync('rustc', args, { cwd, encoding: 'utf8' }).trim();
+assert.equal(run(['--version']), compiler);
+const verbose = run(['-vV']);
+const commit = /^commit-hash: ([0-9a-f]{40})$/m.exec(verbose)?.[1];
+assert.equal(commit, 'ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96');
+const flags = [`--remap-path-prefix=${root}=.`, `--remap-path-prefix=${run(['--print', 'sysroot'])}/lib/rustlib/src/rust/=/rustc/${commit}/`];
+flags.push('-C', 'strip=symbols');
+const env = { ...process.env, CARGO_ENCODED_RUSTFLAGS: flags.join('\x1f') }; delete env.RUSTFLAGS;
+execFileSync('cargo', ['build', '--locked', '--release', '--features', 'host-text', '--target', 'wasm32-unknown-unknown', '-j', '1'], { cwd, env, stdio:'inherit' });
+const bytes = readFileSync(new URL('./repo/rust/target/wasm32-unknown-unknown/release/forgesworn_qr.wasm', import.meta.url));
+writeFileSync(new URL('./budget-dead-candidate.wasm', import.meta.url), bytes);
+writeFileSync(new URL('./budget-dead-candidate-build.json', import.meta.url), JSON.stringify({ compilerVerbose:verbose, flags, sourceSha256:sourceHash(), sha256:sha256(bytes), bytes:bytes.length }, null, 2)+'\n');

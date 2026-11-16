@@ -995,6 +995,14 @@ among them.
   at most 2,875,000 points a frame, each interpolating four pixels, whatever
   the picture's size.
 
+When the global or current per-look map allowance is exhausted, that search
+stops before further finder, triple or location work. A successful final map
+still returns first, and the existing queue remains available for second looks.
+Ordinary reduced sizes reset their allowance as specified above; the inverted
+luminance fallback keeps its shared allowance. Search steps, candidate
+comparisons and alignment-window areas are counted only for searches actually
+performed; maps and second-look work keep their existing accounting.
+
 The caps on maps and second looks are the same with steps 9 and 10 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more

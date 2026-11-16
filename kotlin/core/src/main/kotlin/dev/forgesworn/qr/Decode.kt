@@ -216,6 +216,7 @@ private fun search(
     work: Work?,
     scratch: ReadScratch,
 ): DecodeResult? {
+    if (budget.maps == 0 || budget.here == 0) return null
     // A strict pass first; a looser one for blurred or small codes.
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
         val triples = finderTriples(image, findFinders(image, tolerance, work, edges)).take(MAX_TRIPLES)
@@ -236,6 +237,7 @@ private fun search(
                     }
                     val result = read(image, location, inverted, candidates, strict, f, scratch)
                     if (result != null) return result
+                    if (budget.maps == 0 || budget.here == 0) return null
                 }
             }
         }

@@ -165,6 +165,51 @@ fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budg
     None
 }
 
+#[cfg(test)]
+fn look_reference(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
+    let levels = thresholds(luminance);
+    if f == 1 && !strict_override {
+        budget.inverted_fallback = levels.inverted_fallback;
+        budget.uniform = levels.uniform;
+    }
+    if levels.uniform { return None; }
+    let bits = binarise(luminance, &levels);
+    let strict = f > 1 || strict_override;
+    let mut candidates: Vec<Candidate> = Vec::new();
+    // The inverse changes colour where the picture does, so one set of edges serves both.
+    let mut edges = Edges::new(&bits);
+    let mut modules: Vec<u8> = Vec::new();
+    if inversion != Inversion::Inverted {
+        if let Some(found) = search_reference(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut()) {
+            return Some(found);
+        }
+    }
+    if inversion != Inversion::Normal {
+        let inverse = invert(&bits);
+        if let Some(found) = search_reference(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut()) {
+            return Some(found);
+        }
+    }
+    // Nothing read: look again at the few maps whose format copies agreed.
+    if candidates.is_empty() || budget.second == 0 {
+        return None;
+    }
+    for candidate in &candidates {
+        if budget.second == 0 {
+            break;
+        }
+        budget.second -= 1;
+        if let Some(w) = work.as_deref_mut() {
+            w.second += 1;
+        }
+        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), strict) {
+            return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, f) });
+        }
+    }
+    None
+}
+
+
 /// A location in full-picture coordinates. Picture coordinates are continuous,
 /// pixel i covering [i, i + 1), so a point x in a picture shrunk by f lies at x * f.
 fn place(location: &Location, f: usize) -> Place {
@@ -183,6 +228,69 @@ fn over(image: &BitImage, triple: &[Finder; 3]) -> Option<i64> {
 
 #[allow(clippy::too_many_arguments)]
 fn search(
+    image: &BitImage,
+    edges: &mut Edges,
+    inverted: bool,
+    candidates: &mut Vec<Candidate>,
+    budget: &mut Budget,
+    strict: bool,
+    f: usize,
+    modules: &mut Vec<u8>,
+    mut work: Option<&mut Work>,
+) -> Option<Reading> {
+    // No map can be read, but the caller still owns the second-look queue.
+    if budget.maps == 0 || budget.here == 0 { return None; }
+    // A strict pass first; a looser one for blurred or small codes.
+    for tolerance in TOLERANCES {
+        let found = find_finders(image, tolerance, work.as_deref_mut(), edges);
+        let triples = finder_triples(image, &found);
+        for ids in triples.iter().take(MAX_TRIPLES) {
+            let triple: [Finder; 3] = ids.map(|i| found[i]);
+            let first = locate(image, &triple, None, work.as_deref_mut(), edges);
+            // An estimate past version 40 by no more than the retries reach still
+            // tries the sizes of 177 or less among them.
+            let size = match first.first() {
+                Some(location) => location.size as i64,
+                None => match over(image, &triple) {
+                    Some(size) => size,
+                    None => continue,
+                },
+            };
+            // The size estimate can be a version out; try the neighbours too.
+            for delta in DELTAS {
+                let retried;
+                let locations: &[Location] = if delta == 0 {
+                    &first
+                } else {
+                    retried = locate(image, &triple, Some(size + delta), work.as_deref_mut(), edges);
+                    &retried
+                };
+                for location in locations {
+                    if budget.maps == 0 || budget.here == 0 {
+                        return None;
+                    }
+                    budget.maps -= 1;
+                    budget.here -= 1;
+                    if let Some(w) = work.as_deref_mut() {
+                        w.maps += 1;
+                        if f > 1 {
+                            w.reduced += 1;
+                        }
+                    }
+                    if let Some(result) = read(image, location, inverted, candidates, strict, f, modules) {
+                        return Some(result);
+                    }
+                    if budget.maps == 0 || budget.here == 0 { return None; }
+                }
+            }
+        }
+    }
+    None
+}
+
+#[cfg(test)]
+#[allow(clippy::too_many_arguments)]
+fn search_reference(
     image: &BitImage,
     edges: &mut Edges,
     inverted: bool,
@@ -239,6 +347,7 @@ fn search(
     }
     None
 }
+
 
 /// Samples the module grid through the map and reads it, straight then
 /// mirrored. A map that reads neither way, whose format copies agree, is kept
@@ -448,6 +557,145 @@ mod strict_format_tests {
                 assert_eq!(format!("{strict_queue:?}"), format!("{ordinary_queue:?}"));
                 assert_eq!(strict_queue.len(), 1);
             }}}
+        }
+    }
+}
+
+#[cfg(test)]
+mod exhausted_budget_tests {
+    use super::*;
+    use crate::binarise::Image;
+    use crate::encode::{encode, Options};
+    use crate::symbol::Ecc;
+
+    fn budget(maps: u32, here: u32) -> Budget {
+        Budget { maps, here, second: 4, inverted_fallback: false, uniform: false }
+    }
+
+    fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {
+        (b.maps, b.here, b.second, b.inverted_fallback, b.uniform)
+    }
+
+    fn sentinel() -> Candidate {
+        Candidate {
+            location: Location {
+                top_left: Point { x: 1.0, y: 2.0 }, top_right: Point { x: 3.0, y: 2.0 },
+                bottom_left: Point { x: 1.0, y: 4.0 }, alignment: None, size: 21,
+                matrix: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
+            },
+            inverted: false, mirrored: false, ecc: Ecc::M, mask: 0, distance: 2,
+        }
+    }
+
+    fn bent_version_12() -> Image {
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../vectors/conformance/bent-version-12.png");
+        let file = std::fs::File::open(path).expect("bent version 12 fixture");
+        let mut reader = png::Decoder::new(std::io::BufReader::new(file)).read_info().unwrap();
+        assert_eq!(reader.info().color_type, png::ColorType::Grayscale);
+        assert_eq!(reader.info().bit_depth, png::BitDepth::Eight);
+        let mut data = vec![0; reader.output_buffer_size()];
+        let frame = reader.next_frame(&mut data).unwrap();
+        data.truncate(frame.buffer_size());
+        Image { data, width: frame.width as usize, height: frame.height as usize }
+    }
+
+    #[test]
+    fn exhausted_entry_preserves_queue_modules_budget_and_work() {
+        let image = Image { data: vec![0; 64 * 64], width: 64, height: 64 };
+        for (maps, here) in [(0, 7), (7, 0), (0, 0)] {
+            let mut edges = Edges::new(&image);
+            let mut queue = vec![sentinel()];
+            let before_queue = format!("{queue:?}");
+            let mut modules = vec![2, 1, 0, 2];
+            let before_modules = modules.clone();
+            let mut b = budget(maps, here);
+            let before_budget = snapshot(&b);
+            let mut work = Work { steps: 3, compared: 4, scanned: 5, maps: 6, second: 7, meshes: 8, probed: 9, reduced: 10 };
+            let before_work = work;
+            assert!(search(&image, &mut edges, false, &mut queue, &mut b, false, 1, &mut modules, Some(&mut work)).is_none());
+            assert_eq!(format!("{queue:?}"), before_queue);
+            assert_eq!(modules, before_modules);
+            assert_eq!(snapshot(&b), before_budget);
+            assert_eq!(work, before_work);
+        }
+    }
+
+    #[test]
+    fn last_available_map_can_still_read() {
+        let qr = encode("A", &Options { version: Some(1), ecc: Ecc::H, ..Default::default() }).unwrap();
+        let side = qr.size + 8;
+        let mut image = Image { data: vec![0; side * side], width: side, height: side };
+        for y in 0..qr.size { for x in 0..qr.size { image.data[(y + 4) * side + x + 4] = qr.modules[y * qr.size + x]; } }
+        let mut edges = Edges::new(&image);
+        let mut queue = Vec::new();
+        let mut modules = Vec::new();
+        let mut b = budget(1, 1);
+        let mut work = Work::default();
+        let result = search(&image, &mut edges, false, &mut queue, &mut b, false, 1, &mut modules, Some(&mut work)).expect("first and last available map reads");
+        assert_eq!(result.payload.text, "A");
+        assert_eq!(result.payload.bytes, b"A");
+        assert_eq!((b.maps, b.here, work.maps), (0, 0, 1));
+        let mut reference_edges = Edges::new(&image);
+        let mut reference_queue = Vec::new();
+        let mut reference_modules = Vec::new();
+        let mut reference_budget = budget(1, 1);
+        let mut reference_work = Work::default();
+        let reference = search_reference(&image, &mut reference_edges, false, &mut reference_queue, &mut reference_budget, false, 1, &mut reference_modules, Some(&mut reference_work)).expect("original final-map read");
+        assert_eq!(result, reference);
+        assert_eq!(snapshot(&b), snapshot(&reference_budget));
+        assert_eq!(work, reference_work);
+        assert_eq!(format!("{queue:?}"), format!("{reference_queue:?}"));
+        assert_eq!(modules, reference_modules);
+    }
+
+    #[test]
+    fn exhaustion_preserves_second_look_queue_and_actual_recovery() {
+        let image = bent_version_12();
+        let levels = thresholds(&image);
+        assert!(!levels.uniform);
+        let bits = binarise(&image, &levels);
+        let inverse = invert(&bits);
+        for (maps, here) in [(165, MAX_MAPS), (MAX_MAPS, 165), (165, 165)] {
+            let mut actual_budget = budget(maps, here);
+            let mut original_budget = budget(maps, here);
+            let mut actual_queue = Vec::new();
+            let mut original_queue = Vec::new();
+            let mut actual_modules = Vec::new();
+            let mut original_modules = Vec::new();
+            let mut actual_edges = Edges::new(&bits);
+            let mut original_edges = Edges::new(&bits);
+            let mut actual_work = Work::default();
+            let mut original_work = Work::default();
+            for (plane, inverted) in [(&bits, false), (&inverse, true)] {
+                let a = search(plane, &mut actual_edges, inverted, &mut actual_queue, &mut actual_budget, false, 1, &mut actual_modules, Some(&mut actual_work));
+                let b = search_reference(plane, &mut original_edges, inverted, &mut original_queue, &mut original_budget, false, 1, &mut original_modules, Some(&mut original_work));
+                assert_eq!(a, b);
+                assert!(a.is_none(), "fixture must require the second look");
+            }
+            assert!(actual_budget.maps == 0 || actual_budget.here == 0);
+            assert!(!actual_queue.is_empty(), "fixture must retain a second-look candidate at exhaustion");
+            assert_eq!(format!("{actual_queue:?}"), format!("{original_queue:?}"));
+            assert_eq!(snapshot(&actual_budget), snapshot(&original_budget));
+            assert_eq!(actual_modules, original_modules);
+            assert_eq!(actual_work.maps, original_work.maps);
+
+            let mut b = budget(maps, here);
+            let mut reference_budget = budget(maps, here);
+            let mut work = Work::default();
+            let mut reference_work = Work::default();
+            let reading = look(&image, Inversion::Both, 1, &mut b, Some(&mut work), false)
+                .expect("production look must recover through its retained second-look queue");
+            let reference = look_reference(&image, Inversion::Both, 1, &mut reference_budget, Some(&mut reference_work), false)
+                .expect("original look must also recover");
+            assert_eq!(reading, reference);
+            assert_eq!(reading.payload.text, "https://example.com/m/conformance0123456789abcdefghijklmnopqrs");
+            assert_eq!(reading.payload.bytes, b"https://example.com/m/conformance0123456789abcdefghijklmnopqrs");
+            assert!(b.maps == 0 || b.here == 0);
+            assert_eq!(work.maps, 165);
+            assert!(work.second > 0 && work.meshes > 0);
+            assert_eq!((work.maps, work.second, work.meshes, work.probed, work.reduced), (reference_work.maps, reference_work.second, reference_work.meshes, reference_work.probed, reference_work.reduced));
+            assert_eq!(snapshot(&b), snapshot(&reference_budget));
         }
     }
 }
