@@ -509,7 +509,16 @@ fn alignment_score(image: &BitImage, centre: Point, u: Point, v: Point, mut best
 /// Turns three finders into sampling maps: one through each likely alignment
 /// pattern (when the version has one), then one through the fourth corner.
 /// `size_hint` overrides the estimated module count.
-pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mut work: Option<&mut Work>, edges: &mut Edges) -> Vec<Location> {
+pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, work: Option<&mut Work>, edges: &mut Edges) -> Vec<Location> {
+    locate_impl(image, triple, size_hint, work, edges, false)
+}
+
+/// Construct the same corner maps without searching for alignment patterns.
+pub(crate) fn locate_corners(image: &BitImage, triple: &[Finder; 3], edges: &mut Edges) -> Vec<Location> {
+    locate_impl(image, triple, None, None, edges, true)
+}
+
+fn locate_impl(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mut work: Option<&mut Work>, edges: &mut Edges, corners_only: bool) -> Vec<Location> {
     let [top_left, top_right, bottom_left] = triple.map(|f| at(&f));
     let across = run_module_size(image, top_left, top_right);
     let down = run_module_size(image, top_left, bottom_left);
@@ -559,7 +568,7 @@ pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mu
     // less than a pixel samples the same pixels, so it is not tried twice.
     let corners: Vec<Point> = if distance(corner, parallelogram) >= 1.0 { vec![parallelogram, corner] } else { vec![parallelogram] };
     let mut alignments: Vec<Point> = Vec::new();
-    if size > 21 {
+    if size > 21 && !corners_only {
         // Guesses at the alignment centre, three modules in from the fourth
         // corner: through the projective map, and on the parallelogram.
         let guess = perspective(steps - 3.0, steps - 3.0);
@@ -1230,6 +1239,12 @@ mod alignment_tests {
                     assert_eq!(actual.matrix, expected.matrix);
                 }
                 assert_eq!(a, b);
+                if hint.is_none() {
+                    let expected_corners: Vec<_> = expected.iter().filter(|location| location.alignment.is_none()).cloned().collect();
+                    let corners = locate_corners(image, &triple, &mut edges);
+                    assert_eq!(corners, expected_corners);
+                    if std::ptr::eq(image, &normal) { assert!(!corners.is_empty()); }
+                }
                 if std::ptr::eq(image, &normal) {
                     assert!(!actual.is_empty());
                 }

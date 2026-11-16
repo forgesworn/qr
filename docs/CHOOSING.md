@@ -29,8 +29,9 @@ payload; the synthetic suites also check its bytes.
 | Dataset | QR | ZXing-WASM |
 |---|---:|---:|
 | Existing photograph collection | **179/184** | 171/184 |
-| 192-case synthetic regression set | **172/192** | 169/192 |
-| Frozen stress set: positive frames | **171/224** | 150/224 |
+| 192-case synthetic regression set | **174/192** | 169/192 |
+| Frozen stress set: positive frames | **172/224** | 150/224 |
+| Fresh synthetic qualification: positive frames | **69/128** | 55/128 |
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
@@ -38,18 +39,23 @@ payload; the synthetic suites also check its bytes.
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. ZXing reads
-one version-40 perspective case that this measured QR build misses. The blurred
-version-40 case is now recovered without losing a previous success.
+Both readers miss all 28 finder-occlusion cases in that stress set. The 0.3.2
+recovery adds four exact reads across the existing synthetic suites, including
+the version-40 perspective case. The fresh set was fixed before testing this
+change: both 0.3.0 and 0.3.2 read 69/128, so it shows no additional gain from
+this patch. All 32 fresh negative controls are rejected by both libraries.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-On the recorded Apple M4 Max/native Node 24 run, median clean 720p decoding is
+On the recorded 0.3.0 Apple M4 Max/native Node 24 run, median clean 720p decoding is
 1.590 ms for packaged QR WASM and 2.137 ms for ZXing-WASM. A ten-frame tracked
 sequence totals 7.074 ms versus 19.737 ms. Random noise favours ZXing:
 7.941 ms versus QR's 20.569 ms. These are desktop measurements, not phone
 latency or battery measurements. Pure TypeScript has different costs.
+The 0.3.2 paired checks keep clean/blank medians broadly unchanged; main noise
+costs 3.6–3.9% more to reject in exchange for the additional accuracy. See the
+performance report for both complete timing forks.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

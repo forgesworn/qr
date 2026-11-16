@@ -596,6 +596,15 @@ function sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossSize
  * `sizeHint` overrides the estimated module count.
  */
 export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, work?: Work, edges: Edges = edgesOf(image)): Location[] {
+  return locateImpl(image, triple, sizeHint, work, edges, false)
+}
+
+/** The original corner maps, without alignment searches. */
+export function locateCorners(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint?: number, edges: Edges = edgesOf(image)): Location[] {
+  return locateImpl(image, triple, sizeHint, undefined, edges, true)
+}
+
+function locateImpl(image: BitImage, triple: readonly [Finder, Finder, Finder], sizeHint: number | undefined, work: Work | undefined, edges: Edges, cornersOnly: boolean): Location[] {
   const [topLeft, topRight, bottomLeft] = triple
   const acrossSize = runModuleSize(image, topLeft, topRight)
   const downSize = runModuleSize(image, topLeft, bottomLeft)
@@ -631,7 +640,7 @@ export function locate(image: BitImage, triple: readonly [Finder, Finder, Finder
   // less than a pixel samples the same pixels, so it is not tried twice.
   const corners = distance(corner, parallelogram) >= 1 ? [parallelogram, corner] : [parallelogram]
   let alignments: Point[] = []
-  if (size > 21) {
+  if (size > 21 && !cornersOnly) {
     // Guesses at the alignment centre, three modules in from the fourth
     // corner: through the projective map, and on the parallelogram.
     const guess = perspective(steps - 3, steps - 3)

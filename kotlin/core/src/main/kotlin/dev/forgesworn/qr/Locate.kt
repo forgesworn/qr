@@ -666,6 +666,15 @@ private fun sizeFrom(topLeft: Point, topRight: Point, bottomLeft: Point, acrossS
  * [sizeHint] overrides the estimated module count.
  */
 internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null, work: Work? = null, edges: Edges = Edges(image)): List<Placement> {
+    return locateImpl(image, triple, sizeHint, work, edges, false)
+}
+
+/** The original corner maps, without alignment searches. */
+internal fun locateCorners(image: BitImage, triple: Array<Finder>, sizeHint: Int? = null, edges: Edges = Edges(image)): List<Placement> {
+    return locateImpl(image, triple, sizeHint, null, edges, true)
+}
+
+private fun locateImpl(image: BitImage, triple: Array<Finder>, sizeHint: Int?, work: Work?, edges: Edges, cornersOnly: Boolean): List<Placement> {
     val topLeft = triple[0].point()
     val topRight = triple[1].point()
     val bottomLeft = triple[2].point()
@@ -703,7 +712,7 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
     // less than a pixel samples the same pixels, so it is not tried twice.
     val corners = if (distance(corner, parallelogram) >= 1) listOf(parallelogram, corner) else listOf(parallelogram)
     var alignments: List<Point> = emptyList()
-    if (size > 21) {
+    if (size > 21 && !cornersOnly) {
         // Guesses at the alignment centre, three modules in from the fourth
         // corner: through the projective map, and on the parallelogram.
         val s3 = (steps - 3).toDouble()
