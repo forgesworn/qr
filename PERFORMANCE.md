@@ -46,6 +46,8 @@ gradient time by 9.9–10.6%; main-noise gains are only 0.5–0.6%. The module i
 ABI/photo comparisons, Chrome page/worker/character-set/session checks and the
 packed consumer gate. [Compiler qualification](benchmarks/2026-11-16-m4/compiler196/README.md)
 records small mixed tail results and the final provenance.
+The initial Linux rebuild failed its exact-byte/provenance gate; compiler
+delivery qualification remains pending while that mismatch is investigated.
 
 The latest matched run uses that Rust 1.96.0 WASM (median latency, lower is better):
 

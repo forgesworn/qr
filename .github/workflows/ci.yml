@@ -79,8 +79,18 @@ jobs:
       - run: rustup toolchain install 1.96.0 --profile minimal --target wasm32-unknown-unknown
       - run: rustup override set 1.96.0
       - run: cargo test --locked
-      - run: npm run check:wasm
+      - id: wasm-rebuild
+        run: npm run check:wasm
         working-directory: .
+      - name: Retain failed WASM rebuild diagnostics
+        if: failure() && steps.wasm-rebuild.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: wasm-rebuild-diagnostics
+          retention-days: 1
+          path: |
+            rust/target/wasm32-unknown-unknown/release/forgesworn_qr.wasm
+            rust/target/wasm-check-report.json
       # The package uses host character sets (ABI 2). The standalone module
       # keeps the native port's text contract for these cross-port comparisons.
       - run: cargo build --locked --release --target wasm32-unknown-unknown -j 1

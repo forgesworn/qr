@@ -23,7 +23,25 @@ if (mode === '--write') {
   writeFileSync(asset, bytes)
   writeFileSync(metadata, JSON.stringify(manifest, null, 2) + '\n')
 } else {
-  if (!bytes.equals(readFileSync(asset)) || JSON.stringify(manifest) !== JSON.stringify(JSON.parse(readFileSync(metadata, 'utf8')))) {
+  const expectedBytes = readFileSync(asset)
+  const expectedManifest = JSON.parse(readFileSync(metadata, 'utf8'))
+  const assetMatches = bytes.equals(expectedBytes)
+  const provenanceMatches = JSON.stringify(manifest) === JSON.stringify(expectedManifest)
+  if (!assetMatches || !provenanceMatches) {
+    let firstDifferingByte = 0
+    while (firstDifferingByte < Math.min(bytes.length, expectedBytes.length) && bytes[firstDifferingByte] === expectedBytes[firstDifferingByte]) firstDifferingByte++
+    const report = {
+      assetMatches, provenanceMatches, expected: expectedManifest, actual: manifest,
+      expectedAssetSha256: sha256(expectedBytes),
+      compilerVerbose: execFileSync('rustc', ['-vV'], { cwd, encoding: 'utf8' }).trim(),
+      checkoutRoot: fileURLToPath(root),
+      firstDifferingByte: assetMatches ? null : firstDifferingByte,
+      expectedBytesAtDifference: expectedBytes.subarray(firstDifferingByte, firstDifferingByte + 16).toString('hex'),
+      actualBytesAtDifference: bytes.subarray(firstDifferingByte, firstDifferingByte + 16).toString('hex'),
+    }
+    const reportJson = JSON.stringify(report, null, 2) + '\n'
+    writeFileSync(new URL('rust/target/wasm-check-report.json', root), reportJson)
+    console.error(reportJson)
     throw new Error('The WASM asset or provenance differs; rebuild with npm run build:wasm')
   }
 }

@@ -1,5 +1,15 @@
 # Rust 1.96.0 compiler-only qualification
 
+The initial independent Linux rebuild failed at the exact-byte/provenance gate
+in [CI run 43879367868](https://github.com/forgesworn/qr/actions/runs/43879367868).
+The other four jobs passed. Compiler delivery qualification remains pending
+while that mismatch is investigated; the gate is unchanged. The verifier now
+distinguishes bytes from metadata, reports both identities and retains a failed
+Linux module/report for one day. M4 negative controls confirm that independently
+altering the expected asset or provenance still fails and identifies the right
+kind of mismatch. The timing and correctness evidence below remains valid for
+the measured M4-built candidate; it is not proof of cross-host reproduction.
+
 The accepted Rust source at `bd23ee348e9f70fe8365c41ebcd3c54d165741f5` is
 unchanged. This experiment changes the compiler from Rust 1.94.1 / LLVM 21.1.8
 to Rust 1.96.0 / LLVM 22.1.2, retaining release optimisation, LTO, one codegen
@@ -34,10 +44,12 @@ comparisons and all 184 photographic comparisons agree with the baseline;
 photographs retain 179 correct reads, zero lost reads and zero wrong text.
 Inputs remain unchanged. The normal `scripts/build-wasm.mjs --write` build,
 after updating the compiler pin, reproduces the timed candidate byte-for-byte.
-The final provenance source hash is
+The compiler-pin-only provenance source hash was
 `9084f5024385558134f9ddab26f74ad2ccdd59887876640815e15d9ddcf445ec`;
 it differs from the trial's baseline hash because `scripts/wasm-source.mjs` is
-part of the provenance input. The actual packed package consumer checks pass.
+part of the provenance input. Later verifier diagnostics also change provenance;
+the current manifest records that source hash. The actual packed package
+consumer checks pass.
 
 ## Paired timing
 
