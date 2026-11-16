@@ -75,9 +75,9 @@ known misses and a random-noise latency disadvantage.
 
 ## Native Rust
 
-- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.5, Rust 1.96+, no runtime dependencies.
+- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.6, Rust 1.96+, no runtime dependencies.
 - [Rust API documentation](https://docs.rs/forgesworn-qr): native API, examples and character-set limits.
 - [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md): application entry points, pixel layout, input and resource contracts.
-- Kotlin: self-contained source under `kotlin/core/src/main/kotlin`; Maven Central coordinate `io.github.forgesworn:qr:0.3.5`, JVM 17, Kotlin standard library only. Imports use `dev.forgesworn.qr`.
-- JSR: `jsr:@forgesworn/qr@0.3.5` and optional `jsr:@forgesworn/qr@0.3.5/wasm`; the same TypeScript API. Use `deno add jsr:@forgesworn/qr@0.3.5` for a Deno project.
-- Release 0.3.5 aligns the library version across npm, JSR, crates.io and Maven Central. Earlier JSR 0.3.1 was a packaging fix for library 0.3.0; affected JSR 0.3.0 was yanked. See the distribution guide for provenance, signing and release verification.
+- Kotlin: self-contained source under `kotlin/core/src/main/kotlin`; Maven Central coordinate `io.github.forgesworn:qr:0.3.6`, JVM 17, Kotlin standard library only. Imports use `dev.forgesworn.qr`.
+- JSR: `jsr:@forgesworn/qr@0.3.6` and optional `jsr:@forgesworn/qr@0.3.6/wasm`; the same TypeScript API. Use `deno add jsr:@forgesworn/qr@0.3.6` for a Deno project.
+- Release 0.3.6 aligns the library version across npm, JSR, crates.io and Maven Central. Earlier JSR 0.3.1 was a packaging fix for library 0.3.0; affected JSR 0.3.0 was yanked. See the distribution guide for provenance, signing and release verification.

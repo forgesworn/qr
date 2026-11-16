@@ -1116,6 +1116,28 @@ match the admitted level and mask, and have both final format copies within
 two errors of that word. Earlier successful reads keep their results, ordering
 and work counts; their meshes still use only one pass.
 
+### 14. Read retained meshes after all earlier paths fail
+
+A second look can move a readable alignment mesh away from the module centres
+when its timing walk follows nearby data instead of the timing pattern. If a
+second look formed a mesh but its final refined read fails any of that path's
+acceptance checks, sample the same mesh directly once. Retain its owned module
+grid, size, admitted level and mask, orientation, public polarity and location.
+Do not repeat alignment searches or timing and edge refinement. A second look
+that formed no mesh retains nothing.
+
+Only after every return path in steps 1 to 13 fails, try these saved grids in
+their original second-look order. Both format copies must agree with the saved
+level and mask within two errors; the ordinary version, Reed-Solomon and segment
+checks must pass, and the decoded level and mask must match the saved values.
+The first such read returns. All earlier successful results, including their
+correction counts and locations, keep priority unchanged.
+
+Locations from reduced images are multiplied by their reduction factor, as for
+an ordinary read. Grids sampled from inverse luminance report inverted polarity
+even when that internal pass sampled dark modules normally. Retain no image
+closures: each saved grid owns its bytes and the resolved public metadata.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1160,6 +1182,13 @@ among them.
 - Boundary continuation adds one trusted flag per lattice node (at most 49)
   and three four-node corner fits. It adds no image probes, map searches,
   alignment searches or refinement passes.
+- Step 14 retains at most four grids, one per existing second look: at most
+  125,316 module bytes plus their metadata. Capturing them adds at most 125,316
+  grey probes per frame, each interpolating four pixels, after failed refined
+  reads. Final failure adds at most four format checks and symbol reads. These
+  probes are separate from the alignment-search `probed` counter; no map,
+  alignment search or second look is added. A later successful existing path
+  may still have paid for earlier grid captures, but never for deferred reads.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map
@@ -1169,7 +1198,7 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 to 13 as without them,
+The caps on maps and second looks are the same with steps 9 to 14 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying

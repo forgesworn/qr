@@ -4,8 +4,10 @@
 use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
-use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look, second_look_with_late, sized, Candidate, SECOND_LOOKS};
-use crate::symbol::{agreed_version, curvature_header, read_symbol, Payload, FORMAT_COORDS};
+use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look_collect, sized, Candidate, SECOND_LOOKS};
+#[cfg(test)]
+use crate::refine::second_look;
+use crate::symbol::{agreed_version, curvature_header, read_symbol, Ecc, Payload, FORMAT_COORDS};
 use std::cell::Cell;
 use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 
@@ -60,9 +62,21 @@ struct Overflow {
     inverted: bool,
 }
 
+/// A failed meshed read retained for deferred validation.
+struct MeshGrid {
+    modules: Vec<u8>,
+    size: usize,
+    ecc: Ecc,
+    mask: u8,
+    mirrored: bool,
+    inverted: bool,
+    location: Place,
+}
+
 /// What is left of a frame's maps and second looks, shared by every size, and
 /// of the maps this size may take.
 struct Budget {
+    mesh_grids: Vec<MeshGrid>,
     maps: u32,
     second: u32,
     here: u32,
@@ -84,11 +98,11 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    let mut budget = Budget { mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
-    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints), Some(&mut overflow), Some(&mut curvature)) {
+    if let Some(found) = look_with_hints(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false, Some(&mut hints), Some(&mut overflow), Some(&mut curvature), false) {
         return Some(found);
     }
     if budget.uniform { return None; }
@@ -114,7 +128,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     if inversion != Inversion::Normal && budget.maps > 0 && budget.inverted_fallback {
         budget.here = REDUCED_MAPS;
         let inverse = inverse_luminance.insert(invert_luminance(&luminance));
-        if let Some(mut found) = look_with_hints(inverse, Inversion::Normal, 1, &mut budget, work.as_deref_mut(), true, None, None, Some(&mut inverse_curvature)) {
+        if let Some(mut found) = look_with_hints(inverse, Inversion::Normal, 1, &mut budget, work.as_deref_mut(), true, None, None, Some(&mut inverse_curvature), true) {
             found.inverted = true;
             return Some(found);
         }
@@ -123,7 +137,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
             if budget.maps == 0 || budget.here == 0 { break; }
             if width / f < MIN_REDUCED || height / f < MIN_REDUCED { continue; }
             let reduced = inverse_shrunk.get(f);
-            if let Some(mut found) = look(&reduced, Inversion::Normal, f, &mut budget, work.as_deref_mut(), true) {
+            if let Some(mut found) = look_with_hints(&reduced, Inversion::Normal, f, &mut budget, work.as_deref_mut(), true, None, None, None, true) {
                 found.inverted = true;
                 return Some(found);
             }
@@ -131,14 +145,14 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     }
     if let Some(found) = recover(&luminance, &hints, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_overflow(&luminance, &overflow, &mut budget, work.as_deref_mut()) { return Some(found); }
-    if let Some(found) = recover_curvature(&luminance, &curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
+    if let Some(found) = recover_curvature(&luminance, &curvature, &mut budget, work.as_deref_mut(), false) { return Some(found); }
     if let Some(inverse) = inverse_luminance.as_ref() {
-        if let Some(mut found) = recover_curvature(inverse, &inverse_curvature, &mut budget, work.as_deref_mut()) {
+        if let Some(mut found) = recover_curvature(inverse, &inverse_curvature, &mut budget, work.as_deref_mut(), true) {
             found.inverted = true;
             return Some(found);
         }
     }
-    None
+    recover_mesh_grids(&budget.mesh_grids)
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -146,10 +160,10 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
 /// only if its format copies agree on its level and mask, and locations are
 /// given in full-picture coordinates.
 fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
-    look_with_hints(luminance, inversion, f, budget, work, strict_override, None, None, None)
+    look_with_hints(luminance, inversion, f, budget, work, strict_override, None, None, None, false)
 }
 
-fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>, mut overflow: Option<&mut Vec<Overflow>>, mut curvature: Option<&mut Vec<Candidate>>) -> Option<Reading> {
+fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool, mut hints: Option<&mut Vec<Hint>>, mut overflow: Option<&mut Vec<Overflow>>, mut curvature: Option<&mut Vec<Candidate>>, public_inverse: bool) -> Option<Reading> {
     let levels = thresholds(luminance);
     if f == 1 && !strict_override {
         budget.inverted_fallback = levels.inverted_fallback;
@@ -185,7 +199,7 @@ fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget
         if let Some(w) = work.as_deref_mut() {
             w.second += 1;
         }
-        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), strict) {
+        if let Some(payload) = mesh_attempt(luminance, &levels, candidate, budget, work.as_deref_mut(), strict, false, f, public_inverse) {
             return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, f) });
         }
     }
@@ -455,7 +469,7 @@ fn recover(luminance: &Luminance, hints: &[Hint], budget: &mut Budget, mut work:
         if budget.second == 0 { break; }
         budget.second -= 1;
         if let Some(w) = work.as_deref_mut() { w.second += 1; }
-        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), true) {
+        if let Some(payload) = mesh_attempt(luminance, &levels, candidate, budget, work.as_deref_mut(), true, false, 1, false) {
             return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
         }
     }
@@ -526,22 +540,52 @@ fn recover_overflow(luminance: &Luminance, overflow: &[Overflow], budget: &mut B
         if budget.second == 0 { break; }
         budget.second -= 1;
         if let Some(w) = work.as_deref_mut() { w.second += 1; }
-        if let Some(payload) = second_look(luminance, &levels, candidate, work.as_deref_mut(), true) {
+        if let Some(payload) = mesh_attempt(luminance, &levels, candidate, budget, work.as_deref_mut(), true, false, 1, false) {
             return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
         }
     }
     None
 }
 
+/// Keep only failed meshed reads, with their original public location and polarity.
+fn mesh_attempt(luminance: &Luminance, levels: &crate::binarise::Thresholds, candidate: &Candidate, budget: &mut Budget, work: Option<&mut Work>, strict: bool, late: bool, f: usize, public_inverse: bool) -> Option<Payload> {
+    let mut modules = Vec::new();
+    let collect = if budget.mesh_grids.len() < SECOND_LOOKS { Some(&mut modules) } else { None };
+    let result = second_look_collect(luminance, levels, candidate, work, strict, late, collect);
+    if !modules.is_empty() {
+        budget.mesh_grids.push(MeshGrid { modules, size: candidate.location.size, ecc: candidate.ecc,
+            mask: candidate.mask, mirrored: candidate.mirrored, inverted: public_inverse || candidate.inverted,
+            location: place(&candidate.location, f) });
+    }
+    result
+}
+
+/// Validate captured grids only after every existing recovery path has failed.
+fn recover_mesh_grids(grids: &[MeshGrid]) -> Option<Reading> {
+    for grid in grids {
+        let read = |x: usize, y: usize| {
+            let i = if grid.mirrored { x * grid.size + y } else { y * grid.size + x };
+            grid.modules[i] == 1
+        };
+        if !format_agrees(&read, grid.size, grid.ecc, grid.mask) { continue; }
+        if let Some(payload) = read_symbol(read, grid.size) {
+            if payload.ecc == grid.ecc && payload.mask == grid.mask {
+                return Some(Reading { payload, mirrored: grid.mirrored, inverted: grid.inverted, location: grid.location });
+            }
+        }
+    }
+    None
+}
+
 /// Try deferred curvature candidates only after all previous recovery paths.
-fn recover_curvature(luminance: &Luminance, candidates: &[Candidate], budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+fn recover_curvature(luminance: &Luminance, candidates: &[Candidate], budget: &mut Budget, mut work: Option<&mut Work>, public_inverse: bool) -> Option<Reading> {
     if candidates.is_empty() || budget.second == 0 { return None; }
     let levels = thresholds(luminance);
     for candidate in candidates {
         if budget.second == 0 { break; }
         budget.second -= 1;
         if let Some(w) = work.as_deref_mut() { w.second += 1; }
-        if let Some(payload) = second_look_with_late(luminance, &levels, candidate, work.as_deref_mut(), true, true) {
+        if let Some(payload) = mesh_attempt(luminance, &levels, candidate, budget, work.as_deref_mut(), true, true, 1, public_inverse) {
             return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
         }
     }
@@ -654,7 +698,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut budget = Budget { mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -822,7 +866,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { maps, here, second: 4, inverted_fallback: false, uniform: false }
+        Budget { mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {

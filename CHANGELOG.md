@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.6
+
+- Retain up to four failed alignment-mesh grids and read them only after all
+  earlier decoder paths fail. Timing and edge corrections can displace an
+  already readable mesh; deferred validation recovers it without changing
+  existing successful results or their metadata. Strict header, version and
+  payload checks remain in force.
+- Improve the evaluated 96-case distortion set from 30 to 37 correct reads,
+  a separately frozen 128-case set from 78 to 81, and the earlier curved-sheet
+  set from two to three reads out of 18. No lost or incorrect
+  reads occur in these sets. ZXing still leads overall on both distortion sets.
+- Keep reduced-image coordinates and inverted polarity consistent across
+  TypeScript, Rust, Kotlin and packaged WASM. Two shared conformance fixtures
+  cover the recovered paths. Retained grids add bounded storage and sampling;
+  map, alignment-search and second-look limits do not increase.
+
 ## 0.3.5
 
 - Continue fully trusted alignment cells to the symbol boundary, fitting the
