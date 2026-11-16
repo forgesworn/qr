@@ -317,6 +317,10 @@ pipeline:
    polarity. See below.
 9. Reduced size: only when the second look has found nothing too, the
    picture shrunk and searched again. See below.
+10. Inverted luminance: after all those attempts fail, and only when the
+    requested polarity includes light modules on dark, re-threshold the
+    luminance inverse when flat local blocks may have hidden the code.
+    See "Inverted luminance fallback" below.
 
 ### Reusable camera decoder
 
@@ -349,15 +353,20 @@ has the same work caps as an ordinary call on that smaller picture.
 The separate `@forgesworn/qr/wasm` entry exports `wasmUrl`, the bundled asset's
 URL, and `loadWasm(bytes)`, which asynchronously instantiates caller-supplied
 `Uint8Array` or `ArrayBuffer` bytes without fetching anything. The module must
-implement ABI version 1. The default TypeScript entry does not import it.
+implement ABI version 2, including the `qr_text.decode` host import. The default TypeScript entry does not import it.
 
 Each instance exposes synchronous `encode`, `decode` and `decodeModules` with
 the corresponding TypeScript input shapes, options and public result fields.
 Encoding follows the same segmentation, version and mask rules. Decoding
-follows the Rust port's text capabilities: raw bytes are exact, kanji produces
-U+FFFD without character tables, unsupported ECI bytes follow the platform
-fallback below, and hanzi symbols are refused. Callers needing those character
-sets should use the TypeScript decoder or interpret the returned bytes and ECI.
+uses the host character sets with the same rules as TypeScript. The packaged
+Rust `host-text` feature asks the host during each kanji/hanzi character or
+non-native ECI run, before accepting the symbol. This preserves segment
+boundaries, ECI changes and rejection of invalid hanzi cells; raw bytes remain
+unchanged. The callback receives borrowed input and a bounded Rust-owned
+UTF-8 output buffer, never calls back into the module and retains no memory
+views. Unsupported host character sets follow the platform fallback below.
+Standalone Rust and its default WASM build retain their table-free contract
+and ABI 1; they are distinct from the packaged ABI 2 module.
 
 Input bytes are copied to private reusable linear memory. Native result handles
 are freed on success or JavaScript extraction failure. Returned byte and module
@@ -367,7 +376,14 @@ storage and releases references to the instance; subsequent encoding, decoding
 and reset throw. Disposal is idempotent. `memoryBytes` reports the current
 linear-memory size, or zero after disposal, not a guarantee about when garbage
 collection occurs. Instances share no mutable state. The adapter applies the
-stateless decoder pipeline; it does not track the previous camera region.
+stateless decoder pipeline for `decode`. Its `createDecoder()` method returns
+an opt-in tracked `Decoder` following the camera rules above. Sessions have
+independent rectangles and share their parent's reusable native input storage;
+strided crops copy only their visible pixels into that storage. Session reset
+forgets only that session's rectangle. Parent reset frees input storage and
+invalidates every session's rectangle before its next read. Parent disposal
+invalidates all sessions: their `decode` and `reset` methods then throw. Session
+creation also throws after disposal. No session retains a previous payload.
 
 ### Arithmetic
 
@@ -398,6 +414,11 @@ Step 2, as `vectors/conformance.json` checks it (`bits`).
    at a time, left to right, top row first, and divided by 25.
 5. A pixel is dark when it is at or below its block's threshold. Where
    blocks overlap, the later block in the order of 3 decides.
+
+A picture whose luminance values are all identical cannot contain a finder
+pattern at any reduction. The decoder may stop immediately after recognising
+that case, before constructing the binary picture. This applies after RGBA
+conversion and alpha blending, and is recomputed for every call.
 
 ### Finder scan, exactly
 
@@ -604,11 +625,15 @@ Steps 3 to 6 as one loop, which fixes `result` and `work`.
    each in turn is sampled and read.
 4. Before a map is sampled, one is taken from the frame's 720 and from the
    size's own allowance (the whole 720 at full size, 30 at a reduced
-   size), and `maps` is counted, and `reduced` at a reduced size. With
+   size; step 10 shares a further allowance of 30 across its sizes), and
+   `maps` is counted, and `reduced` at a reduced size. With
    either at nothing, the search of that polarity ends there, whatever
    maps and triples were left.
 5. Sampling: each module (x, y) of the size is the pixel at the floor of
    its sample point, light when that point is outside the picture.
+   Sampling may be deferred until a module is requested and its value
+   retained for subsequent requests, including transposed reads and the
+   format and version checks for keeping a second-look candidate.
 6. The grid is read as below; if it does not read, it is read transposed,
    module (x, y) taken from (y, x), and a read then is `mirrored`. The
    first read ends the search, with the three finder centres and the
@@ -867,6 +892,31 @@ full one; the first read ends the search.
    `[i, i + 1)`, so a point `(x, y)` in the reduced picture is `(x f, y f)`
    in the full one.
 
+### Inverted luminance fallback
+
+Step 10 runs only after steps 2 to 9 return no result, when `inversion` is
+`both` or `inverted`, and the shared map allowance is not exhausted. It
+requires a full-size picture of at least 40 pixels on both sides, at least
+one flat 8 x 8 block under the binarisation rule, and an overall luminance
+range greater than 24. Uniform and near-uniform pictures, and pictures with
+no flat blocks, skip this pass.
+
+The flat-block level assumes light background. Simply flipping the binary
+picture cannot reverse that assumption. The fallback instead replaces each
+luminance value v with `255 - v` and computes fresh thresholds. It searches
+normal polarity on this inverse at full size, then factors 8, 4 and 2 under
+the reduced-size rules. Every size, including full size, requires both
+format copies to agree under the gate in Reduced size, rule 4.
+
+The entire fallback shares one allowance of 30 maps across its sizes, taken
+from the same remaining frame allowance of 720; second looks use whatever
+remains of the frame's four. It stops when either map allowance is exhausted.
+Candidates and second-look sampling use the inverse luminance consistently.
+Returned locations refer to the original full picture, `mirrored` retains
+the sampled orientation, and `inverted` is true. Earlier successful results
+take priority and remain unchanged. `reduced` counts maps sampled at reduced
+size in this fallback too.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -887,7 +937,8 @@ among them.
 - Each triple is tried at 5 sizes, each giving at most 4 alignment maps and
   2 corner maps: at most 720 maps for the whole search, each sampling at
   most size x size modules, straight and transposed. The reduced sizes of
-  step 9 take theirs from the same 720, at most 30 each. Only sizes from 21 to
+  step 9 take theirs from the same 720, at most 30 each; step 10 takes at most
+  30 more from what remains, shared by its sizes. Only sizes from 21 to
   177 give maps. An estimate of 181 or 185, past 177 by no more than the
   retries reach, still has its retries tried, and those of 177 or less
   give maps; any other estimate outside 21 to 177 gives none.
@@ -903,10 +954,13 @@ among them.
   at most 2,875,000 points a frame, each interpolating four pixels, whatever
   the picture's size.
 
-The caps on maps and second looks are the same with step 9 as without it,
+The caps on maps and second looks are the same with steps 9 and 10 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
-pixels in all), so such a frame costs more than it did.
+pixels in all), so such a frame costs more than it did. A frame qualifying
+for step 10 may additionally search its inverse luminance and up to three
+reductions; the uniform/near-uniform and no-flat-block gates avoid that work
+when the polarity-sensitive flat-block rule cannot help.
 
 Both ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,

@@ -683,7 +683,7 @@ same payload, the same location to the last bit and the same counted work
 on all 2,412. It is not published as a standalone Rust crate yet.
 
 The npm package includes an optional WebAssembly backend, imported separately
-from the TypeScript entry. The module is about 195 kB before compression.
+from the TypeScript entry. The module is about 203 kB before compression.
 Fetch and instantiate it once, then reuse it for frames:
 
 ```ts
@@ -708,20 +708,29 @@ bundler, ensure it copies `new URL('./qr.wasm', import.meta.url)` as an asset,
 or supply bytes from your own deployed copy of `@forgesworn/qr/qr.wasm`.
 Serve the module from your own origin; no CDN or runtime dependencies are used.
 
-The backend exposes `encode`, `decode`, `decodeModules`, `reset`, `dispose`
+The backend exposes `encode`, `decode`, `decodeModules`, `createDecoder`, `reset`, `dispose`
 and `memoryBytes`. It copies outputs before freeing native result handles,
 so earlier results survive later calls and disposal. Each instance reuses an
 input allocation; `reset()` frees that allocation and leaves the instance
 usable. WebAssembly memory retains its high-water size until the instance is
 collected. `dispose()` releases the instance and rejects further operations;
 it is safe to call repeatedly. Use one instance per worker and a worker for
-camera frames. This backend does not use the TypeScript session's tracked region.
+camera frames. `qr.createDecoder()` creates a tracked camera session with the
+same region search and same-call fallback as the TypeScript helper. Each
+session tracks independently and shares the instance's native input storage.
+Reset a session to forget its region; reset the parent to free input storage
+and forget all session regions. Disposing the parent invalidates its sessions.
 
-The Rust port carries no character tables. `bytes` is always exact, but
-`text` holds less than in the other ports: a kanji character is U+FFFD,
-and so is every byte it cannot read under an ECI it has no decoder for
-(the ASCII survives under the single-byte sets), and hanzi-mode symbols are
-refused. Read `bytes` and the ECI yourself where the character set matters.
+The packaged WASM backend uses the host's character sets, following the same
+text rules as TypeScript for kanji, hanzi, ECI and implicit Shift_JIS. It does
+this while parsing each segment, preserving mixed encodings and rejecting
+invalid hanzi cells. It bundles no character tables. A host lacking a character
+set follows the documented platform fallback.
+
+The standalone Rust port and its default WASM build still carry no character
+tables: unsupported characters use the documented replacement rules and hanzi
+is refused. The packaged module enables Rust's `host-text` feature and uses
+ABI 2; the standalone module uses ABI 1. Supply the packaged module to `loadWasm`.
 
 ```bash
 cd rust

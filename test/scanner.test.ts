@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { loadWasm, type WasmQr } from '../src/wasm.js'
 import { createDecoder, decode, encode, type DecodeOptions, type ImageLike } from '../src/index.js'
 
 function frame(text: string, x = 200, y = 130, width = 960, height = 640, inverted = false): ImageLike {
@@ -12,9 +14,15 @@ function frame(text: string, x = 200, y = 130, width = 960, height = 640, invert
   return { data, width, height }
 }
 
-describe('camera decoder', () => {
+describe.each(['typescript', 'wasm'] as const)('%s camera decoder', backend => {
+  let wasm: WasmQr | undefined
+  beforeAll(async () => {
+    if (backend === 'wasm') wasm = await loadWasm(readFileSync(new URL('../wasm/qr.wasm', import.meta.url)))
+  })
+  afterAll(() => { wasm?.dispose() })
+  const create = () => wasm ? wasm.createDecoder() : createDecoder()
   it('reads changed payloads from fresh pixels and preserves the caller buffer and previous result', () => {
-    const camera = createDecoder()
+    const camera = create()
     const image = frame('https://example.com/first')
     const original = image.data.slice()
     const first = camera.decode(image)!
@@ -29,7 +37,7 @@ describe('camera decoder', () => {
   })
 
   it('recovers on the same call after movement outside the previous region or a change of dimensions', () => {
-    const camera = createDecoder()
+    const camera = create()
     for (const image of [frame('one'), frame('two', 730, 400), frame('three', 10, 20, 320, 240), frame('four')]) {
       const found = camera.decode(image)!
       const full = decode(image)!
@@ -40,7 +48,7 @@ describe('camera decoder', () => {
   })
 
   it('uses the current polarity options on every frame and forgets state on reset', () => {
-    const camera = createDecoder()
+    const camera = create()
     expect(camera.decode(frame('normal'))?.text).toBe('normal')
     const inverted = frame('inverted', 200, 130, 960, 640, true)
     expect(camera.decode(inverted, { inversion: 'normal' })).toBeUndefined()
@@ -51,7 +59,7 @@ describe('camera decoder', () => {
   })
 
   it('keeps sessions independent and handles padded grey and RGBA inputs', () => {
-    const a = createDecoder(), b = createDecoder()
+    const a = create(), b = create()
     for (const channels of [1, 4] as const) {
       const image = frame('padded')
       const rowStride = image.width + 13
@@ -69,7 +77,7 @@ describe('camera decoder', () => {
   })
 
   it('validates the whole frame even when a previous region would fit inside invalid data', () => {
-    const camera = createDecoder()
+    const camera = create()
     const image = frame('validation')
     camera.decode(image)
     const bad: [ImageLike, DecodeOptions][] = [
@@ -82,4 +90,26 @@ describe('camera decoder', () => {
     for (const [input, options] of bad) expect(() => camera.decode(input, options)).toThrow(RangeError)
     expect(() => camera.decode(null as never)).toThrow(TypeError)
   })
+})
+
+
+it('invalidates WASM sessions on parent disposal and keeps outputs across parent reset', async () => {
+  const wasm = await loadWasm(readFileSync(new URL('../wasm/qr.wasm', import.meta.url)))
+  try {
+    const a = wasm.createDecoder(), b = wasm.createDecoder()
+    const first = a.decode(frame('first'))!
+    expect(b.decode(frame('other', 700, 400))?.text).toBe('other')
+    a.reset()
+    expect(b.decode(frame('updated', 700, 400))?.text).toBe('updated')
+    wasm.reset()
+    expect(a.decode(frame('after reset'))?.text).toBe('after reset')
+    expect(first.text).toBe('first')
+    expect(new TextDecoder().decode(first.bytes)).toBe('first')
+    wasm.dispose()
+    for (const session of [a, b]) {
+      expect(() => session.decode(frame('disposed'))).toThrow(/disposed/)
+      expect(() => session.reset()).toThrow(/disposed/)
+    }
+    expect(() => wasm.createDecoder()).toThrow(/disposed/)
+  } finally { wasm.dispose() }
 })

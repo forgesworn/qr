@@ -1,0 +1,306 @@
+{
+  "revision": "a4f78ffcf3ad264f0a8fa914dc2836eafd7ccb6c",
+  "javascriptSha256": "03b0e7af3410ac57ef66a16979e77e20f167acafaa545e47d8638e5718edba73",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "cpu": "Apple M4 Max",
+  "iterations": 100,
+  "loadBefore": [
+    1.8046875,
+    1.66796875,
+    1.7431640625
+  ],
+  "loadAfter": [
+    1.8203125,
+    1.67333984375,
+    1.74462890625
+  ],
+  "work": [
+    {
+      "name": "clean",
+      "steps": 6615,
+      "compared": 24,
+      "scanned": 5476,
+      "maps": 1,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "blank",
+      "steps": 0,
+      "compared": 0,
+      "scanned": 0,
+      "maps": 0,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "noise",
+      "steps": 454513,
+      "compared": 115,
+      "scanned": 984380,
+      "maps": 341,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0,
+      "reduced": 90
+    }
+  ],
+  "sampleDurationMs": 5412.083,
+  "self": [
+    {
+      "name": "alignmentScore file://dist/locate.js:537",
+      "ms": 963.382,
+      "percent": 17.8005769682394
+    },
+    {
+      "name": "findAlignments file://dist/locate.js:396",
+      "ms": 924.379,
+      "percent": 17.079911745625484
+    },
+    {
+      "name": "findFinders file://dist/locate.js:145",
+      "ms": 874.03,
+      "percent": 16.149604505326323
+    },
+    {
+      "name": "runs file://dist/locate.js:72",
+      "ms": 366.372,
+      "percent": 6.76951924055858
+    },
+    {
+      "name": "correct file://dist/rs.js:21",
+      "ms": 344.879,
+      "percent": 6.372389336970627
+    },
+    {
+      "name": "locate file://dist/locate.js:583",
+      "ms": 247.247,
+      "percent": 4.5684258722565785
+    },
+    {
+      "name": "sample file://dist/decode.js:177",
+      "ms": 240.872,
+      "percent": 4.45063388717431
+    },
+    {
+      "name": "mirroredRead file://dist/decode.js:212",
+      "ms": 202.916,
+      "percent": 3.7493142658750798
+    },
+    {
+      "name": "toLuminance file://dist/binarise.js:6",
+      "ms": 201.334,
+      "percent": 3.7200833764005465
+    },
+    {
+      "name": "readSymbol file://dist/symbol.js:95",
+      "ms": 194.795,
+      "percent": 3.5992611347608676
+    },
+    {
+      "name": "(anonymous) file://dist/locate.js:645",
+      "ms": 178.545,
+      "percent": 3.2990070551393984
+    },
+    {
+      "name": "thresholds file://dist/binarise.js:32",
+      "ms": 87.459,
+      "percent": 1.6159951722839432
+    },
+    {
+      "name": "binarise file://dist/binarise.js:134",
+      "ms": 76.962,
+      "percent": 1.4220402754355392
+    },
+    {
+      "name": "quads file://dist/binarise.js:206",
+      "ms": 61.462,
+      "percent": 1.1356440764119842
+    },
+    {
+      "name": "(anonymous) file://dist/locate.js:484",
+      "ms": 58.832,
+      "percent": 1.0870491084486325
+    },
+    {
+      "name": "read file://dist/decode.js:168",
+      "ms": 51.163,
+      "percent": 0.9453476600414296
+    },
+    {
+      "name": "agreement file://dist/refine.js:25",
+      "ms": 50.082,
+      "percent": 0.9253738348063029
+    },
+    {
+      "name": "readVersion file://dist/symbol.js:66",
+      "ms": 43.997,
+      "percent": 0.8129402302218942
+    },
+    {
+      "name": "nearest file://dist/symbol.js:15",
+      "ms": 36.873,
+      "percent": 0.6813088417158422
+    },
+    {
+      "name": "(anonymous) file://dist/binarise.js:236",
+      "ms": 24.126,
+      "percent": 0.44578030307369637
+    },
+    {
+      "name": "run file://dist/locate.js:338",
+      "ms": 23.333,
+      "percent": 0.4311279039881687
+    },
+    {
+      "name": "consider file://dist/locate.js:164",
+      "ms": 22.043,
+      "percent": 0.40729234935975667
+    },
+    {
+      "name": "(garbage collector) :0",
+      "ms": 20.875,
+      "percent": 0.385711009975272
+    },
+    {
+      "name": "row file://dist/locate.js:7",
+      "ms": 17.375,
+      "percent": 0.32104090051834017
+    },
+    {
+      "name": "finderTriples file://dist/locate.js:270",
+      "ms": 16.5,
+      "percent": 0.30487337315410723
+    }
+  ],
+  "inclusive": [
+    {
+      "name": "(root) :0",
+      "ms": 5412.083,
+      "percent": 100
+    },
+    {
+      "name": "(anonymous) file://scripts/profile-decode.mjs:0",
+      "ms": 5355.831,
+      "percent": 98.96062200080819
+    },
+    {
+      "name": "decodeCounted file://dist/decode.js:16",
+      "ms": 5341.831,
+      "percent": 98.70194156298047
+    },
+    {
+      "name": "look file://dist/decode.js:76",
+      "ms": 5053.368,
+      "percent": 93.37196048175906
+    },
+    {
+      "name": "search file://dist/decode.js:131",
+      "ms": 4876.198,
+      "percent": 90.09835954104916
+    },
+    {
+      "name": "locate file://dist/locate.js:583",
+      "ms": 2380.758,
+      "percent": 43.989680128704606
+    },
+    {
+      "name": "findFinders file://dist/locate.js:145",
+      "ms": 1283.529,
+      "percent": 23.715988834613217
+    },
+    {
+      "name": "read file://dist/decode.js:168",
+      "ms": 1151.87,
+      "percent": 21.283302565758877
+    },
+    {
+      "name": "readSymbol file://dist/symbol.js:95",
+      "ms": 1041.625,
+      "percent": 19.246286503736176
+    },
+    {
+      "name": "findAlignments file://dist/locate.js:396",
+      "ms": 986.253,
+      "percent": 18.223168417779256
+    },
+    {
+      "name": "alignmentScore file://dist/locate.js:537",
+      "ms": 963.382,
+      "percent": 17.8005769682394
+    },
+    {
+      "name": "consider file://dist/locate.js:164",
+      "ms": 395.833,
+      "percent": 7.313875267618771
+    },
+    {
+      "name": "word file://dist/symbol.js:116",
+      "ms": 377.208,
+      "percent": 6.9697378994372405
+    },
+    {
+      "name": "crossCheck file://dist/locate.js:62",
+      "ms": 367.748,
+      "percent": 6.794943832162219
+    },
+    {
+      "name": "runs file://dist/locate.js:72",
+      "ms": 366.372,
+      "percent": 6.76951924055858
+    },
+    {
+      "name": "correct file://dist/rs.js:21",
+      "ms": 344.879,
+      "percent": 6.372389336970627
+    },
+    {
+      "name": "sample file://dist/decode.js:177",
+      "ms": 240.872,
+      "percent": 4.45063388717431
+    },
+    {
+      "name": "mirroredRead file://dist/decode.js:212",
+      "ms": 205.208,
+      "percent": 3.791663948982305
+    },
+    {
+      "name": "toLuminance file://dist/binarise.js:6",
+      "ms": 201.334,
+      "percent": 3.7200833764005465
+    },
+    {
+      "name": "(anonymous) file://dist/locate.js:645",
+      "ms": 178.545,
+      "percent": 3.2990070551393984
+    },
+    {
+      "name": "thresholds file://dist/binarise.js:32",
+      "ms": 87.459,
+      "percent": 1.6159951722839432
+    },
+    {
+      "name": "(anonymous) file://dist/binarise.js:236",
+      "ms": 85.588,
+      "percent": 1.5814243794856804
+    },
+    {
+      "name": "binarise file://dist/binarise.js:134",
+      "ms": 76.962,
+      "percent": 1.4220402754355392
+    },
+    {
+      "name": "readVersion file://dist/symbol.js:66",
+      "ms": 65.162,
+      "percent": 1.2040096206950264
+    },
+    {
+      "name": "quads file://dist/binarise.js:206",
+      "ms": 61.462,
+      "percent": 1.1356440764119842
+    }
+  ]
+}

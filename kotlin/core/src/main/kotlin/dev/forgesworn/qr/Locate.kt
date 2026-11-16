@@ -489,13 +489,14 @@ private fun findAlignments(image: BitImage, edges: Edges, estimate: Point, wide:
             above++
             yy--
         }
+        if (!(abs(above - tall) < slackDown)) return Double.NaN
         var below = 0
         yy = down
         while (yy <= bottom && data[yy * width + x].toInt() != 1) {
             below++
             yy++
         }
-        if (!(abs(above - tall) < slackDown) || !(abs(below - tall) < slackDown)) return Double.NaN
+        if (!(abs(below - tall) < slackDown)) return Double.NaN
         return (up + 1 + down) / 2.0
     }
     val found = ArrayList<Candidate>()
@@ -605,9 +606,10 @@ private fun projective(m: DoubleArray): (Double, Double) -> Point {
  * (dark centre, light ring, dark ring), stepping by [u] across and [v] down.
  * Perspective changes the local module size, so three scales are tried.
  */
-private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): Int {
-    var best = 0
+private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point, initialBest: Int = 0): Int {
+    var best = initialBest
     for (scale in doubleArrayOf(0.85, 1.0, 1.15)) {
+        if (best == 25) break
         var score = 0
         for (j in -2..2) {
             for (i in -2..2) {
@@ -617,6 +619,8 @@ private fun alignmentScore(image: BitImage, centre: Point, u: Point, v: Point): 
                 val got = x >= 0 && y >= 0 && x < image.width && y < image.height && dark(image, x.toInt(), y.toInt())
                 if (got == want) score++
             }
+            // Even perfect remaining rows cannot improve the best score.
+            if (score + (2 - j) * 5 <= best) break
         }
         best = max(best, score)
     }
@@ -724,8 +728,11 @@ internal fun locate(image: BitImage, triple: Array<Finder>, sizeHint: Int? = nul
         for (reach in intArrayOf(4, 8, 16)) {
             for (estimate in estimates) {
                 for (p in findAlignments(image, edges, estimate, wide, tall, reach, work)) {
-                    if (scored.any { distance(it.p, p) <= moduleSize / 2 }) continue
-                    val score = max(alignmentScore(image, p, u, v), alignmentScore(image, p, u0, v0))
+                    // A point outside the enclosing square cannot be within the circle.
+                    val radius = moduleSize / 2
+                    if (scored.any { abs(it.p.x - p.x) <= radius && abs(it.p.y - p.y) <= radius && distance(it.p, p) <= radius }) continue
+                    // Scores below 20 are discarded, but their points still suppress duplicates.
+                    val score = alignmentScore(image, p, u0, v0, alignmentScore(image, p, u, v, 19))
                     scored.add(Scored(p, score, near(p)))
                 }
             }

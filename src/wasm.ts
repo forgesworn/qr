@@ -1,3 +1,5 @@
+import { textImports } from './wasm-text.js'
+import { trackedDecoder, type Decoder } from './session.js'
 import { QrCapacityError } from './errors.js'
 import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 import type { DecodeResult } from './decode.js'
@@ -8,8 +10,10 @@ import type { Payload } from './symbol.js'
 export const wasmUrl: string = new URL('./qr.wasm', import.meta.url).href
 
 export interface WasmQr {
+  /** Tracks one camera independently, sharing this instance's native input allocation. */
+  createDecoder(): Decoder
   encode(data: string | Uint8Array, options?: EncodeOptions | null): QrCode
-  /** Rust text support applies: see the README for kanji, hanzi and ECI limitations. */
+  /** Uses the host character sets with the same text rules as the TypeScript decoder. */
   decode(image: ImageLike, options?: DecodeOptions): DecodeResult | undefined
   decodeModules(modules: ArrayLike<number | boolean>, size: number): (Payload & { mirrored: boolean }) | undefined
   /** Frees reusable input storage. The module remains usable. */
@@ -43,14 +47,20 @@ const kind = (value: unknown) => Object.prototype.toString.call(value).slice(8, 
 export async function loadWasm(bytes: Uint8Array | ArrayBuffer): Promise<WasmQr> {
   if (kind(bytes) !== 'Uint8Array' && kind(bytes) !== 'ArrayBuffer') throw new TypeError('loadWasm needs module bytes')
   const binary = new Uint8Array(bytes)
-  const { instance } = await WebAssembly.instantiate(binary, {})
+  let memory: WebAssembly.Memory | undefined
+  const { instance } = await WebAssembly.instantiate(binary, textImports(() => {
+    if (!memory) throw new TypeError('QR text import called before module initialisation')
+    return memory
+  }))
   if (!(instance.exports.memory instanceof WebAssembly.Memory) || REQUIRED.some(name => typeof instance.exports[name] !== 'function')) {
     throw new TypeError('The module does not implement the QR WebAssembly ABI')
   }
+  memory = instance.exports.memory
   let native: Native | undefined = instance.exports as Native
-  if (native.qr_abi_version() !== 1) throw new RangeError('Unsupported QR WebAssembly ABI version')
+  if (native.qr_abi_version() !== 2) throw new RangeError('Unsupported QR WebAssembly ABI version')
   let pointer = 0
   let capacity = 0
+  let generation = 0
   const encoder = new TextEncoder()
   const decoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true })
   const live = (): Native => {
@@ -99,7 +109,15 @@ export async function loadWasm(bytes: Uint8Array | ArrayBuffer): Promise<WasmQr>
     if (!Number.isInteger(value) || value < low || value > high) throw new RangeError(`Invalid ${name}`)
     return value
   }
-  return {
+  const api: WasmQr = {
+    createDecoder() {
+      live()
+      return trackedDecoder(
+        (image, options) => api.decode(image, options),
+        () => {},
+        () => { live(); return generation },
+      )
+    },
     encode(data, options = {}) {
       const x = live()
       if (typeof data !== 'string' && kind(data) !== 'Uint8Array') throw new TypeError('encode takes a string or a Uint8Array')
@@ -137,9 +155,15 @@ export async function loadWasm(bytes: Uint8Array | ArrayBuffer): Promise<WasmQr>
       const x = live()
       const { width, height, stride, channels, inversion } = imageLayout(image, options)
       if (width > 0xffffffff || height > 0xffffffff || stride > 0xffffffff) throw new RangeError('Dimensions exceed WebAssembly address space')
-      const length = (stride * (height - 1) + width) * channels
-      reserve(length).set(image.data.subarray(0, length))
-      const h = x.read_picture(pointer, length, width, height, channels, stride, INVERSIONS[inversion])
+      const rowBytes = width * channels
+      const length = rowBytes * height
+      const input = reserve(length)
+      if (stride === width) input.set(image.data.subarray(0, length))
+      else for (let y = 0; y < height; y++) {
+        const start = y * stride * channels
+        input.set(image.data.subarray(start, start + rowBytes), y * rowBytes)
+      }
+      const h = x.read_picture(pointer, length, width, height, channels, width, INVERSIONS[inversion])
       if (h === 0) return unread(x)
       try {
         const point = (i: number) => ({ x: x.read_point_x(h, i), y: x.read_point_y(h, i) })
@@ -158,8 +182,9 @@ export async function loadWasm(bytes: Uint8Array | ArrayBuffer): Promise<WasmQr>
       if (h === 0) return unread(x)
       try { return take(x, h) } finally { x.read_free(h) }
     },
-    reset() { live(); reset() },
-    dispose() { reset(); native = undefined },
+    reset() { live(); reset(); generation++ },
+    dispose() { reset(); native = undefined; memory = undefined },
     get memoryBytes() { return native?.memory.buffer.byteLength ?? 0 },
   }
+  return api
 }

@@ -45,6 +45,10 @@ pub struct Thresholds {
     pub across: usize,
     pub down: usize,
     pub values: Vec<f64>,
+    /// Flat local blocks and enough overall contrast to justify re-thresholding the inverse.
+    pub inverted_fallback: bool,
+    /// Constant luminance cannot contain a symbol at any reduction.
+    pub uniform: bool,
 }
 
 /// The threshold `binarise` applied at pixel (`px`, `py`), which must be in
@@ -74,11 +78,14 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
             }
         }
         let value = if max - min < MIN_DYNAMIC_RANGE { -1.0 } else { (min + max) as f64 / 2.0 };
-        return Thresholds { across: 1, down: 1, values: vec![value] };
+        return Thresholds { across: 1, down: 1, values: vec![value], inverted_fallback: false, uniform: min == max };
     }
     let across = width.div_ceil(BLOCK);
     let down = height.div_ceil(BLOCK);
     let mut levels = vec![0f64; across * down];
+    let mut flat = false;
+    let mut picture_min = 255i32;
+    let mut picture_max = 0i32;
     for by in 0..down {
         let top = (by * BLOCK).min(height - BLOCK);
         for bx in 0..across {
@@ -88,6 +95,11 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
             let mut max = 0i32;
             for y in top..top + BLOCK {
                 let row = y * width + left;
+                // Once the range is wide enough only the sum affects the level.
+                if max - min > MIN_DYNAMIC_RANGE {
+                    for &v in &data[row..row + BLOCK] { sum += v as i32; }
+                    continue;
+                }
                 for &v in &data[row..row + BLOCK] {
                     let v = v as i32;
                     sum += v;
@@ -96,7 +108,10 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
                 }
             }
             let mut level = sum as f64 / (BLOCK * BLOCK) as f64;
+            picture_min = picture_min.min(min);
+            picture_max = picture_max.max(max);
             if max - min <= MIN_DYNAMIC_RANGE {
+                flat = true;
                 // A flat block: background unless its neighbours say otherwise.
                 level = min as f64 / 2.0;
                 if bx > 0 && by > 0 {
@@ -124,7 +139,12 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
             values[by * across + bx] = sum / 25.0;
         }
     }
-    Thresholds { across, down, values }
+    Thresholds { across, down, values, inverted_fallback: flat && picture_max - picture_min > MIN_DYNAMIC_RANGE, uniform: picture_min == picture_max }
+}
+
+/// Invert luminance before thresholding: flat-block background estimates depend on polarity.
+pub fn invert_luminance(image: &Luminance) -> Luminance {
+    Image { data: image.data.iter().map(|&v| 255 - v).collect(), width: image.width, height: image.height }
 }
 
 /// 1 where a pixel is at or below its threshold. A pixel is a whole number,

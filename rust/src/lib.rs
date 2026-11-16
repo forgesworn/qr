@@ -64,7 +64,7 @@ pub fn front(data: &[u8], width: usize, height: usize, channels: usize) -> u32 {
 mod exports {
     /// The browser adapter's ABI version. Changes when existing exports change meaning.
     #[no_mangle]
-    pub extern "C" fn qr_abi_version() -> u32 { 1 }
+    pub extern "C" fn qr_abi_version() -> u32 { if cfg!(feature = "host-text") { 2 } else { 1 } }
 
     /// Reserves `len` bytes of WebAssembly memory and returns their address.
     #[no_mangle]

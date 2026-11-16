@@ -15,6 +15,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import jsQRModule from 'jsqr'
 import { describe, expect, it } from 'vitest'
 import { createDecoder, decode } from '../src/index.js'
+import { loadWasm } from '../src/wasm.js'
 import { toRgba } from './photo.js'
 import { readPng } from './png.js'
 
@@ -72,6 +73,21 @@ function summary(photos: Photo[]): string {
 }
 
 describe.skipIf(!cached)('photographs', () => {
+  it('preserves every readable photo and complete text in the packaged WASM backend', async () => {
+    const wasm = await loadWasm(readFileSync(new URL('../wasm/qr.wasm', import.meta.url)))
+    try {
+      let correct = 0
+      for (const p of manifest.photos) {
+        const image = load(p), actual = wasm.decode(image), reference = decode(image)
+        expect(actual?.bytes, p.id).toEqual(reference?.bytes)
+        expect(actual?.text, p.id).toBe(reference?.text)
+        if (actual) { expect(actual.text, p.id).toBe(expected(p)); correct++ }
+        if (p.typescript) expect(actual, p.id).toBeDefined()
+      }
+      expect(correct).toBeGreaterThanOrEqual(manifest.ratchet.typescript)
+    } finally { wasm.dispose() }
+  })
+
   if (process.env.QR_WRITE_PHOTOS) {
     it('re-takes the baseline', () => {
       const pixels = new Map<string, string>()

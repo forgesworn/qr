@@ -81,6 +81,9 @@ jobs:
       - run: cargo test --locked
       - run: npm run check:wasm
         working-directory: .
+      # The package uses host character sets (ABI 2). The standalone module
+      # keeps the native port's text contract for these cross-port comparisons.
+      - run: cargo build --locked --release --target wasm32-unknown-unknown -j 1
       - name: Compare WebAssembly results, options and encoding
         run: |
           node bench/wasm-pack.mjs

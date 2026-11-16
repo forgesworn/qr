@@ -13,7 +13,9 @@ const loadBefore = loadavg();
 const wasmSha256 = createHash('sha256').update(await readFile(root + '/dist/qr.wasm')).digest('hex');
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const profile = await mkdtemp(join(tmpdir(), 'qr-chrome-'));
-const html = `<!doctype html><pre id="result">WAIT</pre><script type="module">
+const symbols = JSON.parse(await readFile(root + '/vectors/conformance.json', 'utf8')).symbols.filter(s => /kanji|hanzi|ECI/.test(s.name));
+const symbolJson = JSON.stringify(symbols).replaceAll('<', '\\u003c');
+const html = `<!doctype html><meta charset="utf-8"><pre id="result">WAIT</pre><script type="module">
 try {
  const {loadWasm,wasmUrl} = await import('/dist/wasm.js');
  const wasm=await loadWasm(await (await fetch(wasmUrl)).arrayBuffer());
@@ -24,9 +26,16 @@ try {
  const frame=c.getImageData(0,0,canvas.width,canvas.height);
  const found=wasm.decode(frame);
  if(found?.text!=='https://example.com/browser')throw Error('wrong full result');
+ const cases=${symbolJson};
+ const checkText=(reader)=>{for(const s of cases){const modules=Uint8Array.from({length:s.size*s.size},(_,i)=>{const x=i%s.size,y=Math.floor(i/s.size);return(parseInt(s.rows[y].slice((x>>3)*2,(x>>3)*2+2),16)>>(7-(x&7)))&1});const r=reader.decodeModules(modules,s.size);if(r?.text!==(s.result?.text))throw Error('charset '+s.name);}};
+ checkText(wasm);
+ const camera=wasm.createDecoder();
+ if(camera.decode(frame)?.text!==found.text||camera.decode(frame)?.text!==found.text)throw Error('WASM session failed');
+ wasm.reset();
+ if(camera.decode(frame)?.text!==found.text)throw Error('WASM session reset failed');
  const origin=location.origin;
- const workerUrl=URL.createObjectURL(new Blob([\`onmessage=async e=>{try{const {loadWasm,wasmUrl}=await import('\${origin}/dist/wasm.js');const w=await loadWasm(await(await fetch(wasmUrl)).arrayBuffer());const r=w.decode(e.data);w.dispose();postMessage(r.text)}catch(e){postMessage(String(e))}}\`],{type:'text/javascript'}));const worker=new Worker(workerUrl,{type:'module'});
- const workerText=await new Promise(resolve=>{worker.onmessage=e=>resolve(e.data);worker.postMessage(frame)});worker.terminate();URL.revokeObjectURL(workerUrl);
+ const workerUrl=URL.createObjectURL(new Blob([\`onmessage=async e=>{try{const {loadWasm,wasmUrl}=await import('\${origin}/dist/wasm.js');const w=await loadWasm(await(await fetch(wasmUrl)).arrayBuffer());const r=w.decode(e.data.frame);for(const s of e.data.cases){const modules=Uint8Array.from({length:s.size*s.size},(_,i)=>{const x=i%s.size,y=Math.floor(i/s.size);return(parseInt(s.rows[y].slice((x>>3)*2,(x>>3)*2+2),16)>>(7-(x&7)))&1});if(w.decodeModules(modules,s.size)?.text!==s.result?.text)throw Error('worker charset '+s.name)}w.dispose();postMessage(r.text)}catch(e){postMessage(String(e))}}\`],{type:'text/javascript'}));const worker=new Worker(workerUrl,{type:'module'});
+ const workerText=await new Promise(resolve=>{worker.onmessage=e=>resolve(e.data);worker.postMessage({frame,cases})});worker.terminate();URL.revokeObjectURL(workerUrl);
  if(workerText!==found.text)throw Error('worker failed: '+workerText);
  const formats=typeof BarcodeDetector==='undefined'?[]:await BarcodeDetector.getSupportedFormats();
  let native='unavailable';
@@ -50,12 +59,12 @@ try {
    timings.push({name:f.name,...Object.fromEntries(Object.entries(samples).map(([n,v])=>[n,summary(v)]))});
  }
  wasm.reset();wasm.dispose();
- document.querySelector('#result').textContent='PASS '+JSON.stringify({userAgent:navigator.userAgent,worker:true,native,formats,rounds:25,warmup:5,timings});
+ document.querySelector('#result').textContent='PASS '+JSON.stringify({userAgent:navigator.userAgent,worker:true,charsetCases:cases.length,wasmSession:true,native,formats,rounds:25,warmup:5,timings});
 }catch(e){document.querySelector('#result').textContent='FAIL '+e.stack}
 await fetch('/done',{method:'POST',body:document.querySelector('#result').textContent});
 </script>`;
 let finish;const completed=new Promise(resolve=>finish=resolve);let chrome;let timer;let closed;
-const server=createServer(async(req,res)=>{requests.push(req.url);try{if(req.url==='/done'){let body='';for await(const part of req)body+=part;res.end('ok');finish(body)}else if(req.url==='/'){res.setHeader('content-type','text/html');res.end(html)}else if((/^\/dist\/[\w.-]+$/.test(req.url)||req.url==='/scripts/comparison-fixtures.mjs')){res.setHeader('content-type',req.url.endsWith('.wasm')?'application/wasm':'text/javascript');res.end(await readFile(root+req.url))}else{res.statusCode=404;res.end()}}catch(e){res.statusCode=500;res.end(String(e))}});
+const server=createServer(async(req,res)=>{requests.push(req.url);try{if(req.url==='/done'){let body='';for await(const part of req)body+=part;res.end('ok');finish(body)}else if(req.url==='/'){res.setHeader('content-type','text/html; charset=utf-8');res.end(html)}else if((/^\/dist\/[\w.-]+$/.test(req.url)||req.url==='/scripts/comparison-fixtures.mjs')){res.setHeader('content-type',req.url.endsWith('.wasm')?'application/wasm':'text/javascript');res.end(await readFile(root+req.url))}else{res.statusCode=404;res.end()}}catch(e){res.statusCode=500;res.end(String(e))}});
 try{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  chrome=spawn(chromePath,['--headless','--disable-gpu','--no-first-run','--no-default-browser-check','--user-data-dir='+profile,'http://127.0.0.1:'+server.address().port],{stdio:'ignore'});

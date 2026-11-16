@@ -59,7 +59,7 @@ describe('distributed WebAssembly adapter', () => {
     } finally { wasm.dispose() }
   })
 
-  it('returns header metadata and makes the character-set limits explicit', async () => {
+  it('returns header metadata and decodes kanji and hanzi with the host character sets', async () => {
     const wasm = await loadWasm(binary)
     try {
       for (const bits of [
@@ -72,9 +72,9 @@ describe('distributed WebAssembly adapter', () => {
         expect(wasm.decodeModules(qr.modules, qr.size)).toEqual(decodeModules(qr.modules, qr.size))
       }
       const kanji = symbol(seg.kanji([0], 8), 2, 'M', 0)
-      expect(wasm.decodeModules(kanji.modules, kanji.size)).toMatchObject({ text: '\ufffd', bytes: new Uint8Array([0x81, 0x40]) })
+      expect(wasm.decodeModules(kanji.modules, kanji.size)).toEqual(decodeModules(kanji.modules, kanji.size))
       const hanzi = symbol(seg.hanzi([0], 8), 2, 'M', 0)
-      expect(wasm.decodeModules(hanzi.modules, hanzi.size)).toBeUndefined()
+      expect(wasm.decodeModules(hanzi.modules, hanzi.size)).toEqual(decodeModules(hanzi.modules, hanzi.size))
     } finally { wasm.dispose() }
   })
 

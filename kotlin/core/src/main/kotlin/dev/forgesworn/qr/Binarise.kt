@@ -49,7 +49,7 @@ private const val MIN_DYNAMIC_RANGE = 24
  * The binariser's thresholds: one an 8x8 block, [across] by [down], or a
  * single one for the whole picture when it is under 40 pixels a side.
  */
-internal class Thresholds(val across: Int, val down: Int, val values: DoubleArray)
+internal class Thresholds(val across: Int, val down: Int, val values: DoubleArray, val invertedFallback: Boolean = false, val uniform: Boolean = false)
 
 /**
  * Local thresholds: each 8x8 block's threshold is the mean of the block
@@ -68,11 +68,14 @@ internal fun thresholds(image: Luminance): Thresholds {
             if (v < min) min = v
             if (v > max) max = v
         }
-        return Thresholds(1, 1, doubleArrayOf(if (max - min < MIN_DYNAMIC_RANGE) -1.0 else (min + max) / 2.0))
+        return Thresholds(1, 1, doubleArrayOf(if (max - min < MIN_DYNAMIC_RANGE) -1.0 else (min + max) / 2.0), uniform = min == max)
     }
     val across = (width + BLOCK - 1) / BLOCK
     val down = (height + BLOCK - 1) / BLOCK
     val levels = DoubleArray(across * down)
+    var flat = false
+    var pictureMin = 255
+    var pictureMax = 0
     for (by in 0 until down) {
         val top = minOf(by * BLOCK, height - BLOCK)
         for (bx in 0 until across) {
@@ -81,6 +84,11 @@ internal fun thresholds(image: Luminance): Thresholds {
             var min = 255
             var max = 0
             for (y in top until top + BLOCK) {
+                // Once the range is wide enough only the sum affects the level.
+                if (max - min > MIN_DYNAMIC_RANGE) {
+                    for (x in left until left + BLOCK) sum += data[y * width + x]
+                    continue
+                }
                 for (x in left until left + BLOCK) {
                     val v = data[y * width + x]
                     sum += v
@@ -89,7 +97,10 @@ internal fun thresholds(image: Luminance): Thresholds {
                 }
             }
             var level = sum.toDouble() / (BLOCK * BLOCK)
+            pictureMin = minOf(pictureMin, min)
+            pictureMax = maxOf(pictureMax, max)
             if (max - min <= MIN_DYNAMIC_RANGE) {
+                flat = true
                 // A flat block: assume it is background unless its neighbours say otherwise.
                 level = min / 2.0
                 if (bx > 0 && by > 0) {
@@ -120,8 +131,12 @@ internal fun thresholds(image: Luminance): Thresholds {
             values[by * across + bx] = sum / n
         }
     }
-    return Thresholds(across, down, values)
+    return Thresholds(across, down, values, flat && pictureMax - pictureMin > MIN_DYNAMIC_RANGE, pictureMin == pictureMax)
 }
+
+/** Invert luminance before thresholding: flat-block background estimates depend on polarity. */
+internal fun invertLuminance(image: Luminance): Luminance =
+    Luminance(IntArray(image.data.size) { 255 - image.data[it] }, image.width, image.height)
 
 /**
  * The threshold [binarise] applied at pixel ([px], [py]), which must be in the

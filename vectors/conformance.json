@@ -24753,7 +24753,7 @@
    "placements": [],
    "result": null,
    "work": {
-    "steps": 115573,
+    "steps": 134423,
     "compared": 113,
     "scanned": 5352,
     "maps": 18,
@@ -25357,7 +25357,7 @@
    ],
    "result": null,
    "work": {
-    "steps": 78671,
+    "steps": 110350,
     "compared": 181,
     "scanned": 265727,
     "maps": 58,
@@ -25365,6 +25365,235 @@
     "meshes": 0,
     "probed": 0,
     "reduced": 32
+   }
+  },
+  {
+   "file": "conformance/inverted-flat-blocks.png",
+   "width": 166,
+   "height": 166,
+   "luminance": "74f0063e6a405c8b9963a8f571c27c404b0f212cd29f90e536901e7168975ad3",
+   "bits": "58cb81766668485dcc8e42e10b9b0ca42ca8b7b1584d7fc98bec5128fba5f29a",
+   "reduced": {
+    "2": "dda8a3ea9490289d2535cd012416842590e40e4edcc162b2e48289401021b9a2",
+    "4": "613fabb4dac9268257b26570f104d6eb9cb1ee771cc5bca41de76f85d25f89a1",
+    "8": "015f143610623ce0eddde1fea5d1a184067141810725947c97fab6bbf18652f6"
+   },
+   "finders": {
+    "0.5": [],
+    "0.8": [
+     [
+      82.5,
+      89,
+      3.5714285714285716,
+      4
+     ]
+    ]
+   },
+   "triples": {
+    "0.5": [],
+    "0.8": []
+   },
+   "placements": [],
+   "result": {
+    "bytes": "68747470733a2f2f6578616d706c652e636f6d2f696e7665727465642f30313233343536373839",
+    "text": "https://example.com/inverted/0123456789",
+    "version": 3,
+    "ecc": "M",
+    "mask": 3,
+    "eci": [],
+    "corrected": 1,
+    "mirrored": false,
+    "inverted": true,
+    "location": {
+     "topLeft": [
+      60.92857142857143,
+      42.07142857142857
+     ],
+     "topRight": [
+      124,
+      61
+     ],
+     "bottomLeft": [
+      41.92857142857143,
+      104.78571428571429
+     ],
+     "alignment": [
+      99,
+      113
+     ]
+    }
+   },
+   "work": {
+    "steps": 10766,
+    "compared": 30,
+    "scanned": 784,
+    "maps": 1,
+    "second": 0,
+    "meshes": 0,
+    "probed": 0,
+    "reduced": 0
+   }
+  },
+  {
+   "file": "conformance/inverted-flat-blocks-mirrored.png",
+   "width": 166,
+   "height": 166,
+   "luminance": "cb17e87bbc31acdbdad64ab556f4675e1cd387185500daca3788044868cc9b10",
+   "bits": "da5cf16407b2d4f13be5e7bf6893303ffb0a24ffc6a939e243911fd22499b99d",
+   "reduced": {
+    "2": "ca892bca5fbce97ed99ddbcd61edc739d9defbe2879ae58d99fb54d60935a813",
+    "4": "4362cd29c596f3bdad6d72b057799025336dfbc0762eaa806aeff7434070e906",
+    "8": "e62dcc46bb3f1e3b646b2e37ae912e890033fc3942dabf3cde616d4f24d7fa2c"
+   },
+   "finders": {
+    "0.5": [],
+    "0.8": [
+     [
+      65,
+      55.5,
+      3.2857142857142856,
+      1
+     ],
+     [
+      105.5,
+      58.5,
+      2.4285714285714284,
+      1
+     ],
+     [
+      86.5,
+      92,
+      5,
+      1
+     ],
+     [
+      99.5,
+      110,
+      4.142857142857143,
+      1
+     ]
+    ]
+   },
+   "triples": {
+    "0.5": [],
+    "0.8": [
+     {
+      "finders": [
+       1,
+       3,
+       0
+      ],
+      "size": 21
+     },
+     {
+      "finders": [
+       1,
+       2,
+       0
+      ],
+      "size": 21
+     }
+    ]
+   },
+   "placements": [],
+   "result": {
+    "bytes": "68747470733a2f2f6578616d706c652e636f6d2f696e7665727465642f30313233343536373839",
+    "text": "https://example.com/inverted/0123456789",
+    "version": 3,
+    "ecc": "M",
+    "mask": 3,
+    "eci": [],
+    "corrected": 0,
+    "mirrored": true,
+    "inverted": true,
+    "location": {
+     "topLeft": [
+      60.92857142857143,
+      42.07142857142857
+     ],
+     "topRight": [
+      123.875,
+      61.125
+     ],
+     "bottomLeft": [
+      41.92857142857143,
+      104.78571428571429
+     ],
+     "alignment": [
+      99,
+      113
+     ]
+    }
+   },
+   "work": {
+    "steps": 10838,
+    "compared": 28,
+    "scanned": 101780,
+    "maps": 13,
+    "second": 0,
+    "meshes": 0,
+    "probed": 0,
+    "reduced": 0
+   }
+  },
+  {
+   "file": "conformance/inverted-flat-blocks-small.png",
+   "width": 114,
+   "height": 114,
+   "luminance": "10ca129a552add977a40fcced112fea3c13171d4189b78cfbafa01ede86f7fbb",
+   "bits": "1d426d96c4eaf9f4b69a9b4bb054b079c41643faba1ae13f153e6d6a2ae12266",
+   "reduced": {
+    "2": "81c8537538e06d11b2e5b84683a99c0a574585c4fdcd16edfa942da2cfb69ade",
+    "4": "b64957e3d9608cb237483a6d5db7c62a20f07d7d3a9a110f69fc7734ed93a9f1",
+    "8": "87f7b5cedb7e87785ff05189841a6fed8855978ea2109af966f030653648a7eb"
+   },
+   "finders": {
+    "0.5": [],
+    "0.8": []
+   },
+   "triples": {
+    "0.5": [],
+    "0.8": []
+   },
+   "placements": [],
+   "result": {
+    "bytes": "68747470733a2f2f6578616d706c652e636f6d2f696e7665727465642f30313233343536373839",
+    "text": "https://example.com/inverted/0123456789",
+    "version": 3,
+    "ecc": "M",
+    "mask": 3,
+    "eci": [],
+    "corrected": 0,
+    "mirrored": false,
+    "inverted": true,
+    "location": {
+     "topLeft": [
+      35,
+      35
+     ],
+     "topRight": [
+      79,
+      35
+     ],
+     "bottomLeft": [
+      35,
+      79
+     ],
+     "alignment": [
+      73,
+      73
+     ]
+    }
+   },
+   "work": {
+    "steps": 3504,
+    "compared": 16,
+    "scanned": 100,
+    "maps": 1,
+    "second": 0,
+    "meshes": 0,
+    "probed": 0,
+    "reduced": 1
    }
   }
  ]

@@ -2,10 +2,10 @@
 //! unmasking, de-interleaving, Reed-Solomon, and the segments (SPEC.md decoder
 //! steps 6 and 7).
 //!
-//! Text follows "Text for kanji and other ECIs" in SPEC.md for a platform with
-//! no character-set decoders, which this port is: ECI 26, 1, 3, 27, 170 and 23
-//! are done by hand, and kanji, hanzi and every other ECI behave as for a
-//! platform lacking the set. `bytes` never depends on a character set.
+//! Native/default builds follow SPEC.md for a platform without character-set
+//! decoders: ECI 26, 1, 3, 27, 170 and 23 are handled here. Packaged WASM uses
+//! the `host-text` feature to ask its host during segment parsing. `bytes`
+//! never depends on a character set.
 
 use crate::tables::{ALIGNMENT_CENTRES, EC_BLOCKS};
 use std::sync::OnceLock;
@@ -697,7 +697,7 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
             }
             8 => {
                 // Kanji: kept as its Shift_JIS bytes; each character's text is the platform's
-                // Shift_JIS, and this port has none, so each is a single U+FFFD (SPEC.md).
+                // Shift_JIS, or a single U+FFFD without host support (SPEC.md).
                 let count = bits.read(KANJI_COUNT_BITS[band])?;
                 for _ in 0..count {
                     let v = bits.read(13)?;
@@ -706,7 +706,7 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
                     out.push((sjis >> 8) as u8);
                     out.push((sjis & 0xff) as u8);
                     let current = runs.last().unwrap().eci;
-                    runs.push(Run { eci: current, bytes: Vec::new(), fixed: Some(kanji_text()) });
+                    runs.push(Run { eci: current, bytes: Vec::new(), fixed: Some(kanji_text(sjis)) });
                     runs.push(Run { eci: current, bytes: Vec::new(), fixed: None });
                 }
             }
@@ -779,17 +779,43 @@ fn parse(data: &[u8], version: usize) -> Option<Parsed> {
     Some(Parsed { text, bytes: out, eci, structured_append, fnc1 })
 }
 
-// Text, by hand. No character-set tables are bundled but the 32 bytes of Windows 1252.
+// Native/default builds have no character-set tables beyond Windows 1252.
+// The packaged WASM feature asks its host while parsing each individual run.
+#[cfg(all(target_arch = "wasm32", feature = "host-text"))]
+#[link(wasm_import_module = "qr_text")]
+extern "C" {
+    #[link_name = "decode"]
+    fn import_text(kind: u32, value: u32, input: *const u8, length: usize, output: *mut u8, capacity: usize) -> i32;
+}
+
+fn host_text(kind: u32, value: u32, bytes: &[u8]) -> Option<String> {
+    #[cfg(all(target_arch = "wasm32", feature = "host-text"))]
+    {
+        // Every input byte can become at most one Unicode scalar (four UTF-8
+        // bytes). Kanji/hanzi pass a packed pair instead and need four bytes.
+        let capacity = bytes.len().checked_mul(4)?.checked_add(4)?;
+        let mut output = vec![0u8; capacity];
+        let count = unsafe { import_text(kind, value, bytes.as_ptr(), bytes.len(), output.as_mut_ptr(), capacity) };
+        if count < 0 || count as usize > capacity { return None; }
+        output.truncate(count as usize);
+        String::from_utf8(output).ok()
+    }
+    #[cfg(not(all(target_arch = "wasm32", feature = "host-text")))]
+    {
+        let _ = (kind, value, bytes);
+        None
+    }
+}
 
 /// Whether hanzi-mode symbols are read at all. Off: without a GB 18030 decoder
 /// an empty GB2312 cell cannot be told from a character, and the reference
 /// ports refuse a symbol that holds one. A host that can check the pairs may
 /// turn this on once the port gives it the means.
-const HANZI: bool = false;
+const HANZI: bool = cfg!(all(target_arch = "wasm32", feature = "host-text"));
 
-/// A kanji-mode character on a platform with no Shift_JIS: a single U+FFFD.
-fn kanji_text() -> String {
-    "\u{fffd}".to_string()
+/// A kanji-mode character through the host, or U+FFFD without Shift_JIS.
+fn kanji_text(sjis: u32) -> String {
+    host_text(1, sjis, &[]).unwrap_or_else(|| "\u{fffd}".to_string())
 }
 
 /// Whether a hanzi pair names a character on a platform with a GB 18030
@@ -803,6 +829,7 @@ fn hanzi_text(lead: u32, low: u32) -> Option<String> {
     if edition_dependent(lead, low) {
         return None;
     }
+    if HANZI { return host_text(2, (lead << 8) | low, &[]); }
     Some("\u{fffd}".to_string())
 }
 
@@ -905,7 +932,7 @@ const WINDOWS_1252: [u32; 32] = [
 ];
 
 /// Text for a run under an ECI the hand-written sets cover (27, 170 and 23),
-/// or `None`: every other ECI is, here, a set the platform lacks.
+/// or a host-supported set. Without host support, the other sets are absent.
 fn from_eci(eci: u32, bytes: &[u8]) -> Option<String> {
     match eci {
         27 | 170 => Some(bytes.iter().map(|&b| if b < 0x80 { b as char } else { '\u{fffd}' }).collect()),
@@ -922,7 +949,7 @@ fn from_eci(eci: u32, bytes: &[u8]) -> Option<String> {
                 })
                 .collect(),
         ),
-        _ => None,
+        _ => host_text(0, eci, bytes),
     }
 }
 
@@ -958,7 +985,7 @@ fn decode_run(run: &Run) -> String {
     if is_utf8(bytes) {
         return from_utf8(bytes);
     }
-    latin1(bytes)
+    host_text(3, 0, bytes).unwrap_or_else(|| latin1(bytes))
 }
 
 /// A symbol read from a module grid, with whether the grid was read transposed.

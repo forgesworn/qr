@@ -1,5 +1,97 @@
 # Performance and verification
 
+## M4 improvement programme — active
+
+The next phase starts from `a4f78ff`, with Astra coordinating technical decisions
+and review, Terra workers handling bounded decoder experiments, and the primary
+agent integrating and running M4 measurements. The goal remains better QR
+scanning than ZXing; a universal superiority claim is not established.
+
+Measurements now use an Apple M4 Max, native arm64 Node 24.21.0 and Chrome 157.
+Task-owned checkouts preserve the existing M4 checkout and running applications.
+ZXing-WASM 3.1.7 was still the registry's current version at baseline setup.
+The same pinned external rival packages and complete-result comparisons are
+used. Source/binary identities, workload hashes and load are retained in
+[the M4 receipts](benchmarks/2026-11-16-m4/). Candidate numbers name successive
+experimental snapshots; final acceptance and delivery are still pending.
+
+The frozen third candidate measured (median latency, lower is better):
+
+| Measurement | Our packaged WASM | ZXing-WASM |
+|---|---:|---:|
+| Clean 1280×720 RGBA, median ms | 1.774 | 1.924 |
+| Blank 1280×720 RGBA, median ms | 1.199 | 2.019 |
+| Random noise, median ms | 24.986 | 7.385 |
+| Existing photographs, exact text | 179/184 | 171/184 |
+| Existing synthetic development set, exact text | 91/96 | 89/96 |
+| Fresh synthetic validation, exact text and bytes | 172/192 | 169/192 |
+| Ten-frame moving/changing-payload sequence, median total ms | 8.783 | 21.527 |
+
+The sequence uses our new tracked WASM session and independently encoded
+synthetic frames. It includes initial acquisition, small movements, a changed
+payload, a jump, a blank and reacquisition; it is not physical camera evidence.
+The old 96-frame set is now development data. A separate 192-frame synthetic
+validation seed and payload prefix were fixed before evaluating the candidate;
+it returned 172 correct reads against the baseline's 157 and ZXing's 169, with
+zero wrong results from any of those implementations and no lost baseline
+successes. TypeScript and packaged WASM agree on every outcome. It uses fresh
+pixels and payloads from the same transformation family, so it is not a new
+independent photographic corpus. The receipt is
+[`candidate3-validation.json`](benchmarks/2026-11-16-m4/candidate3-validation.json).
+Single-pass accuracy-loop timings are diagnostic, not latency comparisons.
+
+The third candidate's paired negative-frame run shows the exact uniform-image
+shortcut taking 1.26–1.29 ms across three blank levels, against ZXing's
+1.99–2.06 ms. Noise is 13–34% faster than the baseline across two fixed seeds
+and three resolutions. Those cases still favour ZXing, as do
+stripes and checkerboards. A smooth gradient is slower than the baseline
+because the new inverse-threshold recovery does more work; that regression
+remains visible in the receipts: 2.62 ms baseline, 4.76 ms candidate, 2.18 ms
+ZXing for the gradient. The bounding-box guard has no established overall
+WASM noise improvement beyond candidate 2; its benefit is workload dependent.
+
+Implemented work in this phase includes lazy module sampling, bounded alignment
+scoring, exact binarisation optimisations, an inverse-luminance recovery pass,
+tracked WASM sessions and host character-set support during segment parsing.
+The latter closes the packaged backend's text gap: all 179 previously readable
+photographs now have the expected text and bytes. The standalone Rust/default
+WASM contract remains separate from the packaged host-text ABI 2 module.
+
+Geometry-based early rejection was investigated and rejected: deterministic
+finder/timing damage cases prove it can discard correct reads. These cases are
+now public-contract regression tests. They are adversarial engineering evidence,
+not an independent accuracy ranking.
+
+The frozen candidate passed all 452 TypeScript tests with photographs required
+on M4 and the byte-for-byte packaged WASM rebuild. Earlier integration checks
+passed 25 native Rust tests with all features, the full Kotlin suite,
+packed-package verification, and standalone WASM parity
+(61 frames/488 counters, 572 option comparisons, 148 encoder vectors). The
+5,000-round memory check stayed flat after warm-up, with a leaking control that
+grew. Chrome page and worker checks cover host character sets and session use.
+The final M4 Rust (25 tests), Kotlin and packed-package reruns passed, as did
+standalone WASM frame, option, encoder, module-grid and rendering parity, and
+the repeated-read memory check. Chrome page/worker checks passed on the frozen
+candidate. The local M1 rerun was stopped
+when unrelated host load exceeded 400; verification moved to the M4 after its
+benchmarks. Further source changes require fresh verification before delivery.
+
+A diagnostic build retaining WASM function names attributes about 39% of the
+noise-frame profile to finder discovery (including cross-checks and row edges),
+34% to location/alignment search and 13% to Reed–Solomon correction. This is
+sampled profiling with instrumentation overhead, not a latency result.
+[The profile summary](benchmarks/2026-11-16-m4/candidate3-wasm-profile.json)
+records its distinct binary hash; the distributed asset remains stripped.
+
+The next performance work should target those loops while retaining all
+readable damage cases. Broader qualification needs independent camera footage,
+mobile/browser coverage, first-read and p95 latency, sustained memory/CPU use,
+and false-positive tests. A win on these finite suites is not evidence of
+superiority on every image or over every ZXing implementation.
+
+
+## Earlier M1 phase (historical)
+
 Work on `perf/overnight-20261115` started at `91dd037`. The core changes and
 WASM package are at `dae4913`; final benchmark tooling and results accompany
 this report. The encoder is faster, failed decoder candidates are cheaper,

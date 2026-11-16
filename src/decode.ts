@@ -1,9 +1,10 @@
 import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
-import { binarise, invert, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
+import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
 import { readSymbol, type ModuleReader, type Payload } from './symbol.js'
+import { FORMAT_COORDS } from './encode.js'
 
 /** A symbol found in a picture. */
 export interface DecodeResult extends Payload {
@@ -44,9 +45,10 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     storage = workspace.luminance.subarray(0, width * height)
   }
   const luminance = toLuminance(image.data, width, height, channels, stride, storage)
-  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS }
+  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false }
   const found = look(luminance, inversion, 1, budget, work)
   if (found) return found
+  if (budget.uniform) return undefined
   // Nothing read at full size: the picture shrunk, coarse to fine, for codes
   // whose modules are large or carry texture or scan lines (decoder step 9).
   const shrunk = reductions(luminance)
@@ -57,6 +59,19 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     budget.here = REDUCED_MAPS
     const reduced = look(shrunk(f), inversion, f, budget, work)
     if (reduced) return reduced
+  }
+  if (inversion !== 'normal' && budget.maps > 0 && budget.invertedFallback) {
+    budget.here = REDUCED_MAPS
+    const inverse = invertLuminance(luminance)
+    const fallback = look(inverse, 'normal', 1, budget, work, true)
+    if (fallback) return { ...fallback, inverted: true }
+    const inverseShrunk = reductions(inverse)
+    for (const f of REDUCTIONS) {
+      if (budget.maps === 0 || budget.here === 0) break
+      if (Math.floor(width / f) < MIN_REDUCED || Math.floor(height / f) < MIN_REDUCED) continue
+      const reduced = look(inverseShrunk(f), 'normal', f, budget, work, true)
+      if (reduced) return { ...reduced, inverted: true }
+    }
   }
   return undefined
 }
@@ -75,6 +90,8 @@ interface Budget {
   maps: number
   second: number
   here: number
+  invertedFallback: boolean
+  uniform: boolean
 }
 
 /**
@@ -83,10 +100,15 @@ interface Budget {
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work): DecodeResult | undefined {
+function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false): DecodeResult | undefined {
   const levels = thresholds(luminance)
+  if (f === 1 && !strictOverride) {
+    budget.invertedFallback = levels.invertedFallback
+    budget.uniform = levels.uniform
+  }
+  if (levels.uniform) return undefined
   const bits = binarise(luminance, levels)
-  const strict = f > 1
+  const strict = f > 1 || strictOverride
   const candidates: Candidate[] = []
   // The inverse changes colour where the picture does, so one set of edges serves both.
   const edges = edgesOf(bits)
@@ -186,42 +208,57 @@ function read(
 ): DecodeResult | undefined {
   const { size, project, matrix } = location
   const modules = new Uint8Array(size * size)
+  modules.fill(2) // Unsampled; projected light and dark modules are 0 and 1.
+  let sample: ModuleReader
   if (matrix) {
     // project(x, y), written out so that no point is made for each module.
     const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = matrix as [number, number, number, number, number, number, number, number, number]
     const { data, width, height } = image
-    for (let y = 0; y < size; y++) {
+    sample = (x, y) => {
+      const index = y * size + x
+      if (modules[index] !== 2) return modules[index] === 1
       const v = y + 0.5
-      for (let x = 0; x < size; x++) {
-        const u = x + 0.5
-        const w = m6 * u + m7 * v + m8
-        const px = Math.floor((m0 * u + m1 * v + m2) / w)
-        const py = Math.floor((m3 * u + m4 * v + m5) / w)
-        if (px >= 0 && py >= 0 && px < width && py < height) modules[y * size + x] = data[py * width + px]!
-      }
+      const u = x + 0.5
+      const w = m6 * u + m7 * v + m8
+      const px = Math.floor((m0 * u + m1 * v + m2) / w)
+      const py = Math.floor((m3 * u + m4 * v + m5) / w)
+      const value = px >= 0 && py >= 0 && px < width && py < height ? data[py * width + px]! : 0
+      modules[index] = value
+      return value === 1
     }
   } else {
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const p = project(x, y)
-        const px = Math.floor(p.x)
-        const py = Math.floor(p.y)
-        if (px >= 0 && py >= 0 && px < image.width && py < image.height) modules[y * size + x] = image.data[py * image.width + px]!
-      }
+    sample = (x, y) => {
+      const index = y * size + x
+      if (modules[index] !== 2) return modules[index] === 1
+      const p = project(x, y)
+      const px = Math.floor(p.x)
+      const py = Math.floor(p.y)
+      const value = px >= 0 && py >= 0 && px < image.width && py < image.height ? image.data[py * image.width + px]! : 0
+      modules[index] = value
+      return value === 1
     }
   }
-  const straightRead: ModuleReader = (x, y) => modules[y * size + x] === 1
+  const straightRead = sample
   const straight = readSymbol(straightRead, size)
   if (straight) {
     // At reduced size, a read whose format copies do not agree on its level and mask is no read.
     if (strict && !formatAgrees(straightRead, size, straight.ecc, straight.mask)) return undefined
     return { ...straight, mirrored: false, inverted, location: where(location, f) }
   }
-  const mirroredRead: ModuleReader = (x, y) => modules[x * size + y] === 1
+  const mirroredRead: ModuleReader = (x, y) => sample(y, x)
   const mirrored = readSymbol(mirroredRead, size)
   if (mirrored) {
     if (strict && !formatAgrees(mirroredRead, size, mirrored.ecc, mirrored.mask)) return undefined
     return { ...mirrored, mirrored: true, inverted, location: where(location, f) }
+  }
+  // A version mismatch can stop either symbol read before its format is read.
+  // Populate both orientations before checking the candidate for a second look.
+  for (let i = 0; i < 15; i++) {
+    const [x, y] = FORMAT_COORDS[i]!
+    sample(x, y); sample(y, x)
+    const sx = i < 8 ? size - 1 - i : 8
+    const sy = i < 8 ? 8 : size - 7 + (i - 8)
+    sample(sx, sy); sample(sy, sx)
   }
   const agreed = agreement(modules, size)
   if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })

@@ -9,6 +9,10 @@ description = "The QR decoder (greyscale, binarisation, finders, sampling maps, 
 [lib]
 crate-type = ["rlib", "cdylib"]
 
+[features]
+# The packaged JavaScript adapter supplies platform character-set decoding.
+host-text = []
+
 [dependencies]
 
 [dev-dependencies]

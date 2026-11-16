@@ -317,7 +317,9 @@ class FalseReadsTest {
     }
 
     /** Maps sampled at reduced size a frame, at most: three factors, 30 each. */
-    private val reducedMaps = 3 * 30
+    // Three original reduced sizes, plus the inverse-luminance fallback's
+    // shared allowance, which may all be used at reduced size.
+    private val reducedMaps = 3 * 30 + 30
 
     /**
      * Frames with no symbol whose sides sit at the smallest reduced size: 21

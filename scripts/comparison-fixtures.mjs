@@ -19,12 +19,12 @@ export function rgba(image) {
   }
   return { data, width: image.width, height: image.height }
 }
-export function heldOutFrames(encode) {
-  let state = 0x783fa126
+export function heldOutFrames(encode, { seed = 0x783fa126, count = 96, prefix = 'held-out' } = {}) {
+  let state = seed
   const random = () => ((state = (Math.imul(state, 1664525) + 1013904223) >>> 0) / 2 ** 32)
   const frames = []
-  for (let i = 0; i < 96; i++) {
-    const expected = `https://example.com/held-out/${i}/` + '0123456789ABCDEF'.repeat(1 + i % 6)
+  for (let i = 0; i < count; i++) {
+    const expected = `https://example.com/${prefix}/${i}/` + '0123456789ABCDEF'.repeat(1 + i % 6)
     const qr = encode(expected, i % 2 ? 'H' : 'M')
     const width = 480, height = 360, data = new Uint8Array(width * height)
     const scale = [2, 3, 4, 5][i % 4], angle = (random() - 0.5) * Math.PI * 2
@@ -45,9 +45,14 @@ export function heldOutFrames(encode) {
         data[p] = Math.round((copy[p] * 4 + copy[p - 1] + copy[p + 1] + copy[p - width] + copy[p + width]) / 8)
       }
     }
-    frames.push({ name: `held-out-${i}`, expected, ...rgba({ data, width, height }) })
+    frames.push({ name: `${prefix}-${i}`, expected, ...rgba({ data, width, height }) })
   }
   return frames
+}
+// Frozen before evaluating the next candidate. New pixels and payloads from
+// the same synthetic transformation family; this is not a camera-photo corpus.
+export function validationFrames(encode) {
+  return heldOutFrames(encode, { seed: 0x6d3a217b, count: 192, prefix: 'validation' })
 }
 export function summary(values) {
   const sorted = [...values].sort((a, b) => a - b)

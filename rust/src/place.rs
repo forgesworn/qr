@@ -299,13 +299,16 @@ fn find_alignments(image: &BitImage, edges: &mut Edges, estimate: Point, wide: f
             above += 1;
             yy -= 1;
         }
+        if !((above as f64 - tall).abs() < slack_down) {
+            return f64::NAN;
+        }
         let mut below = 0i64;
         let mut yy = down;
         while yy <= bottom && data[(yy * width + x) as usize] != 1 {
             below += 1;
             yy += 1;
         }
-        if !((above as f64 - tall).abs() < slack_down) || !((below as f64 - tall).abs() < slack_down) {
+        if !((below as f64 - tall).abs() < slack_down) {
             return f64::NAN;
         }
         (up + 1 + down) as f64 / 2.0
@@ -444,10 +447,10 @@ fn quad_matrix(from: &[Point; 4], to: &[Point; 4]) -> Matrix {
 /// Out of 25, how many modules around `centre` match an alignment pattern
 /// (dark centre, light ring, dark ring), stepping by `u` across and `v` down.
 /// Perspective changes the local module size, so three scales are tried.
-fn alignment_score(image: &BitImage, centre: Point, u: Point, v: Point) -> u32 {
+fn alignment_score(image: &BitImage, centre: Point, u: Point, v: Point, mut best: u32) -> u32 {
     let (width, height) = (image.width as f64, image.height as f64);
-    let mut best = 0;
     for scale in [0.85, 1.0, 1.15] {
+        if best == 25 { break; }
         let mut score = 0;
         for j in -2i32..=2 {
             for i in -2i32..=2 {
@@ -460,6 +463,8 @@ fn alignment_score(image: &BitImage, centre: Point, u: Point, v: Point) -> u32 {
                     score += 1;
                 }
             }
+            // Even perfect remaining rows cannot improve the best score.
+            if score + ((2 - j) * 5) as u32 <= best { break; }
         }
         best = best.max(score);
     }
@@ -550,10 +555,13 @@ pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mu
         for reach in [4.0, 8.0, 16.0] {
             for estimate in &estimates {
                 for p in find_alignments(image, edges, *estimate, wide, tall, reach, work.as_deref_mut()) {
-                    if scored.iter().any(|a| distance(a.p, p) <= module_size / 2.0) {
+                    // A point outside the enclosing square cannot be within the circle.
+                    let radius = module_size / 2.0;
+                    if scored.iter().any(|a| (a.p.x - p.x).abs() <= radius && (a.p.y - p.y).abs() <= radius && distance(a.p, p) <= radius) {
                         continue;
                     }
-                    let score = alignment_score(image, p, u, v).max(alignment_score(image, p, u0, v0));
+                    // Scores below 20 are discarded, but their points still suppress duplicates.
+                    let score = alignment_score(image, p, u0, v0, alignment_score(image, p, u, v, 19));
                     scored.push(Scored { p, score, away: near(p) });
                 }
             }
@@ -583,4 +591,50 @@ pub fn locate(image: &BitImage, triple: &[Finder; 3], size_hint: Option<i64>, mu
     let mut out: Vec<Location> = alignments.iter().map(|a| map(Some(*a), corner)).collect();
     out.extend(corners.iter().map(|c| map(None, *c)));
     out
+}
+
+#[cfg(test)]
+mod alignment_tests {
+    use super::*;
+
+    // Read every module at every scale, including samples outside the picture.
+    fn reference(image: &BitImage, centre: Point, u: Point, v: Point) -> u32 {
+        [0.85, 1.0, 1.15].into_iter().map(|scale| {
+            let mut score = 0;
+            for j in -2i32..=2 {
+                for i in -2i32..=2 {
+                    let x = (centre.x + (i as f64 * u.x + j as f64 * v.x) * scale).floor();
+                    let y = (centre.y + (i as f64 * u.y + j as f64 * v.y) * scale).floor();
+                    let got = x >= 0.0 && y >= 0.0 && x < image.width as f64 && y < image.height as f64
+                        && image.data[y as usize * image.width + x as usize] == 1;
+                    if got == (i.abs().max(j.abs()) != 1) { score += 1; }
+                }
+            }
+            score
+        }).max().unwrap()
+    }
+
+    #[test]
+    fn bounded_scores_match_exhaustive_scores_at_all_prior_best_values() {
+        let mut seed = 12345u32;
+        let mut next = || { seed = seed.wrapping_mul(1664525).wrapping_add(1013904223); seed };
+        for _ in 0..300 {
+            let data = (0..19 * 17).map(|_| (next() >> 31) as u8).collect();
+            let image = BitImage { data, width: 19, height: 17 };
+            let centre = Point { x: (next() % 260) as f64 / 10.0 - 4.0, y: (next() % 240) as f64 / 10.0 - 4.0 };
+            let u = Point { x: (next() % 90) as f64 / 10.0 - 4.5, y: (next() % 90) as f64 / 10.0 - 4.5 };
+            let v = Point { x: (next() % 90) as f64 / 10.0 - 4.5, y: (next() % 90) as f64 / 10.0 - 4.5 };
+            let full = reference(&image, centre, u, v);
+            for prior in 0..=25 {
+                assert_eq!(alignment_score(&image, centre, u, v, prior), full.max(prior));
+            }
+            let u0 = Point { x: (next() % 90) as f64 / 10.0 - 4.5, y: (next() % 90) as f64 / 10.0 - 4.5 };
+            let v0 = Point { x: (next() % 90) as f64 / 10.0 - 4.5, y: (next() % 90) as f64 / 10.0 - 4.5 };
+            let exhaustive = full.max(reference(&image, centre, u0, v0));
+            let bounded = alignment_score(&image, centre, u0, v0, alignment_score(&image, centre, u, v, 19));
+            assert_eq!(bounded, exhaustive.max(19));
+            assert_eq!(bounded >= 20, exhaustive >= 20);
+            assert_eq!(bounded >= 23, exhaustive >= 23);
+        }
+    }
 }

@@ -28,7 +28,10 @@ try {
       const found = wasm.decodeModules(qr.modules, qr.size);
       assert.deepEqual(found, decodeModules(qr.modules, qr.size));
       assert.throws(() => wasm.encode(new Uint8Array(3000)), QrCapacityError);
+      const session = wasm.createDecoder();
+      session.reset();
       wasm.dispose();
+      assert.throws(() => session.reset(), /disposed/);
       assert.equal(found.text, 'https://example.com/package');
       createDecoder().reset();
     } finally { wasm.dispose(); }

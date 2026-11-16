@@ -2,13 +2,17 @@
 
 ## Unreleased
 
+- WASM camera sessions with independent tracked regions, same-call recovery,
+  compact crop copying and explicit parent reset/disposal behaviour.
+
 - Faster mask scoring and earlier rejection of uncorrectable decoder blocks in
   TypeScript, Kotlin and Rust, preserving encoded matrices and decoded results.
 - Optional `createDecoder()` camera session with reusable luminance storage,
   tracked-region search, full-frame fallback and explicit reset.
 - Separately imported `@forgesworn/qr/wasm` backend with a bundled, reproducibly
   verified module, complete result extraction and explicit memory lifecycle.
-  The Rust character-set limitations still apply.
+  The packaged backend now uses host character sets for text parity, including
+  mixed kanji/hanzi/ECI segments. Standalone Rust retains its platform limits.
 - Per-photograph regression checks and reproducible comparative benchmarks.
 
 ## 0.2.0

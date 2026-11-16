@@ -11,11 +11,11 @@ const actual = execFileSync('rustc', ['--version'], { cwd, encoding: 'utf8' }).t
 if (actual !== compiler) throw new Error(`Use ${compiler}; found ${actual}`)
 // Keep the worktree's target directory. Remap paths and omit debug/name sections
 // so the same compiler and sources produce the same bytes on different hosts.
-execFileSync('cargo', ['build', '--locked', '--release', '--target', 'wasm32-unknown-unknown', '-j', '1'], {
+execFileSync('cargo', ['build', '--locked', '--release', '--features', 'host-text', '--target', 'wasm32-unknown-unknown', '-j', '1'], {
   cwd, stdio: 'inherit', env: { ...process.env, RUSTFLAGS: `--remap-path-prefix=${fileURLToPath(root)}=. -C strip=symbols` },
 })
 const bytes = readFileSync(new URL('rust/target/wasm32-unknown-unknown/release/forgesworn_qr.wasm', root))
-const manifest = { abi: 1, compiler, target: 'wasm32-unknown-unknown', sourceSha256: sourceHash(), sha256: sha256(bytes), bytes: bytes.length }
+const manifest = { abi: 2, compiler, target: 'wasm32-unknown-unknown', sourceSha256: sourceHash(), sha256: sha256(bytes), bytes: bytes.length }
 const asset = new URL('wasm/qr.wasm', root)
 const metadata = new URL('wasm/manifest.json', root)
 if (mode === '--write') {

@@ -1,11 +1,12 @@
 //! The whole decoder: the ordinary search in each polarity (SPEC.md steps 3 to
 //! 7), the second look (step 8) and the reduced-size pass (step 9).
 
-use crate::binarise::{binarise, invert, thresholds, to_luminance, BitImage, Luminance, Reductions};
+use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, Location, Point};
 use crate::refine::{agreement, format_agrees, keep, second_look, sized, Candidate, SECOND_LOOKS};
-use crate::symbol::{read_symbol, Payload};
+use crate::symbol::{read_symbol, Payload, FORMAT_COORDS};
+use std::cell::Cell;
 use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 
 /// Triples tried at each tolerance.
@@ -56,6 +57,8 @@ struct Budget {
     maps: u32,
     second: u32,
     here: u32,
+    inverted_fallback: bool,
+    uniform: bool,
 }
 
 /// Finds and reads one QR code. `channels` is 4 (RGBA) or 1 (grey); rows are
@@ -72,10 +75,11 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS };
-    if let Some(found) = look(&luminance, inversion, 1, &mut budget, work.as_deref_mut()) {
+    let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    if let Some(found) = look(&luminance, inversion, 1, &mut budget, work.as_deref_mut(), false) {
         return Some(found);
     }
+    if budget.uniform { return None; }
     // Nothing read at full size: the picture shrunk, coarse to fine, for codes
     // whose modules are large or carry texture or scan lines (decoder step 9).
     let mut shrunk = Reductions::new(&luminance);
@@ -89,8 +93,26 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         }
         budget.here = REDUCED_MAPS;
         let reduced = shrunk.get(f);
-        if let Some(found) = look(&reduced, inversion, f, &mut budget, work.as_deref_mut()) {
+        if let Some(found) = look(&reduced, inversion, f, &mut budget, work.as_deref_mut(), false) {
             return Some(found);
+        }
+    }
+    if inversion != Inversion::Normal && budget.maps > 0 && budget.inverted_fallback {
+        budget.here = REDUCED_MAPS;
+        let inverse = invert_luminance(&luminance);
+        if let Some(mut found) = look(&inverse, Inversion::Normal, 1, &mut budget, work.as_deref_mut(), true) {
+            found.inverted = true;
+            return Some(found);
+        }
+        let mut inverse_shrunk = Reductions::new(&inverse);
+        for f in REDUCTIONS {
+            if budget.maps == 0 || budget.here == 0 { break; }
+            if width / f < MIN_REDUCED || height / f < MIN_REDUCED { continue; }
+            let reduced = inverse_shrunk.get(f);
+            if let Some(mut found) = look(&reduced, Inversion::Normal, f, &mut budget, work.as_deref_mut(), true) {
+                found.inverted = true;
+                return Some(found);
+            }
         }
     }
     None
@@ -100,10 +122,15 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
 /// shrunk by `f` (1 for the picture itself). At reduced size a read counts
 /// only if its format copies agree on its level and mask, and locations are
 /// given in full-picture coordinates.
-fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+fn look(luminance: &Luminance, inversion: Inversion, f: usize, budget: &mut Budget, mut work: Option<&mut Work>, strict_override: bool) -> Option<Reading> {
     let levels = thresholds(luminance);
+    if f == 1 && !strict_override {
+        budget.inverted_fallback = levels.inverted_fallback;
+        budget.uniform = levels.uniform;
+    }
+    if levels.uniform { return None; }
     let bits = binarise(luminance, &levels);
-    let strict = f > 1;
+    let strict = f > 1 || strict_override;
     let mut candidates: Vec<Candidate> = Vec::new();
     // The inverse changes colour where the picture does, so one set of edges serves both.
     let mut edges = Edges::new(&bits);
@@ -219,37 +246,47 @@ fn search(
 fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>) -> Option<Reading> {
     let size = location.size;
     modules.clear();
-    modules.resize(size * size, 0);
-    let [m0, m1, m2, m3, m4, m5, m6, m7, m8] = location.matrix;
-    let (width, height) = (image.width as f64, image.height as f64);
-    for y in 0..size {
-        let v = y as f64 + 0.5;
-        for x in 0..size {
+    modules.resize(size * size, 2); // Unsampled; light and dark are 0 and 1.
+    {
+        let cells = Cell::from_mut(modules.as_mut_slice()).as_slice_of_cells();
+        let [m0, m1, m2, m3, m4, m5, m6, m7, m8] = location.matrix;
+        let (width, height) = (image.width as f64, image.height as f64);
+        let sample = |x: usize, y: usize| {
+            let cell = &cells[y * size + x];
+            let cached = cell.get();
+            if cached != 2 { return cached == 1; }
             let u = x as f64 + 0.5;
+            let v = y as f64 + 0.5;
             let w = m6 * u + m7 * v + m8;
             let px = ((m0 * u + m1 * v + m2) / w).floor();
             let py = ((m3 * u + m4 * v + m5) / w).floor();
-            // A NaN fails every comparison, and so the module stays 0 as in the reference.
-            if px >= 0.0 && py >= 0.0 && px < width && py < height {
-                modules[y * size + x] = image.data[py as usize * image.width + px as usize];
+            // A NaN fails every comparison, so it is light as in the reference.
+            let value = if px >= 0.0 && py >= 0.0 && px < width && py < height {
+                image.data[py as usize * image.width + px as usize]
+            } else { 0 };
+            cell.set(value);
+            value == 1
+        };
+        let straight_read = |x, y| sample(x, y);
+        if let Some(payload) = read_symbol(straight_read, size) {
+            if strict && !format_agrees(&straight_read, size, payload.ecc, payload.mask) {
+                return None;
             }
+            return Some(Reading { payload, mirrored: false, inverted, location: place(location, f) });
         }
-    }
-    let modules: &[u8] = modules;
-    let straight_read = |x: usize, y: usize| modules[y * size + x] == 1;
-    if let Some(payload) = read_symbol(straight_read, size) {
-        // At reduced size, a read whose format copies do not agree on its level and mask is no read.
-        if strict && !format_agrees(&straight_read, size, payload.ecc, payload.mask) {
-            return None;
+        let mirrored_read = |x, y| sample(y, x);
+        if let Some(payload) = read_symbol(mirrored_read, size) {
+            if strict && !format_agrees(&mirrored_read, size, payload.ecc, payload.mask) {
+                return None;
+            }
+            return Some(Reading { payload, mirrored: true, inverted, location: place(location, f) });
         }
-        return Some(Reading { payload, mirrored: false, inverted, location: place(location, f) });
-    }
-    let mirrored_read = |x: usize, y: usize| modules[x * size + y] == 1;
-    if let Some(payload) = read_symbol(mirrored_read, size) {
-        if strict && !format_agrees(&mirrored_read, size, payload.ecc, payload.mask) {
-            return None;
+        // A version mismatch may have stopped either read before its format.
+        for (i, &(x, y)) in FORMAT_COORDS.iter().enumerate() {
+            sample(x, y); sample(y, x);
+            let (sx, sy) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + (i - 8)) };
+            sample(sx, sy); sample(sy, sx);
         }
-        return Some(Reading { payload, mirrored: true, inverted, location: place(location, f) });
     }
     if let Some(agreed) = agreement(modules, size) {
         if sized(modules, size, agreed.mirrored) {
