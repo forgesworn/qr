@@ -258,8 +258,9 @@ private const val FOUND = 24
  * where the most of its 25 modules match. A pattern matched by fewer than
  * FOUND modules, or whose best offsets spread or reach the window's edge, is
  * doubtful and takes its neighbours' prediction. Offsets between lattice
- * points are interpolated bilinearly, and held at the outermost row and
- * column beyond them. Null below version 7, or when no pattern is found.
+ * points are interpolated bilinearly. Beyond the lattice, fully trusted cells
+ * continue to the symbol boundary; other cells use the outermost row and column.
+ * Null below version 7, or when no pattern is found.
  */
 private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean): Placement? {
     val size = location.size
@@ -399,16 +400,63 @@ private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean):
     }
     if (found == 0) return null
     if (work != null) work.meshes++
-    fun cell(z: Double): Pair<Int, Double> {
-        val t = maxOf(c[0].toDouble(), minOf(c[n - 1].toDouble(), z))
+    // The finder centres lie at module indices 3 and size - 4, not at the
+    // synthetic lattice corners. Fit each corner from its three measured neighbours.
+    val trusted = IntArray(state.size) { if (state[it] == 2) 1 else 0 }
+    fun fitCorner(q: Int, r: Int, finderX: Int, finderY: Int) {
+        val i = if (q == 0) 0 else n - 2
+        val j = if (r == 0) 0 else n - 2
+        val o = j * n + i
+        val indices = intArrayOf(o, o + 1, o + n, o + n + 1)
+        val corner = r * n + q
+        if (indices.any { it != corner && state[it] != 2 }) return
+        val s = (finderX.toDouble() - c[i]) / (c[i + 1].toDouble() - c[i])
+        val t = (finderY.toDouble() - c[j]) / (c[j + 1].toDouble() - c[j])
+        val weights = doubleArrayOf((1 - t) * (1 - s), (1 - t) * s, t * (1 - s), t * s)
+        var x = 0.0
+        var y = 0.0
+        var coefficient = 0.0
+        for (k in indices.indices) {
+            val index = indices[k]
+            if (index == corner) coefficient = weights[k]
+            else {
+                x += weights[k] * ox[index]
+                y += weights[k] * oy[index]
+            }
+        }
+        // Preserve the original map at the finder; this is not a search seed.
+        if (!coefficient.isFinite() || coefficient == 0.0) return
+        val fittedX = -x / coefficient
+        val fittedY = -y / coefficient
+        if (!fittedX.isFinite() || !fittedY.isFinite()) return
+        ox[corner] = fittedX
+        oy[corner] = fittedY
+        trusted[corner] = 1
+    }
+    fitCorner(0, 0, 3, 3)
+    fitCorner(n - 1, 0, size - 4, 3)
+    fitCorner(0, n - 1, 3, size - 4)
+    fun cell(z: Double, extend: Boolean = false): Pair<Int, Double> {
+        val t = if (extend) maxOf(0.0, minOf((size - 1).toDouble(), z))
+            else maxOf(c[0].toDouble(), minOf(c[n - 1].toDouble(), z))
         var i = 0
         while (i < n - 2 && t > c[i + 1]) i++
-        return Pair(i, (t - c[i]) / (c[i + 1] - c[i]))
+        return Pair(i, (t - c[i]) / (c[i + 1].toDouble() - c[i]))
     }
     val bent = { x: Double, y: Double ->
-        val (i, s) = cell(x)
-        val (j, t) = cell(y)
-        val o = j * n + i
+        var (i, s) = cell(x, true)
+        var (j, t) = cell(y, true)
+        var o = j * n + i
+        val outside = x < c[0] || x > c[n - 1] || y < c[0] || y > c[n - 1]
+        if (outside && !(trusted[o] != 0 && trusted[o + 1] != 0 && trusted[o + n] != 0 && trusted[o + n + 1] != 0)) {
+            val xc = cell(x)
+            val yc = cell(y)
+            i = xc.first
+            s = xc.second
+            j = yc.first
+            t = yc.second
+            o = j * n + i
+        }
         val dx = (1 - t) * ((1 - s) * ox[o] + s * ox[o + 1]) + t * ((1 - s) * ox[o + n] + s * ox[o + n + 1])
         val dy = (1 - t) * ((1 - s) * oy[o] + s * oy[o + 1]) + t * ((1 - s) * oy[o + n] + s * oy[o + n + 1])
         location.at(x + dx, y + dy)

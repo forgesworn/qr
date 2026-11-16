@@ -120,7 +120,7 @@ describe.skipIf(!cached)('photographs', () => {
           image = { data: rotated, width: height, height: width }
         }
       }
-      expect(recovered).toBeGreaterThanOrEqual(7)
+      expect(recovered).toBe(8)
     } finally { wasm.dispose() }
   }, 60_000)
 

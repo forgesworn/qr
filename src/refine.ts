@@ -256,8 +256,10 @@ const FOUND = 24
  * where the most of its 25 modules match. A pattern matched by fewer than
  * FOUND modules, or whose best offsets spread or reach the window's edge, is
  * doubtful and takes its neighbours' prediction. Offsets between lattice
- * points are interpolated bilinearly, and held at the outermost row and
- * column beyond them. Undefined below version 7, or when no pattern is found.
+ * points are interpolated bilinearly. Fully measured outer cells continue
+ * to the symbol boundary; their synthetic corners preserve the actual finder
+ * centres. Unsupported outer cells hold the outermost row and column.
+ * Undefined below version 7, or when no pattern is found.
  * With `late`, predicted nodes get one further search using a frozen pair of
  * accepted anchors; ordinary second looks retain their original single pass.
  */
@@ -391,16 +393,63 @@ function mesh(location: Location, probe: Probe, work?: Work, late = false): Loca
   }
   if (found === 0) return undefined
   if (work) work.meshes++
-  const cell = (z: number): [number, number] => {
-    const t = Math.max(c[0]!, Math.min(c[n - 1]!, z))
+  // Measurements and searches are complete before fitting the outer corners.
+  // The three synthetic lattice corners are not alignment measurements: the
+  // actual finder centres lie at module indices 3 and size - 4, not c[0]/c[n-1].
+  const trusted = Uint8Array.from(state, value => value === 2 ? 1 : 0)
+  const fitCorner = (q: number, r: number, finderX: number, finderY: number) => {
+    const i = q === 0 ? 0 : n - 2
+    const j = r === 0 ? 0 : n - 2
+    const o = j * n + i
+    const indices = [o, o + 1, o + n, o + n + 1]
+    const corner = r * n + q
+    if (indices.some(k => k !== corner && state[k] !== 2)) return
+    const s = (finderX - c[i]!) / (c[i + 1]! - c[i]!)
+    const t = (finderY - c[j]!) / (c[j + 1]! - c[j]!)
+    const weights = [(1 - t) * (1 - s), (1 - t) * s, t * (1 - s), t * s]
+    let x = 0
+    let y = 0
+    let coefficient = 0
+    for (let k = 0; k < indices.length; k++) {
+      const index = indices[k]!
+      if (index === corner) coefficient = weights[k]!
+      else {
+        x += weights[k]! * ox[index]!
+        y += weights[k]! * oy[index]!
+      }
+    }
+    // Zero offset at the true finder centre preserves the original map's
+    // measured finder anchor. This fit never becomes an alignment-search seed.
+    if (!Number.isFinite(coefficient) || coefficient === 0) return
+    const fittedX = -x / coefficient
+    const fittedY = -y / coefficient
+    if (!Number.isFinite(fittedX) || !Number.isFinite(fittedY)) return
+    ox[corner] = fittedX
+    oy[corner] = fittedY
+    trusted[corner] = 1
+  }
+  fitCorner(0, 0, 3, 3)
+  fitCorner(n - 1, 0, size - 4, 3)
+  fitCorner(0, n - 1, 3, size - 4)
+  const cell = (z: number, extend = false): [number, number] => {
+    // Continuation stops at legal module centres: no unbounded projection of
+    // large timing offsets beyond the symbol. Interior arithmetic is unchanged.
+    const t = extend ? Math.max(0, Math.min(size - 1, z)) : Math.max(c[0]!, Math.min(c[n - 1]!, z))
     let i = 0
     while (i < n - 2 && t > c[i + 1]!) i++
     return [i, (t - c[i]!) / (c[i + 1]! - c[i]!)]
   }
   const bent = (x: number, y: number): Point => {
-    const [i, s] = cell(x)
-    const [j, t] = cell(y)
-    const o = j * n + i
+    let [i, s] = cell(x, true)
+    let [j, t] = cell(y, true)
+    let o = j * n + i
+    const outside = x < c[0]! || x > c[n - 1]! || y < c[0]! || y > c[n - 1]!
+    if (outside && !(trusted[o] && trusted[o + 1] && trusted[o + n] && trusted[o + n + 1])) {
+      // Predicted nodes do not justify extrapolation; retain the old clamp.
+      ;[i, s] = cell(x)
+      ;[j, t] = cell(y)
+      o = j * n + i
+    }
     const dx = (1 - t) * ((1 - s) * ox[o]! + s * ox[o + 1]!) + t * ((1 - s) * ox[o + n]! + s * ox[o + n + 1]!)
     const dy = (1 - t) * ((1 - s) * oy[o]! + s * oy[o + 1]!) + t * ((1 - s) * oy[o + n]! + s * oy[o + n + 1]!)
     return project(x + dx, y + dy)

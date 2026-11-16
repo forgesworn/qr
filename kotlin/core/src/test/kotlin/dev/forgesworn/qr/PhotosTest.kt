@@ -94,7 +94,7 @@ class PhotosTest {
                 image = Grey(rotated, image.height, image.width)
             }
         }
-        assertTrue("${photo.id}: fewer than seven reference orientations read", recovered >= 7)
+        assertTrue("${photo.id}: all reference orientations read", recovered == 8)
     }
 
     @Test

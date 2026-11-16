@@ -156,7 +156,7 @@ const STEP: f64 = 1.0 / 16.0;
 /// alignment patterns the picture shows.
 enum Map {
     Plain([f64; 9]),
-    Bent { matrix: [f64; 9], c: &'static [u8], n: usize, ox: Vec<f64>, oy: Vec<f64> },
+    Bent { matrix: [f64; 9], c: &'static [u8], n: usize, size: usize, ox: Vec<f64>, oy: Vec<f64>, trusted: Vec<bool> },
 }
 
 fn plain(m: &[f64; 9], x: f64, y: f64) -> Point {
@@ -168,8 +168,8 @@ fn plain(m: &[f64; 9], x: f64, y: f64) -> Point {
 }
 
 /// Which lattice cell a coordinate falls in, and how far along it.
-fn cell(c: &[u8], n: usize, z: f64) -> (usize, f64) {
-    let (first, last) = (c[0] as f64, c[n - 1] as f64);
+fn cell(c: &[u8], n: usize, z: f64, size: usize, extend: bool) -> (usize, f64) {
+    let (first, last) = if extend { (0.0, (size - 1) as f64) } else { (c[0] as f64, c[n - 1] as f64) };
     // Math.min and Math.max pass a NaN on.
     let t = if z.is_nan() { z } else { first.max(last.min(z)) };
     let mut i = 0;
@@ -183,11 +183,17 @@ impl Map {
     fn project(&self, x: f64, y: f64) -> Point {
         match self {
             Map::Plain(m) => plain(m, x, y),
-            Map::Bent { matrix, c, n, ox, oy } => {
+            Map::Bent { matrix, c, n, size, ox, oy, trusted } => {
                 let n = *n;
-                let (i, s) = cell(c, n, x);
-                let (j, t) = cell(c, n, y);
-                let o = j * n + i;
+                let (mut i, mut s) = cell(c, n, x, *size, true);
+                let (mut j, mut t) = cell(c, n, y, *size, true);
+                let mut o = j * n + i;
+                let outside = x < c[0] as f64 || x > c[n - 1] as f64 || y < c[0] as f64 || y > c[n - 1] as f64;
+                if outside && !(trusted[o] && trusted[o + 1] && trusted[o + n] && trusted[o + n + 1]) {
+                    (i, s) = cell(c, n, x, *size, false);
+                    (j, t) = cell(c, n, y, *size, false);
+                    o = j * n + i;
+                }
                 let dx = (1.0 - t) * ((1.0 - s) * ox[o] + s * ox[o + 1]) + t * ((1.0 - s) * ox[o + n] + s * ox[o + n + 1]);
                 let dy = (1.0 - t) * ((1.0 - s) * oy[o] + s * oy[o + 1]) + t * ((1.0 - s) * oy[o + n] + s * oy[o + n + 1]);
                 plain(matrix, x + dx, y + dy)
@@ -518,7 +524,39 @@ fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>, late: bool)
     if found == 0 {
         return None;
     }
-    Some(Map::Bent { matrix, c, n, ox, oy })
+    // Synthetic corners constrain the measured map at the actual finder centres.
+    // Only measured neighbours justify a fit or subsequent extrapolation.
+    let mut trusted: Vec<bool> = state.iter().map(|&value| value == 2).collect();
+    let mut fit_corner = |q: usize, r: usize, finder_x: f64, finder_y: f64| {
+        let i = if q == 0 { 0 } else { n - 2 };
+        let j = if r == 0 { 0 } else { n - 2 };
+        let o = j * n + i;
+        let indices = [o, o + 1, o + n, o + n + 1];
+        let corner = r * n + q;
+        if indices.iter().any(|&k| k != corner && state[k] != 2) { return; }
+        let s = (finder_x - c[i] as f64) / (c[i + 1] as f64 - c[i] as f64);
+        let t = (finder_y - c[j] as f64) / (c[j + 1] as f64 - c[j] as f64);
+        let weights = [(1.0 - t) * (1.0 - s), (1.0 - t) * s, t * (1.0 - s), t * s];
+        let mut x = 0.0;
+        let mut y = 0.0;
+        let mut coefficient = 0.0;
+        for k in 0..indices.len() {
+            let index = indices[k];
+            if index == corner { coefficient = weights[k]; }
+            else { x += weights[k] * ox[index]; y += weights[k] * oy[index]; }
+        }
+        if !coefficient.is_finite() || coefficient == 0.0 { return; }
+        let fitted_x = -x / coefficient;
+        let fitted_y = -y / coefficient;
+        if !fitted_x.is_finite() || !fitted_y.is_finite() { return; }
+        ox[corner] = fitted_x;
+        oy[corner] = fitted_y;
+        trusted[corner] = true;
+    };
+    fit_corner(0, 0, 3.0, 3.0);
+    fit_corner(n - 1, 0, (size - 4) as f64, 3.0);
+    fit_corner(0, n - 1, 3.0, (size - 4) as f64);
+    Some(Map::Bent { matrix, c, n, size, ox, oy, trusted })
 }
 
 /// Reads one candidate again; the result must keep its selected level and mask.
