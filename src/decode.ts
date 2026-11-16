@@ -57,8 +57,13 @@ export function decode(image: ImageLike, options: DecodeOptions = {}): DecodeRes
   return decodeCounted(image, options)
 }
 
-/** As decode(), counting the search's work into `work`; for tests, not exported from the package. */
-export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, work?: Work): DecodeResult | undefined {
+/** Working storage owned by one decoder session, never the caller's data. */
+export interface DecodeWorkspace {
+  luminance?: Uint8Array | undefined
+}
+
+/** Validates the complete input before a session considers a smaller region. */
+export function imageLayout(image: ImageLike, options: DecodeOptions = {}) {
   if (image === null || typeof image !== 'object') throw new TypeError('decode needs { data, width, height }')
   const kind = Object.prototype.toString.call(image.data).slice(8, -1)
   if (kind !== 'Uint8Array' && kind !== 'Uint8ClampedArray') {
@@ -76,7 +81,18 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   const stride = options.rowStride ?? width
   if (!Number.isInteger(stride) || stride < width) throw new RangeError('rowStride must be an integer of at least width')
   const channels = channelsFor(image, stride, options.channels)
-  const luminance = toLuminance(image.data, width, height, channels, stride)
+  return { width, height, stride, channels, inversion }
+}
+
+/** Counts search work for tests; optional internal storage leaves ordinary decode() stateless. */
+export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, work?: Work, workspace?: DecodeWorkspace): DecodeResult | undefined {
+  const { width, height, stride, channels, inversion } = imageLayout(image, options)
+  let storage: Uint8Array | undefined
+  if (workspace) {
+    if (!workspace.luminance || workspace.luminance.length < width * height) workspace.luminance = new Uint8Array(width * height)
+    storage = workspace.luminance.subarray(0, width * height)
+  }
+  const luminance = toLuminance(image.data, width, height, channels, stride, storage)
   const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS }
   const found = look(luminance, inversion, 1, budget, work)
   if (found) return found

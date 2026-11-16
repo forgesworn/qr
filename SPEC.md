@@ -318,6 +318,32 @@ pipeline:
 9. Reduced size: only when the second look has found nothing too, the
    picture shrunk and searched again. See below.
 
+### Reusable camera decoder
+
+The TypeScript `createDecoder()` helper returns an independent synchronous
+`Decoder` with `decode(image, options?)` and `reset()`. Its input validation,
+options and result fields are those of `decode`. Every call validates the
+whole input and reads its current pixels. It keeps its own luminance working
+buffer and a rectangle, never caller buffers or a cached payload. Returned
+payloads remain valid after subsequent calls and reset.
+
+After a successful read, a following frame of the same dimensions first
+searches a padded rectangle around the previous symbol, provided that rectangle
+covers at most half the frame. Coordinates in the returned location refer to
+the full input image. If the rectangle does not read, the whole frame is
+searched in the same call. A failed full-frame read forgets the rectangle;
+changed dimensions also discard it. Options, including polarity, apply anew
+on every call. `reset()` forgets the rectangle and releases references to
+working storage; it is safe to call repeatedly.
+
+This opt-in helper favours a code near the last successful location when a
+frame contains several codes. Cropping can change local thresholds and finder
+estimates, so its location and chosen code need not equal a fresh `decode`
+call. Each crop uses the same decoding and correction rules; a previous result
+is never evidence that the current frame is readable. The stateless pipeline
+and its conformance work counters are unchanged. The additional cropped search
+has the same work caps as an ordinary call on that smaller picture.
+
 ### Arithmetic
 
 Real numbers are IEEE 754 doubles, and each expression is evaluated in the

@@ -13,11 +13,12 @@ const option = (name, fallback) => args.includes(name) ? args[args.indexOf(name)
 const rounds = Number(option('--rounds', 25))
 if (!Number.isInteger(rounds) || rounds < 25) throw new RangeError('Use at least 25 rounds')
 const suite = option('--suite', 'all')
-if (!['all', 'encode', 'decode'].includes(suite)) throw new RangeError('Unknown suite')
+if (!['all', 'encode', 'decode', 'session'].includes(suite)) throw new RangeError('Unknown suite')
 const currentPath = resolve('dist')
 const baselinePath = option('--baseline', undefined)
 const current = await import(pathToFileURL(currentPath + '/index.js'))
-const baseline = baselinePath ? await import(pathToFileURL(resolve(baselinePath, 'index.js'))) : undefined
+const baseline = suite === 'session' ? current : baselinePath ? await import(pathToFileURL(resolve(baselinePath, 'index.js'))) : undefined
+const candidate = suite === 'session' ? current.createDecoder() : current
 const identity = (directory) => {
   const hash = createHash('sha256')
   for (const file of readdirSync(directory).filter(n => n.endsWith('.js')).sort()) {
@@ -26,7 +27,7 @@ const identity = (directory) => {
   return hash.digest('hex')
 }
 const cases = []
-if (suite !== 'decode') {
+if (suite !== 'decode' && suite !== 'session') {
   for (const [name, data, options] of [
     ['url', 'https://example.com/performance/0123456789', {}],
     ['mixed', 'lightning:LNBC' + '0123456789ACDEFGHJKLMNPQRSTUVWXYZ'.repeat(8), {}],
@@ -69,12 +70,17 @@ const summary = values => {
 const before = loadavg()
 const rows = []
 let consumed = 0
+const publicResult = (result) => {
+  if (!result?.location) return result
+  const point = p => p === undefined ? undefined : { x: p.x, y: p.y }
+  return { ...result, location: Object.fromEntries(Object.entries(result.location).map(([key, p]) => [key, point(p)])) }
+}
 for (const c of cases) {
-  if (baseline) deepStrictEqual(c.run(current), c.run(baseline), c.name + ' full result differs')
+  if (baseline) deepStrictEqual(publicResult(c.run(candidate)), publicResult(c.run(baseline)), c.name + ' full result differs')
   const samples = { current: [], baseline: [] }
   for (let round = -5; round < rounds; round++) {
     for (const name of round % 2 ? ['current', 'baseline'] : ['baseline', 'current']) {
-      const lib = name === 'current' ? current : baseline
+      const lib = name === 'current' ? candidate : baseline
       if (!lib) continue
       const start = performance.now()
       for (let i = 0; i < c.iterations; i++) {
@@ -84,6 +90,7 @@ for (const c of cases) {
       if (round >= 0) samples[name].push((performance.now() - start) / c.iterations)
     }
   }
+  if (baseline) deepStrictEqual(publicResult(c.run(candidate)), publicResult(c.run(baseline)), c.name + ' final result differs')
   const row = { name: c.name, current: summary(samples.current) }
   if (baseline) {
     row.baseline = summary(samples.baseline)
@@ -95,6 +102,6 @@ console.log(JSON.stringify({
   revision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   dirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '',
   currentSha256: identity(currentPath), baselineSha256: baselinePath ? identity(baselinePath) : undefined,
-  cpu: cpus()[0]?.model, platform: platform(), node: process.version, rounds,
+  cpu: cpus()[0]?.model, platform: platform(), node: process.version, rounds, suite,
   warmupRounds: 5, loadBefore: before, loadAfter: loadavg(), consumed, rows,
 }, null, 2))

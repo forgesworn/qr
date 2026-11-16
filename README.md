@@ -322,6 +322,27 @@ The data must hold at least `rowStride * (height - 1) + width` bytes, and
 and works as it is. `decode` copies what it needs: it neither changes your
 buffer nor keeps it.
 
+### Repeated camera frames
+
+Use an independent decoder for each camera stream:
+
+```ts
+import { createDecoder, type ImageLike } from '@forgesworn/qr'
+
+const reader = createDecoder()
+function readFrame(frame: ImageLike) {
+  return reader.decode(frame) // the same image and options as decode()
+}
+reader.reset()               // call when stopping or switching cameras
+```
+
+It reuses luminance storage and tries the previous symbol's region first.
+When that region misses, it searches the full frame in the same call. Each
+call reads fresh pixels; it never returns a cached payload. With several codes
+visible, it favours the previous region. Cropping can change the reported
+location slightly. `reset()` forgets the region and releases working storage.
+Keep using a worker and avoid queueing frames, as in the recipe above.
+
 ### Everything a read gives you
 
 ```ts
@@ -384,6 +405,7 @@ function toSvg(qr: QrCode, options?: SvgOptions): string
 function drawCanvas(canvas: CanvasLike, qr: QrCode, options?: CanvasOptions): void
 function toTerminal(qr: QrCode, options?: TerminalOptions): string
 function decode(image: ImageLike, options?: DecodeOptions): DecodeResult | undefined
+function createDecoder(): Decoder
 function decodeModules(modules: ArrayLike<number | boolean>, size: number): (Payload & { mirrored: boolean }) | undefined
 class QrCapacityError extends RangeError {}
 
@@ -416,6 +438,10 @@ interface CanvasOptions { width?: number; margin?: number; dark?: string; light?
 interface TerminalOptions { margin?: number; ink?: 'light' | 'dark' }
 
 interface ImageLike { data: Uint8Array | Uint8ClampedArray; width: number; height: number }
+interface Decoder {
+  decode(image: ImageLike, options?: DecodeOptions): DecodeResult | undefined
+  reset(): void
+}
 interface DecodeOptions {
   rowStride?: number                        // pixels from row to row; default width
   channels?: 1 | 4                          // default: worked out from the data length

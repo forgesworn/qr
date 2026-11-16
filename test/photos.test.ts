@@ -14,7 +14,7 @@ import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import jsQRModule from 'jsqr'
 import { describe, expect, it } from 'vitest'
-import { decode } from '../src/index.js'
+import { createDecoder, decode } from '../src/index.js'
 import { toRgba } from './photo.js'
 import { readPng } from './png.js'
 
@@ -122,5 +122,18 @@ describe.skipIf(!cached)('photographs', () => {
     console.log(`photographs read: ${readIds.length}/${manifest.photos.length} (floor ${manifest.ratchet.typescript}); baseline images no longer read: ${lost.join(' ') || 'none'}`)
     expect(lost, 'previously readable photographs must remain readable').toEqual([])
     expect(readIds.length).toBeGreaterThanOrEqual(manifest.ratchet.typescript)
+  }, 1_800_000)
+
+  it('preserves readable photographs without wrong text after a camera session learns their region', () => {
+    for (const p of manifest.photos) {
+      const reader = createDecoder()
+      const image = load(p)
+      const want = expected(p)
+      const first = reader.decode(image)
+      const tracked = reader.decode(image)
+      if (tracked) expect(tracked.text, p.id).toBe(want)
+      if (first) expect(tracked?.text, `lost after tracking: ${p.id}`).toBe(want)
+      reader.reset()
+    }
   }, 1_800_000)
 })

@@ -23,8 +23,9 @@ export function toLuminance(
   height: number,
   channels: 1 | 4,
   rowStride = width,
+  storage?: Uint8Array,
 ): Luminance {
-  const out = new Uint8Array(width * height)
+  const out = storage ?? new Uint8Array(width * height)
   if (channels === 1) {
     for (let y = 0; y < height; y++) out.set(data.subarray(y * rowStride, y * rowStride + width), y * width)
     return { data: out, width, height }

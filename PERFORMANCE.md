@@ -11,7 +11,7 @@ universal superiority is established by a desktop microbenchmark.
   interleaved timings, typical and slow cases, full decoded results.
 - [x] Faster mask selection, with identical matrices and tie-breaking.
 - [x] Cheaper failed decoder candidates, preserving recovered reads and work bounds.
-- [ ] Optional reusable camera decoder session, tested for changed frames,
+- [x] Optional reusable camera decoder session, tested for changed frames,
   movement, polarity, independent sessions and stale-result rejection.
 - [ ] Usable optional browser WASM backend, full-result timing and memory
   lifecycle checks; investigate SIMD only where measurements justify it.
@@ -52,9 +52,48 @@ repository release workflow, never manual npm publishing.
 - Full-result WASM timing now checks every returned field, including text.
   Character-set differences must be evaluated separately rather than silently
   accepted as equal results.
-- Current step: complete the core optimisation checks, then add the optional
-  camera session and distributable WASM interface. No physical device results
-  or independent competitor ranking have been established.
+- Camera session implemented: `createDecoder()`, per-instance luminance
+  storage, bounded cropped search, same-call full-frame fallback, reset.
+  Tests cover changed payloads, blank replacements, movement, dimensions,
+  current polarity options, padded grey/RGBA, independent sessions and invalid
+  whole frames. Repeated reads of all 184 photographs preserve all first reads
+  without wrong text. Typecheck and all 418 TypeScript tests passed.
+- Core commits: `f47f80b` (scoring, block extraction and benchmark infrastructure),
+  `621586b` (compare public points in full-result WASM timing; TypeScript's
+  internal finder count/moduleSize properties are not public Point fields).
+- Corrected full-result WASM timing passed on all three synthetic fixtures:
+  blank TS/WASM 11.97/5.21 ms, clean 7.96/3.30 ms, noise 118.21/57.92 ms.
+- Camera benchmark (`--suite session`), against the current stateless decoder:
+  repeated clean grey 3.545/0.832 ms (4.26x), RGBA 7.284/1.316 ms (5.53x).
+  Blank/noise medians stayed within 3%. These repeated-frame measurements
+  describe tracking after warm-up, not initial acquisition or moving-camera
+  performance. Host one-minute load was about 17.
+- Current step: distributable browser WASM interface, independent comparative
+  evaluation and final package/hosted checks. No physical device results or
+  independent competitor ranking have been established.
+
+### Next implementation notes
+
+The existing `rust/bench/loader.js` is Node-only and allocates/frees each input.
+Move the supported browser interface into a separately imported package entry,
+with reusable input memory, result ownership, explicit disposal and documented
+Rust character-set limitations. Preserve the dependency-free default entry.
+A binary must be included and checked against its Rust source; do not require
+package consumers to install Rust or fetch an unpinned remote module.
+
+The anvil reusable release workflow was inspected at `v0`: build-a and build-b
+both run `npm ci` then `npm run build`, but build-b does not run test-command.
+Generating the distributed WASM only in test-command would therefore break
+reproducible tarballs. Resolve packaging in the common build path (for example,
+a small checked-in, reproducibly verified WASM asset copied into dist), and
+validate the actual packed package. The current local compiler is Rust 1.94.1;
+the current release WASM is 209,055 bytes. No release workflow was changed.
+
+Task-created caches still needed for final verification: `vectors/photos-cache`,
+`rust/target`, Kotlin build output (inspect pre-existing cache ownership before
+cleanup), and `/tmp/qr-performance-Eoi9WV`. No task server, emulator or fixture
+process is running. The original checkout was clean and detached at `91dd037`;
+`qr-release` is a separate pre-existing worktree and must be preserved.
 
 ## Initial before/after measurements
 
