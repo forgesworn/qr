@@ -78,4 +78,6 @@ known misses and a random-noise latency disadvantage.
 - [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.0, Rust 1.96+, no runtime dependencies.
 - [Rust API documentation](https://docs.rs/forgesworn-qr): native API, examples and character-set limits.
 - [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md): application entry points, pixel layout, input and resource contracts.
-- Kotlin is source-distributed. No Maven Central or JSR release is currently advertised.
+- Kotlin: self-contained source under `kotlin/core/src/main/kotlin`; Maven Central coordinate `io.github.forgesworn:qr:0.3.0`, JVM 17, Kotlin standard library only. Imports use `dev.forgesworn.qr`.
+- JSR: `jsr:@forgesworn/qr@0.3.0` and optional `jsr:@forgesworn/qr@0.3.0/wasm`; the same TypeScript API. Use `deno add jsr:@forgesworn/qr@0.3.0` for a Deno project.
+- Check the distribution guide for verified publication status. Reserved coordinates and configured workflows alone do not establish registry availability.
