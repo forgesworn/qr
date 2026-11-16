@@ -20,6 +20,39 @@ class VersionInfoTest {
     }
 
     @Test
+    fun curvatureAdmissionRequiresExactVersionAndNonconflictingHeaders() {
+        val qr = encode("Curved sheet test payload", EncodeOptions(version = 12, ecc = ErrorCorrection.M, mask = 3))
+        val size = qr.size
+        val original = qr.modules.copyOf()
+        val (bottom, top) = versionModules(size)
+        val formats = Array(2) { copy -> IntArray(15) { i ->
+            val x = if (copy == 0) FORMAT_COORDS[i][0] else if (i < 8) size - 1 - i else 8
+            val y = if (copy == 0) FORMAT_COORDS[i][1] else if (i < 8) 8 else size - 7 + i - 8
+            y * size + x
+        } }
+        fun write(indices: IntArray, word: Int) {
+            for (i in indices.indices) qr.modules[indices[i]] = ((word shr i) and 1).toByte()
+        }
+        val read = ModuleReader { x, y -> qr.modules[y * size + x].toInt() == 1 }
+        fun reset() = original.copyInto(qr.modules)
+        write(top, 0)
+        write(formats[0], 0)
+        write(formats[1], formatBits(ErrorCorrection.M, 3) xor 1)
+        val good = curvatureHeader(read, size, false)
+        assertNotNull(good)
+        assertEquals(ErrorCorrection.M, good!!.ecc)
+        assertEquals(3, good.mask)
+        assertEquals(1, good.distance)
+        reset(); write(bottom, versionBits(12) xor 1); write(top, versionBits(12) xor 2)
+        assertEquals(12, readVersion(read, size)); assertNull(curvatureHeader(read, size, false))
+        reset(); write(top, versionBits(13) xor 1); assertNull(curvatureHeader(read, size, false))
+        reset(); write(formats[1], formatBits(ErrorCorrection.Q, 7) xor 1); assertNull(curvatureHeader(read, size, false))
+        reset(); write(formats[0], 0); write(formats[1], 0); assertNull(curvatureHeader(read, size, false))
+        reset(); write(bottom, versionBits(13)); write(top, 0); assertNull(curvatureHeader(read, size, false))
+        assertNull(curvatureHeader(ModuleReader { _, _ -> error("must not sample") }, 41, false))
+    }
+
+    @Test
     fun versionHintRequiresBothCopiesToAgreeIndependently() {
         for (version in listOf(7, 12, 40)) {
             val size = 17 + 4 * version

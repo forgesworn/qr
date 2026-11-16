@@ -28,10 +28,10 @@ payload; the synthetic suites also check its bytes.
 
 | Dataset | QR | ZXing-WASM |
 |---|---:|---:|
-| Existing photograph collection | **179/184** | 171/184 |
+| Existing photograph collection | **180/184** | 171/184 |
 | 192-case synthetic regression set | **174/192** | 169/192 |
 | Frozen stress set: positive frames | **172/224** | 150/224 |
-| Fresh synthetic qualification: positive frames | **69/128** | 55/128 |
+| Previously qualified synthetic positives | **69/128** | 55/128 |
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
@@ -39,11 +39,15 @@ payload; the synthetic suites also check its bytes.
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. The 0.3.2
-recovery adds four exact reads across the existing synthetic suites, including
-the version-40 perspective case. The fresh set was fixed before testing this
-change: both 0.3.0 and 0.3.2 read 69/128, so it shows no additional gain from
-this patch. All 32 fresh negative controls are rejected by both libraries.
+Both readers miss all 28 finder-occlusion cases in that stress set. Version
+0.3.3 adds one correct dense curved photograph, preserving every earlier
+success across 888 checked cases. It also reads seven of 16 transformed
+versions of that photo, versus none before; inverted variants remain unread.
+A separate new family of 18 synthetic curved sheets remains unread by both
+QR versions. This is a measured improvement, not general curvature coverage.
+The previously qualified 160-case set is now regression data: QR remains
+69/128 on positives, with all 32 negatives rejected. The additional curvature
+pass produces no gain on those cases.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
@@ -55,7 +59,10 @@ sequence totals 7.074 ms versus 19.737 ms. Random noise favours ZXing:
 latency or battery measurements. Pure TypeScript has different costs.
 The 0.3.2 paired checks keep clean/blank medians broadly unchanged; main noise
 costs 3.6–3.9% more to reject in exchange for the additional accuracy. See the
-performance report for both complete timing forks.
+performance report for both complete timing forks. The 0.3.3 change adds
+about 0.2% to main-noise WASM medians in its two paired runs, with clean and blank
+medians within 0.5%. Recovering the newly readable curved photo takes about
+22.2 ms instead of the earlier 12.1 ms miss.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

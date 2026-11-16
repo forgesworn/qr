@@ -254,7 +254,7 @@ function emptyLarge(random: () => number): Frame[] {
 }
 
 /** The mesh's points probed a frame, at most, as in test/work.test.ts. */
-const MESH_PROBES = 4 * 46 * 25 * 25 * 25
+const MESH_PROBES = 4 * 92 * 25 * 25 * 25
 
 /** Whether a triple the search locates estimates the size past 177, by no more than 8. */
 function over(frame: Frame): boolean {

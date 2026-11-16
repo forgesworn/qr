@@ -1,5 +1,56 @@
 # Performance and verification
 
+## 0.3.3 curved-map recovery
+
+One deferred alignment retry recovers the dense curved `s2-qrcode-2-high-res-1`
+photograph. Its first mesh accepts 22 of 33 lattice nodes; the late sweep
+uses frozen accepted neighbours to accept the remaining 11. Admission needs
+an exact version word matching the existing map and non-conflicting readable
+headers. Final two-copy format agreement, version, Reed-Solomon and segment
+checks remain required. Earlier successful paths retain priority.
+
+| Dataset | QR 0.3.2 | QR 0.3.3 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Photographs, exact expected text | 179/184 | **180/184** | 171/184 |
+| Synthetic validation | 174/192 | 174/192 | 169/192 |
+| Stress positives | 172/224 | 172/224 | 150/224 |
+| Earlier synthetic set | 92/96 | 92/96 | 89/96 |
+| Previously qualified positives | 69/128 | 69/128 | 55/128 |
+| Negative controls, rejected | 64/64 | 64/64 | 64/64 |
+
+All 888 cases preserve earlier QR successes and return no wrong QR payloads.
+The photograph oracle supplies expected text, not independent raw payload
+bytes; synthetic positives also check exact bytes. The packaged WASM and
+TypeScript match complete results on every case. The photo floor is regenerated
+at 180, with only this newly recovered photo changing status. The packaged
+WASM is 222,089 bytes, SHA-256
+`f63d7f09a377f3107cf5c9e0693f546b26585a117e302fa1ec9a53d953c107ba`.
+
+The additional geometry checks are deliberately reported separately: QR reads
+seven of 16 rotations, mirrors and polarity variants of the target, versus
+none before. Inverted variants remain unread. Both QR versions miss all 18
+new synthetic curved-sheet cases. These results establish a specific recovery,
+not general curvature coverage or superiority on every image. Evaluated cases
+are now regression data.
+
+Two independent paired processes on the Apple M4 Max, native Node 24.21.0,
+alternate baseline and candidate order over 60 measured pairs after at least
+10 warm-up pairs and 500 ms. Clean and blank WASM medians remain within 0.5%;
+main 720p noise rises about 0.2%, and three additional noise fixtures vary from
+-0.1% to +0.6%. TypeScript main noise changes by 0.0–0.9%, with the additional
+noise fixtures costing 0.5–1.3% more. These are measurements, not guaranteed
+bounds or phone results.
+
+The recovered photo costs more because the earlier version stops without a
+result: WASM medians rise from 12.07–12.12 ms (miss) to 22.21–22.22 ms (correct
+read); TypeScript rises from 27.79–27.82 ms to 49.73–49.96 ms. The map cap remains
+720 and the second-look cap remains four. The extra alignment sweep makes the
+conservative worst-case probe bound 5,750,000, twice the previous mesh bound.
+The actual target uses 781,250 probes and two second looks.
+
+Source identities, full per-case receipts, timing samples and reproduction
+commands are in the [0.3.3 evidence](benchmarks/2026-11-16-m4/curvature-recovery/README.md).
+
 ## 0.3.2 ranked-overflow recovery
 
 The decoder now screens previously ranked finder triples beyond the first six
@@ -26,7 +77,7 @@ image damage, but still shares the independent qrcode encoder and our image
 renderer with earlier synthetic sets. It shows no additional accuracy gain
 from this patch; all evaluated cases are now regression data. Both readers
 still miss the 28 finder-occlusion stress cases. A dense curved real photograph
-remains unreadable by QR. These finite results do not prove universal accuracy
+remains unreadable in 0.3.2; 0.3.3 recovers it as described above. These finite results do not prove universal accuracy
 or physical-camera performance.
 
 Two paired M4 Max/native arm64 Node 24.21.0 timing forks compare the packaged

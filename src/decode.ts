@@ -3,7 +3,7 @@ export type { ImageLike, DecodeOptions } from './image.js'
 import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
-import { agreedVersion, readSymbol, type ModuleReader, type Payload } from './symbol.js'
+import { agreedVersion, readSymbol, curvatureHeader, type ModuleReader, type Payload } from './symbol.js'
 import { FORMAT_COORDS } from './encode.js'
 
 /** A symbol found in a picture. */
@@ -45,7 +45,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     storage = workspace.luminance.subarray(0, width * height)
   }
   const luminance = toLuminance(image.data, width, height, channels, stride, storage)
-  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false, hints: [] }
+  const budget: Budget = { maps: MAX_MAPS, second: SECOND_LOOKS, here: MAX_MAPS, invertedFallback: false, uniform: false, hints: [], curvature: [] }
   const found = look(luminance, inversion, 1, budget, work)
   if (found) return found
   if (budget.uniform) return undefined
@@ -75,7 +75,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   }
   const recovered = recoverVersion(luminance, budget, work)
   if (recovered) return recovered
-  return recoverOverflow(luminance, budget, work)
+  const overflow = recoverOverflow(luminance, budget, work)
+  if (overflow) return overflow
+  return recoverCurvature(luminance, budget, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -95,6 +97,7 @@ interface Budget {
   invertedFallback: boolean
   uniform: boolean
   hints: VersionHint[]
+  curvature: Candidate[]
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
 }
 
@@ -196,7 +199,7 @@ function search(
             work.maps++
             if (f > 1) work.reduced = (work.reduced ?? 0) + 1
           }
-          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple)
+          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple, collectHints ? budget.curvature : undefined)
           if (result) return result
           if (budget.maps === 0 || budget.here === 0) return undefined
         }
@@ -224,6 +227,7 @@ function read(
   f: number,
   hints?: VersionHint[],
   triple?: readonly [Finder, Finder, Finder],
+  curvature?: Candidate[],
 ): DecodeResult | undefined {
   const { size, project, matrix } = location
   const modules = new Uint8Array(size * size)
@@ -279,6 +283,14 @@ function read(
     const sx = i < 8 ? size - 1 - i : 8
     const sy = i < 8 ? 8 : size - 7 + (i - 8)
     sample(sx, sy); sample(sy, sx)
+  }
+  if (curvature) {
+    for (const mirrored of [false, true]) {
+      const header = curvatureHeader(mirrored ? mirroredRead : straightRead, size)
+      if (!header) continue
+      const duplicate = curvature.some(c => c.inverted === inverted && c.mirrored === mirrored && c.ecc === header.ecc && c.mask === header.mask && c.location.size === size && c.location.matrix && matrix && c.location.matrix.every((v,i)=>v === matrix[i]))
+      if (!duplicate) keep(curvature, {location, inverted, mirrored, ...header})
+    }
   }
   const agreed = agreement(modules, size)
   if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
@@ -397,4 +409,18 @@ export function decodeModules(modules: ArrayLike<number | boolean>, size: number
   if (straight) return { ...straight, mirrored: false }
   const mirrored = readSymbol((x, y) => at(x * size + y), size)
   return mirrored ? { ...mirrored, mirrored: true } : undefined
+}
+
+/** A final bounded retry of original maps anchored by an exact version word. */
+function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work): DecodeResult | undefined {
+  if (budget.curvature.length === 0 || budget.second === 0) return undefined
+  const levels = thresholds(luminance)
+  for (const candidate of budget.curvature) {
+    if (budget.second === 0) break
+    budget.second--
+    if (work) work.second++
+    const result = secondLook(luminance, levels, candidate, work, true, true)
+    if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
+  }
+  return undefined
 }

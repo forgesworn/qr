@@ -336,6 +336,10 @@ pipeline:
 12. Ranked overflow: after version-directed recovery also fails, screen
     previously ranked full-resolution triples beyond the first six using
     agreeing format and version copies. See "Ranked overflow recovery" below.
+13. Curved-map recovery: after all earlier attempts fail, retry retained
+    full-resolution maps anchored by an exact version word. A bounded late
+    alignment pass may repair predictions missed on the first sweep.
+    See "Curved-map recovery" below.
 
 ### Reusable camera decoder
 
@@ -1036,6 +1040,50 @@ only the frame's remaining four and remain eligible after map exhaustion.
 This pass collects no additional lists or version hints. Earlier successes
 retain their result, ordering and work counts.
 
+### Curved-map recovery
+
+Step 13 runs only after steps 2 to 12 return no result. During failed reads
+of original full-resolution binary maps, retain a separate list of at most
+four candidates. Reduced pictures, the inverted-luminance fallback and other
+recovery passes do not add candidates. No new finder, size or map search is
+performed by this recovery.
+
+Check straight and then transposed orientations separately. From version 7,
+at least one version copy must be an exact BCH codeword for the map's existing
+size. An independently decodable peer, within the ordinary three-error radius,
+must identify the same version. At least one format copy must decode within
+that radius, and any independently decodable peer must identify the same error
+correction level and mask. This evidence admits a retry, never a result.
+
+Rank candidates by the smaller format distance, retaining encounter order on
+a tie. Identical size, projective matrix coefficients, polarity, orientation,
+level and mask identify a duplicate. Retain only four; this list never displaces
+the ordinary second-look queue. After every earlier recovery fails, process it
+in order using only the frame's remaining second looks, even if map allowance
+is exhausted. Stop at the first successful strict read.
+
+Each candidate first uses the ordinary alignment mesh. Then freeze its accepted
+alignment states and offsets. Visit only nodes that were predicted, in the
+original lattice traversal order, at most once more. Search each of the left,
+right, up and down rays for its nearest two accepted alignment nodes; finder
+anchors and predicted nodes are not measurements. Choose the pair whose nearer
+node is closest in module coordinates, then whose farther node is closest,
+then ray order. Extrapolate both offsets linearly using the actual alignment
+centre spacing. Without such a pair, leave the node unchanged.
+
+Search the same three-module window at quarter-module steps around that
+prediction. The existing 24-of-25 match, spread and window-edge tests remain
+unchanged. Accept a successful late measurement; on failure preserve the
+original offset. Newly found nodes never become anchors in this pass. Retain
+all initially accepted nodes. Bilinear mesh interpolation, timing walks and
+edge refinement are unchanged. Count every additional pattern search in
+`probed`, and count the resulting mesh once.
+
+The result must pass the ordinary version, Reed-Solomon and segment rules,
+match the admitted level and mask, and have both final format copies within
+two errors of that word. Earlier successful reads keep their results, ordering
+and work counts; their meshes still use only one pass.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1071,10 +1119,12 @@ among them.
   each sampled three times
   (timing, edges, final) plus one sixteenth-step search per timing module
   and per boundary between unlike modules.
-- The mesh probes at most 46 lattice points a second look (version 40 has
-  49, three of them at the finders), each at 25 x 25 offsets of 25 modules:
-  at most 2,875,000 points a frame, each interpolating four pixels, whatever
-  the picture's size.
+- The ordinary mesh probes at most 46 lattice points a second look (version
+  40 has 49, three of them at the finders), each at 25 x 25 offsets of 25
+  modules. Step 13 may search predicted nodes once more, for a conservative
+  bound of 92 pattern searches per second look and 5,750,000 points a frame,
+  each interpolating four pixels, whatever the picture's size. Frames using
+  only ordinary meshes retain the 2,875,000-point bound.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map
@@ -1084,7 +1134,7 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 to 12 as without them,
+The caps on maps and second looks are the same with steps 9 to 13 as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying
@@ -1099,6 +1149,11 @@ remaining map allowance exist. It retains references to existing ranked data
 until the frame completes and adds corner geometry work for unselected triples;
 it does not repeat finder scans. Alignment work is counted only after agreeing
 headers admit a full location.
+Step 13 stores at most four additional map references and header results. It
+recomputes thresholds only when an admitted map and a second look remain; it
+needs no new binary image or finder scan. The extra alignment sweep is bounded
+as above. Header checks during original failed reads add a fixed number of
+module samples per map; the existing Work counters do not measure these samples.
 
 All three ports count this work for their tests (pixels stepped in
 cross-checks, stored candidates compared, pixels in alignment windows,

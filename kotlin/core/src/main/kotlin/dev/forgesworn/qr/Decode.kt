@@ -121,6 +121,7 @@ private class Overflow(val ranked: List<Array<Finder>>, val inverted: Boolean)
 private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
     val hints = ArrayList<VersionHint>(4)
     val overflow = ArrayList<Overflow>()
+    val curvature = ArrayList<Retry>(SECOND_LOOKS + 1)
 }
 
 private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Work? = null): DecodeResult? {
@@ -160,7 +161,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     }
     val recovered = recoverVersions(luminance, budget, work)
     if (recovered != null) return recovered
-    return recoverOverflow(luminance, budget, work)
+    val overflow = recoverOverflow(luminance, budget, work)
+    if (overflow != null) return overflow
+    return recoverCurvature(luminance, budget, work)
 }
 
 /**
@@ -329,6 +332,18 @@ private fun read(
         val sy = if (i < 8) 8 else size - 7 + (i - 8)
         sample.read(sx, sy); sample.read(sy, sx)
     }
+    if (triple != null && budget != null) {
+        for (isMirrored in booleanArrayOf(false, true)) {
+            val header = curvatureHeader(if (isMirrored) mirroredRead else straightRead, size, isMirrored) ?: continue
+            val duplicate = budget.curvature.any {
+                val old = it.location.matrix
+                it.inverted == inverted && it.agreed.mirrored == isMirrored && it.agreed.ecc == header.ecc &&
+                    it.agreed.mask == header.mask && it.location.size == size && old != null && m != null &&
+                    old.indices.all { i -> old[i] == m[i] }
+            }
+            if (!duplicate) keep(budget.curvature, Retry(location, inverted, header))
+        }
+    }
     val agreed = agreement(modules, size)
     if (agreed != null) {
         // Preserve the existing candidate decision before sampling additional version modules.
@@ -342,6 +357,20 @@ private fun read(
                     (0..2).all { hint.triple[it].x == triple[it].x && hint.triple[it].y == triple[it].y }
             }) budget.hints.add(VersionHint(triple, target, inverted))
         }
+    }
+    return null
+}
+
+/** A final bounded retry of original maps anchored by an exact version word. */
+private fun recoverCurvature(luminance: Luminance, budget: Budget, work: Work?): DecodeResult? {
+    if (budget.curvature.isEmpty() || budget.second == 0) return null
+    val levels = thresholds(luminance)
+    for (candidate in budget.curvature) {
+        if (budget.second == 0) break
+        budget.second--
+        if (work != null) work.second++
+        val payload = secondLook(luminance, levels, candidate, work, true, true) ?: continue
+        return result(payload, candidate.agreed.mirrored, candidate.inverted, where(candidate.location, 1))
     }
     return null
 }
