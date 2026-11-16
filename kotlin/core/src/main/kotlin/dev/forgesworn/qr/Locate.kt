@@ -103,20 +103,20 @@ private fun distance(a: Point, b: Point): Double = length(a.x - b.x, a.y - b.y)
 private fun distance(a: Finder, b: Finder): Double = length(a.x - b.x, a.y - b.y)
 
 /** Runs in 1:1:3:1:1 proportion, each within half a module (the centre within 1.5). */
-private fun finderRatio(counts: IntArray, tolerance: Double = 0.5): Boolean {
-    var total = 0
-    for (c in counts) {
-        if (c == 0) return false
-        total += c
-    }
+private fun finderRatio(counts: IntArray, tolerance: Double = 0.5): Boolean =
+    finderRatio(counts[0], counts[1], counts[2], counts[3], counts[4], tolerance)
+
+private fun finderRatio(c0: Int, c1: Int, c2: Int, c3: Int, c4: Int, tolerance: Double): Boolean {
+    if (c0 == 0 || c1 == 0 || c2 == 0 || c3 == 0 || c4 == 0) return false
+    val total = c0 + c1 + c2 + c3 + c4
     if (total < 7) return false
     val module = total / 7.0
     val slack = module * tolerance
-    return abs(module - counts[0]) < slack &&
-        abs(module - counts[1]) < slack &&
-        abs(3 * module - counts[2]) < 3 * slack &&
-        abs(module - counts[3]) < slack &&
-        abs(module - counts[4]) < slack
+    return abs(module - c0) < slack &&
+        abs(module - c1) < slack &&
+        abs(3 * module - c2) < 3 * slack &&
+        abs(module - c3) < slack &&
+        abs(module - c4) < slack
 }
 
 private fun centreFromEnd(counts: IntArray, end: Double): Double =
@@ -136,85 +136,74 @@ private fun crossCheck(
     originalTotal: Int,
     tolerance: Double = 0.5,
     work: Work? = null,
-    counts: IntArray,
 ): Double {
-    counts.fill(0)
+    var c0 = 0
+    var c1 = 0
+    var c2 = 0
+    var c3 = 0
+    var c4 = 0
     try {
-        return runs(image, x, y, dx, dy, maxCount, originalTotal, tolerance, counts)
+        val width = image.width
+        val height = image.height
+        fun inside(px: Int, py: Int) = px >= 0 && py >= 0 && px < width && py < height
+        // A centre run past these lengths could not pass the checks below, so
+        // stopping there loses nothing and keeps a long dark stripe from costing its
+        // length. Back along the row or down the column, the total would be more
+        // than twice the row's. On the diagonal, whose four outer runs stop at
+        // maxCount, a centre in proportion is under 29 times maxCount (at the
+        // loosest tolerance, 1.05).
+        val longest = if (dx != 0 && dy != 0) 32 * (maxCount + 1) else 2 * originalTotal
+        var px = x
+        var py = y
+        while (inside(px, py) && dark(image, px, py)) {
+            if (++c2 > longest) return Double.NaN
+            px -= dx
+            py -= dy
+        }
+        while (inside(px, py) && !dark(image, px, py) && c1 <= maxCount) {
+            c1++
+            px -= dx
+            py -= dy
+        }
+        if (!inside(px, py) || c1 > maxCount) return Double.NaN
+        while (inside(px, py) && dark(image, px, py) && c0 <= maxCount) {
+            c0++
+            px -= dx
+            py -= dy
+        }
+        if (c0 > maxCount) return Double.NaN
+        px = x + dx
+        py = y + dy
+        while (inside(px, py) && dark(image, px, py)) {
+            if (++c2 > longest) return Double.NaN
+            px += dx
+            py += dy
+        }
+        while (inside(px, py) && !dark(image, px, py) && c3 < maxCount) {
+            c3++
+            px += dx
+            py += dy
+        }
+        if (!inside(px, py) || c3 >= maxCount) return Double.NaN
+        while (inside(px, py) && dark(image, px, py) && c4 < maxCount) {
+            c4++
+            px += dx
+            py += dy
+        }
+        if (c4 >= maxCount) return Double.NaN
+        val total = c0 + c1 + c2 + c3 + c4
+        // A diagonal crosses the pattern at a longer stretch, so only straight lines
+        // compare totals. Back along the row the stretch must match; down the column,
+        // perspective can make the pattern up to twice as tall as wide, or half.
+        if (dx != 0 && dy == 0 && 5 * abs(total - originalTotal) >= 2 * originalTotal) return Double.NaN
+        if (dy != 0 && dx == 0 && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return Double.NaN
+        if (!finderRatio(c0, c1, c2, c3, c4, tolerance)) return Double.NaN
+        // Position along the line, measured in steps from the start point.
+        val end = if (dx != 0) px - x else py - y
+        return (end * (if (dx + dy > 0) 1 else -1)).toDouble() - c4 - c3 - c2 / 2.0
     } finally {
-        if (work != null) work.steps += counts.sum()
+        if (work != null) work.steps += c0 + c1 + c2 + c3 + c4
     }
-}
-
-private fun runs(
-    image: BitImage,
-    x: Int,
-    y: Int,
-    dx: Int,
-    dy: Int,
-    maxCount: Int,
-    originalTotal: Int,
-    tolerance: Double,
-    counts: IntArray,
-): Double {
-    val width = image.width
-    val height = image.height
-    fun inside(px: Int, py: Int) = px >= 0 && py >= 0 && px < width && py < height
-    // A centre run past these lengths could not pass the checks below, so
-    // stopping there loses nothing and keeps a long dark stripe from costing its
-    // length. Back along the row or down the column, the total would be more
-    // than twice the row's. On the diagonal, whose four outer runs stop at
-    // maxCount, a centre in proportion is under 29 times maxCount (at the
-    // loosest tolerance, 1.05).
-    val longest = if (dx != 0 && dy != 0) 32 * (maxCount + 1) else 2 * originalTotal
-    var px = x
-    var py = y
-    while (inside(px, py) && dark(image, px, py)) {
-        if (++counts[2] > longest) return Double.NaN
-        px -= dx
-        py -= dy
-    }
-    while (inside(px, py) && !dark(image, px, py) && counts[1] <= maxCount) {
-        counts[1]++
-        px -= dx
-        py -= dy
-    }
-    if (!inside(px, py) || counts[1] > maxCount) return Double.NaN
-    while (inside(px, py) && dark(image, px, py) && counts[0] <= maxCount) {
-        counts[0]++
-        px -= dx
-        py -= dy
-    }
-    if (counts[0] > maxCount) return Double.NaN
-    px = x + dx
-    py = y + dy
-    while (inside(px, py) && dark(image, px, py)) {
-        if (++counts[2] > longest) return Double.NaN
-        px += dx
-        py += dy
-    }
-    while (inside(px, py) && !dark(image, px, py) && counts[3] < maxCount) {
-        counts[3]++
-        px += dx
-        py += dy
-    }
-    if (!inside(px, py) || counts[3] >= maxCount) return Double.NaN
-    while (inside(px, py) && dark(image, px, py) && counts[4] < maxCount) {
-        counts[4]++
-        px += dx
-        py += dy
-    }
-    if (counts[4] >= maxCount) return Double.NaN
-    val total = counts.sum()
-    // A diagonal crosses the pattern at a longer stretch, so only straight lines
-    // compare totals. Back along the row the stretch must match; down the column,
-    // perspective can make the pattern up to twice as tall as wide, or half.
-    if (dx != 0 && dy == 0 && 5 * abs(total - originalTotal) >= 2 * originalTotal) return Double.NaN
-    if (dy != 0 && dx == 0 && (total >= 2 * originalTotal || 2 * total <= originalTotal)) return Double.NaN
-    if (!finderRatio(counts, tolerance)) return Double.NaN
-    // Position along the line, measured in steps from the start point.
-    val end = if (dx != 0) px - x else py - y
-    return centreFromEnd(counts, (end * (if (dx + dy > 0) 1 else -1)).toDouble())
 }
 
 /**
@@ -236,18 +225,17 @@ internal fun findFinders(image: BitImage, tolerance: Double = 0.5, work: Work? =
     fun file(i: Int) {
         cells.getOrPut(down(found[i].y) * columns + across(found[i].x)) { ArrayList() }.add(i)
     }
-    val crossCounts = IntArray(5)
     fun consider(counts: IntArray, y: Int, end: Int): Boolean {
         val total = counts.sum()
         var cx = centreFromEnd(counts, end.toDouble())
         val maxCount = counts[2]
-        val dy = crossCheck(image, floor(cx).toInt(), y, 0, 1, maxCount, total, tolerance, work, crossCounts)
+        val dy = crossCheck(image, floor(cx).toInt(), y, 0, 1, maxCount, total, tolerance, work)
         if (dy.isNaN()) return false
         val cy = y + dy
-        val dx = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 0, maxCount, total, tolerance, work, crossCounts)
+        val dx = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 0, maxCount, total, tolerance, work)
         if (dx.isNaN()) return false
         cx = floor(cx) + dx
-        val diagonal = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 1, maxCount * 2, total, tolerance + 0.25, work, crossCounts)
+        val diagonal = crossCheck(image, floor(cx).toInt(), floor(cy).toInt(), 1, 1, maxCount * 2, total, tolerance + 0.25, work)
         if (diagonal.isNaN()) return false
         val moduleSize = total / 7.0
         // The earliest stored candidate within a module, of a like module size, takes this sighting.
