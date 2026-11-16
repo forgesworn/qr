@@ -21,3 +21,19 @@ jobs:
       tag: ${{ inputs.tag || '' }}
       test-command: npm run fetch-photos && QR_REQUIRE_PHOTOS=1 npm run check && npm run check:package && npm run check:docs
       lifecycle-scripts-policy: strict
+
+  verify-publication:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      - name: Verify registry bytes, installed API and provenance
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: node scripts/verify-publication.mjs "$RELEASE_TAG"

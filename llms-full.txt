@@ -972,6 +972,14 @@ publication. CI separately rebuilds the packaged WASM with the pinned compiler
 and requires matching bytes. The release workflow runs the required tests and
 checks the actual packed consumer interface.
 
+After upload, a separate check waits up to 20 minutes for public registry
+availability, compares the downloaded tarball with the GitHub release asset,
+and tests a fresh install, including TypeScript/WASM agreement and npm signatures
+and provenance. A failed availability check requires investigation; it is not a
+reason to republish the same version. npm's
+[publish-time scanning](https://github.blog/changelog/2026-07-28-npm-publish-time-malware-scanning-and-dual-use-metadata/)
+can delay installation after a successful upload.
+
 ```sh
 npm view @forgesworn/qr version dist.integrity dist.attestations
 ```
