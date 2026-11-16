@@ -1,0 +1,44 @@
+--- a/rust/src/locate.rs
++++ b/rust/src/locate.rs
+@@ -351,6 +351,13 @@
+     if counts.iter().any(|&c| c == 0) { return (false, false); }
+     let total: i64 = counts.iter().sum();
+     if total < 7 { return (false, false); }
++    // For five equal positive runs r, total >= 7 implies r >= 2. Their
++    // centre error is 8r/7: above the strict 15r/14 limit and below the
++    // loose 12r/7 limit. The outer errors satisfy both. Each margin is at
++    // least r/14, well above f64 rounding throughout the valid i64 domain.
++    if counts[0] == counts[1] && counts[0] == counts[2] && counts[0] == counts[3] && counts[0] == counts[4] {
++        return (false, true);
++    }
+     let module = total as f64 / 7.0;
+     let strict_slack = module * 0.5;
+     let loose_slack = module * 0.8;
+@@ -564,6 +571,27 @@
+         for _ in 0..2 { let mut loose=Vec::new();scan_loose(&changes,width,first,&words,|counts,end|{let yes=accept(counts,end,loose.len());loose.push((*counts,end,yes));yes});assert_eq!(loose,loose_reference,"loose {data:?} pattern={pattern}"); }
+     }
+     #[test]
++    fn equal_run_shortcut_and_near_equal_fallback_match_original() {
++        let max=i64::MAX/5;
++        let mut values:Vec<i64>=(0..=4096).collect();
++        for power in 1..=60 {let n=1i64<<power;for delta in [-1i64,0,1] {let r=n+delta;if r>=0 && r<=max {values.push(r);}}}
++        values.extend([max-2,max-1,max]);
++        let mut seed=0x3eab_780c_139fu64;
++        for _ in 0..2048 {seed=seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);values.push((seed%(max as u64+1)) as i64);}
++        for r in values {
++            let equal=[r;5];let expected=(finder_ratio(&equal,0.5),finder_ratio(&equal,0.8));
++            assert_eq!(joint_ratio(&equal),expected,"equal {r}");
++            assert_eq!(expected,if r>=2 {(false,true)} else {(false,false)},"equal {r}");
++            for i in 0..5 {for delta in [-2i64,-1,1,2] {
++                let Some(value)=r.checked_add(delta) else {continue};if value<0 {continue}
++                let mut nearby=equal;nearby[i]=value;
++                if nearby.iter().try_fold(0i64,|sum,&n|sum.checked_add(n)).is_none() {continue}
++                assert_eq!(joint_ratio(&nearby),(finder_ratio(&nearby,0.5),finder_ratio(&nearby,0.8)),"nearby {nearby:?}");
++            }}
++        }
++    }
++
++    #[test]
+     fn event_rows_match_independent_original_schedule() {
+         for width in 1..=12usize { for mask in 0..(1usize<<width) {
+             let data:Vec<u8>=(0..width).map(|x|((mask>>x)&1) as u8).collect();for pattern in 0..4 {compare_event_row(&data,pattern);}

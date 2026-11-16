@@ -557,12 +557,39 @@ input-mutation checks remain outside timed intervals. A same-binary control
 completed all 12 cases, with fixture hashes matching the previous TypeScript
 receipts. This validates the runner, not a candidate's performance.
 
-The next diagnostic measures repeated five-run finder classification across
-strict/loose tolerances and polarity. A proposed compact event index must replay
-the existing successful-sighting skip schedule exactly. Count saved ratio work
-against joint classification of previously skipped windows, survivor
-reconstruction, storage and clean-frame setup before implementing it. This
-targets finder scanning; alignment indexing alone cannot close the noise gap.
+### Exact finder-event caching: rejected
+
+A [diagnostic and three bounded prototypes](benchmarks/2026-11-16-m4/finder-events/README.md)
+shared strict/loose finder classification while preserving original candidate
+order, successful-callback skips, finder lists and work accounting. On the main
+720p noise frame, shared classification reduces modelled divisions from 421,531
+to 268,789 and absolute-error calculations from 1,047,289 to 827,437, but adds
+threshold comparisons and storage. Operation counts alone do not prove speed.
+
+Two independent M4 Node processes measured each candidate against the same
+accepted WASM. Each process used 60 alternating pairs after warm-up; complete
+results and unchanged inputs were checked outside the timed decode.
+
+| Variant | Main noise latency | Other six noise cases | Stripes | Checkerboard |
+|---|---:|---:|---:|---:|
+| Eager event cache | 5.0–5.1% lower | 3.7–8.5% lower | 6.0–6.2% higher | 7.6–7.8% higher |
+| Fixed majority density fallback | 3.9% lower | 2.9–6.4% lower | 3.6–4.2% higher | 3.7–4.5% higher |
+| Eager with exact equal-run shortcut | 5.3% lower | 3.9–8.7% lower | 4.7–5.4% higher | 5.1–5.2% higher |
+
+Clean, blank and gradient were essentially neutral. All variants passed 89
+complete public-result checks; the latter two also preserved all 184 photograph
+results, including 179 correct reads, zero lost reads and zero wrong text.
+Native Rust tests passed (38, 40 and 39 respectively), including independent row
+schedules, Work, inverse polarity and thin-finder regressions. The native compiler
+ran as x86_64 on M4; the measured WASM ran in native arm64 Node.
+
+The final shortcut proves five equal positive runs pass the loose predicate and
+fail the strict one after the existing total guard, avoiding floating-point
+work in that case. It still leaves a repeatable pattern slowdown. All three
+variants are rejected and this cache family is closed without further tuning.
+Production source, SPEC, vectors and the packaged WASM remain unchanged. These
+are comparisons against our own baseline, not new ZXing headline measurements.
+The fresh held-out corpus remains unevaluated.
 
 A [256-frame synthetic stress set](benchmarks/2026-11-16-m4/fresh-stress-unevaluated/README.md)
 is frozen but has never been decoded. Both rejected filters failed separate
