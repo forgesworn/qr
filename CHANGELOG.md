@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.11
+
+- After all earlier paths fail, validate one retained orientation and format
+  hypothesis against an already sampled refinement grid. Preserve strict
+  validation and the priority of every earlier successful result.
+- Recover two more codes across the previous 736 curved images, increasing
+  correct reads from 438 to 440 against ZXing's 390. A separate 128-image set
+  frozen before evaluation remains at 62 reads against ZXing's 57. These are
+  measured datasets, not a claim of universal accuracy.
+- Keep the limits at eight second looks, 720 maps and 11,500,000 alignment
+  probes. The recovery adds no image sampling; it can retain one grid pair and
+  perform up to two additional strict symbol validations. Existing `Work`
+  counters do not measure those validations.
+
 ## 0.3.10
 
 - After all earlier paths fail, refine one retained map with an exact version

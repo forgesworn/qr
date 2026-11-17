@@ -1,0 +1,857 @@
+{
+  "passed": true,
+  "fullWasmParity": false,
+  "runnerSha256": "ac3155c2926be5408938ff2cd52d115a161dce4805cafa874bc4dac9af0c956f",
+  "identity": {
+    "revision": "8360eb3b648ebc1d9439684a9f643cc1fb162713",
+    "compiler": "5.9.3",
+    "sources": {
+      "base": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "938ade1c3e0ca13051f8e23bb7d04e44742bcab1afc9e8051778ca6d6f6f3ee1",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "3fc547bce07c4487cb5f42f216231c00499ffcfb44f112b3520355705621cc96",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "public": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "4e615b5e0e575de7d72f189a98326cef57f01eb9020b631c92b86dd590c4752a",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "9283458e17da68e859e733b3b1cb7fccee5c8a7f955cf09bc1e58023a7e3d4d6",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      }
+    },
+    "generated": {
+      "base": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "6a5ba169328e8efa3168395a723046d1a6df4e0d02f110d2cfa62f3705557ca1",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "3ba7c635a6b9b5f8968fbc750cd17176fc1774c5a894f4c9f90fbfe4c0cf4208",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      },
+      "public": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "d4bba029ff2e04950219405551856e4e638e627c40f68391b669c0972a0db403",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "805bbc5261709b33e21a5932191174a87cf5ecc7f5e16834d13a72274697bade",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      }
+    },
+    "prototype": {
+      "revision": "8360eb3b648ebc1d9439684a9f643cc1fb162713",
+      "prototypeSha256": "d953e4c8baa1a1590defc559b2a7920f7f85cf7de9c53981df0754da5c0f4fe6",
+      "expectedSourcesSha256": "129c4215a64e70a4d40200abf465a380d4244332ac03afa11fbd4f8e93f863b0",
+      "sourceFiles": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "938ade1c3e0ca13051f8e23bb7d04e44742bcab1afc9e8051778ca6d6f6f3ee1",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "3fc547bce07c4487cb5f42f216231c00499ffcfb44f112b3520355705621cc96",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "copiedFiles": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "4e615b5e0e575de7d72f189a98326cef57f01eb9020b631c92b86dd590c4752a",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "9283458e17da68e859e733b3b1cb7fccee5c8a7f955cf09bc1e58023a7e3d4d6",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "replacements": [
+        {
+          "file": "decode.ts",
+          "needle": "    inverseCurvature = []\n",
+          "count": 1
+        },
+        {
+          "file": "decode.ts",
+          "needle": "  return recoverVersionPeer(luminance, inverse, budget, work)\n}",
+          "count": 1
+        },
+        {
+          "file": "decode.ts",
+          "needle": "  meshGrids: MeshGrid[]\n",
+          "count": 1
+        },
+        {
+          "file": "decode.ts",
+          "needle": "secondLook(luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse))",
+          "count": 1
+        },
+        {
+          "file": "decode.ts",
+          "needle": "secondLook(image, thresholds(image), candidate, work, true, true,",
+          "count": 4
+        },
+        {
+          "file": "refine.ts",
+          "needle": "collectMesh?: (modules: Uint8Array) => void): Payload | undefined {",
+          "count": 1
+        },
+        {
+          "file": "refine.ts",
+          "needle": "  // Keep this intermediate only after the final-stage read failed.\n",
+          "count": 1
+        }
+      ],
+      "policy": "first-at-capture alternate; final late-skip; no backfill",
+      "bounds": {
+        "second": 8,
+        "maps": 720,
+        "alignmentProbes": 11500000,
+        "extraSymbolReads": 2,
+        "extraImageSamples": 0,
+        "savedPairModuleBytes": 62658,
+        "conservativeRetainedModuleBytes": 219303
+      }
+    },
+    "builderSha256": "bf054a97ef4d299c0a377534875405dc48893aa3320eac6308c291315dd11065",
+    "typecheck": {
+      "passed": true,
+      "diagnostics": 0,
+      "tsconfigSha256": "045d2034180425f0b5e182341432962e38c953ad21ad9d4000243b572aaa36af",
+      "packageJsonSha256": "6914bf1cf16e1678dfe801dac67df592c16293959b8b0305f3860b601413ecae",
+      "options": {
+        "base": {
+          "target": 9,
+          "module": 199,
+          "moduleResolution": 99,
+          "lib": [
+            "lib.es2022.d.ts",
+            "lib.dom.d.ts"
+          ],
+          "outDir": "base",
+          "rootDir": "check-base",
+          "strict": true,
+          "noUncheckedIndexedAccess": true,
+          "declaration": true,
+          "sourceMap": false,
+          "skipLibCheck": true,
+          "forceConsistentCasingInFileNames": true,
+          "isolatedModules": true,
+          "types": [],
+          "noEmit": true
+        },
+        "public": {
+          "target": 9,
+          "module": 199,
+          "moduleResolution": 99,
+          "lib": [
+            "lib.es2022.d.ts",
+            "lib.dom.d.ts"
+          ],
+          "outDir": "public",
+          "rootDir": "check-public",
+          "strict": true,
+          "noUncheckedIndexedAccess": true,
+          "declaration": true,
+          "sourceMap": false,
+          "skipLibCheck": true,
+          "forceConsistentCasingInFileNames": true,
+          "isolatedModules": true,
+          "types": [],
+          "noEmit": true
+        }
+      }
+    },
+    "helpers": {
+      "pngJsSha256": "67d87426768feba4909277f5627b19620bd5fb4e00c4c0e53e3309cd86e6c166"
+    }
+  },
+  "rows": [
+    {
+      "version": 12,
+      "scale": 2,
+      "amplitude": 6,
+      "pixelSha256": "df950c6ed4e6ef18dd37af80a71facad95d84410590265705efae9b4f5b8e164",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 27552,
+            "compared": 47,
+            "scanned": 286294,
+            "maps": 163,
+            "second": 6,
+            "meshes": 6,
+            "probed": 593750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 27552,
+            "compared": 47,
+            "scanned": 286294,
+            "maps": 163,
+            "second": 6,
+            "meshes": 6,
+            "probed": 593750,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 12,
+      "scale": 2,
+      "amplitude": 10,
+      "pixelSha256": "ea5717764b4937d96cd7252574a089847c2f91140c3cca311dc3cdb285ce154f",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 26101,
+            "compared": 38,
+            "scanned": 173067,
+            "maps": 79,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 26101,
+            "compared": 38,
+            "scanned": 173067,
+            "maps": 79,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 12,
+      "scale": 2,
+      "amplitude": 14,
+      "pixelSha256": "de09bcdf20535e672336e4397f9b02696d051a332fa644af61dbfdcd4e1cd32f",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 27173,
+            "compared": 31,
+            "scanned": 329723,
+            "maps": 170,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 0
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 27173,
+            "compared": 31,
+            "scanned": 329723,
+            "maps": 170,
+            "second": 2,
+            "meshes": 2,
+            "probed": 187500,
+            "reduced": 0
+          }
+        }
+      }
+    },
+    {
+      "version": 12,
+      "scale": 3,
+      "amplitude": 6,
+      "pixelSha256": "1083a0fb133c65df23b6f680f933b98a493f6744a5ed7167e73740e8e5bc2a05",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 61720,
+            "compared": 95,
+            "scanned": 2625127,
+            "maps": 276,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 61720,
+            "compared": 95,
+            "scanned": 2625127,
+            "maps": 276,
+            "second": 2,
+            "meshes": 2,
+            "probed": 218750,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 12,
+      "scale": 3,
+      "amplitude": 10,
+      "pixelSha256": "342014be63c8455cc822caf30afd173f6c6b9a378c8ddc2873dfb5ffc09d2760",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 54745,
+            "compared": 74,
+            "scanned": 1908039,
+            "maps": 293,
+            "second": 2,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 54745,
+            "compared": 74,
+            "scanned": 1908039,
+            "maps": 293,
+            "second": 2,
+            "meshes": 1,
+            "probed": 93750,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 12,
+      "scale": 3,
+      "amplitude": 14,
+      "pixelSha256": "7a40b0df3ec0919759ab763db55e19ff820324756d5928277ba557cd12657510",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 60167,
+            "compared": 86,
+            "scanned": 1993919,
+            "maps": 290,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 27
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 60167,
+            "compared": 86,
+            "scanned": 1993919,
+            "maps": 290,
+            "second": 4,
+            "meshes": 4,
+            "probed": 375000,
+            "reduced": 27
+          }
+        }
+      }
+    },
+    {
+      "version": 24,
+      "scale": 2,
+      "amplitude": 6,
+      "pixelSha256": "51005e679bbb9e7becc13751528e56efbb2ce2c263d577a08a6a330fa5c93e0f",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 90532,
+            "compared": 73,
+            "scanned": 1161391,
+            "maps": 330,
+            "second": 5,
+            "meshes": 5,
+            "probed": 1812500,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 90532,
+            "compared": 73,
+            "scanned": 1161391,
+            "maps": 330,
+            "second": 5,
+            "meshes": 5,
+            "probed": 1812500,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 24,
+      "scale": 2,
+      "amplitude": 10,
+      "pixelSha256": "693dc9e77fb8faeb9176db99cb71911cb203a9b89e4d414b78599ec5c3adaefe",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 84899,
+            "compared": 56,
+            "scanned": 1530407,
+            "maps": 334,
+            "second": 5,
+            "meshes": 5,
+            "probed": 2093750,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 84899,
+            "compared": 56,
+            "scanned": 1530407,
+            "maps": 334,
+            "second": 5,
+            "meshes": 5,
+            "probed": 2093750,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 24,
+      "scale": 2,
+      "amplitude": 14,
+      "pixelSha256": "0e98cf5e1db350ab04dae242db7296cf235583bb385acbf1bf767b8afc4f6d97",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 81212,
+            "compared": 53,
+            "scanned": 1730107,
+            "maps": 294,
+            "second": 1,
+            "meshes": 1,
+            "probed": 484375,
+            "reduced": 30
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 81212,
+            "compared": 53,
+            "scanned": 1730107,
+            "maps": 294,
+            "second": 1,
+            "meshes": 1,
+            "probed": 484375,
+            "reduced": 30
+          }
+        }
+      }
+    },
+    {
+      "version": 24,
+      "scale": 3,
+      "amplitude": 6,
+      "pixelSha256": "f0bcc28af1351fc01877accc87bd416fba8850258950e1c867311860e9561f54",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 204684,
+            "compared": 152,
+            "scanned": 4824976,
+            "maps": 386,
+            "second": 5,
+            "meshes": 5,
+            "probed": 1812500,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 204684,
+            "compared": 152,
+            "scanned": 4824976,
+            "maps": 386,
+            "second": 5,
+            "meshes": 5,
+            "probed": 1812500,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 24,
+      "scale": 3,
+      "amplitude": 10,
+      "pixelSha256": "45c22b6eecad7cb3da998bb1141aba682552c3855bc251a1d3ef68c5a05c8bef",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 182137,
+            "compared": 159,
+            "scanned": 2326588,
+            "maps": 400,
+            "second": 4,
+            "meshes": 1,
+            "probed": 750000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 182137,
+            "compared": 159,
+            "scanned": 2326588,
+            "maps": 400,
+            "second": 4,
+            "meshes": 1,
+            "probed": 750000,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 24,
+      "scale": 3,
+      "amplitude": 14,
+      "pixelSha256": "561911dc61f19dfa9f1fcc58191011fc1f2f7b4ebd3b9f34d9e0bcc4172d5227",
+      "readers": {
+        "base": {
+          "read": false,
+          "work": {
+            "steps": 177438,
+            "compared": 127,
+            "scanned": 7556341,
+            "maps": 358,
+            "second": 2,
+            "meshes": 2,
+            "probed": 968750,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": false,
+          "work": {
+            "steps": 177438,
+            "compared": 127,
+            "scanned": 7556341,
+            "maps": 358,
+            "second": 2,
+            "meshes": 2,
+            "probed": 968750,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 34,
+      "scale": 2,
+      "amplitude": 6,
+      "pixelSha256": "0fa60ee04c718ce6a7aab21331b3ad054e4e58fb3afd3d6abbdecb20d2884856",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 164032,
+            "compared": 148,
+            "scanned": 1701995,
+            "maps": 374,
+            "second": 6,
+            "meshes": 6,
+            "probed": 3281250,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 164032,
+            "compared": 148,
+            "scanned": 1701995,
+            "maps": 374,
+            "second": 6,
+            "meshes": 6,
+            "probed": 3281250,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 34,
+      "scale": 2,
+      "amplitude": 10,
+      "pixelSha256": "82400fd7bfb9ec29b7f71ea5d4e10d7b086cdd462c11affd46b031b838925d0b",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 161452,
+            "compared": 114,
+            "scanned": 1260727,
+            "maps": 329,
+            "second": 1,
+            "meshes": 1,
+            "probed": 703125,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 161452,
+            "compared": 114,
+            "scanned": 1260727,
+            "maps": 329,
+            "second": 1,
+            "meshes": 1,
+            "probed": 703125,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 34,
+      "scale": 2,
+      "amplitude": 14,
+      "pixelSha256": "ee4cbf06b6d0b1175e86920008c9aa9fc9d8a1a52c47a756b6dae4bd18687c28",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 159824,
+            "compared": 102,
+            "scanned": 2368588,
+            "maps": 333,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3015625,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 159824,
+            "compared": 102,
+            "scanned": 2368588,
+            "maps": 333,
+            "second": 4,
+            "meshes": 4,
+            "probed": 3015625,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 34,
+      "scale": 3,
+      "amplitude": 6,
+      "pixelSha256": "ac2fcf103d52c7d3b3a358dd30e5f2f7e4175c70ae1b4941690b914d990bfb3c",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 180024,
+            "compared": 73,
+            "scanned": 2214265,
+            "maps": 386,
+            "second": 5,
+            "meshes": 5,
+            "probed": 2671875,
+            "reduced": 71
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 180024,
+            "compared": 73,
+            "scanned": 2214265,
+            "maps": 386,
+            "second": 5,
+            "meshes": 5,
+            "probed": 2671875,
+            "reduced": 71
+          }
+        }
+      }
+    },
+    {
+      "version": 34,
+      "scale": 3,
+      "amplitude": 10,
+      "pixelSha256": "487e95d5a9d2f26757f3cf69a9e4317b6ea5c1fdad7d782b8a0ee9842ba4f7b3",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 197985,
+            "compared": 92,
+            "scanned": 2650347,
+            "maps": 360,
+            "second": 1,
+            "meshes": 1,
+            "probed": 703125,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 197985,
+            "compared": 92,
+            "scanned": 2650347,
+            "maps": 360,
+            "second": 1,
+            "meshes": 1,
+            "probed": 703125,
+            "reduced": 60
+          }
+        }
+      }
+    },
+    {
+      "version": 34,
+      "scale": 3,
+      "amplitude": 14,
+      "pixelSha256": "8da2aa5fc68cb29dc9b9d7450e41a6fff811f58680ddfae128c7de533da47a9e",
+      "readers": {
+        "base": {
+          "read": true,
+          "work": {
+            "steps": 198067,
+            "compared": 80,
+            "scanned": 2100160,
+            "maps": 355,
+            "second": 3,
+            "meshes": 3,
+            "probed": 2250000,
+            "reduced": 60
+          }
+        },
+        "candidate": {
+          "read": true,
+          "work": {
+            "steps": 198067,
+            "compared": 80,
+            "scanned": 2100160,
+            "maps": 355,
+            "second": 3,
+            "meshes": 3,
+            "probed": 2250000,
+            "reduced": 60
+          }
+        }
+      }
+    }
+  ]
+}

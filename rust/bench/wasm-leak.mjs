@@ -20,12 +20,15 @@ const { decodeFull, decodeGrid, encode, memory } = await loadFront(wasm)
 
 // Small pictures that read, one that does not, and a grid.
 const frames = pack.frames.filter((f) => f.result !== null && f.width <= 300).slice(0, 6).map((f) => readPng(readFileSync(vectors + f.file)))
-// Exercise the owned deferred grids too, including reduced, inverted and all four terminal retry paths.
-const meshFrames = ['mesh-reading-16.png', 'mesh-reading-87.png', 'starved-curvature-32.png', 'starved-curvature-84.png', 'starved-curvature-89.png', 'header-conflict-32.png', 'header-conflict-42.png', 'header-conflict-72.png', 'header-conflict-76.png', 'ordinary-curvature-73.png', 'ordinary-curvature-79.png', 'ordinary-curvature-88.png', 'version-peer-120.png', 'version-peer-122.png'].map((name) => {
+// Exercise owned deferred grids, including reduced, inverted and alternate readings.
+const meshFrames = ['mesh-reading-16.png', 'mesh-reading-87.png', 'starved-curvature-32.png', 'starved-curvature-84.png', 'starved-curvature-89.png', 'header-conflict-32.png', 'header-conflict-42.png', 'header-conflict-72.png', 'header-conflict-76.png', 'ordinary-curvature-73.png', 'ordinary-curvature-79.png', 'ordinary-curvature-88.png', 'version-peer-120.png', 'version-peer-122.png', 'alternate-grid-90.png'].map((name) => {
   const frame = pack.frames.find((f) => f.file === 'conformance/' + name)
   if (!frame?.result) throw new Error('Missing mesh memory fixture: ' + name)
   return { image: readPng(readFileSync(vectors + frame.file)), expected: frame.result.text }
 })
+// Every recovery fixture must run before measuring steady-state capacity.
+const warmupCalls = Math.max(200, meshFrames.length * 16)
+if (!Number.isInteger(calls) || calls <= warmupCalls) throw new Error('Run more rounds than the warm-up')
 const blank = readPng(readFileSync(vectors + 'conformance/blank.png'))
 const qr = encode('a throwaway payload for the leak run', { ecc: 'Q' })
 const bad = new Uint8Array(10)
@@ -56,7 +59,7 @@ for (let i = 0; i < calls; i++) {
       refused++
     }
   }
-  if (i === 199) sizes.push(['after warm-up (200 calls)', size()])
+  if (i === warmupCalls - 1) sizes.push([`after warm-up (${warmupCalls} calls)`, size()])
   else if ((i + 1) % 1000 === 0) sizes.push([`after ${i + 1} calls`, size()])
 }
 const last = size()

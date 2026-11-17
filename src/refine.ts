@@ -464,7 +464,7 @@ function mesh(location: Location, probe: Probe, work?: Work, late = false): Loca
  * `late` enables the deferred recovery's extra alignment pass.
  * After failure, `collectMesh` may retain the unrefined mesh for step 14.
  */
-export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false, collectMesh?: (modules: Uint8Array) => void): Payload | undefined {
+export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false, collectMesh?: (modules: Uint8Array) => void, collectFinal?: (modules: Uint8Array) => void): Payload | undefined {
   const { inverted, mirrored } = candidate
   const probe = probeFor(image, t, inverted)
   // 0. From version 7, the map bent onto the alignment patterns it can find.
@@ -514,6 +514,7 @@ export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate
   const result = readSymbol(read, size)
   if (result !== undefined && result.ecc === candidate.ecc && result.mask === candidate.mask &&
       (!strict || formatAgrees(read, size, result.ecc, result.mask))) return result
+  if (collectFinal) collectFinal(modules)
   // Keep this intermediate only after the final-stage read failed.
   // The caller defers validation until every earlier recovery path has failed.
   if (meshed && collectMesh) {

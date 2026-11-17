@@ -1,0 +1,167 @@
+{
+  "passed": true,
+  "wasmSha256": "66b4a41067266e3a5e804de4f09dc6dc3c89c97f9bd29105343d1a249a9aa01f",
+  "pairsPerCase": 60,
+  "casesPerFork": 40,
+  "forksPerBackend": 2,
+  "newReads": {
+    "ts": {
+      "alternate-known-90": {
+        "changesPercent": [
+          0.08573536364566703,
+          0.6415116847221736
+        ],
+        "baselineMedianMs": [
+          93.35820900002727,
+          93.04850000003353
+        ],
+        "candidateMedianMs": [
+          93.43825000000652,
+          93.64541699999245
+        ]
+      },
+      "alternate-previous-40": {
+        "changesPercent": [
+          0.06025430238139062,
+          0.20288289106911161
+        ],
+        "baselineMedianMs": [
+          50.618791999993846,
+          50.54245800001081
+        ],
+        "candidateMedianMs": [
+          50.64929199998733,
+          50.64500000001863
+        ]
+      }
+    },
+    "wasm": {
+      "alternate-known-90": {
+        "changesPercent": [
+          0.4721979803425702,
+          0.22390620647723125
+        ],
+        "baselineMedianMs": [
+          40.10499999998137,
+          40.1583329999994
+        ],
+        "candidateMedianMs": [
+          40.29437499999767,
+          40.24825000000419
+        ]
+      },
+      "alternate-previous-40": {
+        "changesPercent": [
+          0.8737581732871424,
+          0.41260107981324623
+        ],
+        "baselineMedianMs": [
+          21.5257500000007,
+          21.499459000013303
+        ],
+        "candidateMedianMs": [
+          21.713832999987062,
+          21.588166000001365
+        ]
+      }
+    }
+  },
+  "mainCases": {
+    "ts": {
+      "clean": {
+        "changesPercent": [
+          -3.478988009305428,
+          1.3767361366973097
+        ],
+        "baselineMedianMs": [
+          3.9822500000009313,
+          3.7952079999995476
+        ],
+        "candidateMedianMs": [
+          3.8437080000003334,
+          3.847457999998369
+        ]
+      },
+      "blank": {
+        "changesPercent": [
+          0.14839665594212903,
+          -0.31541956587426423
+        ],
+        "baselineMedianMs": [
+          3.0600420000009763,
+          2.958916000001409
+        ],
+        "candidateMedianMs": [
+          3.064582999999402,
+          2.9495829999996204
+        ]
+      },
+      "noise": {
+        "changesPercent": [
+          0.2549300834922663,
+          -0.5492146609214932
+        ],
+        "baselineMedianMs": [
+          52.18725000000268,
+          52.946875000001455
+        ],
+        "candidateMedianMs": [
+          52.320291,
+          52.65608300000167
+        ]
+      }
+    },
+    "wasm": {
+      "clean": {
+        "changesPercent": [
+          0.7416171064164034,
+          0.4353835930351213
+        ],
+        "baselineMedianMs": [
+          1.51129199999923,
+          1.5214169999999285
+        ],
+        "candidateMedianMs": [
+          1.5224999999991269,
+          1.5280409999995754
+        ]
+      },
+      "blank": {
+        "changesPercent": [
+          -1.1765256238120192,
+          -0.2850706595337371
+        ],
+        "baselineMedianMs": [
+          1.1970839999994496,
+          1.1839170000002923
+        ],
+        "candidateMedianMs": [
+          1.1830000000009022,
+          1.1805420000000595
+        ]
+      },
+      "noise": {
+        "changesPercent": [
+          0.41634370163599055,
+          -0.052332950020206326
+        ],
+        "baselineMedianMs": [
+          20.31566699999894,
+          20.38104100000055
+        ],
+        "candidateMedianMs": [
+          20.400249999998778,
+          20.370375000000422
+        ]
+      }
+    }
+  },
+  "rawHashes": {
+    "ts-1.json": "1da66e62d4b4c18362d38bc4b086d653d4bbf75e50cd4a95961f07509ae06daf",
+    "ts-2.json": "54fb16ffc240f94a3842725ec84cc7ad5e0c7deb14c853d645e92061f73ffea4",
+    "wasm-1.json": "63c17ab81f94e0920402593ec08723f78fd98d45c29b04ff3f1039a96eaf1158",
+    "wasm-2.json": "87afa35ed372749b75315bbaf43c31fdf482937a854a787c2c56bee9d6fc98ed",
+    "direct-1.json": "cb212cd605efcbbdb4d64917dff3555e4ca31a78bdb92e5d716c5198a690d7db",
+    "direct-2.json": "b8e48018232835be0c710e04abe81fe32bb15fd174c6ce493a5d3d89899bd11c"
+  }
+}

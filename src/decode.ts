@@ -66,6 +66,7 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     budget.here = REDUCED_MAPS
     inverse = invertLuminance(luminance)
     inverseCurvature = []
+    budget.alternateInverse = inverseCurvature
     const fallback = look(inverse, 'normal', 1, budget, work, true, inverseCurvature, true)
     if (fallback) return { ...fallback, inverted: true }
     const inverseShrunk = reductions(inverse)
@@ -94,7 +95,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (conflict) return conflict
   const ordinary = recoverOrdinaryCurvature(luminance, inverse, budget, inverseCurvature, work)
   if (ordinary) return ordinary
-  return recoverVersionPeer(luminance, inverse, budget, work)
+  const versionPeer = recoverVersionPeer(luminance, inverse, budget, work)
+  if (versionPeer) return versionPeer
+  return recoverAlternateGrid(budget)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -116,6 +119,8 @@ interface Budget {
   hints: VersionHint[]
   curvature: Candidate[]
   meshGrids: MeshGrid[]
+  alternateInverse?: Candidate[]
+  alternateGrid?: AlternateGrid
   attempted?: AttemptedCandidate[]
   conflict?: { candidate: Candidate; inverseLuminance: boolean }
   versionPeer?: { candidate: Candidate; inverseLuminance: boolean }
@@ -517,7 +522,7 @@ function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, can
     budget.second--
     if (work) work.second++
     rememberAttempt(budget, candidate, 1, publicInverse, true)
-    const result = secondLook(luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse))
+    const result = alternateSecondLook(budget, publicInverse, luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
   return undefined
@@ -562,7 +567,7 @@ function recoverUnattemptedCurvature(luminance: Luminance, inverse: Luminance | 
       if (work) work.second++
       let modules: Uint8Array | undefined
       rememberAttempt(budget, candidate, 1, inverseLuminance, true)
-      const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+      const payload = alternateSecondLook(budget, inverseLuminance, image, thresholds(image), candidate, work, true, true,
         grid => { modules = grid })
       const inverted = inverseLuminance || candidate.inverted
       const location = where(candidate.location, 1)
@@ -597,7 +602,7 @@ function recoverHeaderConflict(luminance: Luminance, inverse: Luminance | undefi
   if (work) work.second++
   let modules: Uint8Array | undefined
   rememberAttempt(budget, candidate, 1, inverseLuminance, true)
-  const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+  const payload = alternateSecondLook(budget, inverseLuminance, image, thresholds(image), candidate, work, true, true,
     grid => { modules = grid })
   const inverted = inverseLuminance || candidate.inverted
   const location = where(candidate.location, 1)
@@ -633,7 +638,7 @@ function recoverOrdinaryCurvature(luminance: Luminance, inverse: Luminance | und
       if (work) work.second++
       let modules: Uint8Array | undefined
       rememberAttempt(budget, candidate, 1, inverseLuminance, true)
-      const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+      const payload = alternateSecondLook(budget, inverseLuminance, image, thresholds(image), candidate, work, true, true,
         grid => { modules = grid })
       const inverted = inverseLuminance || candidate.inverted
       const location = where(candidate.location, 1)
@@ -669,7 +674,7 @@ function recoverVersionPeer(luminance: Luminance, inverse: Luminance | undefined
   if (!image) return undefined
   if (work) work.second++
   let modules: Uint8Array | undefined
-  const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+  const payload = alternateSecondLook(budget, inverseLuminance, image, thresholds(image), candidate, work, true, true,
     grid => { modules = grid })
   const inverted = inverseLuminance || candidate.inverted
   const location = where(candidate.location, 1)
@@ -682,6 +687,78 @@ function recoverVersionPeer(luminance: Luminance, inverse: Luminance | undefined
       if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
         return { ...result, mirrored: candidate.mirrored, inverted, location }
     }
+  }
+  return undefined
+}
+
+
+interface AlternateGrid {
+  candidate: Candidate
+  inverseLuminance: boolean
+  final: Uint8Array
+  mesh?: Uint8Array
+  lateAttempted: boolean
+}
+
+/** Refinement geometry excludes the orientation and format hypothesis. */
+function sameAlternateGeometry(a: Candidate, b: Candidate): boolean {
+  const left = a.location.matrix, right = b.location.matrix
+  return a.location.size === b.location.size && a.inverted === b.inverted &&
+    !!left && !!right && left.length === right.length &&
+    left.every((value, i) => Number.isFinite(value) && value === right[i])
+}
+
+function sameAlternateHypothesis(a: Candidate, b: Candidate): boolean {
+  return a.mirrored === b.mirrored && a.ecc === b.ecc && a.mask === b.mask
+}
+
+/** Keep only the first eligible failed late grid; later invalidation never backfills. */
+function alternateSecondLook(budget: Budget, inverseLuminance: boolean,
+  ...args: Parameters<typeof secondLook>): Payload | undefined {
+  const candidate = args[2], pending = budget.alternateGrid
+  // Every full-size late call goes through here, including the eighth call
+  // which is deliberately absent from the earlier seven-attempt ledger.
+  if (pending && pending.inverseLuminance === inverseLuminance &&
+    sameAlternateGeometry(pending.candidate, candidate) &&
+    sameAlternateHypothesis(pending.candidate, candidate)) pending.lateAttempted = true
+  if (pending) return secondLook(...args)
+  let selected: AlternateGrid | undefined
+  const collectMesh = args[6]
+  // Wrap only an existing collector: never introduce new mesh sampling.
+  if (collectMesh) args[6] = modules => {
+    collectMesh(modules)
+    if (selected) selected.mesh = modules
+  }
+  args[7] = modules => {
+    for (const inverse of [false, true]) {
+      if (inverse !== inverseLuminance) continue
+      const candidates = inverse ? budget.alternateInverse : budget.curvature
+      if (!candidates) continue
+      for (const alternative of candidates) {
+        if (!sameAlternateGeometry(candidate, alternative) || sameAlternateHypothesis(candidate, alternative) ||
+          alreadyAttempted(budget, alternative, inverse, true)) continue
+        selected = { candidate: alternative, inverseLuminance: inverse, final: modules, lateAttempted: false }
+        budget.alternateGrid = selected
+        return
+      }
+    }
+  }
+  return secondLook(...args)
+}
+
+/** Existing grids only, strictly validated after every previous return path. */
+function recoverAlternateGrid(budget: Budget): DecodeResult | undefined {
+  const retained = budget.alternateGrid
+  if (!retained || retained.lateAttempted) return undefined
+  const { candidate, inverseLuminance } = retained, size = candidate.location.size
+  for (const grid of [retained.final, retained.mesh]) {
+    if (!grid) continue
+    const read: ModuleReader = candidate.mirrored ? (x, y) => grid[x * size + y] === 1 : (x, y) => grid[y * size + x] === 1
+    if (!formatAgrees(read, size, candidate.ecc, candidate.mask)) continue
+    const result = readSymbol(read, size)
+    if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
+      return { ...result, mirrored: candidate.mirrored, inverted: inverseLuminance || candidate.inverted,
+        location: where(candidate.location, 1) }
   }
   return undefined
 }

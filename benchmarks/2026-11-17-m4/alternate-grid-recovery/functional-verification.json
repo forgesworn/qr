@@ -1,0 +1,200 @@
+{
+  "sourceHashes": {
+    "src/decode.ts": "4e615b5e0e575de7d72f189a98326cef57f01eb9020b631c92b86dd590c4752a",
+    "src/refine.ts": "9283458e17da68e859e733b3b1cb7fccee5c8a7f955cf09bc1e58023a7e3d4d6",
+    "rust/src/decode.rs": "86523fccec8eb0d76f839e1f7bc0ae0be675be2edcf37cd3eabb08eb05f0c7ec",
+    "rust/src/refine.rs": "a445b88e784be5c1828447ec298d6c956325d0e67176f72a8b3a2fc8d371b1fc",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt": "9d457bfc3f31be42ca8a6e6534c0bfdac89e00a6b3ba5eb1a2fa502939e28997",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Refine.kt": "e68b6fe881b5a45f6d9e5d82c21395fdb5fce49195ce6303fe0494d91aae2eb5",
+    "test/alternate-grid-fixture.ts": "3e9ada6b239be65c49fa82bbaea4c73a74fc9ac555a931a3342be116f666fcd5",
+    "test/alternate-grid.test.ts": "6d0b30dd471b8111521f501e107e8670b4bf90a246157c0c15a4e38bc7a0d31d",
+    "test/conformance.test.ts": "9cbbc52cb9f059ec2087c8058a64df06bbd16c9b5679833619603dc3cda134f9",
+    "vectors/conformance.json": "ea44a1914d13e0a9216a01a6217bb55c2925012f4671645aa131ca6e434472b2",
+    "rust/bench/wasm-leak.mjs": "775c8edd2e11a394417070755cd8cf777bdad47b3e69a134e6b9aaff840212ee"
+  },
+  "typecheck": {
+    "passed": true,
+    "session": 13917
+  },
+  "focusedRed": {
+    "expectedFailure": "expected undefined to be defined",
+    "log": "red-test.log"
+  },
+  "focusedGreen": {
+    "passed": true,
+    "session": 13917
+  },
+  "officialConformance": {
+    "passed": true,
+    "tests": 6,
+    "session": 13917,
+    "frames": 80,
+    "unchangedPriorFrames": 79
+  },
+  "wasm": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "9968e63cd0ca5f18a1df62fc9ae77ad95273926d117fa610050ee5fe9b41f53b",
+    "sha256": "66b4a41067266e3a5e804de4f09dc6dc3c89c97f9bd29105343d1a249a9aa01f",
+    "bytes": 246322
+  },
+  "typescriptSuite": {
+    "passed": true,
+    "requiredPhotos": true,
+    "files": 44,
+    "tests": 507,
+    "session": 16910,
+    "durationSeconds": 26.78
+  },
+  "rust": {
+    "passed": true,
+    "features": "default",
+    "tests": 49,
+    "doctests": 1,
+    "log": "rust-test.log",
+    "allFeatures": {
+      "passed": true,
+      "tests": 49,
+      "doctests": 1,
+      "log": "rust-all-features.log"
+    }
+  },
+  "kotlin": {
+    "passed": true,
+    "suites": 25,
+    "tests": 123,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "kotlin-test.log"
+  },
+  "packagedParity": {
+    "passed": true,
+    "curves": 864,
+    "regressions": 888,
+    "photoViews": 2944,
+    "sheets": 18,
+    "session": 87382
+  },
+  "memory": {
+    "passed": true,
+    "rounds": 1000,
+    "warmupRounds": 240,
+    "recoveryFixtures": 15,
+    "recoveryReads": 63,
+    "capacityAfterWarmup": 5242880,
+    "capacityAtEnd": 5242880,
+    "unfreedControlBefore": 1179648,
+    "unfreedControlAfter": 1507328,
+    "scope": "Standalone WASM capacity, not peak live allocation. Fifteen-fixture workload and 240-round warm-up differ from 0.3.10."
+  },
+  "timing": {
+    "passed": true,
+    "casesPerFork": 40,
+    "pairsPerCase": 60,
+    "forksPerBackend": 2,
+    "directComparisonForks": 2,
+    "rawHashes": {
+      "ts-1.json": "1da66e62d4b4c18362d38bc4b086d653d4bbf75e50cd4a95961f07509ae06daf",
+      "ts-2.json": "54fb16ffc240f94a3842725ec84cc7ad5e0c7deb14c853d645e92061f73ffea4",
+      "wasm-1.json": "63c17ab81f94e0920402593ec08723f78fd98d45c29b04ff3f1039a96eaf1158",
+      "wasm-2.json": "87afa35ed372749b75315bbaf43c31fdf482937a854a787c2c56bee9d6fc98ed",
+      "direct-1.json": "cb212cd605efcbbdb4d64917dff3555e4ca31a78bdb92e5d716c5198a690d7db",
+      "direct-2.json": "b8e48018232835be0c710e04abe81fe32bb15fd174c6ce493a5d3d89899bd11c"
+    },
+    "summarySha256": "13c23221a91be9181e63a8d335c92929591fa30f47942f8e5b503def1f39788a"
+  },
+  "version": "0.3.11",
+  "baselineCommit": "8360eb3b648ebc1d9439684a9f643cc1fb162713",
+  "sourceState": "Uncommitted candidate; source and binary hashes identify tested bytes. Browser revision reports baseline checkout HEAD.",
+  "standalone": {
+    "passed": true,
+    "conformanceFrames": 80,
+    "read": 72,
+    "miss": 8,
+    "countersCompared": 640,
+    "differences": 0,
+    "optionComparisons": 1541,
+    "encoderVectors": 148,
+    "nativeGridAndRenderingParity": true,
+    "session": 30744
+  },
+  "browser": {
+    "passed": true,
+    "worker": true,
+    "charsetCases": 6,
+    "sessionReset": true,
+    "wasmSha256": "66b4a41067266e3a5e804de4f09dc6dc3c89c97f9bd29105343d1a249a9aa01f",
+    "session": 44610
+  },
+  "privateLogHashes": {
+    "rust-test.log": "b2ed671b52b5540e5cac796f83b419c60a2be4c611a727e9eab8006e5b29a422",
+    "rust-all-features.log": "0fb576d039b71cd51ab0c439f11c433aa6e29228540c7342cfc71f5e93173ec3",
+    "kotlin-test.log": "312d7617139c31cdeff645964602cd399ebbc062e9438af302dd73c3bd3ff6c8",
+    "wasm-pack.log": "1ca9791ef8aa058cf9f08fb44a12cb401eefa80cca8b227384b9cc039183553e",
+    "wasm-options.log": "462d0aec1ef1a19d6f28e59657d2c4f86d226c1f8f36934142f907af2266da22",
+    "wasm-encode.log": "8ca8714f86609c907a4ebc47f4087791fbc339481213603dc9fea0ac6e48b353",
+    "wasm-symbols.log": "b599628353f13e6aed49db64c5fcfc5c6906c199138da3ae102eec62ec560660",
+    "wasm-leak.log": "3ac2e2bb47841eb36c04f6958b768822258c351d3f08dd73458133fdae0a4aaa",
+    "verify-standalone.log": "b737e66c55c961f89bed9bd16c16bc9ade63ec19dc4cd73129f4fa37403694d0",
+    "verify-production.log": "1184cc4fdc8539f0760a4b04d7e2b297b2c3a6ce908d48298f297f1059fac3ee",
+    "red-test.log": "ca26d1ee76d8b7f005b029e8b90822145492042697665457d97dc5ee8a7e98c0",
+    "docs-build.log": "4db7c4f8449da26898e3a83b03976aac196226f565a0e336d29775877c24826d",
+    "docs-browser.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "package-check.log": "7bb6b07b16df2ad52d77555522047f39bcebb2b330bce531e1dde796836a4359",
+    "jsr-prepare.log": "ea8c34c83256f5656801ed8bddafa4c1cd27808c3bd32ecb2600c382f7a4ce85",
+    "jsr-check.log": "1ff903f8ba61065d90312007115e43f5019da95de00b2258c5a7f5bf25292d2c",
+    "jsr-upload.log": "55f8840689d5901c2d76b0474bac9e5fde562a03cd214f0e17dac0b870cfa1df",
+    "maven-stage.log": "888fb5dae6e50961b305a170ee184c71b61471a0780c4e55aa990f7fb71d8325",
+    "maven-check.log": "f8d4505c59171cdde56d23c51896804148c2f84d8f33ed19cd6994b5ea3ab54d",
+    "crate-package.log": "cefd64147f4fbef4f91b3194a2bbfc6eab1024068a9d54861e809d9e8863f22e",
+    "crate-consumer.log": "a038591fcb2acca24fb2d5dce5596be25d9a3dc024bdba3462c1f77d8636b7fa"
+  },
+  "receipts": {
+    "production-binding.json": "d3b4a6febe11b396acf9492c5c636f4a93479ce79e8760923757ad2f9df817e9",
+    "production-backends.json": "8a10e66e4a08d90f5a7dbd02a64b9bad20546f42b1ba0bdc9fd4a4d9ca861de2",
+    "production-qualified.json": "0da1b39b86d390d87b5b7b746ba948a1341488b9f9a9fdb0e422e4233801e6df",
+    "production-photos.json": "8ca83ae0e080089ecf0648e36fe426ac107e004f66381141d712220ac8174168",
+    "production-sheet.json": "fb42c203710ddb853e55b979cfa34ce675798d269c1cf07a246c08a01094941f",
+    "browser.json": "c24712330b3e2765f4c388d34e1146b613e7522e27eaaf1ebade1dc647246cb4",
+    "conformance-comparison.json": "8fca1277817169e1ae330b1e4ad86a50b0d20ae07717711d95b47d37d5b18303",
+    "docs-browser.json": "30881429122d055f3da3ed86c5f8eef9784264fae500baa77ad5feb4d620e70e"
+  },
+  "prepublication": {
+    "passed": true,
+    "docs": {
+      "pages": 8,
+      "widths": [
+        1280,
+        390
+      ],
+      "llmsFullSha256": "63591166fed1074ed0519dbb7c6ce38df265380ecfb26c8a0e2edcb9b6e9631a"
+    },
+    "npm": {
+      "isolatedConsumer": true,
+      "wasmBytesMatch": true
+    },
+    "jsr": {
+      "strictDryRun": true,
+      "sourceConsumer": true,
+      "actualPublisherArchiveCapturedOnLoopback": true,
+      "host": "local macOS; M4 lacks Deno",
+      "session": 75038
+    },
+    "maven": {
+      "stagedArtefactsChecked": true,
+      "isolatedGradleConsumer": true
+    },
+    "crate": {
+      "packageVerified": true,
+      "isolatedLibraryTests": 29,
+      "isolatedDoctests": 1
+    },
+    "m4CompletedSessions": [
+      86172,
+      93467
+    ],
+    "m4InitialSessionNote": "86172 completed docs/browser/npm and stopped at missing Deno. 93467 completed remaining Maven and crate checks."
+  }
+}

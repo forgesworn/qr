@@ -469,7 +469,7 @@ private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean):
  * by its header evidence. With [strict], the format copies of the modules
  * read again must also agree on them, as every read at reduced size must.
  */
-internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false, collectMesh: ((ByteArray) -> Unit)? = null): Payload? {
+internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false, collectMesh: ((ByteArray) -> Unit)? = null, collectFinal: ((ByteArray) -> Unit)? = null): Payload? {
     val mirrored = candidate.agreed.mirrored
     val probe = Probe(image, t, candidate.inverted)
     // 0. From version 7, the map bent onto the alignment patterns it can find.
@@ -527,6 +527,7 @@ internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work:
     val result = readSymbol(read, size)
     if (result != null && result.ecc == candidate.agreed.ecc && result.mask == candidate.agreed.mask &&
         (!strict || formatAgrees(read, size, result.ecc, result.mask))) return result
+    collectFinal?.invoke(modules)
     // Retain the intermediate only after the existing final read fails.
     if (meshed != null && collectMesh != null) {
         val sampled = ByteArray(size * size)
