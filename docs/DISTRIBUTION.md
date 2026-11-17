@@ -2,7 +2,7 @@
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. The 0.3.6 release
+published on Maven Central as `io.github.forgesworn:qr`. The 0.3.7 release
 aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
 fix for the 0.3.0 library; its version number is not reused.
 
@@ -25,9 +25,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.6
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.6
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.6
+npm install --save-exact @forgesworn/qr@0.3.7
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.7
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.7
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -37,12 +37,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.6
+deno add jsr:@forgesworn/qr@0.3.7
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.6'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.6/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.7'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.7/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -57,7 +57,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.6") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.7") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -66,7 +66,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.6
+cargo add forgesworn-qr@0.3.7
 ```
 
 See the [Rust guide](../rust/README.md) for API contracts, pixel layout and

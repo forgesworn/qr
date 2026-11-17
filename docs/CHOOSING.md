@@ -35,21 +35,26 @@ payload; the synthetic suites also check its bytes.
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
+| Evaluated curved distortion set | **44/96** | 42/96 |
+| Earlier curved distortion set | 89/128 | **106/128** |
+| Separate curved set frozen before evaluation | **53/128** | 52/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.6
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.7
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-Deferred mesh reading improves the evaluated distortion set from 30 to 37/96;
-ZXing reads 42/96. On a separate 128-case set frozen before evaluation, QR
-improves from 78 to 81/128, while ZXing reads 106/128. Curvature remains a
-limitation. The new recovery retains all earlier successful results and metadata
-exactly in the checked sets, with no incorrect QR payloads. Earlier geometry
-changes can alter correction counts and optional alignment locations.
+One terminal refinement retry improves the evaluated distortion set from 37 to
+44/96 and the earlier 128-case set from 81 to 89/128. On a separate 128-case set
+frozen before evaluation, QR improves from 48 to 53/128. These finite sets favour
+different readers; they do not establish a universal accuracy lead. The newly
+evaluated set is now regression data. The new recovery retains all earlier
+successful results and metadata exactly in the checked sets, with no incorrect
+QR payloads. Earlier geometry changes can alter correction counts and optional
+alignment locations.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
@@ -79,6 +84,14 @@ after failed meshes costs 1.3–2.6% more. Clean and main-noise WASM medians
 vary within 1.0% across the two paired runs. At most four retained grids add
 125,316 module bytes plus metadata and extra sampling work. See the 0.3.6
 performance section for all timings and storage bounds.
+
+Version 0.3.7 adds one terminal attempt after all earlier paths fail. In two
+paired M4 runs, main-noise WASM medians vary within 0.5% and clean within 0.4%.
+The four newly recovered curved examples cost 13.4–21.2% more than their earlier
+misses; the tested persistent curved miss costs 19.7–21.0% more. The explicit
+limit is now five second looks and 7,187,500 alignment probes, with at most
+156,645 retained module bytes plus metadata. This improves measured accuracy
+at the cost of additional work on some difficult frames.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

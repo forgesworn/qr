@@ -1,5 +1,82 @@
 # Performance and verification
 
+## 0.3.7 one final curvature retry
+
+Four second looks can exhaust their allowance before a retained curved map gets
+an attempt. After every earlier recovery path fails, the decoder now tries one
+previously unattempted full-size map with exact version evidence. It preserves
+the original attempt order and earlier successful results. Strict format,
+version, Reed-Solomon and segment validation still apply; a failed fifth attempt
+does not proceed to the rest of the queue.
+
+| Dataset | QR 0.3.6 | QR 0.3.7 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Evaluated distortion set | 37/96 | **44/96** | 42/96 |
+| Earlier distortion set | 81/128 | **89/128** | 106/128 |
+| Separate set frozen before evaluation | 48/128 | **53/128** | 52/128 |
+| Earlier curved sheets | 3/18 | **4/18** | — |
+| Original photographs | 180/184 | 180/184 | 171/184 |
+| All photo rotations, mirrors and polarities | 2,872/2,944 | 2,872/2,944 | — |
+
+No previous successful result or metadata changes in these checks, and no wrong
+QR payload is found. The 888-case regression also retains all earlier results
+and rejects all 64 negative controls. Final packaged WASM matches complete
+TypeScript results and input preservation across that regression, all 352
+curved distortions, all 2,944 photo transformations and the 18 sheets. Photos
+independently supply expected text; synthetic cases also check exact bytes.
+Photo transformations are related observations. The separate 128-case set was
+frozen before policy evaluation and decoder imports; it is now regression data.
+ZXing retains a substantial lead on the earlier 128 distortions, so these gains
+do not establish a universal accuracy advantage.
+
+Three own-encoder fixtures fail on 0.3.6 and pass with the new recovery, covering
+normal, inverted and mirrored images. All 67 earlier conformance entries remain
+identical; TypeScript, Rust and Kotlin pass the expanded 70-frame pack. The 482
+TypeScript tests, required photos, browser and worker checks also pass.
+
+This deliberately raises the second-look limit to five and the conservative
+alignment-probe limit to 7,187,500. The original four attempts and 720-map limit
+remain unchanged. Four attempted-candidate records add bounded metadata. The
+fifth attempt adds ordinary mesh/timing/edge refinement; an optional separate
+mesh capture adds at most 31,329 grey probes, each interpolating four pixels,
+and 31,329 module bytes. Combined retained grid storage is at most 156,645 bytes
+plus metadata. Capture probes are additional to `Work.probed`, which counts
+alignment searches. Earlier successful paths do not pay for the fifth attempt.
+
+Two independent paired processes per backend ran sequentially on the Apple M4
+Max with native Node 24.21.0. Each alternates execution order over 60 measured
+pairs after at least ten warm-up pairs and 500 ms. WASM clean medians change by
++0.02% and +0.33%, blank by +0.50% and -0.87%, and main 720p noise by -0.42%
+and +0.03%. TypeScript main noise changes by -0.22% and -0.14%; its blank
+variation is -4.86% and +3.97%. These figures do not establish a general speed
+improvement. The smaller 320×240 noise case varies by -1.90% and +3.10% in WASM;
+all 17 cases, raw samples and p95 values are retained.
+
+| Case | WASM 0.3.6 median range | WASM 0.3.7 median range | Change in each paired run |
+|---|---:|---:|---:|
+| Newly recovered distortion 32 | 22.62–22.62 ms, miss | 25.65–25.91 ms, read | +14.56%, +13.39% |
+| Newly recovered distortion 74 | 54.19–54.39 ms, miss | 65.48–65.54 ms, read | +20.95%, +20.40% |
+| Newly recovered distortion 84 | 63.68–63.95 ms, miss | 77.00–77.20 ms, read | +21.24%, +20.40% |
+| Newly recovered mirrored distortion 89 | 35.06–35.54 ms, miss | 40.59–41.51 ms, read | +16.80%, +15.77% |
+| Existing success after failed meshes | 16.31–16.49 ms | 16.43–16.57 ms | +0.72%, +0.46% |
+| Persistent curved miss | 66.27–66.33 ms | 79.32–80.23 ms | +20.95%, +19.70% |
+
+TypeScript costs for the four new reads rise by 12.86–20.41%; the persistent
+miss costs 20.11% and 20.58% more. This is an explicit accuracy/time trade-off.
+Earlier successful paths avoid the fifth attempt, but retain the small cost of
+recording original attempts when refinement is used. Both WASM versions finish
+the timing sequence at 14,483,456 bytes of linear-memory capacity. These desktop
+measurements do not establish mobile latency or worst-case time bounds.
+
+A separate 1,000-round allocation check exercises 63 reads spread over five
+recovery fixtures. WASM linear-memory capacity remains at 4,325,376 bytes after
+warm-up; an intentionally unfreed-handle control grows. The standalone pack also
+matches all 560 work counters. Capacity is not peak live allocation. The
+packaged WASM grows by 1,875 bytes to 234,541 bytes, SHA-256
+`b12344a46090e846737e9e27746b5efbcf29b3d5bfebe94b2efbe66e4e529bd3`.
+
+See the [0.3.7 receipts and reproduction commands](benchmarks/2026-11-17-m4/starved-curvature-recovery/README.md).
+
 ## 0.3.6 deferred mesh reading
 
 Timing and edge corrections can displace an alignment mesh that already decodes.

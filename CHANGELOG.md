@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.7
+
+- After every earlier decoder path fails, allow one retained curved map that
+  never received a full-size refinement attempt. It must already have an exact
+  version anchor and non-conflicting readable headers. Strict final format,
+  version and payload validation remain required; existing successful results
+  and metadata retain priority.
+- Improve the evaluated 96-case distortion set from 37 to 44 correct reads,
+  the earlier 128-case set from 81 to 89, and a separately frozen 128-case set
+  from 48 to 53. ZXing reads 42, 106 and 52 respectively. No earlier read is
+  lost in these checks; significant curvature limitations remain.
+- Keep TypeScript, Rust, Kotlin and packaged WASM aligned with three new shared
+  fixtures covering normal, inverted and mirrored recovery. The terminal retry
+  explicitly raises the maximum refinement attempts to five and the alignment
+  probe bound to 7,187,500. The original four attempts and map budget remain
+  unchanged; extra recovery work trades time for accuracy.
+
 ## 0.3.6
 
 - Retain up to four failed alignment-mesh grids and read them only after all

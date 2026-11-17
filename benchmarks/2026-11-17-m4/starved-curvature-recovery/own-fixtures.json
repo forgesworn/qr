@@ -1,0 +1,401 @@
+[
+  {
+    "meta": {
+      "id": "boundary-unseen-32",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "85cc1bbb628c1c0a1ccaaf6258f2c2d919e8a1c2918bf7fc8baaedfedb0d2bb3",
+      "textSha256": "b3cdf166c2d5ef01302aa6e553d979c0290d59ea85f689d2a1f6d790b2880eb1"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 123255,
+      "compared": 173,
+      "scanned": 3137211,
+      "maps": 393,
+      "second": 5,
+      "meshes": 5,
+      "probed": 1015625,
+      "reduced": 56
+    },
+    "result": {
+      "version": 18,
+      "inverted": false,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 28.5,
+          "y": 28.5,
+          "moduleSize": 2.952380952380952,
+          "count": 9
+        },
+        "topRight": {
+          "x": 274.5,
+          "y": 28.5,
+          "moduleSize": 3,
+          "count": 9
+        },
+        "bottomLeft": {
+          "x": 28.5,
+          "y": 274.5,
+          "moduleSize": 3.0793650793650795,
+          "count": 9
+        },
+        "alignment": {
+          "x": 265.5,
+          "y": 265.5
+        }
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "boundary-unseen-40",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "a2d1c59dd209b851ec7e905fa4f4a4ff2e422dddf0ed33a1040ecf32fa54d959",
+      "textSha256": "6c56ec1a048e4b6ea4d21ea5f3fe0c0d4b87f074fa5d7797557db351a57b2067"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 186228,
+      "compared": 170,
+      "scanned": 6270121,
+      "maps": 357,
+      "second": 5,
+      "meshes": 5,
+      "probed": 1015625,
+      "reduced": 60
+    },
+    "result": {
+      "version": 18,
+      "inverted": false,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 47.5,
+          "y": 47.5,
+          "moduleSize": 5.061224489795919,
+          "count": 7
+        },
+        "topRight": {
+          "x": 457.5,
+          "y": 47.5,
+          "moduleSize": 5,
+          "count": 7
+        },
+        "bottomLeft": {
+          "x": 47.5,
+          "y": 457.5,
+          "moduleSize": 5.020408163265306,
+          "count": 7
+        },
+        "alignment": {
+          "x": 442.5,
+          "y": 442.5
+        }
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "boundary-unseen-41",
+      "version": 18,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "c495a363542c5ece660822a16bce88877372728d5e830a14c71f43a02cd4abf0",
+      "textSha256": "73dbf03a77e9d6c09045f97c7eb0247721bfd17b43abd15a62a72f1aa3084ef7"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 230798,
+      "compared": 199,
+      "scanned": 7627926,
+      "maps": 405,
+      "second": 5,
+      "meshes": 5,
+      "probed": 1015625,
+      "reduced": 60
+    },
+    "result": {
+      "version": 18,
+      "inverted": false,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 457.5,
+          "y": 47.5,
+          "moduleSize": 5.061224489795919,
+          "count": 7
+        },
+        "topRight": {
+          "x": 457.5,
+          "y": 457.5,
+          "moduleSize": 5.020408163265306,
+          "count": 7
+        },
+        "bottomLeft": {
+          "x": 47.5,
+          "y": 47.5,
+          "moduleSize": 5,
+          "count": 7
+        },
+        "alignment": {
+          "x": 62.5,
+          "y": 442.5
+        }
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "boundary-unseen-50",
+      "version": 26,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "3487dadf7c5b920b888449016a509282ea922ea16a71ca14ce9db2b343beadc8",
+      "textSha256": "4d6a28d6e18b98b551367b89df7992d764fc52cd3d5cfb6859b3b994dd3292ab"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 97692,
+      "compared": 129,
+      "scanned": 1265055,
+      "maps": 327,
+      "second": 5,
+      "meshes": 5,
+      "probed": 1718750,
+      "reduced": 30
+    },
+    "result": {
+      "version": 26,
+      "inverted": false,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 247,
+          "y": 247,
+          "moduleSize": 2,
+          "count": 6
+        },
+        "topRight": {
+          "x": 19,
+          "y": 247,
+          "moduleSize": 2,
+          "count": 6
+        },
+        "bottomLeft": {
+          "x": 247,
+          "y": 19,
+          "moduleSize": 2,
+          "count": 6
+        },
+        "alignment": {
+          "x": 25,
+          "y": 25
+        }
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "boundary-unseen-65",
+      "version": 26,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "pixelSha256": "662e473d60ee14bf5f440de865bf16da666977db68b7b8cc566dd238f7769957",
+      "textSha256": "bbd669473f0dc8f8ca596aac48795606b00396f798e1105c81e135e6fa8b70d9"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 299216,
+      "compared": 131,
+      "scanned": 4675190,
+      "maps": 337,
+      "second": 5,
+      "meshes": 5,
+      "probed": 1718750,
+      "reduced": 60
+    },
+    "result": {
+      "version": 26,
+      "inverted": false,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 617.5,
+          "y": 47.5,
+          "moduleSize": 5.057142857142858,
+          "count": 5
+        },
+        "topRight": {
+          "x": 617.5,
+          "y": 617.5,
+          "moduleSize": 5.057142857142857,
+          "count": 5
+        },
+        "bottomLeft": {
+          "x": 47.5,
+          "y": 47.5,
+          "moduleSize": 5,
+          "count": 5
+        },
+        "alignment": {
+          "x": 62.5,
+          "y": 602.5
+        }
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "boundary-unseen-74",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "7f461fd3e435facc837225440c3c7c840470941a0d24628feadc31a4f15deac2",
+      "textSha256": "b63446210de1dbe303a53ec95214b2a44de304bbe51c5d0bce8df49f68557e04"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 161093,
+      "compared": 122,
+      "scanned": 2688004,
+      "maps": 349,
+      "second": 5,
+      "meshes": 5,
+      "probed": 3593750,
+      "reduced": 60
+    },
+    "result": {
+      "version": 38,
+      "inverted": false,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 343,
+          "y": 343,
+          "moduleSize": 2,
+          "count": 6
+        },
+        "topRight": {
+          "x": 19,
+          "y": 343,
+          "moduleSize": 2,
+          "count": 6
+        },
+        "bottomLeft": {
+          "x": 343,
+          "y": 19,
+          "moduleSize": 2,
+          "count": 6
+        },
+        "alignment": {
+          "x": 25,
+          "y": 25
+        }
+      }
+    }
+  },
+  {
+    "meta": {
+      "id": "boundary-unseen-84",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": -1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": true,
+      "pixelSha256": "a8c8a61a7297e04395337553c78d639445bd2a4f6eafca3b7453bbf0137d22ad",
+      "textSha256": "0732a7ab1320118e27a795f8f44961b1d4a48f83ba02f3c04c386cef137bb244"
+    },
+    "before": false,
+    "after": true,
+    "work": {
+      "steps": 183472,
+      "compared": 109,
+      "scanned": 3285595,
+      "maps": 388,
+      "second": 5,
+      "meshes": 5,
+      "probed": 4531250,
+      "reduced": 90
+    },
+    "result": {
+      "version": 38,
+      "inverted": true,
+      "mirrored": false,
+      "location": {
+        "topLeft": {
+          "x": 28.5,
+          "y": 28.5,
+          "moduleSize": 3,
+          "count": 4
+        },
+        "topRight": {
+          "x": 514.5,
+          "y": 28.5,
+          "moduleSize": 3,
+          "count": 4
+        },
+        "bottomLeft": {
+          "x": 28.5,
+          "y": 514.5,
+          "moduleSize": 3,
+          "count": 4
+        },
+        "alignment": {
+          "x": 505.5,
+          "y": 505.5
+        }
+      }
+    }
+  }
+]

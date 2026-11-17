@@ -20,8 +20,8 @@ const { decodeFull, decodeGrid, encode, memory } = await loadFront(wasm)
 
 // Small pictures that read, one that does not, and a grid.
 const frames = pack.frames.filter((f) => f.result !== null && f.width <= 300).slice(0, 6).map((f) => readPng(readFileSync(vectors + f.file)))
-// Exercise the owned deferred grids too, including reduced and inverted reads.
-const meshFrames = ['mesh-reading-16.png', 'mesh-reading-87.png'].map((name) => {
+// Exercise the owned deferred grids too, including reduced, inverted and terminal fifth reads.
+const meshFrames = ['mesh-reading-16.png', 'mesh-reading-87.png', 'starved-curvature-32.png', 'starved-curvature-84.png', 'starved-curvature-89.png'].map((name) => {
   const frame = pack.frames.find((f) => f.file === 'conformance/' + name)
   if (!frame?.result) throw new Error('Missing mesh memory fixture: ' + name)
   return { image: readPng(readFileSync(vectors + frame.file)), expected: frame.result.text }
@@ -62,7 +62,7 @@ for (let i = 0; i < calls; i++) {
 const last = size()
 console.log(`memory before the run: ${first} bytes`)
 for (const [when, bytes] of sizes) console.log(`memory ${when}: ${bytes} bytes`)
-console.log(`memory at the end: ${last} bytes (${calls} rounds: ${read} frames read, ${meshReads} deferred meshes read, ${nothing} blank pictures read nothing, ${refused} calls refused)`)
+console.log(`memory at the end: ${last} bytes (${calls} rounds: ${read} frames read, ${meshReads} recovery fixtures read, ${nothing} blank pictures read nothing, ${refused} calls refused)`)
 // A control, so that a flat line means something: the same grid read on a fresh instance with
 // the handles never given back must make the memory grow.
 const { instance } = await WebAssembly.instantiate(readFileSync(wasm), {})

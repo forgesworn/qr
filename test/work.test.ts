@@ -13,8 +13,8 @@ function counted(image: Frame): { found: boolean; work: Work } {
   return { found, work }
 }
 
-/** The mesh's points probed a frame, at most: 4 second looks, at most two passes of 46 lattice points, 25 x 25 offsets, 25 modules. */
-const MESH_PROBES = 4 * 92 * 25 * 25 * 25
+/** The mesh's points probed a frame, at most: 5 second looks, at most two passes of 46 lattice points, 25 x 25 offsets, 25 modules. */
+const MESH_PROBES = 5 * 92 * 25 * 25 * 25
 
 const perPixel = ({ work }: { work: Work }, image: Frame) => (work.steps + work.compared + work.scanned) / (image.width * image.height)
 
@@ -51,7 +51,7 @@ describe('bounded work', () => {
       expect(perPixel(b, large)).toBeLessThan(1.5)
       // Four times the pixels, not much more than four times the work.
       expect(perPixel(b, large)).toBeLessThan(perPixel(a, small) * 1.1)
-      expect(a.work.second + b.work.second).toBeLessThanOrEqual(2 * 4)
+      expect(a.work.second + b.work.second).toBeLessThanOrEqual(2 * 5)
       expect(a.work.probed + b.work.probed).toBeLessThanOrEqual(2 * MESH_PROBES)
     }
   })
@@ -63,8 +63,8 @@ describe('bounded work', () => {
     expect(result.found).toBe(false)
     // Four passes, six triples, five sizes, at most six maps a size.
     expect(result.work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
-    // The second look reads at most four of them again.
-    expect(result.work.second).toBeLessThanOrEqual(4)
+    // The original four second looks may be followed by one terminal retry.
+    expect(result.work.second).toBeLessThanOrEqual(5)
     // Each of them searches at most 92 patterns across two passes, at 25 x 25
     // quarter-module offsets of 25 modules.
     expect(result.work.probed).toBeLessThanOrEqual(MESH_PROBES)
