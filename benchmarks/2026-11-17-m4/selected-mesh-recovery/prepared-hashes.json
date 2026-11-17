@@ -1,0 +1,15 @@
+{
+  "README.md": "8390b7f0eca3ae75b520ef4bdc1d812d4bee13de32e5258eac502b380202f441",
+  "build.cjs": "568821b848e9081fce20803822171a5eefc9853122eabf8eab86c3fbeeac85b5",
+  "expected-sources.json": "47ce5d1270ca40ee5f74949cf437a0f234bb0693e5c840950cc9c01fb6f1c754",
+  "frames-fresh.mjs": "b1c79f7cbbe2212c42b51a4bdb42eb3310bb4cf3448352bf667b7169eb1deeb5",
+  "frames-holdout.mjs": "88263cc92df1eadf5a5c14c9017cb18a50452d0f2d016ec0fce00327d5ca9d8a",
+  "frames-next-fresh.mjs": "526918bf2a58297938efac42867cacdf51808f17599c5ebc777985b6074d5bc9",
+  "frames-previous-fresh.mjs": "e2ee5631d8d0f86fc0287c9ebea765f4f7eeb68ce00a31fbe97cbec7896545c0",
+  "frames-previous128.mjs": "a44737c5e3fac539f8a1712c3ca8dd0727aefc1d8e29cb1f0c9c98acfe22ab60",
+  "frames-validation.mjs": "2f46d2b22621198cb1c937a7890d77cddea5cbc17f5b1b41ff0b63303c763867",
+  "frames128.mjs": "a1f6f04002dad30fb2bd763d26a09659473c65af03d5af5d7087f41454f0a10a",
+  "frames96.mjs": "9ecabf1da5b454be38e72ad5e4ebd3a1aa90c4b32457ea4b03940742ebf57e5b",
+  "instrument.py": "becb7788d64a10e8967e634c7d51a549fafb02beee2d0f7edfa4fd4b70a2ea4b",
+  "run.mjs": "b185accc3055bbb67842d9f6e6e565ff5ccccaf48e1179adbb3e1182c781266c"
+}

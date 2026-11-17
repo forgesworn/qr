@@ -37,37 +37,43 @@ payload; the synthetic suites also check its bytes.
 | False reads on its 32 negative controls | 0 | 0 |
 | Evaluated curved distortion set | **48/96** | 42/96 |
 | Earlier curved distortion set | **109/128** | 106/128 |
-| Previous curved holdout | **67/128** | 52/128 |
+| Previous curved holdout | **68/128** | 52/128 |
 | Earlier separate curved holdout | **74/128** | 67/128 |
-| Previous curved set frozen before evaluation | **81/128** | 70/128 |
-| Previous curved set frozen before version-peer evaluation | **69/128** | 53/128 |
+| Previous curved set frozen before evaluation | **82/128** | 70/128 |
+| Previous curved set frozen before version-peer evaluation | **70/128** | 53/128 |
 | Curved set frozen before alternate-grid evaluation | **64/128** | 57/128 |
-| Latest curved set frozen before evaluation | **59/128** | 53/128 |
+| Curved set frozen before header-rediscovery evaluation | **60/128** | 53/128 |
+| Latest curved set frozen before selected-mesh evaluation | **78/128** | 69/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.12
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.13
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-Version 0.3.12 rechecks an existing refinement grid when its two format headers
-agree on a different orientation or format hypothesis. This recovers eleven
-more curved images, including one in the new 128-image set frozen before
-evaluation. Across all eight evaluated curved sets, QR reads 571/992 (57.6%)
-against ZXing's 500/992 (50.4%). Earlier successful results and metadata remain identical
-in these checks, with no wrong QR payloads observed. These are measured dataset
+Version 0.3.13 reuses the direct alignment mesh captured by the same refinement
+call that supplied the selected header. It tries that mesh only after the
+refined-grid read and every earlier path fail, using the same strict header,
+version and payload checks. This recovers five more curved images, including
+one in the separate 128-image set frozen before evaluation. Across all nine
+evaluated curved sets, QR reads 653/1,120 (58.3%) against ZXing's 569/1,120
+(50.8%). Both read 555; QR alone reads 98, ZXing alone reads 14, and neither
+reads 453. Earlier successful results, metadata and work counts remain identical
+in these checks, with no wrong QR payloads observed. The 888-case regression
+suite and its 64 negative controls are unchanged. These are measured dataset
 results, not a universal accuracy claim.
-See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
+See [the release evidence](../benchmarks/2026-11-17-m4/selected-mesh-recovery/README.md)
+and [full methodology and history](../PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-| Fixed frame | QR 0.3.12 WASM median | ZXing-WASM 3.1.7 median |
+| Fixed frame | QR 0.3.13 WASM median | ZXing-WASM 3.1.7 median |
 |---|---:|---:|
-| Clean QR | 1.521–1.526 ms | 1.889–1.896 ms |
-| Blank | 1.167–1.180 ms | 2.118–2.137 ms |
-| Random noise, no QR | 20.265–20.303 ms | 7.703–7.729 ms |
+| Clean QR | 1.519–1.545 ms | 1.882–1.892 ms |
+| Blank | 1.172–1.181 ms | 2.109–2.120 ms |
+| Random noise, no QR | 20.273–20.419 ms | 7.689–7.749 ms |
 
 These are packaged API timings, including each library's wrapper, on three fixed
 1280×720 RGBA frames. Both readers receive identical pixels; their complete
@@ -77,14 +83,22 @@ ten warm-up pairs and 500 ms. They do not establish mobile latency, battery use
 or general throughput. Pure TypeScript has different costs.
 Measurements were made on a working desktop with other applications open. No task-owned QR build, test or benchmark ran concurrently; alternating baseline and candidate calls share the same host conditions.
 
-Version 0.3.12 adds no image sampling or secondary attempt. Compared with
-0.3.11, it can retain one additional existing grid, check at most sixteen
-orientations and perform one additional strict symbol validation.
-The caps remain eight second looks, 11,500,000 alignment probes and 720 maps.
-The conservative retained-grid bound is 250,632 module bytes; active buffers,
-metadata and allocator capacity are additional. Unchanged search counters do
-not imply unchanged CPU time because they do not count symbol validation.
-Across two paired M4 runs, the five measured new reads change WASM median latency by -0.34–0.32% relative to their earlier misses. The three cases with a selected header that still fails to decode change by -0.58–0.01%; earlier successful curved cases change by -0.88–1.46%. These measurements do not establish a general speed improvement or a worst-case bound.
+Version 0.3.13 adds no image sampling or secondary attempt. Compared with
+0.3.12, it can retain one more existing mesh grid and perform one additional
+strict symbol validation. The caps remain eight second looks, 11,500,000
+alignment probes and 720 maps. The conservative retained-grid bound is
+281,961 module bytes; active buffers, metadata and allocator capacity are
+additional. The packaged WASM is 252,923 bytes, up 404 bytes from 0.3.12.
+Unchanged search counters do not imply unchanged CPU time because they do not
+count symbol validation.
+
+Across two paired M4 runs, the five new reads change WASM median latency by 0.19–0.89% relative to the earlier misses. The two selected-mesh cases that still fail to decode change by -0.24–0.40%; earlier successful curved cases change by -0.45–0.84%. These measurements do not establish a general speed improvement or a worst-case bound.
+
+The paired pure-TypeScript clean-frame median rises from 3.785–3.824 ms to
+3.968–4.017 ms (3.77–6.15% per fork); blank-frame medians rise from
+2.937–2.953 ms to 3.077–3.080 ms (4.32–4.78%). These measured regressions
+are part of the accuracy trade-off. Their cause is not established by these
+timings; no general TypeScript speed improvement is claimed.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

@@ -353,7 +353,8 @@ pipeline:
 19. Alternate grid reading: after earlier paths fail, validate one retained
     orientation and format hypothesis using an already sampled refinement grid.
 20. Refined header rediscovery: after earlier paths fail, validate the first
-    different strict format hypothesis discovered on a failed refinement grid.
+    different strict format hypothesis discovered on a failed refinement grid,
+    then its existing same-call mesh if that final-grid read fails.
 
 ### Reusable camera decoder
 
@@ -1327,18 +1328,28 @@ the refinement's original hypothesis. Retain that grid, location, polarity and
 luminance basis. Do not replace, invalidate or backfill the slot, even if a
 later refinement uses the same hypothesis or the eventual symbol read fails.
 
-After every earlier path, including step 19, fails, validate the retained grid
-once. Require strict format agreement and ordinary version, Reed–Solomon and
-segment validation, with the selected error-correction level and mask. Return
-the full-size location and public inverted polarity as for earlier reads.
-The existing version validation applies unchanged; this step adds no new
-version-header acceptance rule.
+If that same refinement invocation already has a mesh collector and delivers
+its existing direct mesh after selecting the slot, retain that mesh too. Forward
+the original collector in its original order. Never introduce a collector or
+sample a mesh for this purpose. A slot present before an invocation starts must
+not receive that invocation's mesh; absent delivery does not permit backfilling
+from another call. The retained mesh uses the selected final grid's hypothesis,
+location, polarity and luminance basis, without rediscovering a header on it.
+
+After every earlier path, including step 19, fails, validate the retained final
+grid once. Only if that read fails, validate its retained same-call mesh once,
+if available. Each read requires strict format agreement and ordinary version,
+Reed–Solomon and segment validation with the selected error-correction level
+and mask. Return the full-size location and public inverted polarity as for
+earlier reads. The existing version validation applies unchanged; this step
+adds no new version-header acceptance rule.
 
 This adds at most sixteen orientation-specific header checks across the eight
-existing late attempts and one strict symbol validation outside the `Work`
+existing late attempts and two strict symbol validations outside the `Work`
 counters. It introduces no image sampling, mesh capture, alignment search,
-map or second look. Earlier successes retain priority, although they may have
-paid the bounded header checks and grid retention before succeeding.
+map or second look. Earlier successes, including the retained final-grid read,
+retain priority. They may have paid the bounded header checks and retention
+before succeeding.
 
 ### Bounded work
 
@@ -1428,12 +1439,13 @@ among them.
   garbage-collector capacity. Earlier successful paths avoid later terminal
   attempts, but may pay bounded header-classification, candidate retention and
   attempt-recording costs before they succeed.
-- Step 20 retains at most one additional grid of 31,329 module bytes, bringing
-  the conservative combined retained-grid bound to 250,632 module bytes plus
-  metadata. Ports may share ownership with step 19 when both retain the same
-  grid. The extra grid record and candidate do not change the eight-attempt,
-  720-map or 11,500,000-alignment-probe limits. This bound excludes active
-  refinement buffers and allocator or garbage-collector capacity.
+- Step 20 retains at most one additional final/mesh pair of 62,658 module bytes,
+  bringing the conservative combined retained-grid bound to 281,961 module
+  bytes plus metadata. Ports may share ownership with earlier retained grids
+  when they refer to the same arrays. The one candidate record and its two grid
+  references do not change the eight-attempt, 720-map or
+  11,500,000-alignment-probe limits. This bound excludes active refinement
+  buffers and allocator or garbage-collector capacity.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

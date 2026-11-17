@@ -226,7 +226,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (versionPeer != null) return versionPeer
     val alternate = recoverAlternateGrid(budget)
     if (alternate != null) return alternate
-    return recoverRediscoveredGrid(budget)
+    val rediscovered = recoverRediscoveredGrid(budget)
+    if (rediscovered != null) return rediscovered
+    return recoverRediscoveredGrid(budget, true)
 }
 
 /**
@@ -751,6 +753,12 @@ private fun sameAlternateHypothesis(a: Retry, b: Retry): Boolean =
 /** The first eligible failed late grid is retained; invalidation never backfills. */
 private fun alternateSecondLook(budget: Budget, inverseLuminance: Boolean, image: Luminance, levels: Thresholds,
     candidate: Retry, work: Work?, collectMesh: ((ByteArray) -> Unit)?): Payload? {
+    // Only the call which selects a previously empty slot may retain its existing mesh.
+    val selectedMesh: ((ByteArray) -> Unit)? = if (collectMesh != null && budget.rediscoveredGrid == null)
+        ({ modules: ByteArray ->
+            collectMesh(modules)
+            budget.rediscoveredGrid?.mesh = modules
+        }) else collectMesh
     val pending = budget.alternateGrid
     if (pending != null && pending.inverseLuminance == inverseLuminance &&
         sameAlternateGeometry(pending.candidate, candidate) && sameAlternateHypothesis(pending.candidate, candidate))
@@ -758,11 +766,11 @@ private fun alternateSecondLook(budget: Budget, inverseLuminance: Boolean, image
     if (pending != null) {
         val finalCollector: ((ByteArray) -> Unit)? = if (budget.rediscoveredGrid == null)
             ({ modules: ByteArray -> keepRediscoveredGrid(budget, inverseLuminance, candidate, modules) }) else null
-        return secondLook(image, levels, candidate, work, true, true, collectMesh, finalCollector)
+        return secondLook(image, levels, candidate, work, true, true, selectedMesh, finalCollector)
     }
     var selected: AlternateGrid? = null
-    val mesh: ((ByteArray) -> Unit)? = if (collectMesh == null) null else ({ modules: ByteArray ->
-        collectMesh(modules)
+    val mesh: ((ByteArray) -> Unit)? = if (selectedMesh == null) null else ({ modules: ByteArray ->
+        selectedMesh(modules)
         selected?.mesh = modules
     })
     val collectFinal: (ByteArray) -> Unit = { modules ->
@@ -799,7 +807,9 @@ private fun recoverAlternateGrid(budget: Budget): DecodeResult? {
     return null
 }
 
-private class RediscoveredGrid(val candidate: Retry, val inverseLuminance: Boolean, val modules: ByteArray)
+private class RediscoveredGrid(val candidate: Retry, val inverseLuminance: Boolean, val modules: ByteArray) {
+    var mesh: ByteArray? = null
+}
 
 /** Retain the first strict format rediscovery from an existing failed late grid. */
 private fun keepRediscoveredGrid(budget: Budget, inverseLuminance: Boolean, original: Retry, modules: ByteArray) {
@@ -816,11 +826,11 @@ private fun keepRediscoveredGrid(budget: Budget, inverseLuminance: Boolean, orig
     }
 }
 
-/** Validate the one retained grid only after every earlier success path fails. */
-private fun recoverRediscoveredGrid(budget: Budget): DecodeResult? {
+/** Validate the final grid first, then its same-call mesh, after earlier paths fail. */
+private fun recoverRediscoveredGrid(budget: Budget, mesh: Boolean = false): DecodeResult? {
     val retained = budget.rediscoveredGrid ?: return null
     val candidate = retained.candidate
-    val modules = retained.modules
+    val modules = (if (mesh) retained.mesh else retained.modules) ?: return null
     val size = candidate.location.size
     val read = if (candidate.agreed.mirrored) ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
         else ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }

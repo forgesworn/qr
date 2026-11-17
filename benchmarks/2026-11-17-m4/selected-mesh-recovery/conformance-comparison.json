@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "previousFrames": 82,
+  "currentFrames": 84,
+  "allPreviousEntriesExactlyUnchanged": true,
+  "added": [
+    "conformance/selected-mesh-42.png",
+    "conformance/selected-mesh-39.png"
+  ]
+}

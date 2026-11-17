@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "sourceReceipt": "production-qualified.json",
+  "sourceSha256": "e3fd095acf869037599b642807ca03a7657c99080e35cb18abb634a9fa79891b",
+  "cases": 1120,
+  "counts": {
+    "qrOnly": 98,
+    "neither": 453,
+    "both": 555,
+    "zxingOnly": 14
+  }
+}

@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.13
+
+- After the selected refined-grid header read fails, try its strict orientation
+  and format hypothesis once on the direct mesh captured by the same refinement
+  call. Preserve every earlier successful result, with no new image sampling,
+  alignment search or secondary attempt.
+- Recover five more codes across 1,120 evaluated curved images: 653 correct
+  reads against 569 for ZXing-WASM 3.1.7. The separate 128-image set frozen
+  before evaluation improves from 77 to 78 reads, against ZXing's 69. Earlier
+  successful results, metadata and work counts remain identical in these
+  checks; these are dataset results, not a universal accuracy claim.
+- Mirror the recovery in TypeScript, Rust and Kotlin. Add two conformance
+  frames while preserving all 82 previous entries. The 888-case regression
+  suite, its 64 negative controls and all 2,944 photograph views retain their
+  earlier outcomes, with no incorrect payloads observed.
+- Keep the eight-second-look, 720-map and 11,500,000-alignment-probe limits.
+  Retaining one more existing grid raises the conservative retained-grid bound
+  to 281,961 module bytes, excluding active buffers and metadata. One additional
+  strict symbol read is not counted by `Work`. The packaged WASM is 252,923
+  bytes, 404 bytes larger than 0.3.12.
+- Record the measured TypeScript trade-off: clean-frame medians rise
+  3.77–6.15% and blank-frame medians 4.32–4.78% in two paired M4 runs.
+  The five new WASM reads cost 0.19–0.89% more than their previous misses.
+
 ## 0.3.12
 
 - After all earlier paths fail, read one different strict format hypothesis

@@ -1,0 +1,7492 @@
+{
+  "passed": true,
+  "baseline": "0fdcd6262f0cd5ddcd7ec6bfba5d131df01c9a37",
+  "runnerSha256": "b185accc3055bbb67842d9f6e6e565ff5ccccaf48e1179adbb3e1182c781266c",
+  "releasedReceiptSha256": "7fb933ee0e5716ca64aaefa10f6d6af22a8b06577d82e146c18d5bbf5ff2dfde",
+  "baselineJavascript": {
+    "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+    "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+    "decode.ts": "c13c3da2a7c89ee8f4db7ed1173f0c78e7c1eb4d4d3930c99a970c703906d406",
+    "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+    "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+    "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+    "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+    "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+    "refine.ts": "9900d3a1245fa8b9d53698269c8704c2c4b290d555df662757e2168f1842c668",
+    "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+    "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+    "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+    "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+    "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+    "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+    "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+    "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+    "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+    "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+  },
+  "inputs": [
+    {
+      "suite": "known96",
+      "generator": "frames96.mjs",
+      "generatorSha256": "9ecabf1da5b454be38e72ad5e4ebd3a1aa90c4b32457ea4b03940742ebf57e5b",
+      "manifestSha256": "6bc79b43d34a2a38a27bced8c5113e2575b738e407a05031b5767fecc0a6ee1d"
+    },
+    {
+      "suite": "known128",
+      "generator": "frames128.mjs",
+      "generatorSha256": "a1f6f04002dad30fb2bd763d26a09659473c65af03d5af5d7087f41454f0a10a",
+      "manifestSha256": "08d12d617b3d5ba1dad96d7aed531cc6b372c9fe86c5f5e4e0c27bc17fa03214"
+    },
+    {
+      "suite": "previous128",
+      "generator": "frames-previous128.mjs",
+      "generatorSha256": "a44737c5e3fac539f8a1712c3ca8dd0727aefc1d8e29cb1f0c9c98acfe22ab60",
+      "manifestSha256": "92060f7971a8300266e160ff203ed41bf6e2cdfc36ebd2dab3cb3d67ff6a57ef"
+    },
+    {
+      "suite": "holdout128",
+      "generator": "frames-holdout.mjs",
+      "generatorSha256": "88263cc92df1eadf5a5c14c9017cb18a50452d0f2d016ec0fce00327d5ca9d8a",
+      "manifestSha256": "b41eca76172a44131aac6e5fc50a0660847468e20d9335facb1380042c200a0e"
+    },
+    {
+      "suite": "fresh128",
+      "generator": "frames-previous-fresh.mjs",
+      "generatorSha256": "e2ee5631d8d0f86fc0287c9ebea765f4f7eeb68ce00a31fbe97cbec7896545c0",
+      "manifestSha256": "a6f06a08f11d18c5973fc48e0e48dea273576e65867d46393e6961ca6f9cef8e"
+    },
+    {
+      "suite": "versionPeerFresh128",
+      "generator": "frames-fresh.mjs",
+      "generatorSha256": "b1c79f7cbbe2212c42b51a4bdb42eb3310bb4cf3448352bf667b7169eb1deeb5",
+      "manifestSha256": "481508bf3a3a179d4580ba532b6b08661bbfad2ae1ca22367eb4a6c3e33caf1f"
+    },
+    {
+      "suite": "alternateGridFresh128",
+      "generator": "frames-next-fresh.mjs",
+      "generatorSha256": "526918bf2a58297938efac42867cacdf51808f17599c5ebc777985b6074d5bc9",
+      "manifestSha256": "28e194711b451222c1afb557fe07cfc2c747ec05f75fd2181beec78983864f17"
+    },
+    {
+      "suite": "headerRediscoveryFresh128",
+      "generator": "frames-validation.mjs",
+      "generatorSha256": "2f46d2b22621198cb1c937a7890d77cddea5cbc17f5b1b41ff0b63303c763867",
+      "manifestSha256": "631eb65fc063c27510fc39286c72f04a17583cbe85c09c50c6d9b28f3352f48b"
+    }
+  ],
+  "identity": {
+    "instrument": {
+      "revision": "0fdcd6262f0cd5ddcd7ec6bfba5d131df01c9a37",
+      "instrumentSha256": "becb7788d64a10e8967e634c7d51a549fafb02beee2d0f7edfa4fd4b70a2ea4b",
+      "expectedSourcesSha256": "47ce5d1270ca40ee5f74949cf437a0f234bb0693e5c840950cc9c01fb6f1c754",
+      "sourceFiles": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "ae213d4ee32ef39e4af3a132479f2ae748734b0817cf697c8d84fea924061d2f",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "a69dd537c9d59e9e8ffd84db79cbf6f35ea7144c122c4db4c3dd259a2ba7a48e",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "copiedFiles": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "8c6e160f81371ccf3d60050aaf45eec6bbfabd732539600844c87a3cb8b7ce67",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "1871092e360ef141e9deaf48bcd862e19c014475da2d58ce12d3ceefc1e8dad0",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "packageJsonSha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+      "replacements": [
+        {
+          "file": "decode.ts",
+          "needle": "export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, work?: Work, workspace?: DecodeWorkspace): DecodeResult | undefined {",
+          "count": 1
+        },
+        {
+          "file": "decode.ts",
+          "needle": "function alternateSecondLook(budget: Budget, inverseLuminance: boolean,",
+          "count": 1
+        },
+        {
+          "file": "decode.ts",
+          "needle": "    budget.rediscoveredGrid = { candidate: { ...original, ...agreed, mirrored }, inverseLuminance, modules }\n",
+          "count": 1
+        },
+        {
+          "file": "refine.ts",
+          "needle": "    collectMesh(modules)\n",
+          "count": 1
+        }
+      ],
+      "selection": "Actual production rediscoveredGrid slot assignment, associated with its enclosing full-size late invocation. No diagnostic header selection or backfill.",
+      "replay": "After complete baseline failure, one strict read of the existing mesh delivered by the SAME invocation, using the SAME selected orientation/ECC/mask. Clear on success, next decode or consumption.",
+      "bounds": "At most one extra mesh reference, no new collector, image sample, map, second look or Work. One format check and at most one readSymbol call; no new image plane."
+    },
+    "compiler": "5.9.3",
+    "typechecked": true,
+    "tsconfigSha256": "045d2034180425f0b5e182341432962e38c953ad21ad9d4000243b572aaa36af",
+    "generated": {
+      "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+      "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+      "decode.ts": "a3747f25fd95cb8d7f8a43b77a3b01d367fa6b3f4557cf76118a00b0839704d8",
+      "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+      "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+      "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+      "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+      "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+      "refine.ts": "21cb531c1cf31cd015457721f36777d8eb054411c5b675a49acf342699877331",
+      "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+      "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+      "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+      "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+      "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+      "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+      "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+      "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+      "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+      "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+    },
+    "builderSha256": "568821b848e9081fce20803822171a5eefc9853122eabf8eab86c3fbeeac85b5"
+  },
+  "summary": {
+    "cases": 25,
+    "controls": 22,
+    "misses": 3,
+    "replayed": 3,
+    "recovered": [
+      "starvation-holdout-42"
+    ]
+  },
+  "resetControl": {
+    "pendingFrom": "boundary-unseen-95",
+    "unconsumed": true,
+    "cases": [
+      {
+        "next": "boundary-unseen-16",
+        "status": "correct",
+        "passed": true
+      },
+      {
+        "next": "boundary-unseen-95",
+        "status": "miss",
+        "passed": true
+      }
+    ]
+  },
+  "rows": [
+    {
+      "id": "boundary-unseen-16",
+      "version": 10,
+      "scale": 5,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "2c3904d97590ee6c8afd09955c2a23683951389490ded85c1ece18da2b967a6a",
+      "textSha256": "8532742165dfb2af74aa4d0de26c273842fa4e234fcb1525a0a3a018bfbc004e",
+      "group": "known96",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 144091,
+        "compared": 197,
+        "scanned": 5142515,
+        "maps": 219,
+        "second": 4,
+        "meshes": 4,
+        "probed": 375000,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 10,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 37,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 47,
+            "y": 48
+          },
+          "topRight": {
+            "x": 298,
+            "y": 48
+          },
+          "bottomLeft": {
+            "x": 48,
+            "y": 298
+          }
+        },
+        "textSha256": "8532742165dfb2af74aa4d0de26c273842fa4e234fcb1525a0a3a018bfbc004e",
+        "bytesSha256": "8532742165dfb2af74aa4d0de26c273842fa4e234fcb1525a0a3a018bfbc004e"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 57,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              14265.122737391517,
+              6.172903057286476,
+              85545.6873658672,
+              0.3940150887629841,
+              14301.316825194375,
+              85439.23416644704,
+              0.008295054500273125,
+              0.12995585383760977,
+              2852.047113556355
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 297.5,
+                "y": 47.5
+              },
+              {
+                "x": 47.5,
+                "y": 297.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": false,
+          "bytes": 3249
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 57,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              12500,
+              0,
+              75000,
+              0,
+              12500,
+              75000,
+              0,
+              0,
+              2500
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 297.5,
+                "y": 47.5
+              },
+              {
+                "x": 47.5,
+                "y": 297.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 3249
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 2,
+          "selectedIndex": null,
+          "meshDelivered": false,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "boundary-unseen-32",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "pixelSha256": "85cc1bbb628c1c0a1ccaaf6258f2c2d919e8a1c2918bf7fc8baaedfedb0d2bb3",
+      "textSha256": "b3cdf166c2d5ef01302aa6e553d979c0290d59ea85f689d2a1f6d790b2880eb1",
+      "group": "known96",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 123255,
+        "compared": 173,
+        "scanned": 3137211,
+        "maps": 393,
+        "second": 5,
+        "meshes": 5,
+        "probed": 1015625,
+        "reduced": 56
+      },
+      "baseline": {
+        "eci": [],
+        "version": 18,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 2.952380952380952,
+            "count": 9
+          },
+          "topRight": {
+            "x": 274.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 28.5,
+            "y": 274.5,
+            "moduleSize": 3.0793650793650795,
+            "count": 9
+          },
+          "alignment": {
+            "x": 265.5,
+            "y": 265.5
+          }
+        },
+        "textSha256": "b3cdf166c2d5ef01302aa6e553d979c0290d59ea85f689d2a1f6d790b2880eb1",
+        "bytesSha256": "b3cdf166c2d5ef01302aa6e553d979c0290d59ea85f689d2a1f6d790b2880eb1"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 89,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              21795.95775623269,
+              1.4210854715202004e-14,
+              130775.74653739613,
+              1.4210854715202004e-14,
+              21795.95775623269,
+              130775.74653739613,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              7265.319252077563
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": null,
+          "meshDelivered": false,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "boundary-unseen-74",
+      "version": 38,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "pixelSha256": "7f461fd3e435facc837225440c3c7c840470941a0d24628feadc31a4f15deac2",
+      "textSha256": "b63446210de1dbe303a53ec95214b2a44de304bbe51c5d0bce8df49f68557e04",
+      "group": "known96",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 161093,
+        "compared": 122,
+        "scanned": 2688004,
+        "maps": 349,
+        "second": 5,
+        "meshes": 5,
+        "probed": 3593750,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 38,
+        "ecc": "M",
+        "mask": 0,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 343,
+            "y": 343,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 343,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 343,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 25,
+            "y": 25
+          }
+        },
+        "textSha256": "b63446210de1dbe303a53ec95214b2a44de304bbe51c5d0bce8df49f68557e04",
+        "bytesSha256": "b63446210de1dbe303a53ec95214b2a44de304bbe51c5d0bce8df49f68557e04"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              -54526.180473372784,
+              0,
+              9542081.58284024,
+              0,
+              -54526.180473372784,
+              9542081.58284024,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 343,
+                "y": 343
+              },
+              {
+                "x": 19,
+                "y": 343
+              },
+              {
+                "x": 343,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": null,
+          "meshDelivered": false,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "boundary-unseen-87",
+      "version": 38,
+      "scale": 3,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "54d3f6ca17b3d378d87c0cbb9254187b59678ff7e0e5d9b522b248f73251f198",
+      "textSha256": "2cee6bbb1c490c223afe1179b7f73760cc385200e389dcdf06e81d4c2a9a2cf6",
+      "group": "known96",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 219582,
+        "compared": 101,
+        "scanned": 3298004,
+        "maps": 376,
+        "second": 4,
+        "meshes": 4,
+        "probed": 3625000,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 38,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 734,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 514.5,
+            "moduleSize": 3.071428571428571,
+            "count": 4
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.071428571428571,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 514.5,
+            "y": 514.5,
+            "moduleSize": 3,
+            "count": 4
+          },
+          "alignment": {
+            "x": 505.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "2cee6bbb1c490c223afe1179b7f73760cc385200e389dcdf06e81d4c2a9a2cf6",
+        "bytesSha256": "2cee6bbb1c490c223afe1179b7f73760cc385200e389dcdf06e81d4c2a9a2cf6"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              1.4210854715202004e-14,
+              81789.27071005918,
+              490735.62426035514,
+              -81789.2707100592,
+              0,
+              14313122.374260357,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 514.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 514.5,
+                "y": 514.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              78732,
+              472392,
+              -78732,
+              0,
+              13778100,
+              0,
+              0,
+              26244
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 514.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 514.5,
+                "y": 514.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              1.4210854715202004e-14,
+              81789.27071005918,
+              490735.62426035514,
+              -81789.2707100592,
+              0,
+              14313122.374260357,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 514.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 514.5,
+                "y": 514.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 2,
+          "collectorPresent": true,
+          "original": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              1.4210854715202004e-14,
+              81789.27071005918,
+              490735.62426035514,
+              -81789.2707100592,
+              0,
+              14313122.374260357,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 514.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 514.5,
+                "y": 514.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              1.4210854715202004e-14,
+              81789.27071005918,
+              490735.62426035514,
+              -81789.2707100592,
+              0,
+              14313122.374260357,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 514.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 514.5,
+                "y": 514.5
+              }
+            ]
+          },
+          "finalBytes": 28561,
+          "finalSha256": "73ab329b3542385ec3fa796c222dba898071d335cc42fb0a6b703b6c97be672b"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": true,
+          "bytes": 28561,
+          "meshBytes": 28561,
+          "meshSha256": "32958c52317f6f2b42d1041abf93f49712d05491fc5592f19ed891020b3e3f3b"
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              78732,
+              472392,
+              -78732,
+              0,
+              13778100,
+              0,
+              0,
+              26244
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 514.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 514.5,
+                "y": 514.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 2,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "boundary-unseen-95",
+      "version": 38,
+      "scale": 5,
+      "amplitude": 7,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 3,
+      "inverted": true,
+      "pixelSha256": "9cf76526a291438fc530526432b1790fdf6af5936857cba1208e7a3561a5e2bc",
+      "textSha256": "ed6fa0911dce55b7d0453b59b08a7599bbac2d0b306aae1ebd7784427d4316da",
+      "group": "known96",
+      "role": "selected-header-miss",
+      "baselineWork": {
+        "steps": 458692,
+        "compared": 132,
+        "scanned": 8579147,
+        "maps": 392,
+        "second": 6,
+        "meshes": 6,
+        "probed": 5250000,
+        "reduced": 90
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -2592,
+              131220,
+              796392,
+              -101250,
+              0,
+              22858605,
+              0,
+              0,
+              26244
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 31.5,
+                "y": 232.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              136315.45118343196,
+              817892.7071005919,
+              -136315.45118343196,
+              0,
+              23855203.957100593,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 1,
+          "collectorPresent": true,
+          "original": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              136315.45118343196,
+              817892.7071005919,
+              -136315.45118343196,
+              0,
+              23855203.957100593,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              136315.45118343196,
+              817892.7071005919,
+              -136315.45118343196,
+              0,
+              23855203.957100593,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          },
+          "finalBytes": 28561,
+          "finalSha256": "60fbd66a64da48f55f01ce291cf809a578ec29169b2a7dc13fdf1ce824e80db3"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": true,
+          "bytes": 28561,
+          "meshBytes": 28561,
+          "meshSha256": "0a077f2d5f2bc0737afd8bf802a588345904fe2a78396f0389e954497d4a414a"
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              131220,
+              787320,
+              -131220,
+              0,
+              22963500,
+              0,
+              0,
+              26244
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              136315.45118343196,
+              817892.7071005919,
+              -136315.45118343196,
+              0,
+              23855203.957100593,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 4,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              131220,
+              787320,
+              -131220,
+              0,
+              22963500,
+              0,
+              0,
+              26244
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 4,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 4,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 5,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 169,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              136315.45118343196,
+              817892.7071005919,
+              -136315.45118343196,
+              0,
+              23855203.957100593,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              27263.090236686396
+            ],
+            "finders": [
+              {
+                "x": 47.5,
+                "y": 857.5
+              },
+              {
+                "x": 47.5,
+                "y": 47.5
+              },
+              {
+                "x": 857.5,
+                "y": 857.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 5,
+          "selected": false,
+          "bytes": 28561
+        },
+        {
+          "kind": "late-end",
+          "index": 5,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": false,
+          "attempts": 6,
+          "selectedIndex": 1,
+          "meshDelivered": true,
+          "pending": true
+        }
+      ],
+      "replay": {
+        "index": 1,
+        "original": {
+          "size": 169,
+          "mirrored": true,
+          "inverted": true,
+          "ecc": "H",
+          "mask": 1,
+          "basis": "original",
+          "publicInverted": true,
+          "matrix": [
+            0,
+            136315.45118343196,
+            817892.7071005919,
+            -136315.45118343196,
+            0,
+            23855203.957100593,
+            4.440892098500626e-16,
+            4.440892098500626e-16,
+            27263.090236686396
+          ],
+          "finders": [
+            {
+              "x": 47.5,
+              "y": 857.5
+            },
+            {
+              "x": 47.5,
+              "y": 47.5
+            },
+            {
+              "x": 857.5,
+              "y": 857.5
+            }
+          ]
+        },
+        "candidate": {
+          "size": 169,
+          "mirrored": false,
+          "inverted": true,
+          "ecc": "M",
+          "mask": 0,
+          "basis": "original",
+          "publicInverted": true,
+          "matrix": [
+            0,
+            136315.45118343196,
+            817892.7071005919,
+            -136315.45118343196,
+            0,
+            23855203.957100593,
+            4.440892098500626e-16,
+            4.440892098500626e-16,
+            27263.090236686396
+          ],
+          "finders": [
+            {
+              "x": 47.5,
+              "y": 857.5
+            },
+            {
+              "x": 47.5,
+              "y": 47.5
+            },
+            {
+              "x": 857.5,
+              "y": 857.5
+            }
+          ]
+        },
+        "strictFormat": true,
+        "gridChecks": 1,
+        "symbolReads": 1,
+        "newImageSamples": 0,
+        "work": {
+          "steps": 0,
+          "compared": 0,
+          "scanned": 0,
+          "maps": 0,
+          "second": 0,
+          "meshes": 0,
+          "probed": 0,
+          "reduced": 0
+        },
+        "meshBytes": 28561,
+        "meshSha256": "0a077f2d5f2bc0737afd8bf802a588345904fe2a78396f0389e954497d4a414a",
+        "status": "miss"
+      }
+    },
+    {
+      "id": "mesh-retain-unseen-32",
+      "version": 15,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "419fe528e6ede19a784d21e890b364da9a4bfbf6428ae14c38bed6728a44e2a1",
+      "textSha256": "3f5979e5e54f51651204b945a2d4f2c00b0a49eedc9b9571a4070e9bbf2ac75c",
+      "group": "known128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 38174,
+        "compared": 93,
+        "scanned": 863611,
+        "maps": 237,
+        "second": 1,
+        "meshes": 1,
+        "probed": 203125,
+        "reduced": 30
+      },
+      "baseline": {
+        "eci": [],
+        "version": 15,
+        "ecc": "M",
+        "mask": 4,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2.0285714285714285,
+            "count": 5
+          },
+          "topRight": {
+            "x": 159,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 19,
+            "y": 159,
+            "moduleSize": 2.0285714285714285,
+            "count": 5
+          },
+          "alignment": {
+            "x": 153,
+            "y": 153
+          }
+        },
+        "textSha256": "3f5979e5e54f51651204b945a2d4f2c00b0a49eedc9b9571a4070e9bbf2ac75c",
+        "bytesSha256": "3f5979e5e54f51651204b945a2d4f2c00b0a49eedc9b9571a4070e9bbf2ac75c"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 77,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              10740.283203125,
+              0,
+              64441.69921875,
+              0,
+              10740.283203125,
+              64441.69921875,
+              0,
+              0,
+              5370.1416015625
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 159,
+                "y": 19
+              },
+              {
+                "x": 19,
+                "y": 159
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": null,
+          "meshDelivered": false,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "mesh-retain-unseen-73",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "arch",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "5a9e9fb8f53bda7dc037f69b157b113563fe456c0ce3556b1e72465a4678d4e8",
+      "textSha256": "b1e9a04a3c7fc71dfe4a92c617ce70cf17ba18344ca9abca52dda20e23e7506e",
+      "group": "known128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 98408,
+        "compared": 53,
+        "scanned": 491769,
+        "maps": 198,
+        "second": 6,
+        "meshes": 6,
+        "probed": 2156250,
+        "reduced": 30
+      },
+      "baseline": {
+        "eci": [],
+        "version": 23,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 223,
+            "y": 223,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 223,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 223,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 25,
+            "y": 25
+          }
+        },
+        "textSha256": "b1e9a04a3c7fc71dfe4a92c617ce70cf17ba18344ca9abca52dda20e23e7506e",
+        "bytesSha256": "b1e9a04a3c7fc71dfe4a92c617ce70cf17ba18344ca9abca52dda20e23e7506e"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 223,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "H",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 223,
+                "y": 19
+              }
+            ]
+          },
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 223,
+                "y": 19
+              }
+            ]
+          },
+          "finalBytes": 11881,
+          "finalSha256": "00da3720e552312e692b21970fef99df8b281d2ad071bd678b10eb9799015189"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 11881,
+          "meshBytes": 11881,
+          "meshSha256": "00da3720e552312e692b21970fef99df8b281d2ad071bd678b10eb9799015189"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 223,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 2,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "mesh-retain-unseen-76",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "1c5de4aacb680b4be246e7c4cd1c098059f06b186490673ae984d70d543b4b35",
+      "textSha256": "f65c9b29e7f08c9599f0dea87eb36ddaf391a2f5e51d45cbfbc334edd1a87001",
+      "group": "known128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 83750,
+        "compared": 174,
+        "scanned": 1586755,
+        "maps": 322,
+        "second": 6,
+        "meshes": 5,
+        "probed": 1953125,
+        "reduced": 30
+      },
+      "baseline": {
+        "eci": [],
+        "version": 23,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 1,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 223,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "topRight": {
+            "x": 223,
+            "y": 223,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 25,
+            "y": 217
+          }
+        },
+        "textSha256": "f65c9b29e7f08c9599f0dea87eb36ddaf391a2f5e51d45cbfbc334edd1a87001",
+        "bytesSha256": "f65c9b29e7f08c9599f0dea87eb36ddaf391a2f5e51d45cbfbc334edd1a87001"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              22128.8203125,
+              0,
+              132772.921875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              22128.8203125,
+              0,
+              132772.921875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          },
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              22128.8203125,
+              0,
+              132772.921875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          },
+          "finalBytes": 11881,
+          "finalSha256": "481ef230eb62dab87c5614c4447362c69ffb536a96499e3ddfb74b4fc6659896"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 11881,
+          "meshBytes": 11881,
+          "meshSha256": "5fced0e0c2f9500b77d0b72b2de7a9f65e977cf80aa6506fc202ccef76c06e32"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -20808,
+              2392920,
+              20808,
+              0,
+              124848,
+              0,
+              0,
+              10404
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              22128.8203125,
+              0,
+              132772.921875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -20808,
+              2392920,
+              20808,
+              0,
+              124848,
+              0,
+              0,
+              10404
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 4,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              -22128.8203125,
+              2544814.3359375,
+              22128.8203125,
+              0,
+              132772.921875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 223,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 4,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 5,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "mesh-retain-unseen-90",
+      "version": 23,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "b77fc54feae9cd9d5107654ea25ecb24eb9250eb3d02e2805d3b0e86b203da7b",
+      "textSha256": "8543bd1ff1301e88c882c462b61f715b35dd860e751e99fbec23357070100299",
+      "group": "known128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 213398,
+        "compared": 120,
+        "scanned": 6134698,
+        "maps": 340,
+        "second": 5,
+        "meshes": 5,
+        "probed": 1765625,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 23,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 38,
+            "y": 446,
+            "moduleSize": 4,
+            "count": 5
+          },
+          "topRight": {
+            "x": 38,
+            "y": 38,
+            "moduleSize": 4,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 446,
+            "y": 446,
+            "moduleSize": 4,
+            "count": 5
+          },
+          "alignment": {
+            "x": 434,
+            "y": 50
+          }
+        },
+        "textSha256": "8543bd1ff1301e88c882c462b61f715b35dd860e751e99fbec23357070100299",
+        "bytesSha256": "8543bd1ff1301e88c882c462b61f715b35dd860e751e99fbec23357070100299"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              44257.640625,
+              265545.84375,
+              -44257.640625,
+              0,
+              5089628.671875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 446
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 446,
+                "y": 446
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              44257.640625,
+              265545.84375,
+              -44257.640625,
+              0,
+              5089628.671875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 446
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 446,
+                "y": 446
+              }
+            ]
+          },
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              44257.640625,
+              265545.84375,
+              -44257.640625,
+              0,
+              5089628.671875,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 446
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 446,
+                "y": 446
+              }
+            ]
+          },
+          "finalBytes": 11881,
+          "finalSha256": "5c98f218c448c4f45ffb722dd526106a7f7e42d264b259d74528fd3a3157bc8c"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 11881,
+          "meshBytes": 11881,
+          "meshSha256": "5c98f218c448c4f45ffb722dd526106a7f7e42d264b259d74528fd3a3157bc8c"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "mesh-retain-unseen-120",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "3cc8d81370a0f5bf8c2d04865b32a4cfe1195233dc93dd5dbef48b07da066410",
+      "textSha256": "da15d16f9648d24b2db6f20c70a0e67d0e788da23ae51cfd0fa818b20921d432",
+      "group": "known128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 291399,
+        "compared": 172,
+        "scanned": 4024967,
+        "maps": 385,
+        "second": 5,
+        "meshes": 5,
+        "probed": 3671875,
+        "reduced": 90
+      },
+      "baseline": {
+        "eci": [],
+        "version": 35,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 638,
+            "y": 38,
+            "moduleSize": 4.035714285714286,
+            "count": 4
+          },
+          "topRight": {
+            "x": 638,
+            "y": 638,
+            "moduleSize": 4.071428571428572,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 38,
+            "y": 38,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "alignment": {
+            "x": 50,
+            "y": 626
+          }
+        },
+        "textSha256": "da15d16f9648d24b2db6f20c70a0e67d0e788da23ae51cfd0fa818b20921d432",
+        "bytesSha256": "da15d16f9648d24b2db6f20c70a0e67d0e788da23ae51cfd0fa818b20921d432"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 157,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              2.2737367544323206e-13,
+              -93789.0625,
+              15287617.187499998,
+              93789.0625,
+              1.4210854715202004e-14,
+              562734.375,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              23447.265624999996
+            ],
+            "finders": [
+              {
+                "x": 638,
+                "y": 38
+              },
+              {
+                "x": 638,
+                "y": 638
+              },
+              {
+                "x": 38,
+                "y": 38
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": null,
+          "meshDelivered": false,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "mesh-retain-unseen-122",
+      "version": 35,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "81edf99c4b2b46b5480ceb036d5c3f0cef140845b6ec7dca0a6d8d26f65c269a",
+      "textSha256": "3baaac1210cce491e27d37d6031d8f9295bcddbcf6b6bd1a2faac80a5045898e",
+      "group": "known128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 303349,
+        "compared": 187,
+        "scanned": 4304112,
+        "maps": 380,
+        "second": 5,
+        "meshes": 5,
+        "probed": 3000000,
+        "reduced": 90
+      },
+      "baseline": {
+        "eci": [],
+        "version": 35,
+        "ecc": "M",
+        "mask": 4,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 38,
+            "y": 638,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "topRight": {
+            "x": 38,
+            "y": 38,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 638,
+            "y": 638,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "alignment": {
+            "x": 626,
+            "y": 50
+          }
+        },
+        "textSha256": "3baaac1210cce491e27d37d6031d8f9295bcddbcf6b6bd1a2faac80a5045898e",
+        "bytesSha256": "3baaac1210cce491e27d37d6031d8f9295bcddbcf6b6bd1a2faac80a5045898e"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 157,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              1.4210854715202004e-14,
+              93789.0625,
+              562734.375,
+              -93789.0625,
+              2.2737367544323206e-13,
+              15287617.187499998,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              23447.265624999996
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 638
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 638,
+                "y": 638
+              }
+            ]
+          }
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": true,
+          "meshDelivered": false
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": null,
+          "meshDelivered": false,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "starvation-holdout-40",
+      "version": 17,
+      "scale": 2,
+      "amplitude": 6,
+      "sign": -1,
+      "axis": "x",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 0,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "b0a99d6970f6defe5be8aee83707bec16927a66c631f5932a138bf66b48cfb0a",
+      "textSha256": "b822fcd9f931f7368e9beca4e1e6dae3a05d96f3542ba7662ca16ab4dc1b0224",
+      "group": "previous128",
+      "role": "prior-success-control",
+      "baselineWork": {
+        "steps": 52039,
+        "compared": 88,
+        "scanned": 1334998,
+        "maps": 306,
+        "second": 5,
+        "meshes": 5,
+        "probed": 1078125,
+        "reduced": 30
+      },
+      "baseline": {
+        "eci": [],
+        "version": 17,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 57,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 175,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "topRight": {
+            "x": 175,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 25,
+            "y": 169
+          }
+        },
+        "textSha256": "b822fcd9f931f7368e9beca4e1e6dae3a05d96f3542ba7662ca16ab4dc1b0224",
+        "bytesSha256": "b822fcd9f931f7368e9beca4e1e6dae3a05d96f3542ba7662ca16ab4dc1b0224"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              -13203.125,
+              1201484.3749999998,
+              13203.125,
+              0,
+              79218.75,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 175,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              -13203.125,
+              1201484.3749999998,
+              13203.125,
+              0,
+              79218.75,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 175,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          },
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              -13203.125,
+              1201484.3749999998,
+              13203.125,
+              0,
+              79218.75,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 175,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              }
+            ]
+          },
+          "finalBytes": 7225,
+          "finalSha256": "14344e75095c22a4ec4898dbdb314a09a1f831f14bf0319e4d59e2ab003a57a1"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 7225,
+          "meshBytes": 7225,
+          "meshSha256": "01465525b735fe980dd1759039568c6cb3efe09c93608438e6110655f9125293"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "starvation-holdout-42",
+      "version": 17,
+      "scale": 2,
+      "amplitude": 6,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "69d818691e692f883bbef0074859d794ded59e75aa5166187efe5c95d74fd085",
+      "textSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113",
+      "group": "previous128",
+      "role": "selected-header-miss",
+      "baselineWork": {
+        "steps": 53298,
+        "compared": 59,
+        "scanned": 1563621,
+        "maps": 323,
+        "second": 2,
+        "meshes": 2,
+        "probed": 531250,
+        "reduced": 30
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 6,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              13203.125,
+              79218.75,
+              -13203.125,
+              0,
+              1201484.3749999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 6,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              13203.125,
+              79218.75,
+              -13203.125,
+              0,
+              1201484.3749999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              }
+            ]
+          },
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              13203.125,
+              79218.75,
+              -13203.125,
+              0,
+              1201484.3749999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              }
+            ]
+          },
+          "finalBytes": 7225,
+          "finalSha256": "b8ce11ebb21bf35a901002022c9a11d56ca7ae1ade1f1dfcd76d1563e74040a4"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 7225,
+          "meshBytes": 7225,
+          "meshSha256": "d282e5915119058ff1edfbaaa8a10295b99c025d19581482acc95d9cd02e6c78"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 6,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              12168,
+              73008,
+              -12168,
+              0,
+              1107288,
+              0,
+              0,
+              6084
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 175
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 175,
+                "y": 175
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": false,
+          "attempts": 2,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": true
+        }
+      ],
+      "replay": {
+        "index": 0,
+        "original": {
+          "size": 85,
+          "mirrored": false,
+          "inverted": false,
+          "ecc": "Q",
+          "mask": 6,
+          "basis": "original",
+          "publicInverted": false,
+          "matrix": [
+            0,
+            13203.125,
+            79218.75,
+            -13203.125,
+            0,
+            1201484.3749999998,
+            0,
+            0,
+            6601.562499999999
+          ],
+          "finders": [
+            {
+              "x": 19,
+              "y": 175
+            },
+            {
+              "x": 19,
+              "y": 19
+            },
+            {
+              "x": 175,
+              "y": 175
+            }
+          ]
+        },
+        "candidate": {
+          "size": 85,
+          "mirrored": true,
+          "inverted": false,
+          "ecc": "Q",
+          "mask": 4,
+          "basis": "original",
+          "publicInverted": false,
+          "matrix": [
+            0,
+            13203.125,
+            79218.75,
+            -13203.125,
+            0,
+            1201484.3749999998,
+            0,
+            0,
+            6601.562499999999
+          ],
+          "finders": [
+            {
+              "x": 19,
+              "y": 175
+            },
+            {
+              "x": 19,
+              "y": 19
+            },
+            {
+              "x": 175,
+              "y": 175
+            }
+          ]
+        },
+        "result": {
+          "eci": [],
+          "version": 17,
+          "ecc": "Q",
+          "mask": 4,
+          "corrected": 78,
+          "mirrored": true,
+          "inverted": false,
+          "location": {
+            "topLeft": {
+              "x": 19,
+              "y": 175,
+              "moduleSize": 2,
+              "count": 4
+            },
+            "topRight": {
+              "x": 19,
+              "y": 19,
+              "moduleSize": 2,
+              "count": 6
+            },
+            "bottomLeft": {
+              "x": 175,
+              "y": 175,
+              "moduleSize": 2,
+              "count": 4
+            },
+            "alignment": {
+              "x": 169,
+              "y": 25
+            }
+          },
+          "textSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113",
+          "bytesSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113"
+        },
+        "strictFormat": true,
+        "gridChecks": 1,
+        "symbolReads": 1,
+        "newImageSamples": 0,
+        "work": {
+          "steps": 0,
+          "compared": 0,
+          "scanned": 0,
+          "maps": 0,
+          "second": 0,
+          "meshes": 0,
+          "probed": 0,
+          "reduced": 0
+        },
+        "meshBytes": 7225,
+        "meshSha256": "d282e5915119058ff1edfbaaa8a10295b99c025d19581482acc95d9cd02e6c78",
+        "status": "correct"
+      }
+    },
+    {
+      "id": "starvation-holdout-54",
+      "version": 17,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "ad6172e4ce72c0879a88cbd1d3a6ee726b2227b9e30723429d57c27c803e784e",
+      "textSha256": "78395e0d997d8700b907ab078d38633a5841432cd8a299eb837cc5bd3e7a2187",
+      "group": "previous128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 122990,
+        "compared": 181,
+        "scanned": 2205846,
+        "maps": 333,
+        "second": 5,
+        "meshes": 4,
+        "probed": 812500,
+        "reduced": 58
+      },
+      "baseline": {
+        "eci": [],
+        "version": 17,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 262.5,
+            "y": 262.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 262.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 262.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "78395e0d997d8700b907ab078d38633a5841432cd8a299eb837cc5bd3e7a2187",
+        "bytesSha256": "78395e0d997d8700b907ab078d38633a5841432cd8a299eb837cc5bd3e7a2187"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "finalBytes": 7225,
+          "finalSha256": "dba73af97652d69da4b6c7431a2dd70813dae1d212ed83b53fbb7f54b8d7aeac"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 7225,
+          "meshBytes": 7225,
+          "meshSha256": "dba73af97652d69da4b6c7431a2dd70813dae1d212ed83b53fbb7f54b8d7aeac"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -18252,
+              0,
+              1660932,
+              0,
+              -18252,
+              1660932,
+              0,
+              0,
+              6084
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -18252,
+              0,
+              1660932,
+              0,
+              -18252,
+              1660932,
+              0,
+              0,
+              6084
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "starvation-holdout-78",
+      "version": 25,
+      "scale": 2,
+      "amplitude": 6,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "2423c4346621825143d2960b3c3692fdd0af247b3cddfb25860f39e0d00dcf11",
+      "textSha256": "1416aa75b7ac1a9bbb50f32f9b578427b3847f19710ca55257dc303e94506d49",
+      "group": "previous128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 102263,
+        "compared": 120,
+        "scanned": 1969114,
+        "maps": 346,
+        "second": 5,
+        "meshes": 5,
+        "probed": 2093750,
+        "reduced": 48
+      },
+      "baseline": {
+        "eci": [],
+        "version": 25,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 9,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 239,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 239,
+            "y": 239,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 233,
+            "y": 25
+          }
+        },
+        "textSha256": "1416aa75b7ac1a9bbb50f32f9b578427b3847f19710ca55257dc303e94506d49",
+        "bytesSha256": "1416aa75b7ac1a9bbb50f32f9b578427b3847f19710ca55257dc303e94506d49"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 117,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              7.105427357601002e-15,
+              25616.290680473376,
+              153697.74408284022,
+              -25616.290680473372,
+              1.1368683772161603e-13,
+              3150803.753698225,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              12808.145340236688
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 239
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 239,
+                "y": 239
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 117,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              7.105427357601002e-15,
+              25616.290680473376,
+              153697.74408284022,
+              -25616.290680473372,
+              1.1368683772161603e-13,
+              3150803.753698225,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              12808.145340236688
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 239
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 239,
+                "y": 239
+              }
+            ]
+          },
+          "candidate": {
+            "size": 117,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              7.105427357601002e-15,
+              25616.290680473376,
+              153697.74408284022,
+              -25616.290680473372,
+              1.1368683772161603e-13,
+              3150803.753698225,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              12808.145340236688
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 239
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 239,
+                "y": 239
+              }
+            ]
+          },
+          "finalBytes": 13689,
+          "finalSha256": "7b7c94e3c32238741310dafa4a5739e5a536571c956afbf14d7618891779e1a0"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 13689,
+          "meshBytes": 13689,
+          "meshSha256": "1b92ecfff4e7c84ae4e186f8ef11d015669f491468337693ce038a8fcd8f9179"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 117,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              24200,
+              145200,
+              -24200,
+              0,
+              2976600,
+              0,
+              0,
+              12100
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 239
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 239,
+                "y": 239
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 13689
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 117,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              7.105427357601002e-15,
+              25616.290680473376,
+              153697.74408284022,
+              -25616.290680473372,
+              1.1368683772161603e-13,
+              3150803.753698225,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              12808.145340236688
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 239
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 239,
+                "y": 239
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 13689
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 117,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              24200,
+              145200,
+              -24200,
+              0,
+              2976600,
+              0,
+              0,
+              12100
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 239
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 239,
+                "y": 239
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 13689
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "starvation-holdout-122",
+      "version": 33,
+      "scale": 3,
+      "amplitude": 6,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "102bf54ad8a5971240d3dba61097e4fc25fa9e1b23836e9bafbd2ebd41aa7aec",
+      "textSha256": "0bc0400b0673ca75f98de02ed1d9e818c845d919f2bd8b501e221f3c8adbff4d",
+      "group": "previous128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 230302,
+        "compared": 116,
+        "scanned": 3250091,
+        "maps": 452,
+        "second": 2,
+        "meshes": 2,
+        "probed": 1250000,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 33,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 454.5,
+            "moduleSize": 3,
+            "count": 4
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 454.5,
+            "y": 454.5,
+            "moduleSize": 3,
+            "count": 4
+          },
+          "alignment": {
+            "x": 445.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "0bc0400b0673ca75f98de02ed1d9e818c845d919f2bd8b501e221f3c8adbff4d",
+        "bytesSha256": "0bc0400b0673ca75f98de02ed1d9e818c845d919f2bd8b501e221f3c8adbff4d"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 149,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              63190.19961072665,
+              379141.19766435993,
+              -63190.19961072665,
+              2.2737367544323206e-13,
+              9794480.93966263,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              21063.399870242218
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 454.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 454.5,
+                "y": 454.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 149,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              63190.19961072665,
+              379141.19766435993,
+              -63190.19961072665,
+              2.2737367544323206e-13,
+              9794480.93966263,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              21063.399870242218
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 454.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 454.5,
+                "y": 454.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 149,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              63190.19961072665,
+              379141.19766435993,
+              -63190.19961072665,
+              2.2737367544323206e-13,
+              9794480.93966263,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              21063.399870242218
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 454.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 454.5,
+                "y": 454.5
+              }
+            ]
+          },
+          "finalBytes": 22201,
+          "finalSha256": "b42df040640593e6aae552559b606082ecf0ce5ec5e8b93eb96f220a228039ed"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 22201,
+          "meshBytes": 22201,
+          "meshSha256": "b42df040640593e6aae552559b606082ecf0ce5ec5e8b93eb96f220a228039ed"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 149,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              60492,
+              362952,
+              -60492,
+              0,
+              9376260,
+              0,
+              0,
+              20164
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 454.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 454.5,
+                "y": 454.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 22201
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 2,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "admission-holdout-78",
+      "version": 22,
+      "scale": 2,
+      "amplitude": 5,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "234062bf2f5a767cfc17181e73f10c86cc68952d5a3f0e8f87784a64e9d859d8",
+      "textSha256": "63d5cde343a61d3214f33f59ba1e52068bb52609d03834ef0e1340fb602a6db6",
+      "group": "holdout128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 78566,
+        "compared": 92,
+        "scanned": 1857190,
+        "maps": 329,
+        "second": 4,
+        "meshes": 4,
+        "probed": 1562500,
+        "reduced": 30
+      },
+      "baseline": {
+        "eci": [],
+        "version": 22,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 215,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 215,
+            "y": 215,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 209,
+            "y": 25
+          }
+        },
+        "textSha256": "63d5cde343a61d3214f33f59ba1e52068bb52609d03834ef0e1340fb602a6db6",
+        "bytesSha256": "63d5cde343a61d3214f33f59ba1e52068bb52609d03834ef0e1340fb602a6db6"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 105,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              20481.120037807184,
+              122886.72022684311,
+              -20481.120037807184,
+              0,
+              2273404.3241965976,
+              0,
+              0,
+              10240.560018903592
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 215
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 215,
+                "y": 215
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 105,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              20481.120037807184,
+              122886.72022684311,
+              -20481.120037807184,
+              0,
+              2273404.3241965976,
+              0,
+              0,
+              10240.560018903592
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 215
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 215,
+                "y": 215
+              }
+            ]
+          },
+          "candidate": {
+            "size": 105,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              20481.120037807184,
+              122886.72022684311,
+              -20481.120037807184,
+              0,
+              2273404.3241965976,
+              0,
+              0,
+              10240.560018903592
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 215
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 215,
+                "y": 215
+              }
+            ]
+          },
+          "finalBytes": 11025,
+          "finalSha256": "eef2b1740660e5651aba88c4b66658df7b07f0021bca910363b0d0a8d737b262"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 11025,
+          "meshBytes": 11025,
+          "meshSha256": "e746a728f1c6a36c8ca496fbdf3651c752f18c7a46411994a635d8efe11ce74d"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 105,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              19208,
+              115248,
+              -19208,
+              0,
+              2132088,
+              0,
+              0,
+              9604
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 215
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 215,
+                "y": 215
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 11025
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 105,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              20481.120037807184,
+              122886.72022684311,
+              -20481.120037807184,
+              0,
+              2273404.3241965976,
+              0,
+              0,
+              10240.560018903592
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 215
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 215,
+                "y": 215
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 11025
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 105,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              19208,
+              115248,
+              -19208,
+              0,
+              2132088,
+              0,
+              0,
+              9604
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 215
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 215,
+                "y": 215
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 11025
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "admission-holdout-122",
+      "version": 31,
+      "scale": 4,
+      "amplitude": 5,
+      "sign": -1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "M",
+      "rotation": 2,
+      "inverted": false,
+      "mirrored": true,
+      "pixelSha256": "9ec9f0c1c584f97e60ec3eb0cd638f3a5e2a2fc0fc22f452a2d4f14efd7cb532",
+      "textSha256": "56bc7c83a1395a122f0fc6130a960425880fd2f6d8658225f145c0e4c06b2705",
+      "group": "holdout128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 230403,
+        "compared": 124,
+        "scanned": 5598992,
+        "maps": 347,
+        "second": 1,
+        "meshes": 1,
+        "probed": 578125,
+        "reduced": 90
+      },
+      "baseline": {
+        "eci": [],
+        "version": 31,
+        "ecc": "M",
+        "mask": 0,
+        "corrected": 0,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 38,
+            "y": 574,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "topRight": {
+            "x": 38,
+            "y": 38,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 574,
+            "y": 574,
+            "moduleSize": 4,
+            "count": 4
+          },
+          "alignment": {
+            "x": 562,
+            "y": 50
+          }
+        },
+        "textSha256": "56bc7c83a1395a122f0fc6130a960425880fd2f6d8658225f145c0e4c06b2705",
+        "bytesSha256": "56bc7c83a1395a122f0fc6130a960425880fd2f6d8658225f145c0e4c06b2705"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 141,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              75230.2041015625,
+              451381.224609375,
+              -75230.2041015625,
+              0,
+              11058840.002929688,
+              0,
+              0,
+              18807.551025390625
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 574
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 574,
+                "y": 574
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 141,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              75230.2041015625,
+              451381.224609375,
+              -75230.2041015625,
+              0,
+              11058840.002929688,
+              0,
+              0,
+              18807.551025390625
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 574
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 574,
+                "y": 574
+              }
+            ]
+          },
+          "candidate": {
+            "size": 141,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              75230.2041015625,
+              451381.224609375,
+              -75230.2041015625,
+              0,
+              11058840.002929688,
+              0,
+              0,
+              18807.551025390625
+            ],
+            "finders": [
+              {
+                "x": 38,
+                "y": 574
+              },
+              {
+                "x": 38,
+                "y": 38
+              },
+              {
+                "x": 574,
+                "y": 574
+              }
+            ]
+          },
+          "finalBytes": 19881,
+          "finalSha256": "a384de047b98ffd0f553a9a069f0fb7967fad86b9101743a1c724c3292880884"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 19881,
+          "meshBytes": 19881,
+          "meshSha256": "a384de047b98ffd0f553a9a069f0fb7967fad86b9101743a1c724c3292880884"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "late-phase-holdout-6",
+      "version": 8,
+      "scale": 2,
+      "amplitude": 2,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "382a0c2b844a9360dc6460e8bc586c4fcda97f1ab7d4a1d66a7f646360b06517",
+      "textSha256": "74a6f5257f058747dffe028787f9257401b3053051c98f115de6f2b8042fd8fe",
+      "group": "fresh128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 19037,
+        "compared": 78,
+        "scanned": 312058,
+        "maps": 174,
+        "second": 6,
+        "meshes": 6,
+        "probed": 593750,
+        "reduced": 15
+      },
+      "baseline": {
+        "eci": [],
+        "version": 8,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 12,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 103,
+            "y": 103,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 103,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 103,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 25,
+            "y": 25
+          }
+        },
+        "textSha256": "74a6f5257f058747dffe028787f9257401b3053051c98f115de6f2b8042fd8fe",
+        "bytesSha256": "74a6f5257f058747dffe028787f9257401b3053051c98f115de6f2b8042fd8fe"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 49,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -3402,
+              0,
+              193599,
+              -441,
+              -3528,
+              195583.5,
+              0,
+              0,
+              1764
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 22,
+                "y": 92.5
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": false,
+          "bytes": 2401
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 49,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -4140.5,
+              0,
+              227727.5,
+              0,
+              -4140.5,
+              227727.5,
+              0,
+              0,
+              2070.25
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 19,
+                "y": 103
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 1,
+          "collectorPresent": true,
+          "original": {
+            "size": 49,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -4140.5,
+              0,
+              227727.5,
+              0,
+              -4140.5,
+              227727.5,
+              0,
+              0,
+              2070.25
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 19,
+                "y": 103
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          },
+          "candidate": {
+            "size": 49,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -4140.5,
+              0,
+              227727.5,
+              0,
+              -4140.5,
+              227727.5,
+              0,
+              0,
+              2070.25
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 19,
+                "y": 103
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          },
+          "finalBytes": 2401,
+          "finalSha256": "08a645679c1cb65738a79e08102b893ed38c7d4f579eae5e34df0734e0261545"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": true,
+          "bytes": 2401,
+          "meshBytes": 2401,
+          "meshSha256": "efeb485d0597e59138396882f24be940e76d5c5107a451bfb034ef567930ac0e"
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 49,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -3528,
+              0,
+              194040,
+              0,
+              -3528,
+              194040,
+              0,
+              0,
+              1764
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 19,
+                "y": 103
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 2401
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 49,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -3402,
+              0,
+              193599,
+              -441,
+              -3528,
+              195583.5,
+              0,
+              0,
+              1764
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 22,
+                "y": 92.5
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 2401
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 4,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 49,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -4140.5,
+              0,
+              227727.5,
+              0,
+              -4140.5,
+              227727.5,
+              0,
+              0,
+              2070.25
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 19,
+                "y": 103
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 4,
+          "selected": false,
+          "bytes": 2401
+        },
+        {
+          "kind": "late-end",
+          "index": 4,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 5,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 49,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -3827.079402515723,
+              -165.46104917095482,
+              227209.64158090335,
+              178.48148942252726,
+              -4171.021941109206,
+              227209.64158090335,
+              7.524799885648942,
+              -1.6064179531160665,
+              2049.535663236135
+            ],
+            "finders": [
+              {
+                "x": 103,
+                "y": 103
+              },
+              {
+                "x": 22,
+                "y": 92.5
+              },
+              {
+                "x": 103,
+                "y": 19
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 5,
+          "selected": false,
+          "bytes": 2401
+        },
+        {
+          "kind": "late-end",
+          "index": 5,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 6,
+          "selectedIndex": 1,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "version-peer-holdout-54",
+      "version": 18,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "e0a10e17fca97d146dc8acaaa8efd9bd2ede34618fb2fde82035a437ba31dbe6",
+      "textSha256": "f0b937d714b8fd621bc1d881a5d57089daa9eb126c4542caed504545a9a2353e",
+      "group": "versionPeerFresh128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 140431,
+        "compared": 234,
+        "scanned": 1873883,
+        "maps": 299,
+        "second": 5,
+        "meshes": 4,
+        "probed": 812500,
+        "reduced": 54
+      },
+      "baseline": {
+        "eci": [],
+        "version": 18,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 274.5,
+            "y": 274.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 274.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 274.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "f0b937d714b8fd621bc1d881a5d57089daa9eb126c4542caed504545a9a2353e",
+        "bytesSha256": "f0b937d714b8fd621bc1d881a5d57089daa9eb126c4542caed504545a9a2353e"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 89,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -21795.95775623269,
+              0,
+              2070615.9868421052,
+              0,
+              -21795.95775623269,
+              2070615.9868421052,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              7265.319252077563
+            ],
+            "finders": [
+              {
+                "x": 274.5,
+                "y": 274.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 89,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -21795.95775623269,
+              0,
+              2070615.9868421052,
+              0,
+              -21795.95775623269,
+              2070615.9868421052,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              7265.319252077563
+            ],
+            "finders": [
+              {
+                "x": 274.5,
+                "y": 274.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 89,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -21795.95775623269,
+              0,
+              2070615.9868421052,
+              0,
+              -21795.95775623269,
+              2070615.9868421052,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              7265.319252077563
+            ],
+            "finders": [
+              {
+                "x": 274.5,
+                "y": 274.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "finalBytes": 7921,
+          "finalSha256": "8530eebb7367aff9ffc178d7ad3d9163be7899f99d37fb1b3cb2579e6a85b5c4"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 7921,
+          "meshBytes": 7921,
+          "meshSha256": "8530eebb7367aff9ffc178d7ad3d9163be7899f99d37fb1b3cb2579e6a85b5c4"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 89,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -20172,
+              0,
+              1916340,
+              0,
+              -20172,
+              1916340,
+              0,
+              0,
+              6724
+            ],
+            "finders": [
+              {
+                "x": 274.5,
+                "y": 274.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 7921
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 89,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -21795.95775623269,
+              0,
+              2070615.9868421052,
+              0,
+              -21795.95775623269,
+              2070615.9868421052,
+              4.440892098500626e-16,
+              4.440892098500626e-16,
+              7265.319252077563
+            ],
+            "finders": [
+              {
+                "x": 274.5,
+                "y": 274.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 7921
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 89,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -20172,
+              0,
+              1916340,
+              0,
+              -20172,
+              1916340,
+              0,
+              0,
+              6724
+            ],
+            "finders": [
+              {
+                "x": 274.5,
+                "y": 274.5
+              },
+              {
+                "x": 28.5,
+                "y": 274.5
+              },
+              {
+                "x": 274.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 7921
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "version-peer-holdout-87",
+      "version": 26,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "09ecbad8ea7ec366a09185f49111ad2141544efb66b88e8fe8ac740ddb204ba5",
+      "textSha256": "4cd7405a8907af5f4d73089a53690f80703efd9acd2732a8e61dafe45acb59f9",
+      "group": "versionPeerFresh128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 213762,
+        "compared": 168,
+        "scanned": 1794178,
+        "maps": 363,
+        "second": 4,
+        "meshes": 4,
+        "probed": 1375000,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 26,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 336,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 370.5,
+            "moduleSize": 3.0952380952380953,
+            "count": 9
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.0793650793650795,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 370.5,
+            "y": 370.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 361.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "4cd7405a8907af5f4d73089a53690f80703efd9acd2732a8e61dafe45acb59f9",
+        "bytesSha256": "4cd7405a8907af5f4d73089a53690f80703efd9acd2732a8e61dafe45acb59f9"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 121,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              41184.08333333333,
+              247104.49999999997,
+              -41184.08333333333,
+              0,
+              5230378.583333333,
+              0,
+              0,
+              13728.027777777777
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 370.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 370.5,
+                "y": 370.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 121,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              41184.08333333333,
+              247104.49999999997,
+              -41184.08333333333,
+              0,
+              5230378.583333333,
+              0,
+              0,
+              13728.027777777777
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 370.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 370.5,
+                "y": 370.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 121,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              41184.08333333333,
+              247104.49999999997,
+              -41184.08333333333,
+              0,
+              5230378.583333333,
+              0,
+              0,
+              13728.027777777777
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 370.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 370.5,
+                "y": 370.5
+              }
+            ]
+          },
+          "finalBytes": 14641,
+          "finalSha256": "1a476a1ec986572809d3a98afdee0acc348d611a09a9dd5c5c17bfda0ea23ff8"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 14641,
+          "meshBytes": 14641,
+          "meshSha256": "f1722b1ed8608efa2265fabaf633c42c654460b51b160abaee74e41ff2f5eb31"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 121,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              38988,
+              233928,
+              -38988,
+              0,
+              4951476,
+              0,
+              0,
+              12996
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 370.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 370.5,
+                "y": 370.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 14641
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 121,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              41184.08333333333,
+              247104.49999999997,
+              -41184.08333333333,
+              0,
+              5230378.583333333,
+              0,
+              0,
+              13728.027777777777
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 370.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 370.5,
+                "y": 370.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 14641
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 121,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              38988,
+              233928,
+              -38988,
+              0,
+              4951476,
+              0,
+              0,
+              12996
+            ],
+            "finders": [
+              {
+                "x": 28.5,
+                "y": 370.5
+              },
+              {
+                "x": 28.5,
+                "y": 28.5
+              },
+              {
+                "x": 370.5,
+                "y": 370.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 14641
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "alternate-grid-holdout-78",
+      "version": 23,
+      "scale": 2,
+      "amplitude": 6,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "806f6c01e64cea249bcdca7508decc902593613ad4b61fc27b95a63ba4ad8e27",
+      "textSha256": "b4960db645281f3f445808a8d42389cbc6cffd914a3b43c462f3f6ee42915b46",
+      "group": "alternateGridFresh128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 60233,
+        "compared": 84,
+        "scanned": 1436411,
+        "maps": 355,
+        "second": 5,
+        "meshes": 5,
+        "probed": 2187500,
+        "reduced": 30
+      },
+      "baseline": {
+        "eci": [],
+        "version": 23,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 10,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 223,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 223,
+            "y": 223,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 217,
+            "y": 25
+          }
+        },
+        "textSha256": "b4960db645281f3f445808a8d42389cbc6cffd914a3b43c462f3f6ee42915b46",
+        "bytesSha256": "b4960db645281f3f445808a8d42389cbc6cffd914a3b43c462f3f6ee42915b46"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              22128.8203125,
+              132772.921875,
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              22128.8203125,
+              132772.921875,
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          },
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              22128.8203125,
+              132772.921875,
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          },
+          "finalBytes": 11881,
+          "finalSha256": "d15b9b5972b840b41214f1bd01e71059301c366dad81161235c1625150c48a58"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 11881,
+          "meshBytes": 11881,
+          "meshSha256": "92ff3c7ab24af60fe4be5f7d74d8bb6c3e05e08525fd5faf2612f73fa0fdee21"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              20808,
+              124848,
+              -20808,
+              0,
+              2392920,
+              0,
+              0,
+              10404
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              22128.8203125,
+              132772.921875,
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              20808,
+              124848,
+              -20808,
+              0,
+              2392920,
+              0,
+              0,
+              10404
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 4,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 109,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 1,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              0,
+              22128.8203125,
+              132772.921875,
+              -22128.8203125,
+              0,
+              2544814.3359375,
+              0,
+              0,
+              11064.41015625
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 223
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 223,
+                "y": 223
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 4,
+          "selected": false,
+          "bytes": 11881
+        },
+        {
+          "kind": "late-end",
+          "index": 4,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 5,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "alternate-grid-holdout-99",
+      "version": 40,
+      "scale": 2,
+      "amplitude": 3,
+      "sign": -1,
+      "axis": "y",
+      "profile": "double-wave",
+      "ecc": "Q",
+      "rotation": 3,
+      "inverted": false,
+      "mirrored": false,
+      "pixelSha256": "70960bd3ad69642bc99f1498759e36bbce43079fc69e4afecd135ba11ffe13fa",
+      "textSha256": "81e24068158a17a7958ddbeb9515bd86aa92aecc99909b3fd1c7e63e2c889f6d",
+      "group": "alternateGridFresh128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 215059,
+        "compared": 175,
+        "scanned": 2452487,
+        "maps": 350,
+        "second": 5,
+        "meshes": 5,
+        "probed": 3593750,
+        "reduced": 60
+      },
+      "baseline": {
+        "eci": [],
+        "version": 40,
+        "ecc": "Q",
+        "mask": 0,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 359,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 359,
+            "y": 359,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 353,
+            "y": 25
+          }
+        },
+        "textSha256": "81e24068158a17a7958ddbeb9515bd86aa92aecc99909b3fd1c7e63e2c889f6d",
+        "bytesSha256": "81e24068158a17a7958ddbeb9515bd86aa92aecc99909b3fd1c7e63e2c889f6d"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 177,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 3,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              59933.975312314105,
+              359603.8518738847,
+              -59933.9753123141,
+              0,
+              10967917.48215348,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 359
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 359,
+                "y": 359
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 177,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 3,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              59933.975312314105,
+              359603.8518738847,
+              -59933.9753123141,
+              0,
+              10967917.48215348,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 359
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 359,
+                "y": 359
+              }
+            ]
+          },
+          "candidate": {
+            "size": 177,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "Q",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": false,
+            "matrix": [
+              0,
+              59933.975312314105,
+              359603.8518738847,
+              -59933.9753123141,
+              0,
+              10967917.48215348,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 19,
+                "y": 359
+              },
+              {
+                "x": 19,
+                "y": 19
+              },
+              {
+                "x": 359,
+                "y": 359
+              }
+            ]
+          },
+          "finalBytes": 31329,
+          "finalSha256": "49e77cfc83bac92ec7b8f09144a41155a18d15811baccd585cd69784012ae028"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 31329,
+          "meshBytes": 31329,
+          "meshSha256": "72bd83abbe185bd6a37c8208fcdfa0431585cb03308ebcef685908d4fd635f30"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 1,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    },
+    {
+      "id": "alternate-grid-holdout-125",
+      "version": 40,
+      "scale": 3,
+      "amplitude": 6,
+      "sign": 1,
+      "axis": "x",
+      "profile": "double-wave",
+      "ecc": "M",
+      "rotation": 1,
+      "inverted": true,
+      "mirrored": true,
+      "pixelSha256": "87caa9e99e6be025f6bfb671ac70ace57ab0308788b782f08ec951c05e46b0b1",
+      "textSha256": "9551a22cc1a638acd7df3e1d73413e3094c6849062962639e7a5dc59ebaf6805",
+      "group": "alternateGridFresh128",
+      "role": "selected-header-miss",
+      "baselineWork": {
+        "steps": 233796,
+        "compared": 65,
+        "scanned": 1796396,
+        "maps": 452,
+        "second": 5,
+        "meshes": 5,
+        "probed": 4531250,
+        "reduced": 60
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 177,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -89900.96296847115,
+              0,
+              16451876.223230222,
+              0,
+              -89900.96296847115,
+              16451876.223230222,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 177,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -89900.96296847115,
+              0,
+              16451876.223230222,
+              0,
+              -89900.96296847115,
+              16451876.223230222,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 177,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -89900.96296847115,
+              0,
+              16451876.223230222,
+              0,
+              -89900.96296847115,
+              16451876.223230222,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "finalBytes": 31329,
+          "finalSha256": "c1e99dd42f3e74b4291de91afe474d2a14c14ca0cc2e5473a111b100fd9f1d54"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 31329,
+          "meshBytes": 31329,
+          "meshSha256": "3b4a3a74a4974659681847750ebf3fe5ac5ef35b98e667f4b07509c49d2e8c46"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 177,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -89900.96296847115,
+              0,
+              16451876.223230222,
+              0,
+              -89900.96296847115,
+              16451876.223230222,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 31329
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 177,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -86700,
+              0,
+              15866100,
+              0,
+              -86700,
+              15866100,
+              0,
+              0,
+              28900
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 31329
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 177,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -86700,
+              0,
+              15866100,
+              0,
+              -86700,
+              15866100,
+              0,
+              0,
+              28900
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 31329
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 4,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 177,
+            "mirrored": false,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 2,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -89900.96296847115,
+              0,
+              16451876.223230222,
+              0,
+              -89900.96296847115,
+              16451876.223230222,
+              0,
+              0,
+              29966.987656157053
+            ],
+            "finders": [
+              {
+                "x": 538.5,
+                "y": 538.5
+              },
+              {
+                "x": 28.5,
+                "y": 538.5
+              },
+              {
+                "x": 538.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 4,
+          "selected": false,
+          "bytes": 31329
+        },
+        {
+          "kind": "late-end",
+          "index": 4,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": false,
+          "attempts": 5,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": true
+        }
+      ],
+      "replay": {
+        "index": 0,
+        "original": {
+          "size": 177,
+          "mirrored": false,
+          "inverted": true,
+          "ecc": "M",
+          "mask": 2,
+          "basis": "original",
+          "publicInverted": true,
+          "matrix": [
+            -89900.96296847115,
+            0,
+            16451876.223230222,
+            0,
+            -89900.96296847115,
+            16451876.223230222,
+            0,
+            0,
+            29966.987656157053
+          ],
+          "finders": [
+            {
+              "x": 538.5,
+              "y": 538.5
+            },
+            {
+              "x": 28.5,
+              "y": 538.5
+            },
+            {
+              "x": 538.5,
+              "y": 28.5
+            }
+          ]
+        },
+        "candidate": {
+          "size": 177,
+          "mirrored": true,
+          "inverted": true,
+          "ecc": "M",
+          "mask": 2,
+          "basis": "original",
+          "publicInverted": true,
+          "matrix": [
+            -89900.96296847115,
+            0,
+            16451876.223230222,
+            0,
+            -89900.96296847115,
+            16451876.223230222,
+            0,
+            0,
+            29966.987656157053
+          ],
+          "finders": [
+            {
+              "x": 538.5,
+              "y": 538.5
+            },
+            {
+              "x": 28.5,
+              "y": 538.5
+            },
+            {
+              "x": 538.5,
+              "y": 28.5
+            }
+          ]
+        },
+        "strictFormat": true,
+        "gridChecks": 1,
+        "symbolReads": 1,
+        "newImageSamples": 0,
+        "work": {
+          "steps": 0,
+          "compared": 0,
+          "scanned": 0,
+          "maps": 0,
+          "second": 0,
+          "meshes": 0,
+          "probed": 0,
+          "reduced": 0
+        },
+        "meshBytes": 31329,
+        "meshSha256": "3b4a3a74a4974659681847750ebf3fe5ac5ef35b98e667f4b07509c49d2e8c46",
+        "status": "miss"
+      }
+    },
+    {
+      "id": "header-rediscovery-holdout-54",
+      "version": 17,
+      "scale": 3,
+      "amplitude": 3,
+      "sign": 1,
+      "axis": "y",
+      "profile": "parabola",
+      "ecc": "Q",
+      "rotation": 2,
+      "inverted": true,
+      "mirrored": false,
+      "pixelSha256": "55f4b6c719ca88375333e97dbc01134eed36b14faf5ce0701526228dc1fec511",
+      "textSha256": "88a4fa46f21e044a4728759bdf5b53a8d9271d8b96be8366653bacb9320ef594",
+      "group": "headerRediscoveryFresh128",
+      "role": "0.3.12-gain-control",
+      "baselineWork": {
+        "steps": 122927,
+        "compared": 144,
+        "scanned": 2162577,
+        "maps": 324,
+        "second": 5,
+        "meshes": 4,
+        "probed": 812500,
+        "reduced": 59
+      },
+      "baseline": {
+        "eci": [],
+        "version": 17,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 262.5,
+            "y": 262.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 262.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 262.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "88a4fa46f21e044a4728759bdf5b53a8d9271d8b96be8366653bacb9320ef594",
+        "bytesSha256": "88a4fa46f21e044a4728759bdf5b53a8d9271d8b96be8366653bacb9320ef594"
+      },
+      "events": [
+        {
+          "kind": "late-attempt",
+          "index": 0,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "selected",
+          "index": 0,
+          "collectorPresent": true,
+          "original": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "candidate": {
+            "size": 85,
+            "mirrored": false,
+            "inverted": true,
+            "ecc": "Q",
+            "mask": 4,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          },
+          "finalBytes": 7225,
+          "finalSha256": "366c38d2d7804e62713fb69203d81e7e3206ed6446c4f1f06053880647cce73a"
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 0,
+          "selected": true,
+          "bytes": 7225,
+          "meshBytes": 7225,
+          "meshSha256": "366c38d2d7804e62713fb69203d81e7e3206ed6446c4f1f06053880647cce73a"
+        },
+        {
+          "kind": "late-end",
+          "index": 0,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 1,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": true,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "original",
+            "publicInverted": true,
+            "matrix": [
+              -18252,
+              0,
+              1660932,
+              0,
+              -18252,
+              1660932,
+              0,
+              0,
+              6084
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 1,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 1,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 2,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -19804.6875,
+              0,
+              1802226.5624999998,
+              0,
+              -19804.6875,
+              1802226.5624999998,
+              0,
+              0,
+              6601.562499999999
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 2,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 2,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "late-attempt",
+          "index": 3,
+          "strict": true,
+          "late": true,
+          "factor": 1,
+          "collectorPresent": true,
+          "candidate": {
+            "size": 85,
+            "mirrored": true,
+            "inverted": false,
+            "ecc": "M",
+            "mask": 0,
+            "basis": "inverse-luminance",
+            "publicInverted": true,
+            "matrix": [
+              -18252,
+              0,
+              1660932,
+              0,
+              -18252,
+              1660932,
+              0,
+              0,
+              6084
+            ],
+            "finders": [
+              {
+                "x": 262.5,
+                "y": 262.5
+              },
+              {
+                "x": 28.5,
+                "y": 262.5
+              },
+              {
+                "x": 262.5,
+                "y": 28.5
+              }
+            ]
+          }
+        },
+        {
+          "kind": "mesh-delivery",
+          "index": 3,
+          "selected": false,
+          "bytes": 7225
+        },
+        {
+          "kind": "late-end",
+          "index": 3,
+          "read": false,
+          "meshDelivered": true
+        },
+        {
+          "kind": "decode-end",
+          "read": true,
+          "attempts": 4,
+          "selectedIndex": 0,
+          "meshDelivered": true,
+          "pending": false
+        }
+      ]
+    }
+  ]
+}

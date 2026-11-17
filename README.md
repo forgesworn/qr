@@ -46,8 +46,12 @@ reads and must not introduce incorrect payloads.
 The recorded WASM comparison reads **180/184 photographs versus ZXing-WASM's
 171/184**, and **172/224 positive stress frames versus 150/224**. Those finite
 sets do not prove superiority on every image. ZXing is faster on random noise
-and reads one stress frame we miss. See [choosing a library](docs/CHOOSING.md)
-for use cases, trade-offs and [reproducible evidence](PERFORMANCE.md).
+and reads one stress frame we miss. Version 0.3.13 also reads **653/1,120
+curved synthetic images versus 569/1,120**, preserving earlier successful
+results and recovering five more images than 0.3.12. One of those gains is in
+a separate 128-image set frozen before evaluation. See
+[choosing a library](docs/CHOOSING.md) for use cases, trade-offs and
+[reproducible evidence](benchmarks/2026-11-17-m4/selected-mesh-recovery/README.md).
 
 ## Contents
 
@@ -76,11 +80,11 @@ the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.12'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.12/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.13'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.13/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.12` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.13` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -679,6 +683,12 @@ For each frame, in order, stopping at the first read:
    inverted-luminance pass retain their own thresholds and run after the
    original-image candidates. All these retries share the existing map and
    second-look budgets.
+9. **Retained grids.** After those paths fail, bounded strict reads can recover
+   already sampled grids. If the selected refined grid supplies a different
+   agreed header but cannot be read, the decoder can try that same hypothesis
+   on the direct alignment mesh captured by the same refinement call. This
+   adds no image sampling or alignment search and cannot displace an earlier
+   successful result.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
@@ -721,7 +731,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.12") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.13") }
 ```
 
 See [distribution](docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -751,7 +761,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.12`; see the [Rust guide](rust/README.md) and
+`cargo add forgesworn-qr@0.3.13`; see the [Rust guide](rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
