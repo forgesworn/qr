@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.12
+
+- After all earlier paths fail, read one different strict format hypothesis
+  discovered on an existing refined grid. Preserve ordinary version,
+  Reed–Solomon and segment checks and every earlier successful result.
+- Recover eleven more codes across 992 evaluated curved images: 571 correct
+  reads against 500 for ZXing-WASM 3.1.7. This includes one additional read in
+  a separate 128-image set frozen before evaluation. These are dataset results,
+  not a claim of universal accuracy.
+- Apply the recovery to TypeScript, Rust and Kotlin. Add two conformance frames
+  while preserving all 80 previous entries, results and work counts.
+- Keep the eight-second-look, 720-map and 11,500,000-alignment-probe limits.
+  Retain at most one additional existing grid and perform at most one extra
+  strict symbol validation. Existing `Work` counters do not count that
+  validation or the bounded format checks; unchanged counts do not imply
+  unchanged CPU time.
+
 ## 0.3.11
 
 - After all earlier paths fail, validate one retained orientation and format

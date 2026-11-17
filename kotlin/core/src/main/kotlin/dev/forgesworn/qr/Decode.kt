@@ -127,6 +127,7 @@ private class Budget(var maps: Int, var second: Int, var here: Int, var inverted
     var versionPeer: ConflictCandidate? = null
     var alternateInverse: List<Retry>? = null
     var alternateGrid: AlternateGrid? = null
+    var rediscoveredGrid: RediscoveredGrid? = null
     var attempted: MutableList<AttemptedCandidate>? = null
 }
 
@@ -223,7 +224,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (ordinary != null) return ordinary
     val versionPeer = recoverVersionPeer(luminance, inverse, budget, work)
     if (versionPeer != null) return versionPeer
-    return recoverAlternateGrid(budget)
+    val alternate = recoverAlternateGrid(budget)
+    if (alternate != null) return alternate
+    return recoverRediscoveredGrid(budget)
 }
 
 /**
@@ -752,13 +755,18 @@ private fun alternateSecondLook(budget: Budget, inverseLuminance: Boolean, image
     if (pending != null && pending.inverseLuminance == inverseLuminance &&
         sameAlternateGeometry(pending.candidate, candidate) && sameAlternateHypothesis(pending.candidate, candidate))
         pending.lateAttempted = true
-    if (pending != null) return secondLook(image, levels, candidate, work, true, true, collectMesh)
+    if (pending != null) {
+        val finalCollector: ((ByteArray) -> Unit)? = if (budget.rediscoveredGrid == null)
+            ({ modules: ByteArray -> keepRediscoveredGrid(budget, inverseLuminance, candidate, modules) }) else null
+        return secondLook(image, levels, candidate, work, true, true, collectMesh, finalCollector)
+    }
     var selected: AlternateGrid? = null
     val mesh: ((ByteArray) -> Unit)? = if (collectMesh == null) null else ({ modules: ByteArray ->
         collectMesh(modules)
         selected?.mesh = modules
     })
     val collectFinal: (ByteArray) -> Unit = { modules ->
+        keepRediscoveredGrid(budget, inverseLuminance, candidate, modules)
         val candidates = if (inverseLuminance) budget.alternateInverse else budget.curvature
         if (candidates != null) {
             for (alternative in candidates) {
@@ -789,4 +797,35 @@ private fun recoverAlternateGrid(budget: Budget): DecodeResult? {
             return result(payload, candidate.agreed.mirrored, retained.inverseLuminance || candidate.inverted, where(candidate.location, 1))
     }
     return null
+}
+
+private class RediscoveredGrid(val candidate: Retry, val inverseLuminance: Boolean, val modules: ByteArray)
+
+/** Retain the first strict format rediscovery from an existing failed late grid. */
+private fun keepRediscoveredGrid(budget: Budget, inverseLuminance: Boolean, original: Retry, modules: ByteArray) {
+    if (budget.rediscoveredGrid != null) return
+    val size = original.location.size
+    if (size < 45 || size > 177 || (size - 17) % 4 != 0) return
+    for (mirrored in booleanArrayOf(original.agreed.mirrored, !original.agreed.mirrored)) {
+        val read = if (mirrored) ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
+            else ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
+        val agreed = singleFormatAgreement(read, size, mirrored) ?: continue
+        if (mirrored == original.agreed.mirrored && agreed.ecc == original.agreed.ecc && agreed.mask == original.agreed.mask) continue
+        budget.rediscoveredGrid = RediscoveredGrid(Retry(original.location, original.inverted, agreed), inverseLuminance, modules)
+        return
+    }
+}
+
+/** Validate the one retained grid only after every earlier success path fails. */
+private fun recoverRediscoveredGrid(budget: Budget): DecodeResult? {
+    val retained = budget.rediscoveredGrid ?: return null
+    val candidate = retained.candidate
+    val modules = retained.modules
+    val size = candidate.location.size
+    val read = if (candidate.agreed.mirrored) ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
+        else ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
+    if (!formatAgrees(read, size, candidate.agreed.ecc, candidate.agreed.mask)) return null
+    val payload = readSymbol(read, size) ?: return null
+    if (payload.ecc != candidate.agreed.ecc || payload.mask != candidate.agreed.mask) return null
+    return result(payload, candidate.agreed.mirrored, retained.inverseLuminance || candidate.inverted, where(candidate.location, 1))
 }

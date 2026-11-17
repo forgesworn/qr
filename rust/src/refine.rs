@@ -72,6 +72,18 @@ pub(crate) fn agreement_read<R: Fn(usize, usize) -> bool>(read: &R, size: usize)
     best
 }
 
+/// Strict agreement for one already-chosen orientation, in format table order.
+pub(crate) fn single_format_agreement<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<Agreed> {
+    let (first, second) = format_words(read, size);
+    for &(bits, ecc, mask) in FORMATS.iter() {
+        let distance = (bits ^ first).count_ones().max((bits ^ second).count_ones());
+        if distance <= AGREEMENT {
+            return Some(Agreed { mirrored: false, ecc, mask, distance });
+        }
+    }
+    None
+}
+
 /// True when both format copies, read through `read`, lie within `AGREEMENT`
 /// bits of the format word for this level and mask. A read at reduced size
 /// counts only then (SPEC.md, decoder step 9).

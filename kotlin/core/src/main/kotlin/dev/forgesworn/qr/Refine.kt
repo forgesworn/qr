@@ -539,3 +539,20 @@ internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work:
     }
     return null
 }
+
+/** The existing strict format rule in one supplied orientation. */
+internal fun singleFormatAgreement(read: ModuleReader, size: Int, mirrored: Boolean): Agreement? {
+    var first = 0
+    var second = 0
+    for (i in 14 downTo 0) {
+        val x = FORMAT_COORDS[i][0]
+        val y = FORMAT_COORDS[i][1]
+        first = (first shl 1) or (if (read.read(x, y)) 1 else 0)
+        second = (second shl 1) or (if (read.read(if (i < 8) size - 1 - i else 8, if (i < 8) 8 else size - 7 + i - 8)) 1 else 0)
+    }
+    for (f in FORMAT_WORDS) {
+        val distance = maxOf(Integer.bitCount(f.bits xor first), Integer.bitCount(f.bits xor second))
+        if (distance <= AGREEMENT) return Agreement(mirrored, f.ecc, f.mask, distance)
+    }
+    return null
+}

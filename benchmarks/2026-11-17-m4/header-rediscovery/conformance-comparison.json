@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "baselineFrames": 80,
+  "frames": 82,
+  "unchangedPriorFrames": 80,
+  "newFrames": [
+    "conformance/header-rediscovery-6.png",
+    "conformance/header-rediscovery-122.png"
+  ],
+  "sha256": "17435e01d7afd9f469346b05ecf5722cadc7dfbb9ab9c557933ecfc3e7ebb61b"
+}

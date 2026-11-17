@@ -25,6 +25,7 @@ import { headerConflictPicture } from './header-conflict-fixture.js'
 import { ordinaryCurvaturePicture } from './ordinary-curvature-fixture.js'
 import { versionPeerPicture } from './version-peer-fixture.js'
 import { alternateGridPicture } from './alternate-grid-fixture.js'
+import { headerRediscoveryPicture } from './header-rediscovery-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -312,6 +313,8 @@ function build(write: boolean): Pack {
   for (const index of [120, 122] as const) own(`version-peer-${index}`, versionPeerPicture(index).image)
   // The same sampled geometry supports a retained mirrored format hypothesis.
   own('alternate-grid-90', alternateGridPicture().image)
+  // Refined headers identify a different strict hypothesis without resampling.
+  for (const index of [6, 122] as const) own(`header-rediscovery-${index}`, headerRediscoveryPicture(index).image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

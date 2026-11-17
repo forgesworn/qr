@@ -1,0 +1,163 @@
+{
+  "sourceHashes": {
+    "src/decode.ts": "ae213d4ee32ef39e4af3a132479f2ae748734b0817cf697c8d84fea924061d2f",
+    "src/refine.ts": "a69dd537c9d59e9e8ffd84db79cbf6f35ea7144c122c4db4c3dd259a2ba7a48e",
+    "rust/src/decode.rs": "ae859067faca7537eb4baf74358ce69f44765d0201afeba4bff489e3afb69148",
+    "rust/src/refine.rs": "595aa3a32be2df45ba55b870d346a47926d17a9a409c890c2971866312d531e1",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt": "816979433f0c0fea8aea39f097a2c3617c6f3e11e2268f93dfdc4a710a4abac3",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Refine.kt": "f5bad2b7784b569023a023d3774e5145e275b0428ab54c01a47ab8ee33964823",
+    "test/header-rediscovery-fixture.ts": "ae2b20e7b8148cca79afdd76130fa966db63449178766a362457b374f4088fa5",
+    "test/header-rediscovery.test.ts": "bcf5ac31807be986307e9147b732a59179d5a6e817f7ac4c07fbbac781bbe5c2",
+    "test/conformance.test.ts": "5dbeb638d05bf69525b773ae1f263b3bbe09d1eb38b5ac9c546dcdcec2546f4d",
+    "vectors/conformance.json": "17435e01d7afd9f469346b05ecf5722cadc7dfbb9ab9c557933ecfc3e7ebb61b",
+    "rust/bench/wasm-leak.mjs": "c1e00db948e7b64d515cb4fd21191717a3f1da50790351915483260cad3f9734"
+  },
+  "typecheck": {
+    "passed": true,
+    "session": 33782
+  },
+  "focusedRed": {
+    "expectedFailure": "expected undefined to be defined",
+    "tests": 2,
+    "log": "red-test.log"
+  },
+  "focusedGreen": {
+    "passed": true,
+    "tests": 2,
+    "session": 33782
+  },
+  "officialConformance": {
+    "passed": true,
+    "tests": 6,
+    "frames": 82,
+    "unchangedPriorFrames": 80,
+    "session": 33782
+  },
+  "wasm": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "275334b4736e033337707e6aedaa4c7dbbdcc87e89ddebb2423c8ff552eaa2a3",
+    "sha256": "344c36527203940f149186fc6421d355617b90f26881309422500e474aec6066",
+    "bytes": 252519
+  },
+  "typescriptSuite": {
+    "passed": true,
+    "requiredPhotos": true,
+    "files": 45,
+    "tests": 509,
+    "durationSeconds": 53.22
+  },
+  "rust": {
+    "passed": true,
+    "default": {
+      "tests": 49,
+      "doctests": 1
+    },
+    "allFeatures": {
+      "tests": 49,
+      "doctests": 1
+    }
+  },
+  "kotlin": {
+    "passed": true,
+    "suites": 25,
+    "tests": 123,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "standalone": {
+    "passed": true,
+    "frames": 82,
+    "counters": 656,
+    "options": 1643,
+    "encoderVectors": 148,
+    "moduleGridAndRenderingParity": true
+  },
+  "memory": {
+    "passed": true,
+    "rounds": 1000,
+    "warmupRounds": 272,
+    "recoveryFixtures": 17,
+    "recoveryReads": 63,
+    "capacityAfterWarmup": 5242880,
+    "capacityAtEnd": 5242880,
+    "unfreedControlBefore": 1179648,
+    "unfreedControlAfter": 1507328,
+    "scope": "Standalone WASM capacity, not peak live allocation. Seventeen-fixture workload and 272-round warm-up differ from 0.3.11."
+  },
+  "integratedSession": 78669,
+  "pending": [],
+  "packagedParity": {
+    "passed": true,
+    "curves": 992,
+    "regressions": 888,
+    "photoViews": 2944,
+    "sheets": 18,
+    "session": 39793,
+    "finalBackendAndPhotoSession": 14662
+  },
+  "receiptHashes": {
+    "production-build-binding.json": "80645233d8ce41795a15e0d6f6dee1e953b543fbf8659f0f1bd98fbaad0ebabf",
+    "production-qualified.json": "7fb933ee0e5716ca64aaefa10f6d6af22a8b06577d82e146c18d5bbf5ff2dfde",
+    "production-backends.json": "b6cd0a1c34be2e39c020c8266f7b27b6e018efa9a9229db2100714b52055856c",
+    "production-photos.json": "325036b5cb27609537f2ecbc415d174300046c7f466c239e61948edd7bcee2bc",
+    "production-sheet.json": "30af1d93db2b32f6d2cdaf3059a2b94785b0d1e6e03f0ef7dfc17e4feca37564",
+    "conformance-comparison.json": "5aca7e803458fece74f08b909d7d3e5b1f4d48d8cf0d6bb6d825d551f4e60c71",
+    "browser.json": "47dd13ba72873215e804a482b71708e759c34124888abdab875ff1cf068d6c64",
+    "docs-browser.json": "30881429122d055f3da3ed86c5f8eef9784264fae500baa77ad5feb4d620e70e"
+  },
+  "browser": {
+    "passed": true,
+    "worker": true,
+    "charsetCases": 6,
+    "wasmSession": true,
+    "wasmSha256": "344c36527203940f149186fc6421d355617b90f26881309422500e474aec6066"
+  },
+  "timing": {
+    "passed": true,
+    "casesPerFork": 47,
+    "pairsPerCase": 60,
+    "forksPerBackend": 2,
+    "directComparisonForks": 2,
+    "rawHashes": {
+      "ts-1.json": "96e164e75e49a7af81473a16003e934a3dc91058ee53349187ac57b42f7c5e6d",
+      "ts-2.json": "b7b24a65f41f22255578bd0046d7a127a491ef13fa56106df321eeb8e7128c0f",
+      "wasm-1.json": "f45c790f6aaf9fed7d437d1089d9983845bc7492e0b3154a628c6f5407e3dc5d",
+      "wasm-2.json": "6fc447881a970801b2132dd1b4232029e7039023bdac851f366b18d49c910969",
+      "direct-1.json": "b92257f8b5823b2d87400433bf953f140c96d55084a14231fc5087b5feed4bec",
+      "direct-2.json": "43c20506889eda2a56ba3e09159e906af59b511f5c735eb687a7bf0d2e05387e"
+    },
+    "summarySha256": "9b09668c04df8d412e1a16396ea677cf3ea7f4ed861f820487df77571c8b769b"
+  },
+  "prepublication": {
+    "passed": true,
+    "m4Session": 28825,
+    "localJsrSession": 22126,
+    "docs": {
+      "rendered": true,
+      "llmsFullSha256": "444520e7fa2bec89323b1caa6ec1902d26beb8c8ae672fc17a0e4f61907d81c0"
+    },
+    "npm": {
+      "isolatedConsumer": true,
+      "wasmBytesMatch": true
+    },
+    "jsr": {
+      "strictDryRun": true,
+      "sourceConsumer": true,
+      "actualPublisherArchiveCapturedOnLoopback": true,
+      "host": "local macOS; M4 lacks Deno"
+    },
+    "maven": {
+      "stagedArtefactsChecked": true,
+      "isolatedGradleConsumer": true
+    },
+    "crate": {
+      "packageVerified": true,
+      "isolatedLibraryTests": 29,
+      "isolatedDoctests": 1,
+      "rustdocWarningsDenied": true
+    }
+  }
+}

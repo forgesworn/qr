@@ -68,7 +68,7 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then thirty-one in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then thirty-four in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
@@ -82,7 +82,14 @@ two deferred mesh reads covering reduced coordinates and inverted polarity,
 and three terminal curved-map retries covering normal, inverted and mirrored
 symbols, four conflicting-format retries, and three ordinary-only maps needing
 the late alignment pass, two conflicting-version maps, and one alternate
-orientation reading of an existing refinement grid).
+orientation reading of an existing refinement grid, and two strict header
+rediscoveries on existing refinement grids).
+
+The header-rediscovery regeneration adds an inverted version-8 picture and a
+mirrored version-31 picture. Both fail on 0.3.11 and read after both format
+copies on an existing refined grid identify a different strict hypothesis.
+No additional sampling is needed. All 80 previous frames, stages, results and
+work counts remain unchanged.
 
 The alternate-grid regeneration adds a mirrored version-23 picture. It fails
 on 0.3.10 and reads when the existing grid is strictly validated under a
