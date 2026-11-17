@@ -1,0 +1,19 @@
+# Reproducing quadratic-mesh qualification
+
+The portable bootstrap and candidate build identity were replayed successfully; see `../bootstrap-check.json`. The broad accuracy runs have their separate original receipts. Run from an environment with Node and the baseline checkout's pinned dependencies installed, a separately locked rivals installation (`qrcode` 1.5.4 and `zxing-wasm` 3.1.7), and the required local photo cache. No photo payloads or the large raw `stages.json` diagnostic are copied into this archive.
+
+The baseline checkout must be clean in tracked files, at `b1d95074fb442d87004be1c8bd22b8d8e5c8646f`, with its `dist/*.js` matching the released selected-mesh qualification receipt. Use a separate candidate checkout containing the qualified TS sources; bootstrap checks every candidate source against archived `prototype-sources.json`. The replay directory must be new, outside all input trees. An existing directory is never overwritten. The script copies helpers unchanged and preserves original receipts separately under `original/`; a rivals symlink points to the specified existing installation.
+
+```sh
+python3 ARCHIVE/archive-prep/bootstrap.py ARCHIVE BASELINE_CHECKOUT CANDIDATE_CHECKOUT RIVALS NEW_REPLAY_DIR
+node NEW_REPLAY_DIR/build-prototype.cjs BASELINE_CHECKOUT NEW_REPLAY_DIR/prototype-source NEW_REPLAY_DIR/prototype-build NEW_REPLAY_DIR/prototype-sources.json
+node NEW_REPLAY_DIR/prepare-png.cjs BASELINE_CHECKOUT NEW_REPLAY_DIR
+node NEW_REPLAY_DIR/qualify-prototype.mjs BASELINE_CHECKOUT NEW_REPLAY_DIR
+node NEW_REPLAY_DIR/regression-prototype.mjs BASELINE_CHECKOUT NEW_REPLAY_DIR NEW_REPLAY_DIR/rivals NEW_REPLAY_DIR/regression.json
+```
+
+`BASELINE_CHECKOUT` needs the `v0.3.13` tag for the PNG helper. The candidate build's compiler version, emitted JS and builder/config hashes must reproduce the identity embedded in the archived frozen validation manifest; qualification fails closed if they do not. Existing baseline benchmark manifests and fixture generators are read from the baseline checkout; local photo-cache pixels and expected text are checked against its pinned metadata. The helper scripts assert source and generated identities, frozen manifest hashes, input integrity, result and Work limits. Their qualification and regression outputs are fresh replay receipts, not the original receipts in `original/`. The replay may require substantial computation; root coordinates execution and reviews the resulting checks.
+
+Production verification is a separate operation against the candidate checkout, after its release build and verification have been prepared. It requires the original qualification and functional receipts, original integration-files binding, the exact prototype-build identity, and a `released-dist/` copied from the pinned baseline release (including its original `qr.wasm`). Assemble these only in a second new directory; retain the original receipt bytes as `qualification.json` and `functional.json`, not the replay receipts. Copy the unchanged `production-identity.mjs` from the archive, and build/copy the exact matching `prototype-build/` and verified baseline `released-dist/`. A production binding created with `node production-identity.mjs CANDIDATE_CHECKOUT NEW_PRODUCTION_DIR` checks candidate source, emitted JS, WASM manifest and binary, source hash, the recorded integration files, and the original receipt identities. Its `production-binding.json` must not overwrite an archived binding. Production/backend/photo/sheet helpers use their documented arguments and the same original bindings; check each helper's interface and required receipts before running.
+
+Do not edit the archived helper scripts to make a reproduction pass. An identity, compiler, fixture or receipt mismatch is a failed reproduction requiring investigation. This process does not by itself establish publication or device acceptance.

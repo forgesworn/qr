@@ -1,0 +1,2291 @@
+{
+  "passed": true,
+  "binding": {
+    "version": "0.3.14",
+    "wasm": {
+      "abi": 2,
+      "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "target": "wasm32-unknown-unknown",
+      "sourceSha256": "bcef67af506d43ebf88b4dd6d6e5f1f61620a13687ea02bb4374a84e8c708fa9",
+      "sha256": "022993bfb6895152421aaf22673484c8d6fb60be3edae44d5eb85c927f28e326",
+      "bytes": 261831
+    },
+    "typescript": {
+      "typechecked": true,
+      "compiler": "5.9.3",
+      "sources": {
+        "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+        "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+        "decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+        "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+        "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+        "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+        "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+        "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+        "refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+        "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+        "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+        "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+        "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+        "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+        "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+        "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+        "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+        "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+        "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+      },
+      "generated": {
+        "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+        "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+        "decode.ts": "dab00b5878a8b8998552e2e07ea5739deea78e1a2cffd92b6159c13225ab188b",
+        "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+        "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+        "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+        "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+        "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+        "refine.ts": "91a152b9b8ad103c322040a88aabcfbc01bd04e076208ce5ad93b836c82e615c",
+        "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+        "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+        "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+        "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+        "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+        "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+        "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+        "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+        "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+        "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+      },
+      "builderSha256": "36cd47a3445782f34217681a323ff61bc35220af4085c2ac33980ebf082535f9",
+      "tsconfigSha256": "045d2034180425f0b5e182341432962e38c953ad21ad9d4000243b572aaa36af"
+    },
+    "qualificationSha256": "28722ebe27b37fbdbfb5bc130d9a8ef305b42b4f4493adde3855b50f4c7a27bb",
+    "functionalSha256": "529ef21769947bc36c1c1c89162d06b0d492828c4d0b7f858ca7b8fea9462d9d",
+    "integrated": {
+      "SPEC.md": "3bb8b5b4704ebafca740bdd5cff9d625e3a9df913ffa60ef075f62ec830fd336",
+      "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt": "5d496835c121eaefb3554f2810f51e18d14870790ff184f2b0a690c925ec9738",
+      "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Refine.kt": "6712ac2924f3a5dc57a7d068043db8e2d7511092462c17b01cd04bdd20730346",
+      "package-lock.json": "2a5faf7bd8727c3f1c090d9f6c54090234e99c760feac583e2e24be1fa229de4",
+      "package.json": "e0dd09d10934cdb9f6808d4e93455c8274815c20c0d580a4dbc37ad7be81b242",
+      "rust/Cargo.lock": "79e149fe2eaf92a3cb195c14debf824f61c372d81aa449a0b32f98f5b03d661c",
+      "rust/Cargo.toml": "5641513c870c580effc8e4e0759650486bf5dd2ab8606479cd9fdc76d5dbf375",
+      "rust/src/decode.rs": "2c63b7836311fa8c891361befa4fd3c08bc2bca2a2c9d8f0dd32394c62565d8c",
+      "rust/src/refine.rs": "cbfaf5a54f76578aa4abac868dbbedb6805651581cf340ffaae572f8ea9bf84c",
+      "src/decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+      "src/refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+      "test/conformance.test.ts": "6e8c0db9296870a92181c6ba43a967237fdbc32c84cfba817e0769e4f2620511",
+      "vectors/conformance.json": "d58051790394841954d3f90503c380fa5ecdc21c3112b1e5967da39a4ce28f92",
+      "test/quadratic-mesh-fixture.ts": "2fcc3831d480392109f8ee862a0bccc46694248fc3fbd89031496fc3ff76d226",
+      "test/quadratic-mesh.test.ts": "0d08f89c8c7321e379fb374595d9f620e53fea0f867f703d4ee5115230167a49",
+      "vectors/conformance/quadratic-mesh-alternate-16.png": "7e4a62def9e27ddb0c8d90fbe8a4595c47b3d8c5e7d61fe6c0a704cfa375b9ba",
+      "vectors/conformance/quadratic-mesh-alternate-18.png": "466bf4ef7a75002946742716a52e577b94ceb454b0f2b087f40a6671908a0ccb",
+      "vectors/conformance/quadratic-mesh-header-16.png": "4b92a3c2f79562e3c36cc0aad8a8ebc65cb402441ffa45fad882febda22f9559",
+      "vectors/conformance/quadratic-mesh-header-18.png": "9f946d720d55a292da5d4ea539e48df514a2c148815c7dcf176e3bfe7c73d16a",
+      "vectors/conformance/quadratic-mesh-starvation-16.png": "95e102750cf0582603d283dfcf0f54edbabc7af988e1ecbd05a6534acbd6f8c4"
+    },
+    "baselineWasmSha256": "8b75949e2dbf5bf968718a8b776c9a8bb8ad8a5f894c6118686ec95efa8258ad",
+    "verifierSha256": "49dab94170e5b9db0037788ae975a02adcc8c09d47e13ef6a15c234afce53604"
+  },
+  "sourceHashes": {
+    "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+    "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+    "decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+    "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+    "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+    "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+    "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+    "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+    "refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+    "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+    "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+    "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+    "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+    "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+    "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+    "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+    "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+    "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+    "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+  },
+  "observerSourceHashes": {
+    "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+    "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+    "decode.ts": "7a9e57557ede9173658a136deee22f8cc943e84f2c1f501b098351dc3bca6458",
+    "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+    "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+    "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+    "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+    "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+    "refine.ts": "4556e25bcb14a9317c6b31ba4816f584c8f13c2732ade51938e2fc38ec0be36c",
+    "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+    "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+    "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+    "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+    "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+    "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+    "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+    "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+    "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+    "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+  },
+  "instrumentSha256": "b7fc01abfe14fc59c45cd4ffa07ee4d7f972fddb9c5756ce59fa4230905e80fd",
+  "builderSha256": "9dae0bf174d22e4b5df15396434255cf03f7bf716bd2a22fed821c14af65b69d",
+  "observerIdentity": {
+    "sourceHashes": {
+      "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+      "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+      "decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+      "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+      "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+      "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+      "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+      "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+      "refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+      "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+      "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+      "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+      "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+      "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+      "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+      "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+      "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+      "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+      "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+    },
+    "observerSourceHashes": {
+      "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+      "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+      "decode.ts": "7a9e57557ede9173658a136deee22f8cc943e84f2c1f501b098351dc3bca6458",
+      "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+      "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+      "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+      "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+      "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+      "refine.ts": "4556e25bcb14a9317c6b31ba4816f584c8f13c2732ade51938e2fc38ec0be36c",
+      "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+      "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+      "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+      "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+      "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+      "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+      "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+      "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+      "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+      "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+    },
+    "qualificationSha256": "28722ebe27b37fbdbfb5bc130d9a8ef305b42b4f4493adde3855b50f4c7a27bb",
+    "instrumentSha256": "b7fc01abfe14fc59c45cd4ffa07ee4d7f972fddb9c5756ce59fa4230905e80fd",
+    "typechecked": true,
+    "compiler": "5.9.3",
+    "generated": {
+      "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+      "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+      "decode.ts": "a7c617843e7f682962e8da5df626d1d73980f65247157c739d6db56ff785b754",
+      "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+      "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+      "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+      "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+      "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+      "refine.ts": "8987fbc1de14cc846e4faac251a34a25215d70fe7d539acc6913fc2aedb9bfaa",
+      "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+      "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+      "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+      "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+      "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+      "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+      "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+      "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+      "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+      "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+    },
+    "builderSha256": "9dae0bf174d22e4b5df15396434255cf03f7bf716bd2a22fed821c14af65b69d",
+    "tsconfigSha256": "045d2034180425f0b5e182341432962e38c953ad21ad9d4000243b572aaa36af"
+  },
+  "runnerSha256": "41a36cc66084bf66ee48a8a5432f912136e9dfcda47bd41777a31918c74e274b",
+  "selection": "First two sampled terminal misses and first descriptor-retaining prior success in frozen qualification order; no policy changes",
+  "cases": [
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-0",
+      "pixelSha256": "84187f93cd55ab63695bca97c2effcd79620de6783eb6ab2697a9f1a42b5e3d2",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct",
+      "role": "retained-prior-success"
+    },
+    {
+      "suite": "previous128",
+      "id": "starvation-holdout-1",
+      "pixelSha256": "83fe5e9f1a80a2679a911c32ea143c326af2b865ef3542c5e75373daf1176d4b",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "miss",
+      "role": "terminal-miss"
+    },
+    {
+      "suite": "previous128",
+      "id": "starvation-holdout-3",
+      "pixelSha256": "437ab8c80f2bd293944ad8e251818f337934d4d41505385916fa8b64600a7715",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "miss",
+      "role": "terminal-miss"
+    }
+  ],
+  "examined": [
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-0",
+      "pixelSha256": "84187f93cd55ab63695bca97c2effcd79620de6783eb6ab2697a9f1a42b5e3d2",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-1",
+      "pixelSha256": "f67c89909f8b10e33baa682ea0b804b0eec824a7182a28caeef78135a6b6eb33",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-2",
+      "pixelSha256": "87c05079d3eaca12d28a3ff157442e8836a30a6843bcc1dda4a13637ad0c6bcb",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-3",
+      "pixelSha256": "58bfc98daaff8e775eeb61e52de740e467d0280fc6d90a751be3326afd257163",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-4",
+      "pixelSha256": "5b82cdaba180c9e04c74dfbc590ca155e33b538b0892b49a0f862c70512faa6a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-5",
+      "pixelSha256": "cbfda01df3baf68ef74637c9a123ac4fa68b8462ea1be89829fa37cecd6dc99c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-6",
+      "pixelSha256": "0d65c305a1f2c1f85f57b4600398f8294fc6c8d1dd54f790101f22c952a6a321",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-7",
+      "pixelSha256": "09ed0218f5f8ed5fdec77b5c68199115a271f2aba6d48433cc87613f6626d83f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-8",
+      "pixelSha256": "d96d20c829c4f79618a04d81f1f2c4872d9cc2e4cd3153ed95e8f2431cfc1506",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-9",
+      "pixelSha256": "e489ab371cccaee513c63dd390572cd068aa1a79eb70af75a9e2c0dc4d54ba8d",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-10",
+      "pixelSha256": "00e66ca7d45b4c414d13cef3ccfae0e5629a77a162d24385dc35fb9783efd32b",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-11",
+      "pixelSha256": "7e6be526f32244253193969b7f637e1801768f279e1517b7dc282b2d3e029ad9",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-12",
+      "pixelSha256": "e75eccf73ed72eae68e1f590444931c30f5c6f291056f797235f018ae05b14e6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-13",
+      "pixelSha256": "542a196edf675229fe86115629f956afc5ea17ed14c5f82d7d6e2286e614e6c2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-14",
+      "pixelSha256": "b1a065e1e78cee8398de672d5abe263c3e35db7f4322a0ec2e4b5f2ee48dadd6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-15",
+      "pixelSha256": "4905ced6a647cb6bf35df68ba69d3935dc5999ad05dd5fad69e479697455a15d",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-16",
+      "pixelSha256": "2c3904d97590ee6c8afd09955c2a23683951389490ded85c1ece18da2b967a6a",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-17",
+      "pixelSha256": "c99a54c19192db20ed0312d7cc345720532eb2071e179c246ebe4e4992d9f242",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-18",
+      "pixelSha256": "45cf66b99834207cdf49273e1b7a4d6740ab08dd4fa8a937474fdf24e9c89889",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-19",
+      "pixelSha256": "44b719b7e756d41b0e02e8e5ac1beb69c6dce248b92c5cbaed18a1cf3393c30b",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-20",
+      "pixelSha256": "60a578124b08bf6458d33dd4606addc42eb7bb1bf8f32e3cf81a1d06c82d22f2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-21",
+      "pixelSha256": "754a0578cf98a9cd9b20dc3038d572b2cbfcefc3df283545fa85f282fc0b5988",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-22",
+      "pixelSha256": "ce4d91b1bdba440443221c5f359516a41ee6d8449aa37cadaee9a64c24c69f58",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-23",
+      "pixelSha256": "cdc4f6a97de7ea678f0f80096f835854349dc03ec8583ad6769f6566ad6fb844",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-24",
+      "pixelSha256": "397712a50b8effadd216d509b8a1852ac685cc3b6563a6137638c169d8101584",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-25",
+      "pixelSha256": "3eb9cdb9c764e78f2e1fc2df3c765bf08dc1f6f86610a5b07fe67456f9a0e6aa",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-26",
+      "pixelSha256": "b5eeaa2d8170a0e685b94eed46972d13a04ab9a5eee24ddd0ab493a76a8c8a71",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-27",
+      "pixelSha256": "5d7efce3838636573b092f63781f4c19d7fca2ad93d8ef7be802e05fe7c7e03b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-28",
+      "pixelSha256": "31bbc4501d7c2c87ffa53606b632d78b0d30a5cc35b6928cd0690a0083851b8e",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-29",
+      "pixelSha256": "1bfbbb34de12550adea1fef1d09746ff91a3d65fc6c6e11d8fe017cb5e48b977",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-30",
+      "pixelSha256": "714d1dbe2753f03fac66f5658d1193854f6f94a7c58a3af8959b1a5e350fdaca",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-31",
+      "pixelSha256": "ced694648aa59154e8f0d3c7c573909f15a851308372061f6fe722b48e3fd618",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-32",
+      "pixelSha256": "85cc1bbb628c1c0a1ccaaf6258f2c2d919e8a1c2918bf7fc8baaedfedb0d2bb3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-33",
+      "pixelSha256": "fd013850c97241e13130a3292b874a4e162ca7bc4ff2f76bd208b925ff875241",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-34",
+      "pixelSha256": "6db724647d3271ebc8266a38d745eff20bafdc49a541bb18b4b1156cf85fc741",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-35",
+      "pixelSha256": "6bad88f361c829ef6302be2141164457a4ca90242bf478a2cd7efec7d709fd58",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-36",
+      "pixelSha256": "f82d80c0cb9302d0287ae2c63046b0b878b90431ba41df39c1f6e19b00b75c7c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-37",
+      "pixelSha256": "2efcafad6623f396b7b6db833e3c5ce9d3df34760cd4549b6058c84cdb5e7b5e",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-38",
+      "pixelSha256": "372c2a2ed8c6434c037110b53348ea3c8ac611bb6f891ce11ed85e713bade4ef",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-39",
+      "pixelSha256": "39a85181167680a7a5ed44ca497ec6be6352743c3bf96756fddb5c55ea61add2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-40",
+      "pixelSha256": "a2d1c59dd209b851ec7e905fa4f4a4ff2e422dddf0ed33a1040ecf32fa54d959",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-41",
+      "pixelSha256": "c495a363542c5ece660822a16bce88877372728d5e830a14c71f43a02cd4abf0",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-42",
+      "pixelSha256": "f8067a7ff784776d3480410795ce3fd86a5814720a6042561f50350011569f14",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-43",
+      "pixelSha256": "3d94cb2f5f11c9364916f4ef2a483976f1ad4c8c904ff5b285fce17d2631e4a3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-44",
+      "pixelSha256": "7002f7e719e8f2527394a268ac23da3e71f38a6b696b293733c23be7d09270ee",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-45",
+      "pixelSha256": "c72daf645b175f96db21fe4c23d5a8ddaec8f06e77fbd6fdcd97057d44019dbf",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-46",
+      "pixelSha256": "efc6c0e7fbc0aede8527394234631013af625e9e59baff613f1e57f58f33318a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-47",
+      "pixelSha256": "85cb35e236831d2c481a094a5bd635dac31a825a0bc441e179761e38856af8c5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-48",
+      "pixelSha256": "82a3e22c79d9f581aaea757ff2e23a0ced41a10f36e1c0b2b54c52b4696f941d",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-49",
+      "pixelSha256": "2458a49dc009b2ef52e42f46e5b559be1a0bd33f762b0d04fbb779b8a5308411",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-50",
+      "pixelSha256": "3487dadf7c5b920b888449016a509282ea922ea16a71ca14ce9db2b343beadc8",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-51",
+      "pixelSha256": "d281518c9d61fbaccaccd5c85b8499b005a175c5e83657543147262091c295e5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-52",
+      "pixelSha256": "fbf41d4547d42493ffcb0dae7ba94c3d363f25c5a929f9b501d8fe4b14389f49",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-53",
+      "pixelSha256": "8bc3a502fe566b37c294adb41f53a7cb08c658c52d9217d7eb8bbd79ed8853d3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-54",
+      "pixelSha256": "cab96e38160c16ac8cd00c0aaab63f329db482831c0de88e844ae784ce4e9149",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-55",
+      "pixelSha256": "2349b2a9a3aa8b9e1f71f2528c082682143c3dd8050becb3e5c92e9da35c9848",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-56",
+      "pixelSha256": "9ae7140775a2aaf2be73f6c1e7db7b9eb2c631be546479ac757f104c121b1457",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-57",
+      "pixelSha256": "07493c42f293bdb181aa52338646bb04e9dc34a56762c6d020cbb0fdc586e5db",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-58",
+      "pixelSha256": "4d562ff91c8c662315e6d86628b21fe54cb71fdb40cd75586bf03f92c5f67ea5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-59",
+      "pixelSha256": "0e9c22500f31fd784c92cc025e0b90dd580238158aff91c044208bb225653f6a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-60",
+      "pixelSha256": "03301dda9d5b6a2d98fa56a35ec2d4113f9bffe067504f53a2dcf50df2f0c211",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-61",
+      "pixelSha256": "a101181d9cfe0ca2f685f29c0f8cc1cc066ff06efec58b322788510200349b0b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-62",
+      "pixelSha256": "e37b7e897aec726a3fe38942a43d5e332c0e861f5bbff3078afccc882a59351f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-63",
+      "pixelSha256": "022135051b8c32c255af1334ca0d3ede4d2e420fcd4665dc3eada898aad52321",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-64",
+      "pixelSha256": "1c1b3273e544ecb3080222aff59e19f03f2169610f4ed8d7fe9ec95ad67ac241",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-65",
+      "pixelSha256": "662e473d60ee14bf5f440de865bf16da666977db68b7b8cc566dd238f7769957",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-66",
+      "pixelSha256": "12110d52c3e613731b4afa9c0c9c2ec9428ed01cf98b4c281e84d146932e5c9c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-67",
+      "pixelSha256": "2e3c4494b8f981877854836257c4706c8bbec2da5c1ef37e25ee14eb58b6b423",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-68",
+      "pixelSha256": "9ded53445f948410a2da5cec3e73385d5f39258376baa9413a791312c098a1b5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-69",
+      "pixelSha256": "3ddb58904d4eaba52cb215f7496d4087d03081d3a17aaa1847e504c225e0f5df",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-70",
+      "pixelSha256": "a1a5c21668c67aa3cb5fc59ba5d92fde7e2ecc2fa668fe9e2799cf0871e2d641",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-71",
+      "pixelSha256": "1cb02e98c10ceb205f68bb90dcda84d5bd59efb332d656ee04434129df999d53",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-72",
+      "pixelSha256": "0de65bb862eb1f9d57b3812bc6f1ef4100f1b9e4419d3ac68a3f8e7bc2b8c294",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-73",
+      "pixelSha256": "c4066aa96ad09cdb975204e3aaf552fa982f7ead5d8fb5390836d1bc8db46a5a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-74",
+      "pixelSha256": "7f461fd3e435facc837225440c3c7c840470941a0d24628feadc31a4f15deac2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-75",
+      "pixelSha256": "ee283c8a053ae6f79c59bd356bc494d745068dcb7ed407ee6c50e9b0e961a512",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-76",
+      "pixelSha256": "478afcc797f8de374ba00158ace63789e49fb9acd926f131b5b5a419c9f1f0a3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-77",
+      "pixelSha256": "bda4ff9e377247168bab0ddbcae3e86ecfe5cd4d5640d073b01d3ea0ed4d4ade",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-78",
+      "pixelSha256": "c9981993817caa50010e4300c23a0c45fed52c4e4c98129cab8759a7f55a4dfa",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-79",
+      "pixelSha256": "46c7ddd43d42b3adc9e89cc1ecf3c2e1a36e736359817ace7253a9da81e7ddd0",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-80",
+      "pixelSha256": "5f03d54c85cb683846fc37aff209d8b312b17bee0a27153f4334218d514abcc8",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-81",
+      "pixelSha256": "33a8b96a2d521e77da60ac7bce58eb3bf7c3fbff8ab2e7e4b12fabfc9e4bf0a8",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-82",
+      "pixelSha256": "a9ca6b8e059ad7d47089cabe56e9a92cded7a04cd75d738d2f58b96f0f8d253c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-83",
+      "pixelSha256": "cb7dda10cc474d33302c352bbf17837c750b847fa3097fea7e162e241d9b7462",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-84",
+      "pixelSha256": "a8c8a61a7297e04395337553c78d639445bd2a4f6eafca3b7453bbf0137d22ad",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-85",
+      "pixelSha256": "f350ed0c64bdc2ab49ec520b4e2073740382e13de9375102273a723f045e8df7",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-86",
+      "pixelSha256": "d740ee60f1beb8616f05cd3dfe8bf568a08185eed655db712ef263e49db3dff1",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-87",
+      "pixelSha256": "54d3f6ca17b3d378d87c0cbb9254187b59678ff7e0e5d9b522b248f73251f198",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-88",
+      "pixelSha256": "076cb2ba9a90e7b27c24b20d9a0a416918e628886389072613e0a9b309e51975",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-89",
+      "pixelSha256": "f03e3167edcc87f994f8efffd5756fbc192c4b0c943128255c573193c705c78b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-90",
+      "pixelSha256": "8c32833918734a721e5f8e8266806b99851e979512f72252a7eb4a6d4ab89469",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-91",
+      "pixelSha256": "ed608ff63d52c5c24327fc0930be365c04b3d5bce03d8a80c6090e2e49a8762f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-92",
+      "pixelSha256": "afebd24e3498b427b927cf524a55742f82dbac92bec6d5169900bda4899cf0ec",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-93",
+      "pixelSha256": "d4f309d91bd8d840fce259fecf07658692f32dff3d3a78819c985bfd95a664da",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-94",
+      "pixelSha256": "8d78e1af2a4286ed9238eb02ef6fe7e304614af496738c6e7751a3d7202a02ca",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known96",
+      "id": "boundary-unseen-95",
+      "pixelSha256": "9cf76526a291438fc530526432b1790fdf6af5936857cba1208e7a3561a5e2bc",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-0",
+      "pixelSha256": "a461680bd461e29f380ef181dc1e42021d6574368ba6366a98b36b725ad6ba64",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-1",
+      "pixelSha256": "3795a6bb5a86efaa23596b3855478a0f5d448b62f84054706e8aa7b48ef2d5a1",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-2",
+      "pixelSha256": "d364d9b09aa5a9ff0131529a010547f68eb9d5bbe9e570b37da788e6975df603",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-3",
+      "pixelSha256": "301d4b29169479486b376af17542cf8a8591376c157353fe9e7ab87bfc0cd721",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-4",
+      "pixelSha256": "8cca39f30c73d87f3cccae22d83eb07bae790cc19d891425553ae8fd1e1f3c77",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-5",
+      "pixelSha256": "445b133e0900b9a3d536be5681955a6cfdc6aa5aeefc53fabb3c4e0d8f5c4c38",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-6",
+      "pixelSha256": "0f058e22d3655075cb8208d5e8e012d6f05a5f543b13e3165ae8ddba6ae92723",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-7",
+      "pixelSha256": "1ae5e38ba87c40cb6bff84d34899e625002dc10f9f385191fa248474d0685850",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-8",
+      "pixelSha256": "ff0c35b010dcaa364c3db085c78e010441799386c3efa1ee1502667fb9828d0b",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-9",
+      "pixelSha256": "3075ecdd9439287912f32c727615b375c44edfd5d84fb2bca35120f05212f8ff",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-10",
+      "pixelSha256": "6921aa44add2d7ba340be0f584714586f460b79bc2e52a6bafda336e6eaf1517",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-11",
+      "pixelSha256": "923909cb88b458b345ee1cb163c89c70aaab92f544a138db080f80d7985702b3",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-12",
+      "pixelSha256": "c74518ef0b79b3383b23063f2e34668598a76e8b5afe4d3f1377ea7e3689ea8e",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-13",
+      "pixelSha256": "8a1f6f77511668e8b98990159667c2f87764c5a723c2cbb5ddf3cff0affbf40b",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-14",
+      "pixelSha256": "5259589cda09108d62bf4fde11d9ecb8de1a16e49d2dff0f9b6ce2d9bd0c239c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-15",
+      "pixelSha256": "cc000a3e5e6f9a91384aaecb92e33306b94041377450465f7f0b510210b497b5",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-16",
+      "pixelSha256": "3abd683a172c04e415fa68af323c49a2987abaa85224b00de23ef801a7299d46",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-17",
+      "pixelSha256": "ba5433de7fef99841b46e4730a17e8fe26bb4eb987f1242d93d40ea09ad53c0b",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-18",
+      "pixelSha256": "32d41bef762c8adc9a54fa0144d7af2b412f61e928d05b2195fbff1bd0dd0012",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-19",
+      "pixelSha256": "0ba28f20ee32c936acb10e9d72e0136153380572699697cc4d8f4fca5e89c8b9",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-20",
+      "pixelSha256": "671120f49c7aa08faca5bc33a62fe6cc920a2911b2c211fa0509b4a94b85fd5e",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-21",
+      "pixelSha256": "e17351c853c72bc7f1fac96cde83ea0d648bb9f677d8f81962fbe5c19ed99f16",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-22",
+      "pixelSha256": "8bd8016aea1e5ba7f9ba0c6613714a36a64d384889b646acf9011b5d592b2648",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-23",
+      "pixelSha256": "770cf43b542f714329791a042d466b4f14ccb8fd89f19fe32f2826cfa3f16fd6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-24",
+      "pixelSha256": "54764ecc226dd8f7f6eb6dce3f41ec02e5b9fd07ff4963d7b186556753cc4092",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-25",
+      "pixelSha256": "74f9a641563b710c39d7de83a5f8d57fde026753020e5387e18ea46d16289635",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-26",
+      "pixelSha256": "6b73aa44b1fa4c50c67fb6cf322efdd3ccd065d0c0c7803330feda9865c7611a",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-27",
+      "pixelSha256": "a05f8013424b34d715dcfb17a28728b01db0c6a2e93527109047ffedd93bd760",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-28",
+      "pixelSha256": "e1aefe733cdcb79e5a829498731c9cd7e66522c9c5677337366608414a97c6d3",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-29",
+      "pixelSha256": "294f6546494325698ef4c1c683230e90677eecfbcf55a638391a08fc3ce6fa02",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-30",
+      "pixelSha256": "66aef7bd2ecf64eabc8e12731af80956e6ee7e7a45e1f886a6965db5cf4c76e4",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-31",
+      "pixelSha256": "821ab500cd19942e053ec959ef692b926117d88954e8fd28eb529071bbf75ff9",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-32",
+      "pixelSha256": "419fe528e6ede19a784d21e890b364da9a4bfbf6428ae14c38bed6728a44e2a1",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-33",
+      "pixelSha256": "6125a51af8936b67f95b0c8ebcb7ff670f1c3b013c80d5dfc219afbadc1d1542",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-34",
+      "pixelSha256": "9b4ae333a700f9b5c34e5e9f327275be7451c501ff63035a9a376097680332ae",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-35",
+      "pixelSha256": "d6f2585643f39eaf4c3ea0c070c9f2b83501b3c7755a1493f5dfa36483321378",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-36",
+      "pixelSha256": "c648ca49eafeb492a002012857544e4171122559899c01322027607d8fbfe0d8",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-37",
+      "pixelSha256": "53b7064d89d3fb963c77a434edc6d1abe4594b0d8023796dfe2353c17ea17018",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-38",
+      "pixelSha256": "84eafdcadbc26d5ee7da9dcd9bdc6b27656b600b5cc2730013a004e66dc355fa",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-39",
+      "pixelSha256": "327360f36f2d7446dc0f5a31ad272c3467c0b5a98427e625996300fdac46573f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-40",
+      "pixelSha256": "4596e4d17ecc9aff75bfbbd5e8a2e724949dfa383aed6ad0a0a2a72a6037885c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-41",
+      "pixelSha256": "0045ee30d5b492c568340e74c187cbfa4d4dae4173eba5d00ce29776ceadf8cf",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-42",
+      "pixelSha256": "2133ade3c70db0152aba09d17e01dfa6f4032d0a713bf8da2f37b51a820b92c0",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-43",
+      "pixelSha256": "8093a8921940d5b218b2e29d92cb0b07031c83e8c81f6df3e879f20f53fc6ca0",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-44",
+      "pixelSha256": "2907da7c8ef74f88e2371f2eb3a4c251ec666b6367c87f6257967c6cd521d340",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-45",
+      "pixelSha256": "1efba649bc1e103cf5309713b42a8af0104a5f5bdcad40d69479eb5fdf8d6b7f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-46",
+      "pixelSha256": "971e6550061f7fb8517243a4b10dedf149d3c81e8fb9d9c1fdd3575249873700",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-47",
+      "pixelSha256": "ff7aee9ddf053c072a8a2401ca65d1435eaf5a6a252da8edaedb1a0130c345e9",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-48",
+      "pixelSha256": "f42f954d17fa57e11479758f678fa12a862c03895dc8924aa04e929dddc833e2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-49",
+      "pixelSha256": "980050c639a7f9493b3d655bc7361afb8721b96cc3fde149e48108a6d2143c0b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-50",
+      "pixelSha256": "7835b6b8804fd2bbca3247aafdc4df7c2ab39408eba0a25c06bf0a71c1babde5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-51",
+      "pixelSha256": "e87bc0ad47c91489e5be2d5684b85a5ae0a9d469eff7fdc2737b4b886d7370c0",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-52",
+      "pixelSha256": "97beab8e47d517b1c776fe74148103e7555425a3f836daa381c72b4489b8f511",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-53",
+      "pixelSha256": "aaca9102cf13b6d9ec2898c284bd1b1ee54dde84385f4e3ce4ef97829b3c0235",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-54",
+      "pixelSha256": "c98797ea010916613871891fa6e71a73d2fa01e30d9ef94251010fd4ae67aff7",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-55",
+      "pixelSha256": "f4b853aa0a9644b85581752d4adb47c70a56ace97042017352e8b0fbf98ea34a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-56",
+      "pixelSha256": "baf344a98587bf7f83ef079d5634382a35a3d73308958af52a7a737deefc1e4c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-57",
+      "pixelSha256": "19c2be10256d9d8856108b87dae197495a0974a40a0328e0b4bc0abd6e3757c6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-58",
+      "pixelSha256": "e44709dd1dd19279964323207a37a0b1b3684ac0758d7c43543be4fcf88ec20b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-59",
+      "pixelSha256": "c5b51eee80abb271171be93e91737b7d440c8a77e90e9d94541f46ce0d64a51b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-60",
+      "pixelSha256": "63cf9f4725f5a45f2ed436eb2cf4dab06d7a62cd6098c2d4d7def91f0fdf00fa",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "miss"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-61",
+      "pixelSha256": "b3430611a47281c871fc9d5567aeada1268d9e88528e9077cb9cbc97086f5dd5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-62",
+      "pixelSha256": "c35d15395bf0d0878ba62ec69d6acbde4a85ca4f5c6094d2465120fe83643a84",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-63",
+      "pixelSha256": "efa3504c96e12a202141a094db5593cbb813f29eeb3ec07b9bc5cd3fddd38b3e",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-64",
+      "pixelSha256": "92c5d90382d470afe1afdd830fcb204dc310befc9aa9fb6c817b247c8c39844b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-65",
+      "pixelSha256": "37253ace2f737b8e34a975e7f133e24182d5841dae9b3529f1c27e60d7da1afe",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-66",
+      "pixelSha256": "5b5557a75d6b435ec80339fe8afa3d5e3f40cf5a5712e17a9b0438801618f6a4",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-67",
+      "pixelSha256": "b9c882d4f149902a5b96021e2e6e3c61cbed79314fc01e89ffee581ccbc4768a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-68",
+      "pixelSha256": "c63e10881eb3d16d7b034c5a57cfb98ff77bd84f6f33bded096fd591d92b9ea7",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-69",
+      "pixelSha256": "23ad6c725f109bdd741944cef8d7a712f8db45b2246f6b9d6449eb300c7c88b9",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-70",
+      "pixelSha256": "da4e6cff1ccc9b963bf86eeb71a186e3baa61b4678c10250eb60d889df21044c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-71",
+      "pixelSha256": "eb15d4f267a8ecd8a04ae61a9d8e878a4fca4b6336255cf4fd396648a945c749",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-72",
+      "pixelSha256": "4eb5da9879b1914b1f0fcf65af5401594cbf3c0b23f0c1687500d5542728803a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-73",
+      "pixelSha256": "5a9e9fb8f53bda7dc037f69b157b113563fe456c0ce3556b1e72465a4678d4e8",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-74",
+      "pixelSha256": "4617f3d0d126280695ba5a44392572518b9d984fdfadd318bbc682691c0aa1e3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-75",
+      "pixelSha256": "fea3135602ab749edca1ba5d8bdbef718ddc97b27325398b6379018b6fceffb5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-76",
+      "pixelSha256": "1c5de4aacb680b4be246e7c4cd1c098059f06b186490673ae984d70d543b4b35",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-77",
+      "pixelSha256": "b34b7acd2c812a592a6ed5e1dba619592f261da94111e4064f301a6ba3464ca6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-78",
+      "pixelSha256": "48a3532e3a15a773f9a65149f9be315986a5db67143476218edb4f611876bb89",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-79",
+      "pixelSha256": "2182af439687fbe2d963b375854be3ddb617ba93b1e648df1b06a03699c9732b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-80",
+      "pixelSha256": "93a2df4e2dde65fdc031d5a2926b5cf95d4fe87bbd6afd4e2ee6c100d039936b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-81",
+      "pixelSha256": "59b37835710974b1a4ee6062a8387b509b21e57cb1b3182a4a889114ceacd8b3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-82",
+      "pixelSha256": "781e7084dce71c88408c7ca498be84945fa6edf1650068485d59a0af4c1600fe",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-83",
+      "pixelSha256": "111cbfc8517e8840c0dd3da8975992d6d975715bef761674aea94266535dcecc",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-84",
+      "pixelSha256": "0f84746243e41c8a3f2ebea8c98e31d330c5efa125bb9a61395b0ce96f3805ee",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-85",
+      "pixelSha256": "cdce46fd25c4817aa006570db2e74e07b0d5022da03c0b3dffc2c1eae42ff06b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-86",
+      "pixelSha256": "25a8f30868f1cea2b8c3072c0fc076dc2002a89c92d66107e8d2cf05dbbc6dd5",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-87",
+      "pixelSha256": "30d34fbc0e398e0ee3f7a7e7027246d44f661ba6e947097b8fe06f0cc9acd046",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-88",
+      "pixelSha256": "3f44b66fe5f72d95cf2e0ff2f136f438fb7ee6296dc6db71dfc33f031248154f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-89",
+      "pixelSha256": "2b86765178f9462def99c793fb31ed36731d02b39a8bd6405cb7fb6c268ecee2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-90",
+      "pixelSha256": "b77fc54feae9cd9d5107654ea25ecb24eb9250eb3d02e2805d3b0e86b203da7b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-91",
+      "pixelSha256": "fdca3e6b27dde2bd32f9b68de56890989a6a5d524d7ce2912ab77cb15bc964af",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-92",
+      "pixelSha256": "be4fe5dc5cb578ad6dab9fa6388b7c7271fe7e2721d4513eaf2f63dff48a100e",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-93",
+      "pixelSha256": "3762db65255de6314dad8375e55859245fe31bda2e2d4d4f57ee392d8d3d1b70",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-94",
+      "pixelSha256": "d0aa4b326c9d65e934dc16925223821c8f40890934a2f42c4e161941d3f0cd88",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-95",
+      "pixelSha256": "1db10e0adc071f2e8bed57a0bbb32c1e7895308858088a147564ea07d6d37b1d",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-96",
+      "pixelSha256": "6866a0ee81bd7d6593408607fd4df30768373a417ab5b5c382c83de7563bba19",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-97",
+      "pixelSha256": "d511272a153d8813592b638db10b83c3b0474332041ae4d00129c0aa7e92a368",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-98",
+      "pixelSha256": "793ef266eab576a05710f48281fa9fca0f9d75ddac240dd40ac582ddcb78dbc4",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-99",
+      "pixelSha256": "05e32864f637e38c76984b6d54acde2003417b2a43762c4d4128993c4a7f126e",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-100",
+      "pixelSha256": "77dd2c32b8ebdb4cbabd54727550e865298dbc8f18b146023609926590819c0c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-101",
+      "pixelSha256": "d20165ffc7ee33bde8f773f576aa7e501e80bfee8adf05b12cef1c13ac83183b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-102",
+      "pixelSha256": "3f2d59d787498b87243ce0d4852a1b595474115658b575ad39f79804a35dbf5f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-103",
+      "pixelSha256": "34e77c08895a07129d652b7f0f10605f021e0837cb14a095ff638b29e017fd83",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-104",
+      "pixelSha256": "4eec104567528b575d0c86611c42e1e6429935956a7dd9f7cbff938ee07e8fe2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-105",
+      "pixelSha256": "88765c484d300c301595d037f87bb0b5427d1dd9d2cbdb59a3a535872923f43c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-106",
+      "pixelSha256": "7f5ec4f7fd19ed2e1a93ecd944c1982e18ee33296a28ae7511f1da80e71cd3a1",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-107",
+      "pixelSha256": "a4d750a6a739b391beb6835e2973a9abc2e340344a611810d4acd6526e77a2b6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-108",
+      "pixelSha256": "3a7ee5c98cc53d5204e86df4f633f404c3099a02f6e899b202f7e29cf93d55d2",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-109",
+      "pixelSha256": "488c04e5666f8772ed214f9a0d5e2890c47ed93760afe2269fdcf461873b643c",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-110",
+      "pixelSha256": "2c0a60cb124bc30aa76f43cba879d4b7b84687553541fb49b7aa4fbd50f0d2d0",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-111",
+      "pixelSha256": "4deb00bc213bfd623abb79426b55e37d906d4f368294386383e9b307819a2d4b",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-112",
+      "pixelSha256": "5ffc4a629b8383f7cd50724f8d3eacc45c4a220316b43f9c59a6d648d6b7c935",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-113",
+      "pixelSha256": "d67625acd74f05a8769f06d56c590f49647156f15793a5b8c7ba7b3d7a43c290",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-114",
+      "pixelSha256": "d953220fdf3d9667293ae87c0217e169b91e089c92b6d319fa7e9dceba0aff52",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-115",
+      "pixelSha256": "82f37a721d83c53e193f5bc395ca34199a5805df30cf030e92fa299dfc727d8e",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-116",
+      "pixelSha256": "b7d5119ef07d50f0849b70a6969da648feae8932e9ebe7c72a8fa0cea01f8231",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-117",
+      "pixelSha256": "e570ab9ea6022af9ebbc3733da638213bc026ae7f14424d9644f64674a64ac81",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-118",
+      "pixelSha256": "c1778304ca97b5a0b194d2a3e6fe64d79528c1c0a32ed850abedd90807d87c0f",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-119",
+      "pixelSha256": "feae98aff4f81f1428f268023f58a8bddf4fd9a9504049e8571644e872fb7012",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-120",
+      "pixelSha256": "3cc8d81370a0f5bf8c2d04865b32a4cfe1195233dc93dd5dbef48b07da066410",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-121",
+      "pixelSha256": "0fcc01568489a6968eea36e85cdb8ccbfec278e57329222f90110fc6b1a8a0b7",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-122",
+      "pixelSha256": "81edf99c4b2b46b5480ceb036d5c3f0cef140845b6ec7dca0a6d8d26f65c269a",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-123",
+      "pixelSha256": "33d38e111d13229114850322dae2a50aa57066ced4e5270c1541b1123e6365d6",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-124",
+      "pixelSha256": "85587e07d6a2843446dace8902e276d119ba470ca067dc8de099aa073ce766c1",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-125",
+      "pixelSha256": "32720f105530c6d1e0e075cfa44e5c2a3ef99c9e175b7e0eadfd20c18811e044",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-126",
+      "pixelSha256": "a255bd3541f8f362735266035082032163c0bfaebdc2165a40165cbf6623b142",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "known128",
+      "id": "mesh-retain-unseen-127",
+      "pixelSha256": "9035e05c903f5dc0839d8b9212973fe9b9bb5f4dd3966f56fa4427f76b6cf3d3",
+      "retentions": 0,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "previous128",
+      "id": "starvation-holdout-0",
+      "pixelSha256": "9daf5712602418cf4f6aea221f3abb984eded9c6a0405b675ae69646bfd533f9",
+      "retentions": 1,
+      "terminalEntries": 0,
+      "samplingPasses": 0,
+      "status": "correct"
+    },
+    {
+      "suite": "previous128",
+      "id": "starvation-holdout-1",
+      "pixelSha256": "83fe5e9f1a80a2679a911c32ea143c326af2b865ef3542c5e75373daf1176d4b",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "miss"
+    },
+    {
+      "suite": "previous128",
+      "id": "starvation-holdout-2",
+      "pixelSha256": "cb5ee6ba0bf91e9b984c686a4d39e2e5b83d0bb7d1c4aef48b7168e7d4edb446",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "correct"
+    },
+    {
+      "suite": "previous128",
+      "id": "starvation-holdout-3",
+      "pixelSha256": "437ab8c80f2bd293944ad8e251818f337934d4d41505385916fa8b64600a7715",
+      "retentions": 1,
+      "terminalEntries": 1,
+      "samplingPasses": 1,
+      "status": "miss"
+    }
+  ]
+}

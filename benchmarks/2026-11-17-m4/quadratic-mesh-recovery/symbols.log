@@ -1,0 +1,16 @@
+wrote 8 grids to target/quadratic-conformance/grids.json
+   Compiling forgesworn-qr v0.3.14 (/private/tmp/qr-next-20261116/repo/rust)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.46s
+     Running `target/debug/examples/symbols_dump target/quadratic-conformance/grids.json`
+pack symbols: 14 entries, 10 read by the module and 4 not (3 that the pack says do not read, and hanzi); bytes, version, ecc, mask, eci, corrected and mirrored equal the pack's on all 10 read
+pack symbols: text equals the pack's on 8; differs on 2 (ECI 26, UTF-8, around a kanji segment; kanji mode); on all of them it equals the native Rust's
+  structured append 2 of 3, parity 5a | 7365636f6e642070617274 | v1 L m2 c0 false | eci=- | sa=1/3/90 | fnc1=- | text=7365636f6e642070617274
+  structured append 16 of 16, parity ff | 78 | v2 M m5 c0 false | eci=- | sa=15/16/255 | fnc1=- | text=78
+  structured append 1 of 1, parity 00, empty part | - | v1 Q m7 c0 false | eci=- | sa=0/1/0 | fnc1=- | text=-
+  FNC1 first position, group separators and percent signs | 31411d32422533 | v1 M m0 c0 false | eci=- | sa=- | fnc1=first | text=31411d32422533
+  FNC1 second position, indicator 37 | 6c6f742037 | v2 L m1 c0 false | eci=- | sa=- | fnc1=second:37 | text=6c6f742037
+  FNC1 second position, indicator letter A | 411d42 | v1 H m4 c0 false | eci=- | sa=- | fnc1=second:A | text=411d42
+  structured append with FNC1 first position | 31411d3242 | v2 L m3 c0 false | eci=- | sa=0/2/7 | fnc1=first | text=31411d3242
+  structured append, ECI 26 and FNC1 second position | 636166c3a9 | v2 M m6 c0 false | eci=26 | sa=3/4/17 | fnc1=second:48 | text=636166c3a9
+built symbols: 8 grids, 8 read by the module, 5 with structured append and 5 with FNC1 (by the native Rust's lines)
+0 differences

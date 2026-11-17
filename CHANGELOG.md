@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.14
+
+- After all earlier reads fail, sample one quadratic surface from the first
+  fully measured 3×3 alignment lattice and the actual finder anchors. Preserve
+  earlier successful results and strict format, version and payload checks;
+  add no finder or alignment search. Mirror the recovery in all three ports.
+- Recover 143 additional synthetic curved frames: 861/1,376 exact reads versus
+  718/1,376 in 0.3.13 and 646/1,376 for pinned ZXing-WASM 3.1.7. The separate
+  256-frame set frozen before evaluation reads 118 versus ZXing's 77. No earlier
+  successful result is lost or changed, and QR returns no wrong payload in
+  these comparisons. ZXing still reads 14 curved frames QR misses.
+- Preserve the 888-case regression outcomes, including 180/184 photographs
+  and rejection of all 64 negative controls. Add five shared conformance
+  fixtures for the new geometric recovery.
+- Keep the eight legacy second looks and add at most one terminal threshold
+  computation, 4,761 module samples and one symbol read. Retain 18 doubles
+  (144 logical bytes) plus metadata. Legacy Work counters exclude the new
+  terminal pass; equal counters do not mean equal CPU work or allocation.
+- Qualify the runtime trade-off on native M4: the twelve sampled new reads
+  increase WASM median latency by 0.18–4.27% and TypeScript by 0.66–6.06%.
+  The packaged WASM grows by 8,908 bytes to 261,831 bytes. Random-noise
+  rejection remains about 2.6× slower than ZXing; see PERFORMANCE.md.
+
 ## 0.3.13
 
 - After the selected refined-grid header read fails, try its strict orientation

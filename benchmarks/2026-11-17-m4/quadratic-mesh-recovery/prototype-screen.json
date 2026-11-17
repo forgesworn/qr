@@ -1,0 +1,1095 @@
+{
+  "passed": true,
+  "scope": "Known16 causal screen only; fresh qualification pending",
+  "identity": {
+    "typechecked": true,
+    "compiler": "5.9.3",
+    "sources": {
+      "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+      "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+      "decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+      "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+      "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+      "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+      "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+      "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+      "refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+      "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+      "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+      "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+      "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+      "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+      "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+      "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+      "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+      "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+      "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+    },
+    "generated": {
+      "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+      "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+      "decode.ts": "dab00b5878a8b8998552e2e07ea5739deea78e1a2cffd92b6159c13225ab188b",
+      "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+      "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+      "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+      "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+      "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+      "refine.ts": "91a152b9b8ad103c322040a88aabcfbc01bd04e076208ce5ad93b836c82e615c",
+      "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+      "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+      "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+      "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+      "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+      "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+      "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+      "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+      "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+      "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+    },
+    "builderSha256": "36cd47a3445782f34217681a323ff61bc35220af4085c2ac33980ebf082535f9",
+    "tsconfigSha256": "045d2034180425f0b5e182341432962e38c953ad21ad9d4000243b572aaa36af"
+  },
+  "stagesSha256": "077b2374974e6f5728a9883bc814b2dd58ded12cdbfe5bc7e000e65d09517422",
+  "runnerSha256": "cc0695f94b1d8c9ef97465b211300ef3188cc98602ed1cf482af7632337019c9",
+  "rows": [
+    {
+      "id": "starvation-holdout-16",
+      "before": null,
+      "after": {
+        "eci": [],
+        "version": 9,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.0476190476190474,
+            "count": 9
+          },
+          "topRight": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3.0476190476190474,
+            "count": 9
+          },
+          "alignment": {
+            "x": 157.33333333333334,
+            "y": 157.5
+          }
+        },
+        "textSha256": "73184accf9e8911a87aa62ac502ad93c827a0de5e5b6c884bb2318aead860725",
+        "bytesSha256": "73184accf9e8911a87aa62ac502ad93c827a0de5e5b6c884bb2318aead860725"
+      },
+      "work": {
+        "steps": 44533,
+        "compared": 116,
+        "scanned": 1777639,
+        "maps": 285,
+        "second": 5,
+        "meshes": 5,
+        "probed": 468750,
+        "reduced": 30
+      },
+      "gained": true
+    },
+    {
+      "id": "starvation-holdout-18",
+      "before": {
+        "eci": [],
+        "version": 9,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 45,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 166.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "bottomLeft": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 38
+          }
+        },
+        "textSha256": "94c87439f9a7b967f47aa122f9e35e17bf3d23b97bf9c20c9b1f3280a74eb456",
+        "bytesSha256": "94c87439f9a7b967f47aa122f9e35e17bf3d23b97bf9c20c9b1f3280a74eb456"
+      },
+      "after": {
+        "eci": [],
+        "version": 9,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 45,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 166.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "bottomLeft": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 38
+          }
+        },
+        "textSha256": "94c87439f9a7b967f47aa122f9e35e17bf3d23b97bf9c20c9b1f3280a74eb456",
+        "bytesSha256": "94c87439f9a7b967f47aa122f9e35e17bf3d23b97bf9c20c9b1f3280a74eb456"
+      },
+      "work": {
+        "steps": 46580,
+        "compared": 99,
+        "scanned": 631044,
+        "maps": 163,
+        "second": 2,
+        "meshes": 2,
+        "probed": 187500,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "starvation-holdout-22",
+      "before": {
+        "eci": [],
+        "version": 9,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 51,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 166.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "bottomLeft": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "37c65c1aa526a6f61ecab90b3f8909f5ec2400ca03afe3d9c6f8913a6b7f8cb9",
+        "bytesSha256": "37c65c1aa526a6f61ecab90b3f8909f5ec2400ca03afe3d9c6f8913a6b7f8cb9"
+      },
+      "after": {
+        "eci": [],
+        "version": 9,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 51,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 166.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "bottomLeft": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "37c65c1aa526a6f61ecab90b3f8909f5ec2400ca03afe3d9c6f8913a6b7f8cb9",
+        "bytesSha256": "37c65c1aa526a6f61ecab90b3f8909f5ec2400ca03afe3d9c6f8913a6b7f8cb9"
+      },
+      "work": {
+        "steps": 45489,
+        "compared": 120,
+        "scanned": 796187,
+        "maps": 196,
+        "second": 4,
+        "meshes": 4,
+        "probed": 375000,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "starvation-holdout-42",
+      "before": {
+        "eci": [],
+        "version": 17,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 78,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 175,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "alignment": {
+            "x": 169,
+            "y": 25
+          }
+        },
+        "textSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113",
+        "bytesSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113"
+      },
+      "after": {
+        "eci": [],
+        "version": 17,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 78,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 175,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "alignment": {
+            "x": 169,
+            "y": 25
+          }
+        },
+        "textSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113",
+        "bytesSha256": "544a1d174052b4cff278e292bbb2cf7bd5ee540446aad2427f2f2f0ddb155113"
+      },
+      "work": {
+        "steps": 53298,
+        "compared": 59,
+        "scanned": 1563621,
+        "maps": 323,
+        "second": 2,
+        "meshes": 2,
+        "probed": 531250,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "late-phase-holdout-111",
+      "before": {
+        "eci": [],
+        "version": 34,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 385,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 2
+          },
+          "topRight": {
+            "x": 311,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 19,
+            "y": 311,
+            "moduleSize": 2,
+            "count": 2
+          },
+          "alignment": {
+            "x": 305,
+            "y": 305
+          }
+        },
+        "textSha256": "4614409226cbc5f58b72501e9ff5bb5e8101c11c3ce92d28ab0b49d20ac6ecaf",
+        "bytesSha256": "4614409226cbc5f58b72501e9ff5bb5e8101c11c3ce92d28ab0b49d20ac6ecaf"
+      },
+      "after": {
+        "eci": [],
+        "version": 34,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 385,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 2
+          },
+          "topRight": {
+            "x": 311,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 19,
+            "y": 311,
+            "moduleSize": 2,
+            "count": 2
+          },
+          "alignment": {
+            "x": 305,
+            "y": 305
+          }
+        },
+        "textSha256": "4614409226cbc5f58b72501e9ff5bb5e8101c11c3ce92d28ab0b49d20ac6ecaf",
+        "bytesSha256": "4614409226cbc5f58b72501e9ff5bb5e8101c11c3ce92d28ab0b49d20ac6ecaf"
+      },
+      "work": {
+        "steps": 143391,
+        "compared": 105,
+        "scanned": 2407111,
+        "maps": 379,
+        "second": 4,
+        "meshes": 4,
+        "probed": 2437500,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "version-peer-holdout-58",
+      "before": {
+        "eci": [],
+        "version": 18,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 81,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 274.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 274.5,
+            "y": 274.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "alignment": {
+            "x": 265.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "6978016984ad97858470706d3e52feaf9c46a4d8d5ca832889b802c719c77ee1",
+        "bytesSha256": "6978016984ad97858470706d3e52feaf9c46a4d8d5ca832889b802c719c77ee1"
+      },
+      "after": {
+        "eci": [],
+        "version": 18,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 81,
+        "mirrored": true,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 274.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 274.5,
+            "y": 274.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "alignment": {
+            "x": 265.5,
+            "y": 37.5
+          }
+        },
+        "textSha256": "6978016984ad97858470706d3e52feaf9c46a4d8d5ca832889b802c719c77ee1",
+        "bytesSha256": "6978016984ad97858470706d3e52feaf9c46a4d8d5ca832889b802c719c77ee1"
+      },
+      "work": {
+        "steps": 124746,
+        "compared": 147,
+        "scanned": 5479111,
+        "maps": 371,
+        "second": 2,
+        "meshes": 2,
+        "probed": 531250,
+        "reduced": 60
+      },
+      "gained": false
+    },
+    {
+      "id": "alternate-grid-holdout-16",
+      "before": null,
+      "after": {
+        "eci": [],
+        "version": 7,
+        "ecc": "M",
+        "mask": 0,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.0317460317460316,
+            "count": 9
+          },
+          "topRight": {
+            "x": 142.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 28.5,
+            "y": 142.5,
+            "moduleSize": 3.0317460317460316,
+            "count": 9
+          },
+          "alignment": {
+            "x": 133,
+            "y": 133.5
+          }
+        },
+        "textSha256": "f835c2188bba6e830e0207132f3c0814ea315f4a6136f2ada77cb917f92a106b",
+        "bytesSha256": "f835c2188bba6e830e0207132f3c0814ea315f4a6136f2ada77cb917f92a106b"
+      },
+      "work": {
+        "steps": 28160,
+        "compared": 85,
+        "scanned": 48244,
+        "maps": 48,
+        "second": 1,
+        "meshes": 1,
+        "probed": 93750,
+        "reduced": 30
+      },
+      "gained": true
+    },
+    {
+      "id": "alternate-grid-holdout-18",
+      "before": null,
+      "after": {
+        "eci": [],
+        "version": 7,
+        "ecc": "Q",
+        "mask": 6,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 142.5,
+            "y": 142.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 142.5,
+            "moduleSize": 3,
+            "count": 7
+          },
+          "bottomLeft": {
+            "x": 142.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 38
+          }
+        },
+        "textSha256": "d63df8de867135bcb1fdac80faa09cdfddc35910b27004637b3a919a23b5e1af",
+        "bytesSha256": "d63df8de867135bcb1fdac80faa09cdfddc35910b27004637b3a919a23b5e1af"
+      },
+      "work": {
+        "steps": 34909,
+        "compared": 70,
+        "scanned": 100471,
+        "maps": 67,
+        "second": 1,
+        "meshes": 1,
+        "probed": 93750,
+        "reduced": 49
+      },
+      "gained": true
+    },
+    {
+      "id": "header-rediscovery-holdout-16",
+      "before": null,
+      "after": {
+        "eci": [],
+        "version": 9,
+        "ecc": "M",
+        "mask": 2,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.0476190476190474,
+            "count": 9
+          },
+          "topRight": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3.0476190476190474,
+            "count": 9
+          },
+          "alignment": {
+            "x": 157,
+            "y": 157.5
+          }
+        },
+        "textSha256": "bc6619d28eb6f22aa41c4c1a8a37cc0e7b58653621bd77d5dc55fcb1286977bb",
+        "bytesSha256": "bc6619d28eb6f22aa41c4c1a8a37cc0e7b58653621bd77d5dc55fcb1286977bb"
+      },
+      "work": {
+        "steps": 45829,
+        "compared": 121,
+        "scanned": 546905,
+        "maps": 162,
+        "second": 2,
+        "meshes": 2,
+        "probed": 187500,
+        "reduced": 30
+      },
+      "gained": true
+    },
+    {
+      "id": "header-rediscovery-holdout-18",
+      "before": null,
+      "after": {
+        "eci": [],
+        "version": 9,
+        "ecc": "H",
+        "mask": 0,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 166.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "topRight": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3,
+            "count": 8
+          },
+          "bottomLeft": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "alignment": {
+            "x": 37.5,
+            "y": 38
+          }
+        },
+        "textSha256": "e2ad5c4b5088161f6021bb4acac47663acff2c5f44334c2da9efdf725dba99a2",
+        "bytesSha256": "e2ad5c4b5088161f6021bb4acac47663acff2c5f44334c2da9efdf725dba99a2"
+      },
+      "work": {
+        "steps": 43316,
+        "compared": 67,
+        "scanned": 82404,
+        "maps": 62,
+        "second": 2,
+        "meshes": 2,
+        "probed": 187500,
+        "reduced": 30
+      },
+      "gained": true
+    },
+    {
+      "id": "header-rediscovery-holdout-20",
+      "before": {
+        "eci": [],
+        "version": 9,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 53,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.0634920634920633,
+            "count": 9
+          },
+          "topRight": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3.0634920634920633,
+            "count": 9
+          },
+          "alignment": {
+            "x": 157.66666666666666,
+            "y": 157.5
+          }
+        },
+        "textSha256": "0bace466c291fb7bd7766ef9d3bdaaf88d43eefd6e0df044ddfc989146851437",
+        "bytesSha256": "0bace466c291fb7bd7766ef9d3bdaaf88d43eefd6e0df044ddfc989146851437"
+      },
+      "after": {
+        "eci": [],
+        "version": 9,
+        "ecc": "Q",
+        "mask": 2,
+        "corrected": 53,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 28.5,
+            "y": 28.5,
+            "moduleSize": 3.0634920634920633,
+            "count": 9
+          },
+          "topRight": {
+            "x": 166.5,
+            "y": 28.5,
+            "moduleSize": 3,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 28.5,
+            "y": 166.5,
+            "moduleSize": 3.0634920634920633,
+            "count": 9
+          },
+          "alignment": {
+            "x": 157.66666666666666,
+            "y": 157.5
+          }
+        },
+        "textSha256": "0bace466c291fb7bd7766ef9d3bdaaf88d43eefd6e0df044ddfc989146851437",
+        "bytesSha256": "0bace466c291fb7bd7766ef9d3bdaaf88d43eefd6e0df044ddfc989146851437"
+      },
+      "work": {
+        "steps": 39293,
+        "compared": 138,
+        "scanned": 712042,
+        "maps": 179,
+        "second": 4,
+        "meshes": 4,
+        "probed": 375000,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "header-rediscovery-holdout-46",
+      "before": {
+        "eci": [],
+        "version": 17,
+        "ecc": "H",
+        "mask": 4,
+        "corrected": 109,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 5
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 175,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "alignment": {
+            "x": 169,
+            "y": 25
+          }
+        },
+        "textSha256": "faa660f2f14c6f3626be68cdb8bbec88f8d670ada70623d38ae2d6ff6afb46b6",
+        "bytesSha256": "faa660f2f14c6f3626be68cdb8bbec88f8d670ada70623d38ae2d6ff6afb46b6"
+      },
+      "after": {
+        "eci": [],
+        "version": 17,
+        "ecc": "H",
+        "mask": 4,
+        "corrected": 109,
+        "mirrored": true,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 5
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "bottomLeft": {
+            "x": 175,
+            "y": 175,
+            "moduleSize": 2,
+            "count": 4
+          },
+          "alignment": {
+            "x": 169,
+            "y": 25
+          }
+        },
+        "textSha256": "faa660f2f14c6f3626be68cdb8bbec88f8d670ada70623d38ae2d6ff6afb46b6",
+        "bytesSha256": "faa660f2f14c6f3626be68cdb8bbec88f8d670ada70623d38ae2d6ff6afb46b6"
+      },
+      "work": {
+        "steps": 36032,
+        "compared": 53,
+        "scanned": 1015567,
+        "maps": 307,
+        "second": 4,
+        "meshes": 4,
+        "probed": 1062500,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "selected-mesh-holdout-39",
+      "before": {
+        "eci": [],
+        "version": 21,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 140,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 207,
+            "moduleSize": 2.0357142857142856,
+            "count": 4
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2.0357142857142856,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 207,
+            "y": 207,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 201,
+            "y": 25
+          }
+        },
+        "textSha256": "dcbd29990329b10d79f3f0b6c60309ba724528b9a01537b380734754291b0859",
+        "bytesSha256": "dcbd29990329b10d79f3f0b6c60309ba724528b9a01537b380734754291b0859"
+      },
+      "after": {
+        "eci": [],
+        "version": 21,
+        "ecc": "Q",
+        "mask": 4,
+        "corrected": 140,
+        "mirrored": false,
+        "inverted": true,
+        "location": {
+          "topLeft": {
+            "x": 19,
+            "y": 207,
+            "moduleSize": 2.0357142857142856,
+            "count": 4
+          },
+          "topRight": {
+            "x": 19,
+            "y": 19,
+            "moduleSize": 2.0357142857142856,
+            "count": 4
+          },
+          "bottomLeft": {
+            "x": 207,
+            "y": 207,
+            "moduleSize": 2,
+            "count": 6
+          },
+          "alignment": {
+            "x": 201,
+            "y": 25
+          }
+        },
+        "textSha256": "dcbd29990329b10d79f3f0b6c60309ba724528b9a01537b380734754291b0859",
+        "bytesSha256": "dcbd29990329b10d79f3f0b6c60309ba724528b9a01537b380734754291b0859"
+      },
+      "work": {
+        "steps": 87685,
+        "compared": 106,
+        "scanned": 1572310,
+        "maps": 337,
+        "second": 4,
+        "meshes": 4,
+        "probed": 1375000,
+        "reduced": 30
+      },
+      "gained": false
+    },
+    {
+      "id": "clean",
+      "before": {
+        "eci": [],
+        "version": 3,
+        "ecc": "M",
+        "mask": 6,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 431.5,
+            "y": 181.5,
+            "moduleSize": 9,
+            "count": 9
+          },
+          "topRight": {
+            "x": 629.5,
+            "y": 181.5,
+            "moduleSize": 9,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 431.5,
+            "y": 379.5,
+            "moduleSize": 9,
+            "count": 9
+          },
+          "alignment": {
+            "x": 602.5,
+            "y": 352.5
+          }
+        },
+        "textSha256": "e40f1a08afd0c0dca42a80a426429201c65f718d90018c72f1c65bd6cdf6967a",
+        "bytesSha256": "e40f1a08afd0c0dca42a80a426429201c65f718d90018c72f1c65bd6cdf6967a"
+      },
+      "after": {
+        "eci": [],
+        "version": 3,
+        "ecc": "M",
+        "mask": 6,
+        "corrected": 0,
+        "mirrored": false,
+        "inverted": false,
+        "location": {
+          "topLeft": {
+            "x": 431.5,
+            "y": 181.5,
+            "moduleSize": 9,
+            "count": 9
+          },
+          "topRight": {
+            "x": 629.5,
+            "y": 181.5,
+            "moduleSize": 9,
+            "count": 9
+          },
+          "bottomLeft": {
+            "x": 431.5,
+            "y": 379.5,
+            "moduleSize": 9,
+            "count": 9
+          },
+          "alignment": {
+            "x": 602.5,
+            "y": 352.5
+          }
+        },
+        "textSha256": "e40f1a08afd0c0dca42a80a426429201c65f718d90018c72f1c65bd6cdf6967a",
+        "bytesSha256": "e40f1a08afd0c0dca42a80a426429201c65f718d90018c72f1c65bd6cdf6967a"
+      },
+      "work": {
+        "steps": 6615,
+        "compared": 24,
+        "scanned": 5476,
+        "maps": 1,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "gained": false
+    },
+    {
+      "id": "blank",
+      "before": null,
+      "after": null,
+      "work": {
+        "steps": 0,
+        "compared": 0,
+        "scanned": 0,
+        "maps": 0,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 0
+      },
+      "gained": false
+    },
+    {
+      "id": "noise",
+      "before": null,
+      "after": null,
+      "work": {
+        "steps": 103505,
+        "compared": 98,
+        "scanned": 1658969,
+        "maps": 514,
+        "second": 0,
+        "meshes": 0,
+        "probed": 0,
+        "reduced": 60
+      },
+      "gained": false
+    }
+  ],
+  "reset": true
+}

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "baselineVersion": "0.3.13",
+  "candidateVersion": "0.3.14",
+  "curves": {
+    "base": 718,
+    "candidate": 861,
+    "zxing": 646
+  },
+  "curveCases": 1376,
+  "packagedParityCases": 2264,
+  "relatedPhotoViews": {
+    "base": 2872,
+    "candidate": 2872,
+    "gained": 0,
+    "wrong": 0
+  },
+  "curvedSheets": {
+    "base": 10,
+    "candidate": 12
+  },
+  "scope": "Finite deterministic fixtures and related photograph transformations; no physical camera acceptance or universal superiority claim."
+}

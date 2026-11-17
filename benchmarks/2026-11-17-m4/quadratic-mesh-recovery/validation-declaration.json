@@ -1,0 +1,22 @@
+{
+  "name": "small-parabola-validation-256",
+  "purpose": "Independent synthetic validation inputs frozen before candidate evaluation; these are not camera photographs.",
+  "generator": "validation-frames.mjs",
+  "generatorSha256": "9116d80f15d3449155fa4d852e1c48538a2463ab37faa4d9150598881725ec23",
+  "encoder": {"package": "qrcode", "version": "1.5.4", "scope": "isolated test oracle"},
+  "caseCount": 256,
+  "parameters": {"versions": [8, 10, 11, 12], "scales": [2, 3], "amplitudes": [2, 5], "signs": [-1, 1], "axes": ["x", "y"], "profiles": ["parabola", "double-wave", "circular-arch", "cubic-skew"]},
+  "profiles": {
+    "support": "u=(x-3.5)/(size-7), evaluated only for 0<=u<=1; shape=0 outside that range",
+    "parabola": "4*u*(1-u)",
+    "double-wave": "sin(2*pi*u)",
+    "circular-arch": "sqrt(max(0,1-(2*u-1)^2)); continuous with zero endpoints and unbounded endpoint derivatives",
+    "cubic-skew": "4*u*(1-u)*(2*u-1)"
+  },
+  "geometry": "For each fixed axial coordinate x, forward y'=h+y*(1-h/size), h=sign*amplitude*shape. Sampling uses its exact inverse y=(y'-h)/(1-h/size). Each bounded |shape|<=1, |h|<=5 and size>=49, so denominator>=44/49; coordinate inversion is valid. Axis x swaps coordinates before and after mapping. Zero outside profile support may make derivatives discontinuous; this is an artificial raster fixture.",
+  "raster": "Six module quiet-zone pixels at the chosen scale; two by two subpixel samples, each at cell quarter and three-quarter positions; black=25, light=230; floor average, then horizontal mirror, clockwise quarter-turn rotations, then optional inversion.",
+  "payload": "Throwaway SMALL-PARABOLA-VALIDATION-{index}- prefix plus 24 deterministic lower-case alphanumeric characters; LCG seed 0x3b19e72d mixed with the case index; bounded length fits the minimum version and ECC combination.",
+  "transformAssignment": "ECC uses index plus floor(index/4) and floor(index/16), modulo 4; rotation uses floor(index/4) modulo 4; inversion uses floor(index/16) modulo 2; mirror uses floor(index/32) modulo 2. Rotation and ECC are not fixed by profile index alone.",
+  "freezeRequirements": "Before any candidate evaluation, independently hash generator and every pixel array and payload, record complete metadata and assert all 256 are mutually unique and disjoint from the previous 1120-case corpus by both pixel and payload hash. Freeze manifest and source binding; any collision or mismatch fails the gate.",
+  "status": "Source declaration only; cases have not been generated or evaluated by its author."
+}

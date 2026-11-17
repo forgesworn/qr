@@ -43,15 +43,16 @@ help with repeated frames; the plain TypeScript entry needs no WASM setup.
 Accuracy takes priority: speed changes must preserve successful regression
 reads and must not introduce incorrect payloads.
 
-The recorded WASM comparison reads **180/184 photographs versus ZXing-WASM's
-171/184**, and **172/224 positive stress frames versus 150/224**. Those finite
-sets do not prove superiority on every image. ZXing is faster on random noise
-and reads one stress frame we miss. Version 0.3.13 also reads **653/1,120
-curved synthetic images versus 569/1,120**, preserving earlier successful
-results and recovering five more images than 0.3.12. One of those gains is in
-a separate 128-image set frozen before evaluation. See
-[choosing a library](docs/CHOOSING.md) for use cases, trade-offs and
-[reproducible evidence](benchmarks/2026-11-17-m4/selected-mesh-recovery/README.md).
+The recorded photograph comparison reads **180/184 versus ZXing-WASM's
+171/184**, and the positive stress set reads **172/224 versus 150/224**.
+Version 0.3.14's qualified curved-image comparison reads **861/1,376 versus
+646/1,376**, adding 143 exact reads over 0.3.13 while preserving earlier
+successful results. This includes **118/256 versus 77/256** on a separate
+synthetic set frozen before evaluation. ZXing still reads 14 curved frames
+QR misses, and is faster on the recorded random-noise workload. These finite
+sets do not prove superiority on every image or camera. See
+[choosing a library](docs/CHOOSING.md) for trade-offs and
+[reproducible evidence](benchmarks/2026-11-17-m4/quadratic-mesh-recovery/README.md).
 
 ## Contents
 
@@ -80,11 +81,11 @@ the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.13'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.13/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.14'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.14/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.13` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.14` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -731,7 +732,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.13") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.14") }
 ```
 
 See [distribution](docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -761,7 +762,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.13`; see the [Rust guide](rust/README.md) and
+`cargo add forgesworn-qr@0.3.14`; see the [Rust guide](rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately

@@ -60,15 +60,27 @@ support than the packaged WASM adapter. Never describe it as universally more
 accurate or faster than ZXing: the published comparison has named datasets,
 known misses and a random-noise latency disadvantage.
 
-Version 0.3.13 reads 653/1,120 evaluated curved synthetic images against
-ZXing-WASM 3.1.7's 569/1,120. Its five additional reads include one in a separate
-128-image set frozen before evaluation (78 versus ZXing's 69). It reuses an
-already captured mesh with the selected strict header after all earlier reads
-fail; there is no additional image sampling. Earlier successful results and
-work counts remain identical in the recorded checks, and 64 negative controls
-remain rejected. These finite sets are now regression data, not proof of
-universal superiority. Current recovery timings must be taken from the
-versioned performance evidence, not assumed from unchanged search counters.
+Version 0.3.14's qualified curved comparison reads 861/1,376 synthetic images
+against ZXing-WASM 3.1.7's 646/1,376, adding 143 reads over 0.3.13 while
+preserving earlier complete successful results. The separately frozen 256
+reads 118 versus 77; it is now evaluated regression data. There are 229 QR-only
+and 14 ZXing-only reads across the combined set, with no wrong QR payloads.
+Cubic-skew validation still favours ZXing and neither reader succeeds on the
+new double-wave subset. These finite renderings do not prove universal or
+physical-camera superiority. The 888 regression outcomes and 64 negative
+controls are unchanged.
+
+The terminal recovery fits a quadratic surface to six existing alignment
+measurements and actual finder anchors, then uses strict format selection
+before one unchanged symbol read. Work is bounded by eight legacy second
+looks plus one terminal threshold/grid pass of at most 4,761 module samples
+and one symbol read. Legacy Work excludes this added pass; unchanged counters
+do not mean unchanged CPU time. Across twelve sampled new reads, WASM median
+latency rises 0.18–4.27% and TypeScript 0.66–6.06% versus 0.3.13 misses.
+Random-noise rejection remains about 2.6 times slower than ZXing on the fixed
+1280 × 720 M4 workload. The packaged WASM is 261,831 bytes. See the
+[quadratic recovery evidence](https://github.com/forgesworn/qr/tree/main/benchmarks/2026-11-17-m4/quadratic-mesh-recovery)
+for identities, fixtures and limits.
 
 ## Docs
 
@@ -85,9 +97,9 @@ versioned performance evidence, not assumed from unchanged search counters.
 
 ## Native Rust
 
-- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.13, Rust 1.96+, no runtime dependencies.
+- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.14, Rust 1.96+, no runtime dependencies.
 - [Rust API documentation](https://docs.rs/forgesworn-qr): native API, examples and character-set limits.
 - [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md): application entry points, pixel layout, input and resource contracts.
-- Kotlin: self-contained source under `kotlin/core/src/main/kotlin`; Maven Central coordinate `io.github.forgesworn:qr:0.3.13`, JVM 17, Kotlin standard library only. Imports use `dev.forgesworn.qr`.
-- JSR: `jsr:@forgesworn/qr@0.3.13` and optional `jsr:@forgesworn/qr@0.3.13/wasm`; the same TypeScript API. Use `deno add jsr:@forgesworn/qr@0.3.13` for a Deno project.
-- Release 0.3.13 aligns the library version across npm, JSR, crates.io and Maven Central. Earlier JSR 0.3.1 was a packaging fix for library 0.3.0; affected JSR 0.3.0 was yanked. See the distribution guide for provenance, signing and release verification.
+- Kotlin: self-contained source under `kotlin/core/src/main/kotlin`; Maven Central coordinate `io.github.forgesworn:qr:0.3.14`, JVM 17, Kotlin standard library only. Imports use `dev.forgesworn.qr`.
+- JSR: `jsr:@forgesworn/qr@0.3.14` and optional `jsr:@forgesworn/qr@0.3.14/wasm`; the same TypeScript API. Use `deno add jsr:@forgesworn/qr@0.3.14` for a Deno project.
+- Release 0.3.14 aligns the library version across npm, JSR, crates.io and Maven Central. Earlier JSR 0.3.1 was a packaging fix for library 0.3.0; affected JSR 0.3.0 was yanked. See the distribution guide for provenance, signing and release verification.

@@ -128,8 +128,11 @@ private class Budget(var maps: Int, var second: Int, var here: Int, var inverted
     var alternateInverse: List<Retry>? = null
     var alternateGrid: AlternateGrid? = null
     var rediscoveredGrid: RediscoveredGrid? = null
+    var quadraticMesh: QuadraticCandidate? = null
     var attempted: MutableList<AttemptedCandidate>? = null
 }
+
+private class QuadraticCandidate(val candidate: Retry, val inverseLuminance: Boolean, val mesh: QuadraticMesh)
 
 private class ConflictCandidate(val candidate: Retry, val inverseLuminance: Boolean)
 
@@ -228,7 +231,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (alternate != null) return alternate
     val rediscovered = recoverRediscoveredGrid(budget)
     if (rediscovered != null) return rediscovered
-    return recoverRediscoveredGrid(budget, true)
+    val selectedMesh = recoverRediscoveredGrid(budget, true)
+    if (selectedMesh != null) return selectedMesh
+    return recoverQuadraticMesh(luminance, inverse, budget)
 }
 
 /**
@@ -753,6 +758,10 @@ private fun sameAlternateHypothesis(a: Retry, b: Retry): Boolean =
 /** The first eligible failed late grid is retained; invalidation never backfills. */
 private fun alternateSecondLook(budget: Budget, inverseLuminance: Boolean, image: Luminance, levels: Thresholds,
     candidate: Retry, work: Work?, collectMesh: ((ByteArray) -> Unit)?): Payload? {
+    val collectQuadratic: ((QuadraticMesh) -> Unit)? = if (budget.quadraticMesh == null)
+        ({ mesh: QuadraticMesh ->
+            if (budget.quadraticMesh == null) budget.quadraticMesh = QuadraticCandidate(candidate, inverseLuminance, mesh)
+        }) else null
     // Only the call which selects a previously empty slot may retain its existing mesh.
     val selectedMesh: ((ByteArray) -> Unit)? = if (collectMesh != null && budget.rediscoveredGrid == null)
         ({ modules: ByteArray ->
@@ -766,7 +775,7 @@ private fun alternateSecondLook(budget: Budget, inverseLuminance: Boolean, image
     if (pending != null) {
         val finalCollector: ((ByteArray) -> Unit)? = if (budget.rediscoveredGrid == null)
             ({ modules: ByteArray -> keepRediscoveredGrid(budget, inverseLuminance, candidate, modules) }) else null
-        return secondLook(image, levels, candidate, work, true, true, selectedMesh, finalCollector)
+        return secondLook(image, levels, candidate, work, true, true, selectedMesh, finalCollector, collectQuadratic)
     }
     var selected: AlternateGrid? = null
     val mesh: ((ByteArray) -> Unit)? = if (selectedMesh == null) null else ({ modules: ByteArray ->
@@ -786,7 +795,7 @@ private fun alternateSecondLook(budget: Budget, inverseLuminance: Boolean, image
             }
         }
     }
-    return secondLook(image, levels, candidate, work, true, true, mesh, collectFinal)
+    return secondLook(image, levels, candidate, work, true, true, mesh, collectFinal, collectQuadratic)
 }
 
 /** Validate retained grids after every existing return path. */
@@ -838,4 +847,13 @@ private fun recoverRediscoveredGrid(budget: Budget, mesh: Boolean = false): Deco
     val payload = readSymbol(read, size) ?: return null
     if (payload.ecc != candidate.agreed.ecc || payload.mask != candidate.agreed.mask) return null
     return result(payload, candidate.agreed.mirrored, retained.inverseLuminance || candidate.inverted, where(candidate.location, 1))
+}
+
+/** The first fully measured sparse late mesh receives one terminal curved read. */
+private fun recoverQuadraticMesh(luminance: Luminance, inverse: Luminance?, budget: Budget): DecodeResult? {
+    val retained = budget.quadraticMesh ?: return null
+    val image = (if (retained.inverseLuminance) inverse else luminance) ?: return null
+    val decoded = readQuadraticMesh(image, retained.candidate, retained.mesh) ?: return null
+    return result(decoded.payload, decoded.mirrored, retained.inverseLuminance || retained.candidate.inverted,
+        where(retained.candidate.location, 1))
 }
