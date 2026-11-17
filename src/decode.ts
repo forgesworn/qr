@@ -86,7 +86,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
     const recovered = recoverCurvature(inverse, budget, work, inverseCurvature, true)
     if (recovered) return { ...recovered, inverted: true }
   }
-  return recoverMeshGrids(budget)
+  const meshResult = recoverMeshGrids(budget)
+  if (meshResult) return meshResult
+  return recoverUnattemptedCurvature(luminance, inverse, budget, inverseCurvature, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -108,7 +110,14 @@ interface Budget {
   hints: VersionHint[]
   curvature: Candidate[]
   meshGrids: MeshGrid[]
+  attempted?: AttemptedCandidate[]
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
+}
+
+interface AttemptedCandidate {
+  candidate: Candidate
+  factor: number
+  inverseLuminance: boolean
 }
 
 interface MeshGrid {
@@ -181,6 +190,7 @@ function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
+    rememberAttempt(budget, candidate, f, publicInverse)
     const result = secondLook(luminance, levels, candidate, work, strict, false, meshCollector(budget, candidate, f, publicInverse))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, f) }
   }
@@ -384,6 +394,7 @@ function recoverVersion(luminance: Luminance, budget: Budget, work?: Work): Deco
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
+    rememberAttempt(budget, candidate, 1, false)
     const result = secondLook(luminance, levels, candidate, work, true, false, meshCollector(budget, candidate, 1))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
@@ -443,6 +454,7 @@ function recoverOverflow(luminance: Luminance, budget: Budget, work?: Work): Dec
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
+    rememberAttempt(budget, candidate, 1, false)
     const result = secondLook(luminance, levels, candidate, work, true, false, meshCollector(budget, candidate, 1))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
@@ -471,8 +483,66 @@ function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, can
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
+    rememberAttempt(budget, candidate, 1, publicInverse)
     const result = secondLook(luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
+  }
+  return undefined
+}
+
+
+/** Only the original four attempts are remembered; no storage on a direct read. */
+function rememberAttempt(budget: Budget, candidate: Candidate, factor: number, inverseLuminance: boolean): void {
+  const attempted = budget.attempted ??= []
+  if (attempted.length < SECOND_LOOKS) attempted.push({ candidate, factor, inverseLuminance })
+}
+
+/** Candidates are original locator homographies, never the temporary bent mesh. */
+function alreadyAttempted(budget: Budget, candidate: Candidate, inverseLuminance: boolean): boolean {
+  const matrix = candidate.location.matrix
+  return (budget.attempted ?? []).some(attempt => {
+    if (attempt.factor !== 1 || attempt.inverseLuminance !== inverseLuminance) return false
+    const other = attempt.candidate
+    if (other.location.size !== candidate.location.size || other.mirrored !== candidate.mirrored ||
+      other.inverted !== candidate.inverted || other.ecc !== candidate.ecc || other.mask !== candidate.mask) return false
+    const previous = other.location.matrix
+    return !!matrix && !!previous && matrix.length === previous.length && matrix.every((value, i) => value === previous[i])
+  })
+}
+
+/**
+ * After every earlier success path fails, allow one previously unattempted
+ * exact-version candidate. This is one extra attempt, not another queue pass.
+ */
+function recoverUnattemptedCurvature(luminance: Luminance, inverse: Luminance | undefined,
+  budget: Budget, inverseCandidates: Candidate[] | undefined, work?: Work): DecodeResult | undefined {
+  if (budget.second !== 0) return undefined
+  for (const inverseLuminance of [false, true]) {
+    const image = inverseLuminance ? inverse : luminance
+    const candidates = inverseLuminance ? inverseCandidates : budget.curvature
+    if (!image || !candidates) continue
+    for (const candidate of candidates) {
+      // locate and locateCorners always supply matrices. Do not guess whether
+      // arbitrary future nonlinear projection functions describe the same map.
+      if (!candidate.location.matrix || alreadyAttempted(budget, candidate, inverseLuminance)) continue
+      if (work) work.second++
+      let modules: Uint8Array | undefined
+      const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+        grid => { modules = grid })
+      const inverted = inverseLuminance || candidate.inverted
+      const location = where(candidate.location, 1)
+      if (payload) return { ...payload, mirrored: candidate.mirrored, inverted, location }
+      if (modules) {
+        const grid = modules, size = candidate.location.size
+        const read: ModuleReader = candidate.mirrored ? (x, y) => grid[x * size + y] === 1 : (x, y) => grid[y * size + x] === 1
+        if (formatAgrees(read, size, candidate.ecc, candidate.mask)) {
+          const result = readSymbol(read, size)
+          if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
+            return { ...result, mirrored: candidate.mirrored, inverted, location }
+        }
+      }
+      return undefined
+    }
   }
   return undefined
 }

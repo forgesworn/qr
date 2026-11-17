@@ -20,6 +20,7 @@ import { versionHintPicture } from './version-hint-fixture.js'
 import { overflowPicture } from './overflow-fixture.js'
 import { meshBoundaryPicture } from './mesh-boundary-fixture.js'
 import { meshReadingPicture } from './mesh-reading-fixture.js'
+import { starvedCurvaturePicture } from './starved-curvature-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -297,6 +298,7 @@ function build(write: boolean): Pack {
   for (const scale of [2, 3] as const) own(`mesh-boundary-${scale}`, meshBoundaryPicture(scale).image)
   // The saved mesh reads only after all earlier paths fail, including at reduced size.
   for (const index of [16, 87] as const) own(`mesh-reading-${index}`, meshReadingPicture(index).image)
+  for (const index of [32, 84, 89] as const) own(`starved-curvature-${index}`, starvedCurvaturePicture(index).image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

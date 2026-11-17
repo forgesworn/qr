@@ -371,7 +371,7 @@ class FalseReadsTest {
                 val work = Work()
                 val got = decodeCounted(frame.data, frame.width, frame.height, work)
                 if (got != null) assertEquals(text, got.text)
-                assertTrue(work.second <= 4)
+                assertTrue(work.second <= 5)
                 if (kind == Kind.CODEWORDS) {
                     codewordTrials++
                     if (got == null) codewordNothing++
@@ -396,7 +396,7 @@ class FalseReadsTest {
             val got = decodeCounted(frame.data, frame.width, frame.height, work)
             if (got != null) assertEquals(text, got.text)
             assertNull(got)
-            assertTrue(work.second <= 4)
+            assertTrue(work.second <= 5)
             assertTrue(work.probed <= MESH_PROBES)
             if (work.meshes > 0) meshed++
         }
@@ -419,7 +419,7 @@ class FalseReadsTest {
             if (got != null) assertEquals(text, got.text)
             assertNull(got)
             assertTrue(work.maps <= 4 * 6 * 5 * 6)
-            assertTrue(work.second <= 4)
+            assertTrue(work.second <= 5)
             assertTrue(work.probed <= MESH_PROBES)
             if (over(frame)) past++
             if (work.meshes > 0) meshed++

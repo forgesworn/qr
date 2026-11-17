@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.6
+# @forgesworn/qr 0.3.7
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -83,11 +83,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.6'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.6/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.7'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.7/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.6` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.7` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -728,7 +728,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.6") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.7") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -758,7 +758,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.6`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.7`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -901,21 +901,26 @@ payload; the synthetic suites also check its bytes.
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
+| Evaluated curved distortion set | **44/96** | 42/96 |
+| Earlier curved distortion set | 89/128 | **106/128** |
+| Separate curved set frozen before evaluation | **53/128** | 52/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.6
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.7
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-Deferred mesh reading improves the evaluated distortion set from 30 to 37/96;
-ZXing reads 42/96. On a separate 128-case set frozen before evaluation, QR
-improves from 78 to 81/128, while ZXing reads 106/128. Curvature remains a
-limitation. The new recovery retains all earlier successful results and metadata
-exactly in the checked sets, with no incorrect QR payloads. Earlier geometry
-changes can alter correction counts and optional alignment locations.
+One terminal refinement retry improves the evaluated distortion set from 37 to
+44/96 and the earlier 128-case set from 81 to 89/128. On a separate 128-case set
+frozen before evaluation, QR improves from 48 to 53/128. These finite sets favour
+different readers; they do not establish a universal accuracy lead. The newly
+evaluated set is now regression data. The new recovery retains all earlier
+successful results and metadata exactly in the checked sets, with no incorrect
+QR payloads. Earlier geometry changes can alter correction counts and optional
+alignment locations.
 See [full methodology, identities and per-case evidence](https://github.com/forgesworn/qr/blob/main/PERFORMANCE.md).
 
 ## Speed and trade-offs
@@ -945,6 +950,14 @@ after failed meshes costs 1.3–2.6% more. Clean and main-noise WASM medians
 vary within 1.0% across the two paired runs. At most four retained grids add
 125,316 module bytes plus metadata and extra sampling work. See the 0.3.6
 performance section for all timings and storage bounds.
+
+Version 0.3.7 adds one terminal attempt after all earlier paths fail. In two
+paired M4 runs, main-noise WASM medians vary within 0.5% and clean within 0.4%.
+The four newly recovered curved examples cost 13.4–21.2% more than their earlier
+misses; the tested persistent curved miss costs 19.7–21.0% more. The explicit
+limit is now five second looks and 7,187,500 alignment probes, with at most
+156,645 retained module bytes plus metadata. This improves measured accuracy
+at the cost of additional work on some difficult frames.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful
@@ -982,7 +995,7 @@ the TypeScript and optional WASM backends on your actual devices.
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. The 0.3.6 release
+published on Maven Central as `io.github.forgesworn:qr`. The 0.3.7 release
 aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
 fix for the 0.3.0 library; its version number is not reused.
 
@@ -1005,9 +1018,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.6
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.6
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.6
+npm install --save-exact @forgesworn/qr@0.3.7
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.7
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.7
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -1017,12 +1030,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.6
+deno add jsr:@forgesworn/qr@0.3.7
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.6'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.6/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.7'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.7/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1037,7 +1050,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.6") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.7") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -1046,7 +1059,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.6
+cargo add forgesworn-qr@0.3.7
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and
@@ -2395,6 +2408,37 @@ an ordinary read. Grids sampled from inverse luminance report inverted polarity
 even when that internal pass sampled dark modules normally. Retain no image
 closures: each saved grid owns its bytes and the resolved public metadata.
 
+### 15. Retry one unattempted curved map after exhaustion
+
+The first four second looks can be spent on maps whose header evidence was
+plausible but whose grid size or placement was wrong. Remember those four
+attempted candidates with their reduction factor and luminance basis. Only
+after every earlier return path, including step 14, fails, and the original
+second-look allowance is exhausted, inspect the retained curved maps from
+step 13: original luminance first, then inverse luminance, each in its
+existing retained order.
+
+Choose the first candidate with a projective matrix that was never attempted
+at full size in the same luminance basis. Equality requires identical matrix
+coefficients, size, orientation, polarity, error-correction level and mask.
+A reduced-size attempt does not exclude a full-size map. Matrix-less maps are
+ineligible; do not approximate equality of arbitrary projection functions.
+These are existing candidates admitted by an exact matching version word and
+non-conflicting readable headers; no new map search or admission gate is added.
+
+Try only that one candidate, using the strict second look and its deferred
+alignment pass from step 13. If its final refined read fails, directly sample
+and validate its mesh as in step 14. Both final format copies must match the
+admitted level and mask within two errors, and ordinary version, Reed-Solomon
+and segment checks must pass. Return immediately after this candidate, even
+when it fails; do not try the rest of either queue. Resolve its full-size
+location and public inverted polarity as for earlier reads.
+
+Every earlier successful result, including its location, correction counts and
+other metadata, retains priority. This terminal retry explicitly raises the
+maximum number of second looks from four to five; the original four attempts
+and their scheduling remain unchanged.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -2426,14 +2470,15 @@ among them.
 - Each size searches for the alignment pattern in square windows reaching
   4, 8 and then 16 modules around at most two estimates, clipped to the
   picture, stopping after the first reach that finds a near-perfect match.
-- The second look reads at most 4 maps again, at every size together,
+- The original second-look allowance reads at most 4 maps again, at every size together,
   each sampled three times
   (timing, edges, final) plus one sixteenth-step search per timing module
   and per boundary between unlike modules.
 - The ordinary mesh probes at most 46 lattice points a second look (version
   40 has 49, three of them at the finders), each at 25 x 25 offsets of 25
   modules. Step 13 may search predicted nodes once more, for a conservative
-  bound of 92 pattern searches per second look and 5,750,000 points a frame,
+  bound of 92 pattern searches per second look and 5,750,000 points across
+  the original four attempts,
   each interpolating four pixels, whatever the picture's size. Frames using
   only ordinary meshes retain the 2,875,000-point bound.
 - Boundary continuation adds one trusted flag per lattice node (at most 49)
@@ -2446,6 +2491,18 @@ among them.
   probes are separate from the alignment-search `probed` counter; no map,
   alignment search or second look is added. A later successful existing path
   may still have paid for earlier grid captures, but never for deferred reads.
+- Step 15 adds at most one terminal second look, for a total of five. With at
+  most two searches at each of 46 alignment points, 25 by 25 offsets and 25
+  module probes per offset, the conservative total alignment-probe bound is
+  7,187,500. This also adds one ordinary mesh/timing/edge refinement, using the
+  same per-attempt limits as earlier second looks; no finder or map search is
+  added. Its optional direct mesh capture adds at most 31,329 grey probes,
+  each interpolating four pixels, and one strict grid read. These grey probes
+  are not included in `Work.probed`.
+- The extra mesh is separate from step 14's four grids: at most 156,645 retained
+  module bytes in total, plus bounded metadata for five grids and four attempted
+  candidate records. The extra attempt runs only after all earlier results
+  fail, so successful earlier paths do not pay for its sampling or validation.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map
@@ -2455,7 +2512,8 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 to 14 as without them,
+The caps on maps and the original second looks are the same with steps 9 to 14
+as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying

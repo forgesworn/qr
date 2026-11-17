@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "version": "0.3.7",
+  "wasmSha256": "b12344a46090e846737e9e27746b5efbcf29b3d5bfebe94b2efbe66e4e529bd3",
+  "typeScript": {
+    "tests": 482,
+    "files": 38,
+    "requiredPhotos": true,
+    "typecheck": true
+  },
+  "kotlin": {
+    "testsPassed": true
+  },
+  "rust": {
+    "testsPassed": true
+  },
+  "standaloneWasm": {
+    "frames": 70,
+    "read": 62,
+    "miss": 8,
+    "countersCompared": 560,
+    "differences": 0
+  },
+  "allocationCheck": {
+    "rounds": 1000,
+    "recoveryFixtureReads": 63,
+    "warmupRounds": 200,
+    "warmupCapacityBytes": 4325376,
+    "endCapacityBytes": 4325376,
+    "unfreedHandleControlGrew": true,
+    "measurement": "linear-memory capacity, not peak live allocation"
+  },
+  "browserAndWorker": {
+    "passed": true
+  },
+  "localLogSha256": {
+    "production-tests-final.log": "98f6d403eda061f568d19f64e1fbcbcd20fd19b532b64e4f00810c4604a33b9b",
+    "wasm-browser.log": "45ed07d747f9ef2865518f76f2d9b49501109b07917f6162ad1709db112a2272",
+    "production-parity.log": "bdcec3143b81229a6c38fcbb37f5a52346745d8ad77ec99df903d8d947e96151",
+    "docs-package.log": "a4c94c2581336665ca6f89a39c62fa587cd96bebe19b3c83f7fe0c962394d373"
+  },
+  "timingPlatform": {
+    "arch": "arm64",
+    "node": "v24.21.0",
+    "platform": "darwin",
+    "cpu": "Apple M4 Max"
+  },
+  "documentation": {
+    "pages": 8,
+    "anchors": true,
+    "generatedPlainTextFresh": true
+  },
+  "packedConsumer": {
+    "main": true,
+    "wasm": true,
+    "fullResults": true,
+    "disposal": true
+  }
+}

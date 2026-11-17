@@ -62,6 +62,13 @@ struct Overflow {
     inverted: bool,
 }
 
+/// One of the original second looks, including its image basis.
+struct AttemptedCandidate {
+    candidate: Candidate,
+    factor: usize,
+    inverse_luminance: bool,
+}
+
 /// A failed meshed read retained for deferred validation.
 struct MeshGrid {
     modules: Vec<u8>,
@@ -76,6 +83,7 @@ struct MeshGrid {
 /// What is left of a frame's maps and second looks, shared by every size, and
 /// of the maps this size may take.
 struct Budget {
+    attempted: Vec<AttemptedCandidate>,
     mesh_grids: Vec<MeshGrid>,
     maps: u32,
     second: u32,
@@ -98,7 +106,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    let mut budget = Budget { attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
@@ -152,7 +160,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
             return Some(found);
         }
     }
-    recover_mesh_grids(&budget.mesh_grids)
+    if let Some(found) = recover_mesh_grids(&budget.mesh_grids) { return Some(found); }
+    recover_unattempted_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &budget, work.as_deref_mut())
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -549,6 +558,9 @@ fn recover_overflow(luminance: &Luminance, overflow: &[Overflow], budget: &mut B
 
 /// Keep only failed meshed reads, with their original public location and polarity.
 fn mesh_attempt(luminance: &Luminance, levels: &crate::binarise::Thresholds, candidate: &Candidate, budget: &mut Budget, work: Option<&mut Work>, strict: bool, late: bool, f: usize, public_inverse: bool) -> Option<Payload> {
+    if budget.attempted.len() < SECOND_LOOKS {
+        budget.attempted.push(AttemptedCandidate { candidate: candidate.clone(), factor: f, inverse_luminance: public_inverse });
+    }
     let mut modules = Vec::new();
     let collect = if budget.mesh_grids.len() < SECOND_LOOKS { Some(&mut modules) } else { None };
     let result = second_look_collect(luminance, levels, candidate, work, strict, late, collect);
@@ -587,6 +599,42 @@ fn recover_curvature(luminance: &Luminance, candidates: &[Candidate], budget: &m
         if let Some(w) = work.as_deref_mut() { w.second += 1; }
         if let Some(payload) = mesh_attempt(luminance, &levels, candidate, budget, work.as_deref_mut(), true, true, 1, public_inverse) {
             return Some(Reading { payload, mirrored: candidate.mirrored, inverted: candidate.inverted, location: place(&candidate.location, 1) });
+        }
+    }
+    None
+}
+
+/// After all existing paths fail, try one retained curvature map that has not
+/// already had a second look at full size on the same luminance basis.
+fn recover_unattempted_curvature(luminance: &Luminance, inverse: Option<&Luminance>, candidates: &[Candidate], inverse_candidates: &[Candidate], budget: &Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    if budget.second != 0 { return None; }
+    for (image, queue, inverse_luminance) in [(Some(luminance), candidates, false), (inverse, inverse_candidates, true)] {
+        let Some(image) = image else { continue; };
+        for candidate in queue {
+            let attempted = budget.attempted.iter().any(|attempt| {
+                let previous = &attempt.candidate;
+                attempt.factor == 1 && attempt.inverse_luminance == inverse_luminance
+                    && previous.location.size == candidate.location.size
+                    && previous.mirrored == candidate.mirrored && previous.inverted == candidate.inverted
+                    && previous.ecc == candidate.ecc && previous.mask == candidate.mask
+                    && previous.location.matrix == candidate.location.matrix
+            });
+            if attempted { continue; }
+            if let Some(w) = work.as_deref_mut() { w.second += 1; }
+            let levels = thresholds(image);
+            let mut modules = Vec::new();
+            let payload = second_look_collect(image, &levels, candidate, work.as_deref_mut(), true, true, Some(&mut modules));
+            let inverted = inverse_luminance || candidate.inverted;
+            let location = place(&candidate.location, 1);
+            if let Some(payload) = payload {
+                return Some(Reading { payload, mirrored: candidate.mirrored, inverted, location });
+            }
+            if !modules.is_empty() {
+                let grid = MeshGrid { modules, size: candidate.location.size, ecc: candidate.ecc,
+                    mask: candidate.mask, mirrored: candidate.mirrored, inverted, location };
+                return recover_mesh_grids(std::slice::from_ref(&grid));
+            }
+            return None;
         }
     }
     None
@@ -698,7 +746,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut budget = Budget { attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -866,7 +914,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
+        Budget { attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {

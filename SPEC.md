@@ -1138,6 +1138,37 @@ an ordinary read. Grids sampled from inverse luminance report inverted polarity
 even when that internal pass sampled dark modules normally. Retain no image
 closures: each saved grid owns its bytes and the resolved public metadata.
 
+### 15. Retry one unattempted curved map after exhaustion
+
+The first four second looks can be spent on maps whose header evidence was
+plausible but whose grid size or placement was wrong. Remember those four
+attempted candidates with their reduction factor and luminance basis. Only
+after every earlier return path, including step 14, fails, and the original
+second-look allowance is exhausted, inspect the retained curved maps from
+step 13: original luminance first, then inverse luminance, each in its
+existing retained order.
+
+Choose the first candidate with a projective matrix that was never attempted
+at full size in the same luminance basis. Equality requires identical matrix
+coefficients, size, orientation, polarity, error-correction level and mask.
+A reduced-size attempt does not exclude a full-size map. Matrix-less maps are
+ineligible; do not approximate equality of arbitrary projection functions.
+These are existing candidates admitted by an exact matching version word and
+non-conflicting readable headers; no new map search or admission gate is added.
+
+Try only that one candidate, using the strict second look and its deferred
+alignment pass from step 13. If its final refined read fails, directly sample
+and validate its mesh as in step 14. Both final format copies must match the
+admitted level and mask within two errors, and ordinary version, Reed-Solomon
+and segment checks must pass. Return immediately after this candidate, even
+when it fails; do not try the rest of either queue. Resolve its full-size
+location and public inverted polarity as for earlier reads.
+
+Every earlier successful result, including its location, correction counts and
+other metadata, retains priority. This terminal retry explicitly raises the
+maximum number of second looks from four to five; the original four attempts
+and their scheduling remain unchanged.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1169,14 +1200,15 @@ among them.
 - Each size searches for the alignment pattern in square windows reaching
   4, 8 and then 16 modules around at most two estimates, clipped to the
   picture, stopping after the first reach that finds a near-perfect match.
-- The second look reads at most 4 maps again, at every size together,
+- The original second-look allowance reads at most 4 maps again, at every size together,
   each sampled three times
   (timing, edges, final) plus one sixteenth-step search per timing module
   and per boundary between unlike modules.
 - The ordinary mesh probes at most 46 lattice points a second look (version
   40 has 49, three of them at the finders), each at 25 x 25 offsets of 25
   modules. Step 13 may search predicted nodes once more, for a conservative
-  bound of 92 pattern searches per second look and 5,750,000 points a frame,
+  bound of 92 pattern searches per second look and 5,750,000 points across
+  the original four attempts,
   each interpolating four pixels, whatever the picture's size. Frames using
   only ordinary meshes retain the 2,875,000-point bound.
 - Boundary continuation adds one trusted flag per lattice node (at most 49)
@@ -1189,6 +1221,18 @@ among them.
   probes are separate from the alignment-search `probed` counter; no map,
   alignment search or second look is added. A later successful existing path
   may still have paid for earlier grid captures, but never for deferred reads.
+- Step 15 adds at most one terminal second look, for a total of five. With at
+  most two searches at each of 46 alignment points, 25 by 25 offsets and 25
+  module probes per offset, the conservative total alignment-probe bound is
+  7,187,500. This also adds one ordinary mesh/timing/edge refinement, using the
+  same per-attempt limits as earlier second looks; no finder or map search is
+  added. Its optional direct mesh capture adds at most 31,329 grey probes,
+  each interpolating four pixels, and one strict grid read. These grey probes
+  are not included in `Work.probed`.
+- The extra mesh is separate from step 14's four grids: at most 156,645 retained
+  module bytes in total, plus bounded metadata for five grids and four attempted
+  candidate records. The extra attempt runs only after all earlier results
+  fail, so successful earlier paths do not pay for its sampling or validation.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map
@@ -1198,7 +1242,8 @@ luminance fallback keeps its shared allowance. Search steps, candidate
 comparisons and alignment-window areas are counted only for searches actually
 performed; maps and second-look work keep their existing accounting.
 
-The caps on maps and second looks are the same with steps 9 to 14 as without them,
+The caps on maps and the original second looks are the same with steps 9 to 14
+as without them,
 but a frame where nothing reads at full size goes on to be shrunk,
 binarised and searched at up to three reduced sizes (at most a third more
 pixels in all), so such a frame costs more than it did. A frame qualifying
