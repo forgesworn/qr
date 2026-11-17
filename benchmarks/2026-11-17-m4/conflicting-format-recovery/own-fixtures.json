@@ -1,0 +1,69 @@
+{
+  "fixtureSha256": "003cb947ebb57d29139306274d9b089d35ec6b1848c260ad2e7c1359271fe331",
+  "rows": [
+    {
+      "index": 32,
+      "pixelSha256": "419fe528e6ede19a784d21e890b364da9a4bfbf6428ae14c38bed6728a44e2a1",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 38174,
+        "compared": 93,
+        "scanned": 863611,
+        "maps": 237,
+        "second": 1,
+        "meshes": 1,
+        "probed": 203125,
+        "reduced": 30
+      }
+    },
+    {
+      "index": 42,
+      "pixelSha256": "2133ade3c70db0152aba09d17e01dfa6f4032d0a713bf8da2f37b51a820b92c0",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 47580,
+        "compared": 63,
+        "scanned": 890310,
+        "maps": 321,
+        "second": 1,
+        "meshes": 1,
+        "probed": 234375,
+        "reduced": 22
+      }
+    },
+    {
+      "index": 72,
+      "pixelSha256": "4eb5da9879b1914b1f0fcf65af5401594cbf3c0b23f0c1687500d5542728803a",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 69839,
+        "compared": 92,
+        "scanned": 1579150,
+        "maps": 290,
+        "second": 1,
+        "meshes": 1,
+        "probed": 390625,
+        "reduced": 30
+      }
+    },
+    {
+      "index": 76,
+      "pixelSha256": "1c5de4aacb680b4be246e7c4cd1c098059f06b186490673ae984d70d543b4b35",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 83750,
+        "compared": 174,
+        "scanned": 1586755,
+        "maps": 322,
+        "second": 6,
+        "meshes": 5,
+        "probed": 1953125,
+        "reduced": 30
+      }
+    }
+  ]
+}

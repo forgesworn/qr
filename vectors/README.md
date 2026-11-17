@@ -194,3 +194,10 @@ generator are not in these files; each port writes the generator again
 (`(s * 1664525 + 1013904223) mod 2^32`, divided by 2^32). They guard
 against wrong text across hundreds of random cases. A port should have them,
 but the files above are enough to know it implements the same decoder.
+
+The conflicting-format regeneration adds four curved codes made by our encoder.
+They cover a strong header, a weak fallback, preference for a later strong
+candidate and a sixth terminal attempt. Each fails on 0.3.7 and passes with
+the new recovery. They intentionally extend the pack to exercise the new
+admission and scheduling behaviour. All 70 previous entries, including stages,
+results and work counters, remain identical.

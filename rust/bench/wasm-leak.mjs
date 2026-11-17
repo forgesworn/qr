@@ -20,8 +20,8 @@ const { decodeFull, decodeGrid, encode, memory } = await loadFront(wasm)
 
 // Small pictures that read, one that does not, and a grid.
 const frames = pack.frames.filter((f) => f.result !== null && f.width <= 300).slice(0, 6).map((f) => readPng(readFileSync(vectors + f.file)))
-// Exercise the owned deferred grids too, including reduced, inverted and terminal fifth reads.
-const meshFrames = ['mesh-reading-16.png', 'mesh-reading-87.png', 'starved-curvature-32.png', 'starved-curvature-84.png', 'starved-curvature-89.png'].map((name) => {
+// Exercise the owned deferred grids too, including reduced, inverted and both terminal retries.
+const meshFrames = ['mesh-reading-16.png', 'mesh-reading-87.png', 'starved-curvature-32.png', 'starved-curvature-84.png', 'starved-curvature-89.png', 'header-conflict-32.png', 'header-conflict-42.png', 'header-conflict-72.png', 'header-conflict-76.png'].map((name) => {
   const frame = pack.frames.find((f) => f.file === 'conformance/' + name)
   if (!frame?.result) throw new Error('Missing mesh memory fixture: ' + name)
   return { image: readPng(readFileSync(vectors + frame.file)), expected: frame.result.text }

@@ -504,6 +504,10 @@ pub(crate) fn agreed_version<R: Fn(usize, usize) -> bool>(read: &R, size: usize)
 
 /// Header evidence for a deferred curvature recovery.
 pub(crate) fn curvature_header<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<(Ecc, u8, u32)> {
+    curvature_header_with_conflict(read, size, false).map(|(ecc, mask, distance, _)| (ecc, mask, distance))
+}
+
+pub(crate) fn curvature_header_with_conflict<R: Fn(usize, usize) -> bool>(read: &R, size: usize, allow_conflict: bool) -> Option<(Ecc, u8, u32, bool)> {
     if size < 45 { return None; }
     let mut va = 0u32;
     let mut vb = 0u32;
@@ -529,9 +533,19 @@ pub(crate) fn curvature_header<R: Fn(usize, usize) -> bool>(read: &R, size: usiz
     let words = FORMATS.map(|f| f.0);
     let first = nearest(&words, &[a]);
     let second = nearest(&words, &[b]);
-    if first.is_some() && second.is_some() && first != second { return None; }
+    if let (Some(first), Some(second)) = (first, second) {
+        if first != second {
+            if !allow_conflict { return None; }
+            let da = (words[first] ^ a).count_ones();
+            let db = (words[second] ^ b).count_ones();
+            let distance = da.min(db);
+            if distance > 2 || da.max(db) != 3 { return None; }
+            let (_, ecc, mask) = FORMATS[if da < db { first } else { second }];
+            return Some((ecc, mask, distance, true));
+        }
+    }
     let (bits, ecc, mask) = FORMATS[first.or(second)?];
-    Some((ecc, mask, (bits ^ a).count_ones().min((bits ^ b).count_ones())))
+    Some((ecc, mask, (bits ^ a).count_ones().min((bits ^ b).count_ones()), false))
 }
 
 /// The errors a block of this symbol may have had corrected: half of its check
@@ -1241,6 +1255,35 @@ mod curvature_header_tests {
             grid[y * size + x] = ((fb >> i) & 1) as u8;
         }
         grid
+    }
+
+    #[test]
+    fn conflict_mode_requires_exact_version_and_a_uniquely_stronger_copy() {
+        let v12 = version_bits_of(12);
+        let v13 = version_bits_of(13);
+        let m3 = FORMATS.iter().find(|f| f.1 == Ecc::M && f.2 == 3).unwrap().0;
+        let q7 = FORMATS.iter().find(|f| f.1 == Ecc::Q && f.2 == 7).unwrap().0;
+        let check = |va, vb, fa, fb, allow| {
+            let grid = header(va, vb, fa, fb);
+            super::curvature_header_with_conflict(&|x, y| grid[y * 65 + x] == 1, 65, allow)
+        };
+        assert_eq!(check(v12, v12, m3, q7 ^ 7, true), Some((Ecc::M, 3, 0, true)));
+        assert_eq!(check(v12, v12, m3 ^ 1, q7 ^ 7, true), Some((Ecc::M, 3, 1, true)));
+        assert_eq!(check(v12, v12, m3 ^ 3, q7 ^ 7, true), Some((Ecc::M, 3, 2, true)));
+        assert_eq!(check(v12, v12, m3 ^ 7, q7 ^ 7, true), None);
+        // Reverse the copies: the same stronger word must win in either position.
+        assert_eq!(check(v12, v12, q7 ^ 7, m3, true), Some((Ecc::M, 3, 0, true)));
+        assert_eq!(check(v12, v12, q7 ^ 7, m3 ^ 1, true), Some((Ecc::M, 3, 1, true)));
+        assert_eq!(check(v12, v12, q7 ^ 7, m3 ^ 3, true), Some((Ecc::M, 3, 2, true)));
+        assert_eq!(check(v12, v12, q7 ^ 7, m3 ^ 7, true), None);
+        assert_eq!(check(v12, v12, m3 ^ 7, m3 ^ 1, true), Some((Ecc::M, 3, 1, false)));
+        assert_eq!(check(v12, v12, q7 ^ 7, m3 ^ 1, false), None);
+        assert_eq!(check(v12, v12, m3 ^ 1, m3 ^ 7, true), Some((Ecc::M, 3, 1, false)));
+        assert_eq!(check(v12, v12, m3 ^ 1, m3 ^ 7, false), Some((Ecc::M, 3, 1, false)));
+        assert_eq!(super::curvature_header_with_conflict(&|_, _| false, 41, true), None);
+        assert_eq!(check(v12 ^ 1, v12 ^ 2, m3, q7 ^ 7, true), None);
+        assert_eq!(check(v12, v13 ^ 1, m3, q7 ^ 7, true), None);
+        assert_eq!(check(v12, v12, m3, q7 ^ 7, false), None);
     }
 
     #[test]

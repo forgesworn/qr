@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "baseline": "268fa8291e7ba47d93bbccf00a828d69e5a80dc5",
+  "candidateVersion": "0.3.8",
+  "wasm": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "0f81f041c0d9dda58010b696f7137837a5084aaa7d6f6465919510547f58f602",
+    "sha256": "4c30f08b678cfafde9468c813e6645f153f896b6e266896c6fca8523d5c3251c",
+    "bytes": 234791
+  },
+  "checks": {
+    "typescriptTests": 495,
+    "rustAllFeaturesAndDocTests": true,
+    "kotlinTests": true,
+    "requiredPhotos": true,
+    "conformanceFrames": 74,
+    "unchangedPreviousConformanceFrames": 70,
+    "standaloneWasmCountersCompared": 592,
+    "standaloneWasmCounterDifferences": 0,
+    "memoryRounds": 1000,
+    "recoveryReads": 63,
+    "recoveryFixtures": 9,
+    "memoryCapacityAfterWarmup": 4325376,
+    "memoryCapacityAtEnd": 4325376,
+    "unfreedHandleControlGrew": true,
+    "browserAndWorker": true,
+    "browserCharsetCases": 6
+  },
+  "receiptSha256": {
+    "production-backends.json": "12aef15e18f30f2c27d59372d3390bc93ccd6e3882bbd9a732bdb54f0cdf33fd",
+    "production-qualified.json": "c8cdd6404f4cb0aef72d764a7b525ba726d6981d5ed9c4541149afa25a26bb82",
+    "production-photos.json": "5a63da59f79b059dede42e381a8195d61c7031e8c02388adb150f7d324343ed0",
+    "production-sheet.json": "3dcc28a76e72c38b10a2106d3f4a985000b99038fe1afbf3210cdbaf42d38f71",
+    "browser.json": "2b46c7529e21938668bd4fc5de97f68e36f5b6ce1cb1b29ea7aee5fe5e7d7049"
+  },
+  "logSha256": "db57bad40ed9ef94a0759f665eed98ea3da37572385f231e3c0705129656d014",
+  "conformanceSha256": "1e48651761098e62f1e4655d6f9537c162bf4f841dd62fb05fcdb87fcd4df046",
+  "previousConformanceSha256": "6314716180af1b43cb13feb41475667783d95de0a16c2a3004c50136e13118d8",
+  "notes": [
+    "Memory capacity is not peak live allocation.",
+    "Photograph oracles independently supply text; synthetic fixtures also supply bytes.",
+    "Timing receipts and their source identities are separate."
+  ]
+}

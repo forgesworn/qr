@@ -35,26 +35,27 @@ payload; the synthetic suites also check its bytes.
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
-| Evaluated curved distortion set | **44/96** | 42/96 |
-| Earlier curved distortion set | 89/128 | **106/128** |
-| Separate curved set frozen before evaluation | **53/128** | 52/128 |
+| Evaluated curved distortion set | **48/96** | 42/96 |
+| Earlier curved distortion set | 103/128 | **106/128** |
+| Previous curved holdout | **62/128** | 52/128 |
+| Separate curved set frozen before evaluation | **71/128** | 67/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.7
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.8
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-One terminal refinement retry improves the evaluated distortion set from 37 to
-44/96 and the earlier 128-case set from 81 to 89/128. On a separate 128-case set
-frozen before evaluation, QR improves from 48 to 53/128. These finite sets favour
-different readers; they do not establish a universal accuracy lead. The newly
-evaluated set is now regression data. The new recovery retains all earlier
-successful results and metadata exactly in the checked sets, with no incorrect
-QR payloads. Earlier geometry changes can alter correction counts and optional
-alignment locations.
+A final retry for maps with conflicting format headers improves the evaluated
+sets from 44 to 48/96, 89 to 103/128 and 53 to 62/128. On a separate 128-case set
+frozen before policy evaluation, QR improves from 58 to 71/128; ZXing reads
+67/128. These sets favour different readers and do not establish a universal
+accuracy lead. The newly evaluated set is now regression data. Earlier
+successful results and metadata remain identical in these checks, with no
+incorrect QR payloads. Earlier geometry changes can alter correction counts and
+optional alignment locations.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
@@ -89,9 +90,20 @@ Version 0.3.7 adds one terminal attempt after all earlier paths fail. In two
 paired M4 runs, main-noise WASM medians vary within 0.5% and clean within 0.4%.
 The four newly recovered curved examples cost 13.4–21.2% more than their earlier
 misses; the tested persistent curved miss costs 19.7–21.0% more. The explicit
-limit is now five second looks and 7,187,500 alignment probes, with at most
+limit for that release is five second looks and 7,187,500 alignment probes, with at most
 156,645 retained module bytes plus metadata. This improves measured accuracy
 at the cost of additional work on some difficult frames.
+
+Version 0.3.8 adds at most one final attempt for conflicting format evidence,
+raising the limit to six second looks and 8,625,000 alignment probes. It keeps
+one candidate, prefers stronger header evidence, and preserves all earlier
+successful paths. Temporary meshes from the two terminal attempts have
+sequential lifetimes: logically retained optional grids remain bounded at
+156,645 bytes plus metadata, excluding active refinement buffers and allocator
+capacity. In two paired M4 runs, main-noise WASM medians vary by only 0.07%;
+the six newly recovered examples cost 18.2–83.0% more than their earlier misses,
+and the persistent curved miss costs 16.9–17.3% more. Earlier successful curved
+examples stay within 0.6%. See the 0.3.8 performance section for all measurements.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

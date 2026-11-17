@@ -7,7 +7,7 @@ use crate::place::{estimate_size, finder_triples, locate, locate_corners, Locati
 use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look_collect, sized, Candidate, SECOND_LOOKS};
 #[cfg(test)]
 use crate::refine::second_look;
-use crate::symbol::{agreed_version, curvature_header, read_symbol, Ecc, Payload, FORMAT_COORDS};
+use crate::symbol::{agreed_version, curvature_header, curvature_header_with_conflict, read_symbol, Ecc, Payload, FORMAT_COORDS};
 use std::cell::Cell;
 use crate::{MIN_REDUCED, REDUCTIONS, TOLERANCES};
 
@@ -80,9 +80,16 @@ struct MeshGrid {
     location: Place,
 }
 
+/// A conflicting header retained for the final recovery attempt.
+struct ConflictCandidate {
+    candidate: Candidate,
+    inverse_luminance: bool,
+}
+
 /// What is left of a frame's maps and second looks, shared by every size, and
 /// of the maps this size may take.
 struct Budget {
+    conflict: Option<ConflictCandidate>,
     attempted: Vec<AttemptedCandidate>,
     mesh_grids: Vec<MeshGrid>,
     maps: u32,
@@ -106,7 +113,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    let mut budget = Budget { conflict: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
@@ -161,7 +168,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         }
     }
     if let Some(found) = recover_mesh_grids(&budget.mesh_grids) { return Some(found); }
-    recover_unattempted_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &budget, work.as_deref_mut())
+    if let Some(found) = recover_unattempted_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &budget, work.as_deref_mut()) { return Some(found); }
+    recover_header_conflict(&luminance, inverse_luminance.as_ref(), &budget, work.as_deref_mut())
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -186,13 +194,13 @@ fn look_with_hints(luminance: &Luminance, inversion: Inversion, f: usize, budget
     let mut edges = Edges::new(&bits);
     let mut modules: Vec<u8> = Vec::new();
     if inversion != Inversion::Inverted {
-        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut(), curvature.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&bits, &mut edges, false, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut(), curvature.as_deref_mut(), public_inverse) {
             return Some(found);
         }
     }
     if inversion != Inversion::Normal {
         let inverse = invert(&bits);
-        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut(), curvature.as_deref_mut()) {
+        if let Some(found) = search_with_hints(&inverse, &mut edges, true, &mut candidates, budget, strict, f, &mut modules, work.as_deref_mut(), hints.as_deref_mut(), overflow.as_deref_mut(), curvature.as_deref_mut(), public_inverse) {
             return Some(found);
         }
     }
@@ -289,7 +297,7 @@ fn search(
     modules: &mut Vec<u8>,
     work: Option<&mut Work>,
 ) -> Option<Reading> {
-    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None, None, None)
+    search_with_hints(image, edges, inverted, candidates, budget, strict, f, modules, work, None, None, None, false)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -306,6 +314,7 @@ fn search_with_hints(
     mut hints: Option<&mut Vec<Hint>>,
     mut overflow: Option<&mut Vec<Overflow>>,
     mut curvature: Option<&mut Vec<Candidate>>,
+    inverse_luminance: bool,
 ) -> Option<Reading> {
     // No map can be read, but the caller still owns the second-look queue.
     if budget.maps == 0 || budget.here == 0 { return None; }
@@ -346,7 +355,7 @@ fn search_with_hints(
                             w.reduced += 1;
                         }
                     }
-                    if let Some(result) = read_with_curvature(image, location, inverted, candidates, strict, f, modules, curvature.as_deref_mut()) {
+                    if let Some(result) = read_with_curvature(image, location, inverted, candidates, strict, f, modules, curvature.as_deref_mut(), Some(&mut budget.conflict), inverse_luminance) {
                         return Some(result);
                     }
                     if let Some(hints) = hints.as_deref_mut() {
@@ -640,14 +649,36 @@ fn recover_unattempted_curvature(luminance: &Luminance, inverse: Option<&Luminan
     None
 }
 
+/// One final strict read of the retained conflicting-format map.
+fn recover_header_conflict(luminance: &Luminance, inverse: Option<&Luminance>, budget: &Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    let retained = budget.conflict.as_ref()?;
+    let image = if retained.inverse_luminance { inverse? } else { luminance };
+    let candidate = &retained.candidate;
+    if let Some(w) = work.as_deref_mut() { w.second += 1; }
+    let levels = thresholds(image);
+    let mut modules = Vec::new();
+    let payload = second_look_collect(image, &levels, candidate, work.as_deref_mut(), true, true, Some(&mut modules));
+    let inverted = retained.inverse_luminance || candidate.inverted;
+    let location = place(&candidate.location, 1);
+    if let Some(payload) = payload {
+        return Some(Reading { payload, mirrored: candidate.mirrored, inverted, location });
+    }
+    if !modules.is_empty() {
+        let grid = MeshGrid { modules, size: candidate.location.size, ecc: candidate.ecc,
+            mask: candidate.mask, mirrored: candidate.mirrored, inverted, location };
+        return recover_mesh_grids(std::slice::from_ref(&grid));
+    }
+    None
+}
+
 /// Samples the module grid through the map and reads it, straight then
 /// mirrored. A map that reads neither way, whose format copies agree, is kept
 /// as a candidate for the second look.
 fn read(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>) -> Option<Reading> {
-    read_with_curvature(image, location, inverted, candidates, strict, f, modules, None)
+    read_with_curvature(image, location, inverted, candidates, strict, f, modules, None, None, false)
 }
 
-fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>, curvature: Option<&mut Vec<Candidate>>) -> Option<Reading> {
+fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, candidates: &mut Vec<Candidate>, strict: bool, f: usize, modules: &mut Vec<u8>, curvature: Option<&mut Vec<Candidate>>, conflict: Option<&mut Option<ConflictCandidate>>, inverse_luminance: bool) -> Option<Reading> {
     let size = location.size;
     modules.clear();
     modules.resize(size * size, 2); // Unsampled; light and dark are 0 and 1.
@@ -672,7 +703,7 @@ fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, ca
             value == 1
         };
         if strict && agreement_read(&sample, size).is_none() {
-            if let Some(curvature) = curvature { keep_curvature(curvature, location, inverted, &sample); }
+            if let Some(curvature) = curvature { keep_curvature(curvature, location, inverted, &sample, conflict, inverse_luminance); }
             return None;
         }
         let straight_read = |x, y| sample(x, y);
@@ -695,7 +726,7 @@ fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, ca
             let (sx, sy) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + (i - 8)) };
             sample(sx, sy); sample(sy, sx);
         }
-        if let Some(curvature) = curvature { keep_curvature(curvature, location, inverted, &sample); }
+        if let Some(curvature) = curvature { keep_curvature(curvature, location, inverted, &sample, conflict, inverse_luminance); }
     }
     if let Some(agreed) = agreement(modules, size) {
         if sized(modules, size, agreed.mirrored) {
@@ -706,10 +737,24 @@ fn read_with_curvature(image: &BitImage, location: &Location, inverted: bool, ca
 }
 
 /// Retain header-qualified maps within a single luminance basis.
-fn keep_curvature<R: Fn(usize, usize) -> bool>(candidates: &mut Vec<Candidate>, location: &Location, inverted: bool, sample: &R) {
+fn keep_curvature<R: Fn(usize, usize) -> bool>(candidates: &mut Vec<Candidate>, location: &Location, inverted: bool, sample: &R, mut conflict: Option<&mut Option<ConflictCandidate>>, inverse_luminance: bool) {
     for mirrored in [false, true] {
         let oriented = |x, y| if mirrored { sample(y, x) } else { sample(x, y) };
-        let Some((ecc, mask, distance)) = curvature_header(&oriented, location.size) else { continue; };
+        let allow = conflict.as_ref().is_some_and(|slot| slot.as_ref().map_or(true, |c| c.candidate.distance == 2));
+        let header = if allow {
+            curvature_header_with_conflict(&oriented, location.size, true)
+        } else {
+            curvature_header(&oriented, location.size).map(|(ecc, mask, distance)| (ecc, mask, distance, false))
+        };
+        let Some((ecc, mask, distance, is_conflict)) = header else { continue; };
+        if is_conflict {
+            if let Some(slot) = conflict.as_deref_mut() {
+                if slot.is_none() || distance <= 1 {
+                    *slot = Some(ConflictCandidate { candidate: Candidate { location: location.clone(), inverted, mirrored, ecc, mask, distance }, inverse_luminance });
+                }
+            }
+            continue;
+        }
         let duplicate = candidates.iter().any(|c| c.inverted == inverted && c.mirrored == mirrored
             && c.ecc == ecc && c.mask == mask && c.location.size == location.size
             && c.location.matrix == location.matrix);
@@ -746,7 +791,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut budget = Budget { conflict: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -914,7 +959,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
+        Budget { conflict: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {

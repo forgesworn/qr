@@ -1169,6 +1169,40 @@ other metadata, retains priority. This terminal retry explicitly raises the
 maximum number of second looks from four to five; the original four attempts
 and their scheduling remain unchanged.
 
+### 16. Retry one map with conflicting format headers
+
+During the existing full-size curvature collection points, inspect both
+orientations as before. A separate candidate may be retained when the sampled
+size has an exact matching version word, every independently readable version
+peer agrees, and both format copies decode but disagree. The stronger format
+copy must be within zero, one or two bit errors of its word, and the weaker
+copy exactly three errors from a different word. Ties and all other conflicts
+are ineligible. Use the stronger copy's error-correction level and mask only
+as a refinement hypothesis; this does not admit a decoded result.
+
+Keep one slot across the original and inverse-luminance collection order.
+Retain the first two-versus-three candidate until the first zero/one-versus-three
+candidate replaces it. Once a zero/one candidate is retained, never replace it.
+Only projective maps qualify. Store its luminance basis and candidate metadata;
+do not retain a sampling closure or add it to an earlier refinement queue.
+Normal, non-conflicting curvature collection continues unchanged. Reduced
+images, version retries and overflow recovery do not collect this slot.
+
+Only after every earlier return path, including step 15, fails, attempt this
+single retained candidate in its own luminance basis. Use the strict second
+look and deferred alignment pass, then the strict direct mesh read from step 14
+if needed. Both final format copies must agree with the selected level and mask
+within two errors; ordinary version, Reed-Solomon and segment validation remain
+mandatory. Resolve location and public polarity as for earlier full-size reads.
+No second candidate is attempted when this one fails.
+
+The conflicting header evidence excludes the same map, orientation, level and
+mask from the earlier two-copy admission and non-conflicting curvature queues.
+Its new retry therefore does not repeat an earlier identical full-size attempt.
+Earlier successful results and all their metadata retain priority. This raises
+the total maximum from five to six second looks, with the original four and
+step 15 retaining their existing scheduling.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1229,10 +1263,19 @@ among them.
   added. Its optional direct mesh capture adds at most 31,329 grey probes,
   each interpolating four pixels, and one strict grid read. These grey probes
   are not included in `Work.probed`.
-- The extra mesh is separate from step 14's four grids: at most 156,645 retained
-  module bytes in total, plus bounded metadata for five grids and four attempted
-  candidate records. The extra attempt runs only after all earlier results
-  fail, so successful earlier paths do not pay for its sampling or validation.
+- Step 16 adds one further terminal attempt, raising the maximum to six and
+  the conservative alignment-search bound to 8,625,000 probes. It adds no finder
+  or map search. Its mesh/timing/edge refinement uses the same per-attempt
+  limits; optional direct capture adds at most 31,329 grey probes and one strict
+  grid read. The six optional captures together add at most 187,974 grey probes,
+  separate from `Work.probed`.
+- The step 15 and step 16 temporary grids have sequential lifetimes, separate
+  from step 14's four retained grids. At most 156,645 bytes of optional mesh
+  grids remain logically retained together, plus bounded metadata for five
+  grids, four attempted-candidate records and one conflict candidate. This
+  excludes active refinement buffers and allocator or garbage-collector capacity. Earlier successful paths avoid both
+  terminal attempts, but may pay the bounded header-classification and candidate
+  retention cost during ordinary curvature collection.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

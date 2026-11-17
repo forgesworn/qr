@@ -254,7 +254,7 @@ function emptyLarge(random: () => number): Frame[] {
 }
 
 /** The mesh's points probed a frame, at most, as in test/work.test.ts. */
-const MESH_PROBES = 5 * 92 * 25 * 25 * 25
+const MESH_PROBES = 6 * 92 * 25 * 25 * 25
 
 /** Whether a triple the search locates estimates the size past 177, by no more than 8. */
 function over(frame: Frame): boolean {
@@ -352,7 +352,7 @@ describe('no false reads', () => {
         if (got === undefined) t.nothing++
         else t.own++
         if (work.second > 0) t.secondLook++
-        expect(work.second).toBeLessThanOrEqual(5)
+        expect(work.second).toBeLessThanOrEqual(6)
       }
     }
     // Damage past the parity reads as nothing, and the second look ran on nearly every one.
@@ -371,7 +371,7 @@ describe('no false reads', () => {
       const got = decodeCounted(frame, {}, work)
       if (got !== undefined) expect(got.text).toBe(text)
       expect(got).toBeUndefined()
-      expect(work.second).toBeLessThanOrEqual(5)
+      expect(work.second).toBeLessThanOrEqual(6)
       expect(work.probed).toBeLessThanOrEqual(MESH_PROBES)
       if (work.meshes > 0) meshed++
     }
@@ -393,7 +393,7 @@ describe('no false reads', () => {
       if (got !== undefined) expect(got.text).toBe(text)
       expect(got).toBeUndefined()
       expect(work.maps).toBeLessThanOrEqual(4 * 6 * 5 * 6)
-      expect(work.second).toBeLessThanOrEqual(5)
+      expect(work.second).toBeLessThanOrEqual(6)
       expect(work.probed).toBeLessThanOrEqual(MESH_PROBES)
       if (over(frame)) past++
       if (work.meshes > 0) meshed++
