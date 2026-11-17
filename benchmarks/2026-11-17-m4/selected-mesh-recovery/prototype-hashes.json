@@ -1,0 +1,7 @@
+{
+  "prototype.py": "df1450b6e39d5dba5d82cef87adab980411f19c8efcf1f14c157605155fedd1e",
+  "build-candidate.cjs": "f16c2e1a7bf96bda0f8b6e984d00fbee67795cc2c40985c2a29a88fdd81e4ee5",
+  "verify-build-identity.mjs": "806de766aee2fa40bad7364625916d817fce05e66e466b9e545d4a0a944e5ce6",
+  "PROTOTYPE.md": "41a3ef6149524abece9f46990693a2db8d7179367aaada47a3a5fba3fddbad5e",
+  "expected-sources.json": "47ce5d1270ca40ee5f74949cf437a0f234bb0693e5c840950cc9c01fb6f1c754"
+}

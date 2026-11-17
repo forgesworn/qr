@@ -597,7 +597,7 @@ struct AlternateGrid {
     candidate: Candidate,
     inverse_luminance: bool,
     final_grid: Rc<Vec<u8>>,
-    mesh: Option<Vec<u8>>,
+    mesh: Option<Rc<Vec<u8>>>,
     late_attempted: bool,
 }
 
@@ -634,18 +634,21 @@ fn alternate_second_look(luminance: &Luminance, levels: &crate::binarise::Thresh
         let rediscovered = if budget.rediscovered.is_none() {
             rediscovered_header(candidate, &modules)
         } else { None };
+        // Only slots selected on this call may retain the mesh delivered to
+        // the caller's existing collector; no later call can backfill it.
+        let mesh = if selected.is_some() || rediscovered.is_some() {
+            collect_mesh.as_deref().and_then(|grid| if grid.is_empty() { None } else { Some(Rc::new(grid.clone())) })
+        } else { None };
         match (selected, rediscovered) {
             (Some(alternative), Some(header)) => {
                 let modules = Rc::new(modules);
-                let mesh = collect_mesh.and_then(|grid| if grid.is_empty() { None } else { Some(grid.clone()) });
-                budget.alternate = Some(AlternateGrid { candidate: alternative.clone(), inverse_luminance, final_grid: Rc::clone(&modules), mesh, late_attempted: false });
-                budget.rediscovered = Some(RediscoveredGrid { candidate: header, inverse_luminance, modules });
+                budget.alternate = Some(AlternateGrid { candidate: alternative.clone(), inverse_luminance, final_grid: Rc::clone(&modules), mesh: mesh.clone(), late_attempted: false });
+                budget.rediscovered = Some(RediscoveredGrid { candidate: header, inverse_luminance, modules, mesh });
             }
             (Some(alternative), None) => {
-                let mesh = collect_mesh.and_then(|grid| if grid.is_empty() { None } else { Some(grid.clone()) });
                 budget.alternate = Some(AlternateGrid { candidate: alternative.clone(), inverse_luminance, final_grid: Rc::new(modules), mesh, late_attempted: false });
             }
-            (None, Some(header)) => budget.rediscovered = Some(RediscoveredGrid { candidate: header, inverse_luminance, modules: Rc::new(modules) }),
+            (None, Some(header)) => budget.rediscovered = Some(RediscoveredGrid { candidate: header, inverse_luminance, modules: Rc::new(modules), mesh }),
             (None, None) => {}
         }
     }
@@ -657,6 +660,7 @@ struct RediscoveredGrid {
     candidate: Candidate,
     inverse_luminance: bool,
     modules: Rc<Vec<u8>>,
+    mesh: Option<Rc<Vec<u8>>>,
 }
 
 fn rediscovered_header(original: &Candidate, modules: &[u8]) -> Option<Candidate> {
@@ -680,12 +684,17 @@ fn recover_rediscovered_grid(budget: &Budget) -> Option<Reading> {
     let slot = budget.rediscovered.as_ref()?;
     let candidate = &slot.candidate;
     let size = candidate.location.size;
-    let read = |x: usize, y: usize| slot.modules[if candidate.mirrored { x * size + y } else { y * size + x }] == 1;
-    if !format_agrees(&read, size, candidate.ecc, candidate.mask) { return None; }
-    let payload = read_symbol(read, size)?;
-    if payload.ecc != candidate.ecc || payload.mask != candidate.mask { return None; }
-    Some(Reading { payload, mirrored: candidate.mirrored,
-        inverted: slot.inverse_luminance || candidate.inverted, location: place(&candidate.location, 1) })
+    for modules in [Some(slot.modules.as_slice()), slot.mesh.as_ref().map(|mesh| mesh.as_slice())].into_iter().flatten() {
+        let read = |x: usize, y: usize| modules[if candidate.mirrored { x * size + y } else { y * size + x }] == 1;
+        if !format_agrees(&read, size, candidate.ecc, candidate.mask) { continue; }
+        if let Some(payload) = read_symbol(read, size) {
+            if payload.ecc == candidate.ecc && payload.mask == candidate.mask {
+                return Some(Reading { payload, mirrored: candidate.mirrored,
+                    inverted: slot.inverse_luminance || candidate.inverted, location: place(&candidate.location, 1) });
+            }
+        }
+    }
+    None
 }
 
 fn recover_alternate_grid(budget: &Budget) -> Option<Reading> {
@@ -693,7 +702,7 @@ fn recover_alternate_grid(budget: &Budget) -> Option<Reading> {
     if slot.late_attempted { return None; }
     let candidate = &slot.candidate;
     let size = candidate.location.size;
-    for modules in [Some(slot.final_grid.as_slice()), slot.mesh.as_deref()].into_iter().flatten() {
+    for modules in [Some(slot.final_grid.as_slice()), slot.mesh.as_ref().map(|mesh| mesh.as_slice())].into_iter().flatten() {
         let read = |x: usize, y: usize| modules[if candidate.mirrored { x * size + y } else { y * size + x }] == 1;
         if !format_agrees(&read, size, candidate.ecc, candidate.mask) { continue; }
         if let Some(payload) = read_symbol(read, size) {

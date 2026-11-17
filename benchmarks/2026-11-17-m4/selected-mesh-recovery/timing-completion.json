@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "session": 23018,
+  "exitCode": 0,
+  "observedAt": "2026-11-17T08:08:45.202036+00:00",
+  "rawHashes": {
+    "ts-1.json": "04aeb2ccd29acc7073d81c6b77ae638430ad1ced9750b8530cc498e5a36c2905",
+    "ts-2.json": "4d8f68676f28b0244b7a5725b2ce3a43b2c81f63341b61d85c308e67afc170a1",
+    "wasm-1.json": "3fbd8123d1026e8895d39d80ef0d0e52599e71c081178cd969944d4def7f0f77",
+    "wasm-2.json": "095e2d9b52afa7209507e7cfb3e64a4ce8002a46c71d9ba738b62b0ceedb795f",
+    "direct-1.json": "7b9bfb39938a35c952c86405d1a56a33b7b16c09aca6852f47cf9fc562cf6244",
+    "direct-2.json": "d7bbe28998e9b2c07af1529dd03e50c78bf42a6337d876675699b9c02da9d757"
+  }
+}

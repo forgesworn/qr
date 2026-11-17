@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.12
+# @forgesworn/qr 0.3.13
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -53,8 +53,12 @@ reads and must not introduce incorrect payloads.
 The recorded WASM comparison reads **180/184 photographs versus ZXing-WASM's
 171/184**, and **172/224 positive stress frames versus 150/224**. Those finite
 sets do not prove superiority on every image. ZXing is faster on random noise
-and reads one stress frame we miss. See [choosing a library](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md)
-for use cases, trade-offs and [reproducible evidence](https://github.com/forgesworn/qr/blob/main/PERFORMANCE.md).
+and reads one stress frame we miss. Version 0.3.13 also reads **653/1,120
+curved synthetic images versus 569/1,120**, preserving earlier successful
+results and recovering five more images than 0.3.12. One of those gains is in
+a separate 128-image set frozen before evaluation. See
+[choosing a library](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md) for use cases, trade-offs and
+[reproducible evidence](https://github.com/forgesworn/qr/blob/main/benchmarks/2026-11-17-m4/selected-mesh-recovery/README.md).
 
 ## Contents
 
@@ -83,11 +87,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.12'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.12/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.13'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.13/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.12` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.13` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -686,6 +690,12 @@ For each frame, in order, stopping at the first read:
    inverted-luminance pass retain their own thresholds and run after the
    original-image candidates. All these retries share the existing map and
    second-look budgets.
+9. **Retained grids.** After those paths fail, bounded strict reads can recover
+   already sampled grids. If the selected refined grid supplies a different
+   agreed header but cannot be read, the decoder can try that same hypothesis
+   on the direct alignment mesh captured by the same refinement call. This
+   adds no image sampling or alignment search and cannot displace an earlier
+   successful result.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
@@ -728,7 +738,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.12") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.13") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -758,7 +768,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.12`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.13`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -903,37 +913,43 @@ payload; the synthetic suites also check its bytes.
 | False reads on its 32 negative controls | 0 | 0 |
 | Evaluated curved distortion set | **48/96** | 42/96 |
 | Earlier curved distortion set | **109/128** | 106/128 |
-| Previous curved holdout | **67/128** | 52/128 |
+| Previous curved holdout | **68/128** | 52/128 |
 | Earlier separate curved holdout | **74/128** | 67/128 |
-| Previous curved set frozen before evaluation | **81/128** | 70/128 |
-| Previous curved set frozen before version-peer evaluation | **69/128** | 53/128 |
+| Previous curved set frozen before evaluation | **82/128** | 70/128 |
+| Previous curved set frozen before version-peer evaluation | **70/128** | 53/128 |
 | Curved set frozen before alternate-grid evaluation | **64/128** | 57/128 |
-| Latest curved set frozen before evaluation | **59/128** | 53/128 |
+| Curved set frozen before header-rediscovery evaluation | **60/128** | 53/128 |
+| Latest curved set frozen before selected-mesh evaluation | **78/128** | 69/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.12
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.13
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-Version 0.3.12 rechecks an existing refinement grid when its two format headers
-agree on a different orientation or format hypothesis. This recovers eleven
-more curved images, including one in the new 128-image set frozen before
-evaluation. Across all eight evaluated curved sets, QR reads 571/992 (57.6%)
-against ZXing's 500/992 (50.4%). Earlier successful results and metadata remain identical
-in these checks, with no wrong QR payloads observed. These are measured dataset
+Version 0.3.13 reuses the direct alignment mesh captured by the same refinement
+call that supplied the selected header. It tries that mesh only after the
+refined-grid read and every earlier path fail, using the same strict header,
+version and payload checks. This recovers five more curved images, including
+one in the separate 128-image set frozen before evaluation. Across all nine
+evaluated curved sets, QR reads 653/1,120 (58.3%) against ZXing's 569/1,120
+(50.8%). Both read 555; QR alone reads 98, ZXing alone reads 14, and neither
+reads 453. Earlier successful results, metadata and work counts remain identical
+in these checks, with no wrong QR payloads observed. The 888-case regression
+suite and its 64 negative controls are unchanged. These are measured dataset
 results, not a universal accuracy claim.
-See [full methodology, identities and per-case evidence](https://github.com/forgesworn/qr/blob/main/PERFORMANCE.md).
+See [the release evidence](https://github.com/forgesworn/qr/blob/main/benchmarks/2026-11-17-m4/selected-mesh-recovery/README.md)
+and [full methodology and history](https://github.com/forgesworn/qr/blob/main/PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-| Fixed frame | QR 0.3.12 WASM median | ZXing-WASM 3.1.7 median |
+| Fixed frame | QR 0.3.13 WASM median | ZXing-WASM 3.1.7 median |
 |---|---:|---:|
-| Clean QR | 1.521–1.526 ms | 1.889–1.896 ms |
-| Blank | 1.167–1.180 ms | 2.118–2.137 ms |
-| Random noise, no QR | 20.265–20.303 ms | 7.703–7.729 ms |
+| Clean QR | 1.519–1.545 ms | 1.882–1.892 ms |
+| Blank | 1.172–1.181 ms | 2.109–2.120 ms |
+| Random noise, no QR | 20.273–20.419 ms | 7.689–7.749 ms |
 
 These are packaged API timings, including each library's wrapper, on three fixed
 1280×720 RGBA frames. Both readers receive identical pixels; their complete
@@ -943,14 +959,22 @@ ten warm-up pairs and 500 ms. They do not establish mobile latency, battery use
 or general throughput. Pure TypeScript has different costs.
 Measurements were made on a working desktop with other applications open. No task-owned QR build, test or benchmark ran concurrently; alternating baseline and candidate calls share the same host conditions.
 
-Version 0.3.12 adds no image sampling or secondary attempt. Compared with
-0.3.11, it can retain one additional existing grid, check at most sixteen
-orientations and perform one additional strict symbol validation.
-The caps remain eight second looks, 11,500,000 alignment probes and 720 maps.
-The conservative retained-grid bound is 250,632 module bytes; active buffers,
-metadata and allocator capacity are additional. Unchanged search counters do
-not imply unchanged CPU time because they do not count symbol validation.
-Across two paired M4 runs, the five measured new reads change WASM median latency by -0.34–0.32% relative to their earlier misses. The three cases with a selected header that still fails to decode change by -0.58–0.01%; earlier successful curved cases change by -0.88–1.46%. These measurements do not establish a general speed improvement or a worst-case bound.
+Version 0.3.13 adds no image sampling or secondary attempt. Compared with
+0.3.12, it can retain one more existing mesh grid and perform one additional
+strict symbol validation. The caps remain eight second looks, 11,500,000
+alignment probes and 720 maps. The conservative retained-grid bound is
+281,961 module bytes; active buffers, metadata and allocator capacity are
+additional. The packaged WASM is 252,923 bytes, up 404 bytes from 0.3.12.
+Unchanged search counters do not imply unchanged CPU time because they do not
+count symbol validation.
+
+Across two paired M4 runs, the five new reads change WASM median latency by 0.19–0.89% relative to the earlier misses. The two selected-mesh cases that still fail to decode change by -0.24–0.40%; earlier successful curved cases change by -0.45–0.84%. These measurements do not establish a general speed improvement or a worst-case bound.
+
+The paired pure-TypeScript clean-frame median rises from 3.785–3.824 ms to
+3.968–4.017 ms (3.77–6.15% per fork); blank-frame medians rise from
+2.937–2.953 ms to 3.077–3.080 ms (4.32–4.78%). These measured regressions
+are part of the accuracy trade-off. Their cause is not established by these
+timings; no general TypeScript speed improvement is claimed.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful
@@ -990,7 +1014,7 @@ the TypeScript and optional WASM backends on your actual devices.
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. The 0.3.12 release
+published on Maven Central as `io.github.forgesworn:qr`. The 0.3.13 release
 aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
 fix for the 0.3.0 library; its version number is not reused.
 
@@ -1013,9 +1037,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.12
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.12
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.12
+npm install --save-exact @forgesworn/qr@0.3.13
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.13
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.13
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -1025,12 +1049,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.12
+deno add jsr:@forgesworn/qr@0.3.13
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.12'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.12/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.13'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.13/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1045,7 +1069,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.12") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.13") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -1054,7 +1078,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.12
+cargo add forgesworn-qr@0.3.13
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and
@@ -1618,7 +1642,8 @@ pipeline:
 19. Alternate grid reading: after earlier paths fail, validate one retained
     orientation and format hypothesis using an already sampled refinement grid.
 20. Refined header rediscovery: after earlier paths fail, validate the first
-    different strict format hypothesis discovered on a failed refinement grid.
+    different strict format hypothesis discovered on a failed refinement grid,
+    then its existing same-call mesh if that final-grid read fails.
 
 ### Reusable camera decoder
 
@@ -2592,18 +2617,28 @@ the refinement's original hypothesis. Retain that grid, location, polarity and
 luminance basis. Do not replace, invalidate or backfill the slot, even if a
 later refinement uses the same hypothesis or the eventual symbol read fails.
 
-After every earlier path, including step 19, fails, validate the retained grid
-once. Require strict format agreement and ordinary version, Reed–Solomon and
-segment validation, with the selected error-correction level and mask. Return
-the full-size location and public inverted polarity as for earlier reads.
-The existing version validation applies unchanged; this step adds no new
-version-header acceptance rule.
+If that same refinement invocation already has a mesh collector and delivers
+its existing direct mesh after selecting the slot, retain that mesh too. Forward
+the original collector in its original order. Never introduce a collector or
+sample a mesh for this purpose. A slot present before an invocation starts must
+not receive that invocation's mesh; absent delivery does not permit backfilling
+from another call. The retained mesh uses the selected final grid's hypothesis,
+location, polarity and luminance basis, without rediscovering a header on it.
+
+After every earlier path, including step 19, fails, validate the retained final
+grid once. Only if that read fails, validate its retained same-call mesh once,
+if available. Each read requires strict format agreement and ordinary version,
+Reed–Solomon and segment validation with the selected error-correction level
+and mask. Return the full-size location and public inverted polarity as for
+earlier reads. The existing version validation applies unchanged; this step
+adds no new version-header acceptance rule.
 
 This adds at most sixteen orientation-specific header checks across the eight
-existing late attempts and one strict symbol validation outside the `Work`
+existing late attempts and two strict symbol validations outside the `Work`
 counters. It introduces no image sampling, mesh capture, alignment search,
-map or second look. Earlier successes retain priority, although they may have
-paid the bounded header checks and grid retention before succeeding.
+map or second look. Earlier successes, including the retained final-grid read,
+retain priority. They may have paid the bounded header checks and retention
+before succeeding.
 
 ### Bounded work
 
@@ -2693,12 +2728,13 @@ among them.
   garbage-collector capacity. Earlier successful paths avoid later terminal
   attempts, but may pay bounded header-classification, candidate retention and
   attempt-recording costs before they succeed.
-- Step 20 retains at most one additional grid of 31,329 module bytes, bringing
-  the conservative combined retained-grid bound to 250,632 module bytes plus
-  metadata. Ports may share ownership with step 19 when both retain the same
-  grid. The extra grid record and candidate do not change the eight-attempt,
-  720-map or 11,500,000-alignment-probe limits. This bound excludes active
-  refinement buffers and allocator or garbage-collector capacity.
+- Step 20 retains at most one additional final/mesh pair of 62,658 module bytes,
+  bringing the conservative combined retained-grid bound to 281,961 module
+  bytes plus metadata. Ports may share ownership with earlier retained grids
+  when they refer to the same arrays. The one candidate record and its two grid
+  references do not change the eight-attempt, 720-map or
+  11,500,000-alignment-probe limits. This bound excludes active refinement
+  buffers and allocator or garbage-collector capacity.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "session": 76722,
+  "exitCode": 0,
+  "curveCases": 1120,
+  "curveCorrect": {
+    "base": 648,
+    "candidate": 653,
+    "zxing": 569
+  },
+  "regressionCases": 888,
+  "negativeControls": 64,
+  "photoViews": 2944,
+  "photoCorrect": 2872,
+  "sheets": 18,
+  "sheetCorrect": 10,
+  "files": {
+    "qualification.json": "d24355d80deb6627e9d00ea1859304f4408f4d19589c10738e582b0171a815ed",
+    "regression.json": "218bfcb2588aa6eb61bf25487e1c61543d0497ae7ddf181a6ad4f513116c4266",
+    "photos.json": "3191f02f220212ad9e7fd6c1f862b1625c646d44b2291980d5834ac60842c378",
+    "sheet.json": "39dab156743d6ec5b7cd4bc05c68ef9d6b530cdc49a28eab22d88f98567198e5"
+  }
+}

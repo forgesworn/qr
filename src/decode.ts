@@ -99,7 +99,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (versionPeer) return versionPeer
   const alternate = recoverAlternateGrid(budget)
   if (alternate) return alternate
-  return recoverRediscoveredGrid(budget)
+  const rediscovered = recoverRediscoveredGrid(budget)
+  if (rediscovered) return rediscovered
+  return recoverRediscoveredGrid(budget, true)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -719,6 +721,13 @@ function sameAlternateHypothesis(a: Candidate, b: Candidate): boolean {
 function alternateSecondLook(budget: Budget, inverseLuminance: boolean,
   ...args: Parameters<typeof secondLook>): Payload | undefined {
   const candidate = args[2], pending = budget.alternateGrid
+  // Only a slot selected during this synchronous call may receive its mesh.
+  // Wrap an existing collector; never introduce sampling or backfill an old slot.
+  const collectSelectedMesh = args[6]
+  if (collectSelectedMesh && !budget.rediscoveredGrid) args[6] = modules => {
+    collectSelectedMesh(modules)
+    if (budget.rediscoveredGrid) budget.rediscoveredGrid.mesh = modules
+  }
   // Every full-size late call goes through here, including the eighth call
   // which is deliberately absent from the earlier seven-attempt ledger.
   if (pending && pending.inverseLuminance === inverseLuminance &&
@@ -775,6 +784,7 @@ interface RediscoveredGrid {
   candidate: Candidate
   inverseLuminance: boolean
   modules: Uint8Array
+  mesh?: Uint8Array
 }
 
 /** Retain the first strict format rediscovery from an existing failed late grid. */
@@ -791,11 +801,13 @@ function keepRediscoveredGrid(budget: Budget, inverseLuminance: boolean, origina
   }
 }
 
-/** No earlier success is displaced; a failed strict read never selects another grid. */
-function recoverRediscoveredGrid(budget: Budget): DecodeResult | undefined {
+/** Final grid first, then only its same-call mesh; neither read selects another hypothesis. */
+function recoverRediscoveredGrid(budget: Budget, mesh = false): DecodeResult | undefined {
   const retained = budget.rediscoveredGrid
   if (!retained) return undefined
-  const { candidate, inverseLuminance, modules } = retained, size = candidate.location.size
+  const { candidate, inverseLuminance } = retained, modules = mesh ? retained.mesh : retained.modules
+  if (!modules) return undefined
+  const size = candidate.location.size
   const read: ModuleReader = candidate.mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1
   if (!formatAgrees(read, size, candidate.ecc, candidate.mask)) return undefined
   const payload = readSymbol(read, size)

@@ -1,0 +1,177 @@
+{
+  "releaseCandidate": "0.3.13",
+  "baseline": "0.3.12",
+  "sourceHashes": {
+    "src/decode.ts": "9b15e14198416f752868efb49c8278a74a28698ffbcdc0ba1385716362dc085b",
+    "src/refine.ts": "a69dd537c9d59e9e8ffd84db79cbf6f35ea7144c122c4db4c3dd259a2ba7a48e",
+    "rust/src/decode.rs": "a9ca5ab35787e5e1f14c2b4f8d196cd90a644fcba7256bab5880df678e405e2e",
+    "rust/src/refine.rs": "595aa3a32be2df45ba55b870d346a47926d17a9a409c890c2971866312d531e1",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt": "5883ad749320e68a6e6d9a18ec1f89f5ed90af8924e1731324728ea6bc8195b1",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Refine.kt": "f5bad2b7784b569023a023d3774e5145e275b0428ab54c01a47ab8ee33964823",
+    "test/selected-mesh-fixture.ts": "550df3972bf0e2be3aa9fa048c549ae47ca965f076a6beca7668f306e7c0ee28",
+    "test/selected-mesh.test.ts": "c47289009e666389edbb5b353c0c9e7515543af609e3244e3b8495912c4de7a8",
+    "test/conformance.test.ts": "08d85961b8dfaa189362fa4b27f93f5f99e7221f242f8fd2fcede67fbf42e305",
+    "vectors/conformance.json": "ea3b7b18a83825951b7ea143dbb7342e13b0adc794df7b0389dd6486925855bd",
+    "rust/bench/wasm-leak.mjs": "887b639cf8834ac559b3adba61d1a7673668b4be5ab89f51879ea1d8f55f81cc"
+  },
+  "typecheck": {
+    "passed": true,
+    "session": 58915
+  },
+  "focusedRed": {
+    "expectedFailure": "expected undefined to be defined",
+    "tests": 2,
+    "log": "red-test.log"
+  },
+  "focusedGreen": {
+    "passed": true,
+    "tests": 2,
+    "session": 58915
+  },
+  "officialConformance": {
+    "passed": true,
+    "tests": 6,
+    "frames": 84,
+    "unchangedPriorFrames": 82,
+    "session": 58915
+  },
+  "wasm": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "88cde179fd1cd5a07623685e5517d5e41c04ea9d846e2766d38cd24b22710b0b",
+    "sha256": "8b75949e2dbf5bf968718a8b776c9a8bb8ad8a5f894c6118686ec95efa8258ad",
+    "bytes": 252923
+  },
+  "typescriptSuite": {
+    "passed": true,
+    "requiredPhotos": true,
+    "files": 46,
+    "tests": 511,
+    "durationSeconds": 54.05
+  },
+  "rust": {
+    "passed": true,
+    "default": {
+      "tests": 49,
+      "doctests": 1
+    },
+    "allFeatures": {
+      "tests": 49,
+      "doctests": 1
+    }
+  },
+  "kotlin": {
+    "passed": true,
+    "requiredPhotos": true,
+    "tests": 123,
+    "suites": 25,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "standaloneWasm": {
+    "passed": true,
+    "frames": 84,
+    "read": 76,
+    "miss": 8,
+    "workCounters": 672,
+    "optionsComparisons": 1745,
+    "encoderVectors": 148,
+    "gridAndRendererParity": true,
+    "memory": {
+      "rounds": 1000,
+      "fixtures": 19,
+      "warmup": 304,
+      "steadyCapacityBytes": 5242880,
+      "unfreedControlBytes": [
+        1179648,
+        1507328
+      ],
+      "measures": "Linear-memory capacity, not peak live heap"
+    }
+  },
+  "integratedSession": 16143,
+  "productionParitySession": 86915,
+  "fullPackagedParity": {
+    "passed": true,
+    "curves": 1120,
+    "regressions": 888,
+    "photoViews": 2944,
+    "sheets": 18
+  },
+  "receiptHashes": {
+    "production-build-binding.json": "af3bdb3cc1d2e41d1b286f3e2a9304a6f2a85ff4d858cee9d07340e358fdb3cd",
+    "production-qualified.json": "e3fd095acf869037599b642807ca03a7657c99080e35cb18abb634a9fa79891b",
+    "production-backends.json": "7fbe58cb14c92b1aa75a74d7b4667f32938f6427e0511a4a132b69fb9eb746d0",
+    "production-photos.json": "f5e1abb502f8988606b33d192a873caebc937f58c2585c63fac290da173a01ca",
+    "production-sheet.json": "c42b58bd8c72e772081be96e7da3974c3c0273723df734b80f0815dde971caf0",
+    "own-fixtures.json": "d3f9e5cfdaad8b44fbe3a968cdd7f9a013d2765090277ad01f0139d234a40343",
+    "conformance-comparison.json": "2f00f0d132d36b896da7392cdb70c22c4e3812bef25c9b1311b2e86060dfe7a1"
+  },
+  "pending": [],
+  "browser": {
+    "passed": true,
+    "worker": true,
+    "charsetCases": 6,
+    "sessionReset": true,
+    "wasmSha256": "8b75949e2dbf5bf968718a8b776c9a8bb8ad8a5f894c6118686ec95efa8258ad",
+    "receiptSha256": "227281ba6fbbf485a71d21abd7e81b33ab9d38116c050a3666caaadeed698e47"
+  },
+  "timing": {
+    "passed": true,
+    "casesPerFork": 51,
+    "pairsPerCase": 60,
+    "forksPerBackend": 2,
+    "directComparisonForks": 2,
+    "rawHashes": {
+      "ts-1.json": "04aeb2ccd29acc7073d81c6b77ae638430ad1ced9750b8530cc498e5a36c2905",
+      "ts-2.json": "4d8f68676f28b0244b7a5725b2ce3a43b2c81f63341b61d85c308e67afc170a1",
+      "wasm-1.json": "3fbd8123d1026e8895d39d80ef0d0e52599e71c081178cd969944d4def7f0f77",
+      "wasm-2.json": "095e2d9b52afa7209507e7cfb3e64a4ce8002a46c71d9ba738b62b0ceedb795f",
+      "direct-1.json": "7b9bfb39938a35c952c86405d1a56a33b7b16c09aca6852f47cf9fc562cf6244",
+      "direct-2.json": "d7bbe28998e9b2c07af1529dd03e50c78bf42a6337d876675699b9c02da9d757"
+    },
+    "summarySha256": "a9752a2e3a6263ca76b5a4c1108663910b8468dbd2b1f2f0d382f3a8fea196e0"
+  },
+  "prepublication": {
+    "passed": true,
+    "m4Session": 34221,
+    "jsrSession": 35260,
+    "exitCode": 0,
+    "observedAt": "2026-11-17T08:12:35.432667+00:00",
+    "docs": {
+      "freshness": true,
+      "metadataPages": 8,
+      "landingPageWidths": [
+        1280,
+        390
+      ]
+    },
+    "npm": "isolated packed consumer",
+    "maven": "staged artefacts and isolated Gradle consumer",
+    "rust": "packaged crate library and doctest consumer; rustdoc warnings denied",
+    "jsr": "strict publisher dry run, source consumer and actual publisher archive capture on loopback",
+    "logHashes": {
+      "docs-build.log": "a1ec4782b6b91671f0d4715f60626ec1236459b13bd0f9110b9362616ab9d450",
+      "docs-browser.json": "30881429122d055f3da3ed86c5f8eef9784264fae500baa77ad5feb4d620e70e",
+      "package-check.log": "dba0352a9dcf111cea72f3941b8a4cb3f5bc18538a842d894a6b3eccae85de76",
+      "maven-check.log": "0a968ef904d5486f530474c7f138dd429d413a67ed75c7b98ad28530ffa9aec3",
+      "crate-package.log": "933de4901ab916da2eac5f90c362a7ab1302099d77183e4bbae8179b1219df51",
+      "crate-consumer.log": "f96760101ae77729539d2d50590afaa1e594ff84296d25fe06d61433d259b3a1",
+      "rustdoc.log": "4abb3a7741da4c2967f5cbd5534e14c15108f7c63c01e7eb4514f5885a0f3e12",
+      "jsr-check.log": "12a1775ad61e06d6ee7044c8451e468615f7730e7f7a876dc02381455c73d19d",
+      "jsr-upload.log": "17526816f9dfbe18f2af0bde39e75f74bcbf147477206c9187cdbe0078ba46bf"
+    },
+    "documentHashes": {
+      "README.md": "3f6ef5f64f1670ce4b7aeb9f46894b3ad3cc4a9c568a18f71f8226cd9e11bc20",
+      "CHANGELOG.md": "38fbb0d6de0cfd63830cd6667d196dadbfbe4de1fa3c9304266297c54ee630f0",
+      "SPEC.md": "76459d48053b45d48558f708eae33ef2032046a8e2f400e26c47ab135e66585a",
+      "PERFORMANCE.md": "494e0c56a849b20665715358450cc25e48d4f7673e590bfccbbc94d349578212",
+      "docs/CHOOSING.md": "b230cf340df1b79c451728ea126c0903aa225f4a4b475f9bdd7d47cf7723cce8",
+      "docs/DISTRIBUTION.md": "e8f06cf049180c4d1ce905469dfdc0bdde1442a56055582a04cb36606d87360f",
+      "llms.txt": "5f6634236a2dbd646d892fb6f312f9d968af126a3b39869bbb9010290ce50f5b",
+      "llms-full.txt": "ec2022efcd2648c02872ec8996088527aeaa29283c54b8d9f5b25199e6f394c6"
+    }
+  }
+}
