@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "host": {
+    "model": "Apple M4 Max",
+    "node": "v24.21.0",
+    "rust": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+  },
+  "candidate": {
+    "wasmBytes": 264929,
+    "wasmSha256": "1f581db1eba826a3d1268adea88bf96cce1cf2202bf1d8710c6e74a40b40bc45",
+    "typescriptGeneratedDecodeSha256": "b44f4bb762cde86ab7815f0c76ed47b7eb8ff3cd80469a5894a860f89caa2746"
+  },
+  "checks": {
+    "wasmReproducedByteForByte": true,
+    "photographsFetchedAndHashVerified": 184,
+    "typescriptTests": 524,
+    "typescriptPhotographs": "180/184; no baseline image lost",
+    "rustTests": 50,
+    "rustDoctests": 1,
+    "kotlinFullGradleSuite": true,
+    "conformanceFrames": 94,
+    "sharedEnlargementVectors": 2,
+    "typescriptWasmPublicResultParityCases": 1112,
+    "historicalTimingReceiptsWithFinalGeneratedIdentity": 4,
+    "finalVersusInitialCandidateCasesChecked": 1112,
+    "finalVersusInitialOnlyIntentionalMisses": [
+      "low-resolution-validation-102",
+      "low-resolution-validation-115"
+    ],
+    "freshPositiveBaseline": 98,
+    "freshPositiveCandidate": 112,
+    "freshPositiveTotal": 192,
+    "freshNegativeControlsRejected": "32/32",
+    "freshValidationReplayedAfterCapAsRegressionData": true
+  }
+}

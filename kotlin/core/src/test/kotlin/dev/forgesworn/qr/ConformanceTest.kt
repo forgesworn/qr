@@ -82,6 +82,17 @@ class ConformanceTest {
     }
 
     @Test
+    fun enlargesWithTheSameInterpolationAndHalfUpRounding() {
+        for (v in pack["enlargement"] as List<Map<String, Any?>>) {
+            val width = (v["width"] as Number).toInt()
+            val height = (v["height"] as Number).toInt()
+            val factor = (v["factor"] as Number).toInt()
+            val grey = Luminance(unhex(v["grey"] as String), width, height)
+            assertEquals("$width x $height by $factor", v["enlarged"], hex(enlarge(grey, factor).data))
+        }
+    }
+
+    @Test
     fun readsEveryModuleGridAsRecorded() {
         val symbols = pack["symbols"] as List<Map<String, Any?>>
         assertTrue(symbols.size >= 13)

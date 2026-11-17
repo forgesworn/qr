@@ -8,7 +8,7 @@
 import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { binarise, shrink, toLuminance } from '../src/binarise.js'
+import { binarise, enlarge, shrink, toLuminance } from '../src/binarise.js'
 import { decodeCounted, decodeModules } from '../src/decode.js'
 import { blocksFor, encode, FORMAT_COORDS, Grid, type ErrorCorrection } from '../src/encode.js'
 import { ALIGNMENT_CENTRES, EC_BLOCKS } from '../src/tables.js'
@@ -28,6 +28,7 @@ import { alternateGridPicture } from './alternate-grid-fixture.js'
 import { headerRediscoveryPicture } from './header-rediscovery-fixture.js'
 import { selectedMeshPicture } from './selected-mesh-fixture.js'
 import { quadraticMeshPicture } from './quadratic-mesh-fixture.js'
+import { lowResolutionPicture } from './low-resolution-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -51,6 +52,7 @@ interface Pack {
   note: string
   tables: { blocks: number[][][]; alignment: number[][] }
   luminance: { width: number; height: number; rgba: string; grey: string }[]
+  enlargement: { width: number; height: number; factor: number; grey: string; enlarged: string }[]
   symbols: { name: string; size: number; rows: string[]; result: Reading | null }[]
   frames: {
     file: string
@@ -220,6 +222,11 @@ function build(write: boolean): Pack {
     luminance.push({ width, height, rgba: hex(rgba), grey: hex(toLuminance(rgba, width, height, 4).data) })
   }
   luminance.push({ width: 3, height: 1, rgba: 'ffffff00' + '000000ff' + '00000000', grey: hex(toLuminance(unhex('ffffff00000000ff00000000'), 3, 1, 4).data) })
+  const enlargement: Pack['enlargement'] = []
+  for (const [width, height, factor, bytes] of [[2, 2, 4, [0, 4, 0, 4]], [2, 2, 2, [0, 100, 200, 255]]] as const) {
+    const grey = Uint8Array.from(bytes)
+    enlargement.push({ width, height, factor, grey: hex(grey), enlarged: hex(enlarge({ data: grey, width, height }, factor).data) })
+  }
 
   // Module grids.
   const symbols: Pack['symbols'] = []
@@ -323,6 +330,8 @@ function build(write: boolean): Pack {
   for (const [group, index] of [['starvation', 16], ['alternate', 16], ['alternate', 18], ['header', 16], ['header', 18]] as const) {
     own(`quadratic-mesh-${group}-${index}`, quadraticMeshPicture(group, index).image)
   }
+  // Repeated low-pitch finder sightings admit one terminal enlarged search.
+  for (const index of [10, 46, 51, 92, 94] as const) own(`low-resolution-${index}`, lowResolutionPicture(index).image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +
@@ -332,7 +341,7 @@ function build(write: boolean): Pack {
     blocks: EC_BLOCKS.map((levels) => levels.map((b) => [...b])),
     alignment: ALIGNMENT_CENTRES.map((centres) => [...centres]),
   }
-  return { note, tables, luminance, symbols, frames }
+  return { note, tables, luminance, enlargement, symbols, frames }
 }
 
 describe('conformance pack', () => {
@@ -375,6 +384,13 @@ describe('conformance pack', () => {
 
   it('converts RGBA to greyscale as recorded', () => {
     for (const v of pack.luminance) expect(hex(toLuminance(unhex(v.rgba), v.width, v.height, 4).data), `${v.width} x ${v.height}`).toBe(v.grey)
+  })
+
+  it('enlarges with the same interpolation and half-up rounding', () => {
+    for (const v of pack.enlargement) {
+      const enlarged = enlarge({ data: unhex(v.grey), width: v.width, height: v.height }, v.factor)
+      expect(hex(enlarged.data), `${v.width} x ${v.height} by ${v.factor}`).toBe(v.enlarged)
+    }
   })
 
   it('reads every module grid as recorded', () => {

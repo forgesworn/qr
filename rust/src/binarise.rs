@@ -207,6 +207,29 @@ pub fn shrink(image: &Luminance, f: usize) -> Luminance {
     Image { data: out, width, height }
 }
 
+/// Bilinear enlargement by an integer factor, with pixel centres at i + 0.5.
+pub fn enlarge(image: &Luminance, f: usize) -> Luminance {
+    let width = image.width * f;
+    let height = image.height * f;
+    let mut data = vec![0u8; width * height];
+    for y in 0..height {
+        let fy = (y as f64 + 0.5) / f as f64 - 0.5;
+        let y0 = (fy.floor() as isize).clamp(0, image.height as isize - 1) as usize;
+        let y1 = (y0 + 1).min(image.height - 1);
+        let ay = (fy - y0 as f64).clamp(0.0, 1.0);
+        for x in 0..width {
+            let fx = (x as f64 + 0.5) / f as f64 - 0.5;
+            let x0 = (fx.floor() as isize).clamp(0, image.width as isize - 1) as usize;
+            let x1 = (x0 + 1).min(image.width - 1);
+            let ax = (fx - x0 as f64).clamp(0.0, 1.0);
+            let top = image.data[y0 * image.width + x0] as f64 * (1.0 - ax) + image.data[y0 * image.width + x1] as f64 * ax;
+            let bottom = image.data[y1 * image.width + x0] as f64 * (1.0 - ax) + image.data[y1 * image.width + x1] as f64 * ax;
+            data[y * width + x] = (top * (1.0 - ay) + bottom * ay).round() as u8;
+        }
+    }
+    Image { data, width, height }
+}
+
 /// Sums of the 2x2 squares of a grid `width` by `height`.
 fn quads<T: Copy + Into<u16>>(data: &[T], width: usize, height: usize) -> Vec<u16> {
     let across = width / 2;

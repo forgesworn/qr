@@ -232,6 +232,29 @@ export function shrink(image: Luminance, f: number): Luminance {
   return { data: out, width, height }
 }
 
+/** Bilinear enlargement by an integer factor, with pixel centres at i + 0.5. */
+export function enlarge(image: Luminance, f: number): Luminance {
+  const width = image.width * f
+  const height = image.height * f
+  const data = new Uint8Array(width * height)
+  for (let y = 0; y < height; y++) {
+    const fy = (y + 0.5) / f - 0.5
+    const y0 = Math.max(0, Math.min(image.height - 1, Math.floor(fy)))
+    const y1 = Math.min(image.height - 1, y0 + 1)
+    const ay = Math.max(0, Math.min(1, fy - y0))
+    for (let x = 0; x < width; x++) {
+      const fx = (x + 0.5) / f - 0.5
+      const x0 = Math.max(0, Math.min(image.width - 1, Math.floor(fx)))
+      const x1 = Math.min(image.width - 1, x0 + 1)
+      const ax = Math.max(0, Math.min(1, fx - x0))
+      const top = image.data[y0 * image.width + x0]! * (1 - ax) + image.data[y0 * image.width + x1]! * ax
+      const bottom = image.data[y1 * image.width + x0]! * (1 - ax) + image.data[y1 * image.width + x1]! * ax
+      data[y * width + x] = Math.round(top * (1 - ay) + bottom * ay)
+    }
+  }
+  return { data, width, height }
+}
+
 /** Sums of the 2 x 2 squares of a grid `width` by `height`: floor(width / 2) by floor(height / 2) of them. */
 function quads(data: Uint8Array | Uint16Array, width: number, height: number): Uint16Array {
   const across = Math.floor(width / 2)

@@ -2,7 +2,7 @@
 //! goes: greyscale from RGBA, and for every frame the greyscale, binarised and
 //! reduced pictures by SHA-256 and the finder candidates exactly.
 
-use forgesworn_qr::binarise::{binarise, invert, shrink, thresholds, to_luminance, Image, Reductions};
+use forgesworn_qr::binarise::{binarise, enlarge, invert, shrink, thresholds, to_luminance, Image, Reductions};
 use forgesworn_qr::decode::{decode, Inversion};
 use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
 use forgesworn_qr::place::{estimate_size, finder_triples, locate};
@@ -65,6 +65,18 @@ fn luminance_from_rgba() {
         assert_eq!(hex(&grey.data), v["grey"].as_str().unwrap(), "luminance case {n} ({w} x {h})");
     }
     eprintln!("luminance: {} of {} cases passed", cases.len(), cases.len());
+}
+
+#[test]
+fn enlargement_matches_including_half_up_ties() {
+    let pack = pack();
+    for (n, v) in pack["enlargement"].as_array().unwrap().iter().enumerate() {
+        let width = v["width"].as_u64().unwrap() as usize;
+        let height = v["height"].as_u64().unwrap() as usize;
+        let factor = v["factor"].as_u64().unwrap() as usize;
+        let grey = Image { data: unhex(v["grey"].as_str().unwrap()), width, height };
+        assert_eq!(hex(&enlarge(&grey, factor).data), v["enlarged"].as_str().unwrap(), "enlargement case {n}");
+    }
 }
 
 /// Counts what the decoder's whole search counts when it finds no finder

@@ -106,6 +106,9 @@ internal fun decodeCounted(luminance: ByteArray, width: Int, height: Int, work: 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
 private const val MAX_MAPS = 4 * MAX_TRIPLES * 5 * 6
 
+/** Maps available to the terminal enlarged search. */
+private const val LOW_RESOLUTION_MAPS = 90
+
 /** The reduced-size pass's factors, coarse to fine. */
 private val REDUCTIONS = intArrayOf(8, 4, 2)
 
@@ -119,6 +122,7 @@ private class VersionHint(val triple: Array<Finder>, val size: Int, val inverted
 private class Overflow(val ranked: List<Array<Finder>>, val inverted: Boolean)
 /** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
 private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
+    var lowResolution = false
     val hints = ArrayList<VersionHint>(4)
     val overflow = ArrayList<Overflow>()
     val curvature = ArrayList<Retry>(SECOND_LOOKS + 1)
@@ -233,7 +237,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (rediscovered != null) return rediscovered
     val selectedMesh = recoverRediscoveredGrid(budget, true)
     if (selectedMesh != null) return selectedMesh
-    return recoverQuadraticMesh(luminance, inverse, budget)
+    val quadratic = recoverQuadraticMesh(luminance, inverse, budget)
+    if (quadratic != null) return quadratic
+    return recoverLowResolution(luminance, inverse, budget, inversion)
 }
 
 /**
@@ -304,6 +310,10 @@ private fun search(
         val ranked = finderTriples(image, findFinders(image, tolerance, work, edges))
         val triples = ranked.take(MAX_TRIPLES)
         for (triple in triples) {
+            if (f == 1 && image.width * image.height <= 512 * 512 &&
+                (triple[0].moduleSize + triple[1].moduleSize + triple[2].moduleSize) / 3 <= 2.5 &&
+                triple[0].count + triple[1].count + triple[2].count >= 9
+            ) budget.lowResolution = true
             val first = locate(image, triple, null, work, edges)
             // An estimate past version 40 by no more than the retries reach still
             // tries the sizes of 177 or less among them.
@@ -856,4 +866,27 @@ private fun recoverQuadraticMesh(luminance: Luminance, inverse: Luminance?, budg
     val decoded = readQuadraticMesh(image, retained.candidate, retained.mesh) ?: return null
     return result(decoded.payload, decoded.mirrored, retained.inverseLuminance || retained.candidate.inverted,
         where(retained.candidate.location, 1))
+}
+
+/** One separately bounded ordinary search after four-times-axis enlargement. */
+private fun recoverLowResolution(luminance: Luminance, inverse: Luminance?, budget: Budget, inversion: Inversion): DecodeResult? {
+    if (!budget.lowResolution || budget.quadraticMesh != null || luminance.width * luminance.height > 512 * 512) return null
+    val retry = Budget(LOW_RESOLUTION_MAPS, 1, LOW_RESOLUTION_MAPS)
+    retry.here = LOW_RESOLUTION_MAPS
+    val original = look(enlarge(luminance, 4), inversion, 1, retry, null)
+    if (original != null) return scaleLowResolution(original, false)
+    if (inverse != null) {
+        retry.here = LOW_RESOLUTION_MAPS
+        val inverted = look(enlarge(inverse, 4), Inversion.NORMAL, 1, retry, null)
+        if (inverted != null) return scaleLowResolution(inverted, true)
+    }
+    return null
+}
+
+private fun scaleLowResolution(found: DecodeResult, publicInverse: Boolean): DecodeResult {
+    fun down(p: Point): Point = Point(p.x / 4, p.y / 4)
+    val old = found.location
+    val location = if (old == null) null else QrLocation(down(old.topLeft), down(old.topRight), down(old.bottomLeft), old.alignment?.let { down(it) })
+    return DecodeResult(found.text, found.bytes, found.version, found.ecc, found.mask, found.eci, found.corrected,
+        found.mirrored, publicInverse || found.inverted, location, found.structuredAppend, found.fnc1)
 }

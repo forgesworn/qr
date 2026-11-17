@@ -1,0 +1,1666 @@
+{
+  "host": "Apple M4 Max",
+  "node": "v24.21.0",
+  "warmupMinimumPairs": 10,
+  "warmupMinimumMs": 500,
+  "measuredPairs": 60,
+  "previous": {
+    "ts": [
+      {
+        "fork": 1,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 3.851667000000816,
+            "candidateMedianMs": 3.808499999999185,
+            "medianChangePct": -1.1207355153397769,
+            "baselineP95Ms": 6.054583999999522,
+            "candidateP95Ms": 5.774375000000873,
+            "p95DeltaMs": -0.28020899999864923,
+            "candidateRead": true
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 2.8931250000023283,
+            "candidateMedianMs": 2.99566699999923,
+            "medianChangePct": 3.544333549252765,
+            "baselineP95Ms": 3.6029579999994894,
+            "candidateP95Ms": 3.1080830000028072,
+            "p95DeltaMs": -0.49487499999668216,
+            "candidateRead": false
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 51.171667000002344,
+            "candidateMedianMs": 51.55349999999817,
+            "medianChangePct": 0.7461804986650167,
+            "baselineP95Ms": 57.08783299999777,
+            "candidateP95Ms": 56.395541999998386,
+            "p95DeltaMs": -0.6922909999993863,
+            "candidateRead": false
+          },
+          {
+            "name": "boundary-unseen-0",
+            "role": "retained-prior-success",
+            "baselineMedianMs": 10.178166999998211,
+            "candidateMedianMs": 10.233791999999085,
+            "medianChangePct": 0.5465129428597892,
+            "baselineP95Ms": 10.527792000000773,
+            "candidateP95Ms": 10.669207999999344,
+            "p95DeltaMs": 0.14141599999857135,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-2",
+            "role": "gain",
+            "baselineMedianMs": 14.925583000000188,
+            "candidateMedianMs": 15.039749999999913,
+            "medianChangePct": 0.7649081446247319,
+            "baselineP95Ms": 15.365334000001894,
+            "candidateP95Ms": 15.466958999997587,
+            "p95DeltaMs": 0.10162499999569263,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-8",
+            "role": "gain",
+            "baselineMedianMs": 8.68920799999978,
+            "candidateMedianMs": 8.743666999998823,
+            "medianChangePct": 0.6267429666667379,
+            "baselineP95Ms": 9.005750000000262,
+            "candidateP95Ms": 8.94629200000054,
+            "p95DeltaMs": -0.05945799999972223,
+            "candidateRead": true
+          },
+          {
+            "name": "mesh-retain-unseen-9",
+            "role": "gain",
+            "baselineMedianMs": 4.301125000001775,
+            "candidateMedianMs": 4.321875000001455,
+            "medianChangePct": 0.482431921873272,
+            "baselineP95Ms": 4.618207999999868,
+            "candidateP95Ms": 4.6159999999981665,
+            "p95DeltaMs": -0.0022080000017012935,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-1",
+            "role": "terminal-miss",
+            "baselineMedianMs": 9.03904099999636,
+            "candidateMedianMs": 9.041417000000365,
+            "medianChangePct": 0.026285974408191137,
+            "baselineP95Ms": 9.6654170000038,
+            "candidateP95Ms": 9.819833000001381,
+            "p95DeltaMs": 0.15441599999758182,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-3",
+            "role": "terminal-miss",
+            "baselineMedianMs": 8.820749999998952,
+            "candidateMedianMs": 8.843457999995735,
+            "medianChangePct": 0.25743842640122416,
+            "baselineP95Ms": 9.170041000004858,
+            "candidateP95Ms": 9.101209000000381,
+            "p95DeltaMs": -0.06883200000447687,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-4",
+            "role": "gain",
+            "baselineMedianMs": 21.442667000002984,
+            "candidateMedianMs": 21.451874999998836,
+            "medianChangePct": 0.04294241941009691,
+            "baselineP95Ms": 22.08191700000316,
+            "candidateP95Ms": 21.806084000003466,
+            "p95DeltaMs": -0.27583299999969313,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 24.64045900000201,
+            "candidateMedianMs": 24.62220900000102,
+            "medianChangePct": -0.07406517874114504,
+            "baselineP95Ms": 25.27012499999546,
+            "candidateP95Ms": 25.29450000000361,
+            "p95DeltaMs": 0.024375000008149073,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-42",
+            "role": "prior",
+            "baselineMedianMs": 34.53874999999971,
+            "candidateMedianMs": 34.25008399999933,
+            "medianChangePct": -0.8357743114628557,
+            "baselineP95Ms": 34.92716600000131,
+            "candidateP95Ms": 34.84233300000051,
+            "p95DeltaMs": -0.08483300000079907,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 4.074791999999434,
+            "candidateMedianMs": 4.029875000000175,
+            "medianChangePct": -1.1023139340428978,
+            "baselineP95Ms": 4.300832999993872,
+            "candidateP95Ms": 4.2682500000009895,
+            "p95DeltaMs": -0.03258299999288283,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 4.333833000004233,
+            "candidateMedianMs": 4.300749999994878,
+            "medianChangePct": -0.7633658244173946,
+            "baselineP95Ms": 4.647333000000799,
+            "candidateP95Ms": 4.517749999999069,
+            "p95DeltaMs": -0.1295830000017304,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 10.727875000004133,
+            "candidateMedianMs": 10.599709000001894,
+            "medianChangePct": -1.1947007212722793,
+            "baselineP95Ms": 10.966832999998587,
+            "candidateP95Ms": 10.938042000001587,
+            "p95DeltaMs": -0.028790999996999744,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 8.154207999999926,
+            "candidateMedianMs": 8.025708999994094,
+            "medianChangePct": -1.5758611995896232,
+            "baselineP95Ms": 8.519583000001148,
+            "candidateP95Ms": 8.48633400000108,
+            "p95DeltaMs": -0.03324900000006892,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-0",
+            "role": "gain",
+            "baselineMedianMs": 20.86162499999773,
+            "candidateMedianMs": 20.911041999999725,
+            "medianChangePct": 0.23687991708221112,
+            "baselineP95Ms": 21.614207999999053,
+            "candidateP95Ms": 21.335916000003635,
+            "p95DeltaMs": -0.2782919999954174,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-39",
+            "role": "prior",
+            "baselineMedianMs": 61.05304199999955,
+            "candidateMedianMs": 61.20995799999946,
+            "medianChangePct": 0.2570158584398019,
+            "baselineP95Ms": 62.1392909999995,
+            "candidateP95Ms": 62.1583329999994,
+            "p95DeltaMs": 0.019041999999899417,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-10",
+            "role": "gain",
+            "baselineMedianMs": 19.88270799999009,
+            "candidateMedianMs": 20.011083000004874,
+            "medianChangePct": 0.6456615467814952,
+            "baselineP95Ms": 20.57187500000873,
+            "candidateP95Ms": 20.363708000004408,
+            "p95DeltaMs": -0.2081670000043232,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-15",
+            "role": "gain",
+            "baselineMedianMs": 18.845916999998735,
+            "candidateMedianMs": 18.740708999990602,
+            "medianChangePct": -0.5582535464214389,
+            "baselineP95Ms": 19.191875000004075,
+            "candidateP95Ms": 19.24558299999626,
+            "p95DeltaMs": 0.05370799999218434,
+            "candidateRead": true
+          }
+        ]
+      },
+      {
+        "fork": 2,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 3.988832999999431,
+            "candidateMedianMs": 3.865249999998923,
+            "medianChangePct": -3.0982244681721616,
+            "baselineP95Ms": 5.5494999999973516,
+            "candidateP95Ms": 5.763500000000931,
+            "p95DeltaMs": 0.21400000000357977,
+            "candidateRead": true
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 3.076082999999926,
+            "candidateMedianMs": 2.935208999999304,
+            "medianChangePct": -4.579655360425106,
+            "baselineP95Ms": 3.241834000000381,
+            "candidateP95Ms": 3.5005830000009155,
+            "p95DeltaMs": 0.2587490000005346,
+            "candidateRead": false
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 52.131584000002476,
+            "candidateMedianMs": 52.00316700000258,
+            "medianChangePct": -0.24633243447943487,
+            "baselineP95Ms": 56.9822920000006,
+            "candidateP95Ms": 58.31233300000167,
+            "p95DeltaMs": 1.3300410000010743,
+            "candidateRead": false
+          },
+          {
+            "name": "boundary-unseen-0",
+            "role": "retained-prior-success",
+            "baselineMedianMs": 10.38958300000013,
+            "candidateMedianMs": 10.35241699999824,
+            "medianChangePct": -0.3577236930672689,
+            "baselineP95Ms": 10.674332999999024,
+            "candidateP95Ms": 10.654375000001892,
+            "p95DeltaMs": -0.019957999997131992,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-2",
+            "role": "gain",
+            "baselineMedianMs": 15.086166999997658,
+            "candidateMedianMs": 15.101167000000714,
+            "medianChangePct": 0.09942883439548744,
+            "baselineP95Ms": 15.425208000000566,
+            "candidateP95Ms": 15.458624999999302,
+            "p95DeltaMs": 0.033416999998735264,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-8",
+            "role": "gain",
+            "baselineMedianMs": 8.893082999999024,
+            "candidateMedianMs": 8.858416999999463,
+            "medianChangePct": -0.38980857369221855,
+            "baselineP95Ms": 9.126291999997193,
+            "candidateP95Ms": 9.06970899999942,
+            "p95DeltaMs": -0.056582999997772276,
+            "candidateRead": true
+          },
+          {
+            "name": "mesh-retain-unseen-9",
+            "role": "gain",
+            "baselineMedianMs": 4.269334000000526,
+            "candidateMedianMs": 4.251000000000204,
+            "medianChangePct": -0.429434661245065,
+            "baselineP95Ms": 4.447874999998021,
+            "candidateP95Ms": 4.488666999997804,
+            "p95DeltaMs": 0.040791999999783,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-1",
+            "role": "terminal-miss",
+            "baselineMedianMs": 9.156957999999577,
+            "candidateMedianMs": 9.122541000004276,
+            "medianChangePct": -0.37585626138399997,
+            "baselineP95Ms": 9.745291999999608,
+            "candidateP95Ms": 9.523957999997947,
+            "p95DeltaMs": -0.22133400000166148,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-3",
+            "role": "terminal-miss",
+            "baselineMedianMs": 8.914333000000624,
+            "candidateMedianMs": 8.866041000001132,
+            "medianChangePct": -0.5417343058587654,
+            "baselineP95Ms": 9.25983300000371,
+            "candidateP95Ms": 9.07341599999927,
+            "p95DeltaMs": -0.18641700000443961,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-4",
+            "role": "gain",
+            "baselineMedianMs": 21.769584000001487,
+            "candidateMedianMs": 22.032915999996476,
+            "medianChangePct": 1.2096326691174664,
+            "baselineP95Ms": 22.183375000000524,
+            "candidateP95Ms": 22.56287500000326,
+            "p95DeltaMs": 0.37950000000273576,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 25.203499999995984,
+            "candidateMedianMs": 24.928208999997878,
+            "medianChangePct": -1.0922728985980124,
+            "baselineP95Ms": 25.643417000006593,
+            "candidateP95Ms": 25.50362500000483,
+            "p95DeltaMs": -0.13979200000176206,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-42",
+            "role": "prior",
+            "baselineMedianMs": 34.77620800000295,
+            "candidateMedianMs": 34.70287500000268,
+            "medianChangePct": -0.21087117951522627,
+            "baselineP95Ms": 35.255582999998296,
+            "candidateP95Ms": 35.10491700000421,
+            "p95DeltaMs": -0.15066599999408936,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 4.044999999998254,
+            "candidateMedianMs": 4.001207999994222,
+            "medianChangePct": -1.0826205192596028,
+            "baselineP95Ms": 4.302125000001979,
+            "candidateP95Ms": 4.239000000001397,
+            "p95DeltaMs": -0.06312500000058208,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 4.335541000000376,
+            "candidateMedianMs": 4.282208000004175,
+            "medianChangePct": -1.2301348319897376,
+            "baselineP95Ms": 4.57012499999837,
+            "candidateP95Ms": 4.530124999997497,
+            "p95DeltaMs": -0.040000000000873115,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 10.788417000003392,
+            "candidateMedianMs": 10.748625000000175,
+            "medianChangePct": -0.3688400254013624,
+            "baselineP95Ms": 11.089958000004117,
+            "candidateP95Ms": 10.976125000001048,
+            "p95DeltaMs": -0.11383300000306917,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 8.136624999999185,
+            "candidateMedianMs": 8.04833299999882,
+            "medianChangePct": -1.085118215480918,
+            "baselineP95Ms": 8.388249999996333,
+            "candidateP95Ms": 8.385458999997354,
+            "p95DeltaMs": -0.002790999998978805,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-0",
+            "role": "gain",
+            "baselineMedianMs": 21.10779200000252,
+            "candidateMedianMs": 20.98308299999917,
+            "medianChangePct": -0.5908197314211439,
+            "baselineP95Ms": 21.46787499999482,
+            "candidateP95Ms": 21.511124999997264,
+            "p95DeltaMs": 0.04325000000244472,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-39",
+            "role": "prior",
+            "baselineMedianMs": 61.45820800000365,
+            "candidateMedianMs": 61.49104100000113,
+            "medianChangePct": 0.05342329538386981,
+            "baselineP95Ms": 62.27066699999705,
+            "candidateP95Ms": 62.42854100000113,
+            "p95DeltaMs": 0.15787400000408525,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-10",
+            "role": "gain",
+            "baselineMedianMs": 20.02145799999562,
+            "candidateMedianMs": 19.963625000003958,
+            "medianChangePct": -0.2888550873351603,
+            "baselineP95Ms": 20.32983399999648,
+            "candidateP95Ms": 20.389290999999503,
+            "p95DeltaMs": 0.059457000003021676,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-15",
+            "role": "gain",
+            "baselineMedianMs": 18.839041999992332,
+            "candidateMedianMs": 18.699207999990904,
+            "medianChangePct": -0.7422564268474208,
+            "baselineP95Ms": 19.253375000000233,
+            "candidateP95Ms": 18.999207999993814,
+            "p95DeltaMs": -0.2541670000064187,
+            "candidateRead": true
+          }
+        ]
+      }
+    ],
+    "wasm": [
+      {
+        "fork": 1,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 1.5134999999991123,
+            "candidateMedianMs": 1.5139170000002196,
+            "medianChangePct": 0.027552031787747566,
+            "baselineP95Ms": 1.553209000001516,
+            "candidateP95Ms": 1.587666999999783,
+            "p95DeltaMs": 0.03445799999826704,
+            "candidateRead": true
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 1.1580420000027516,
+            "candidateMedianMs": 1.1494999999995343,
+            "medianChangePct": -0.7376243696858076,
+            "baselineP95Ms": 1.2037080000009155,
+            "candidateP95Ms": 1.1771669999980077,
+            "p95DeltaMs": -0.026541000002907822,
+            "candidateRead": false
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 20.340500000002066,
+            "candidateMedianMs": 20.295416999997542,
+            "medianChangePct": -0.22164155258975748,
+            "baselineP95Ms": 20.86145800000304,
+            "candidateP95Ms": 20.91795799999818,
+            "p95DeltaMs": 0.05649999999513966,
+            "candidateRead": false
+          },
+          {
+            "name": "boundary-unseen-0",
+            "role": "retained-prior-success",
+            "baselineMedianMs": 3.9258330000011483,
+            "candidateMedianMs": 3.9441660000011325,
+            "medianChangePct": 0.4669836949248385,
+            "baselineP95Ms": 4.116833000000042,
+            "candidateP95Ms": 4.0665829999998095,
+            "p95DeltaMs": -0.05025000000023283,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-2",
+            "role": "gain",
+            "baselineMedianMs": 6.0939999999973224,
+            "candidateMedianMs": 6.093540999998368,
+            "medianChangePct": -0.007531998670085027,
+            "baselineP95Ms": 6.220332999997481,
+            "candidateP95Ms": 6.3098749999990105,
+            "p95DeltaMs": 0.08954200000152923,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-8",
+            "role": "gain",
+            "baselineMedianMs": 3.669167000000016,
+            "candidateMedianMs": 3.7085000000006403,
+            "medianChangePct": 1.0719871840290773,
+            "baselineP95Ms": 3.81433399999878,
+            "candidateP95Ms": 3.825749999999971,
+            "p95DeltaMs": 0.011416000001190696,
+            "candidateRead": true
+          },
+          {
+            "name": "mesh-retain-unseen-9",
+            "role": "gain",
+            "baselineMedianMs": 1.6803749999999127,
+            "candidateMedianMs": 1.6809170000015001,
+            "medianChangePct": 0.03225470514542916,
+            "baselineP95Ms": 1.7986669999991136,
+            "candidateP95Ms": 1.7845419999976002,
+            "p95DeltaMs": -0.0141250000015134,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-1",
+            "role": "terminal-miss",
+            "baselineMedianMs": 3.5933749999967404,
+            "candidateMedianMs": 3.6139169999987644,
+            "medianChangePct": 0.5716631301225794,
+            "baselineP95Ms": 3.767833999998402,
+            "candidateP95Ms": 3.7376249999979336,
+            "p95DeltaMs": -0.030209000000468222,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-3",
+            "role": "terminal-miss",
+            "baselineMedianMs": 3.561583000002429,
+            "candidateMedianMs": 3.5539580000004207,
+            "medianChangePct": -0.21409019534299745,
+            "baselineP95Ms": 3.6907909999972617,
+            "candidateP95Ms": 3.6615420000016456,
+            "p95DeltaMs": -0.029248999995616032,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-4",
+            "role": "gain",
+            "baselineMedianMs": 8.388624999999593,
+            "candidateMedianMs": 8.359042000000045,
+            "medianChangePct": -0.3526561265946304,
+            "baselineP95Ms": 8.548041999998532,
+            "candidateP95Ms": 8.535499999998137,
+            "p95DeltaMs": -0.012542000000394182,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 10.748791999998502,
+            "candidateMedianMs": 10.739792000000307,
+            "medianChangePct": -0.08373033916924122,
+            "baselineP95Ms": 11.031999999999243,
+            "candidateP95Ms": 11.025875000002998,
+            "p95DeltaMs": -0.006124999996245606,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-42",
+            "role": "prior",
+            "baselineMedianMs": 14.388624999999593,
+            "candidateMedianMs": 14.421041999998124,
+            "medianChangePct": 0.22529602375858104,
+            "baselineP95Ms": 14.702792000000045,
+            "candidateP95Ms": 14.656708999998955,
+            "p95DeltaMs": -0.04608300000109011,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 1.638582999999926,
+            "candidateMedianMs": 1.6439170000012382,
+            "medianChangePct": 0.32552516420056854,
+            "baselineP95Ms": 1.7620419999984733,
+            "candidateP95Ms": 1.773124999999709,
+            "p95DeltaMs": 0.011083000001235632,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 1.8201249999983702,
+            "candidateMedianMs": 1.8117080000010901,
+            "medianChangePct": -0.4624407662818575,
+            "baselineP95Ms": 1.9732499999954598,
+            "candidateP95Ms": 2.0071250000037253,
+            "p95DeltaMs": 0.03387500000826549,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 4.486417000000074,
+            "candidateMedianMs": 4.477499999993597,
+            "medianChangePct": -0.19875548809833443,
+            "baselineP95Ms": 4.60754199999792,
+            "candidateP95Ms": 4.622167000001355,
+            "p95DeltaMs": 0.014625000003434252,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 3.4544170000008307,
+            "candidateMedianMs": 3.424458000001323,
+            "medianChangePct": -0.8672664591304557,
+            "baselineP95Ms": 3.5904999999984284,
+            "candidateP95Ms": 3.6007920000047307,
+            "p95DeltaMs": 0.01029200000630226,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-0",
+            "role": "gain",
+            "baselineMedianMs": 9.064957999995386,
+            "candidateMedianMs": 9.117417000001296,
+            "medianChangePct": 0.5787009714323776,
+            "baselineP95Ms": 9.373500000001513,
+            "candidateP95Ms": 9.368332999998529,
+            "p95DeltaMs": -0.005167000002984423,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-39",
+            "role": "prior",
+            "baselineMedianMs": 25.61112499999581,
+            "candidateMedianMs": 25.601082999994105,
+            "medianChangePct": -0.03920952321190274,
+            "baselineP95Ms": 25.885041999994428,
+            "candidateP95Ms": 26.072415999995428,
+            "p95DeltaMs": 0.18737400000100024,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-10",
+            "role": "gain",
+            "baselineMedianMs": 8.466874999998254,
+            "candidateMedianMs": 8.469291000001249,
+            "medianChangePct": 0.02853473097212955,
+            "baselineP95Ms": 8.647582999998122,
+            "candidateP95Ms": 8.608541999994486,
+            "p95DeltaMs": -0.03904100000363542,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-15",
+            "role": "gain",
+            "baselineMedianMs": 8.040082999999868,
+            "candidateMedianMs": 8.005875000002561,
+            "medianChangePct": -0.4254682445107516,
+            "baselineP95Ms": 8.20954100000381,
+            "candidateP95Ms": 8.164917000001878,
+            "p95DeltaMs": -0.04462400000193156,
+            "candidateRead": true
+          }
+        ],
+        "linearCapacityBytesBefore": {
+          "baseline": 1114112,
+          "candidate": 1114112
+        },
+        "linearCapacityBytesAfter": {
+          "baseline": 14483456,
+          "candidate": 14483456
+        }
+      },
+      {
+        "fork": 2,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 1.5017919999991136,
+            "candidateMedianMs": 1.4949169999999867,
+            "medianChangePct": -0.45778643108572714,
+            "baselineP95Ms": 1.5438329999997222,
+            "candidateP95Ms": 1.5594579999997222,
+            "p95DeltaMs": 0.015625,
+            "candidateRead": true
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 1.1507499999970605,
+            "candidateMedianMs": 1.1490410000005795,
+            "medianChangePct": -0.1485118397988594,
+            "baselineP95Ms": 1.1867910000000848,
+            "candidateP95Ms": 1.1812920000011218,
+            "p95DeltaMs": -0.005498999998962972,
+            "candidateRead": false
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 20.248208999997587,
+            "candidateMedianMs": 20.357124999998632,
+            "medianChangePct": 0.537904364781383,
+            "baselineP95Ms": 20.52337500000067,
+            "candidateP95Ms": 20.57824999999866,
+            "p95DeltaMs": 0.054874999997991836,
+            "candidateRead": false
+          },
+          {
+            "name": "boundary-unseen-0",
+            "role": "retained-prior-success",
+            "baselineMedianMs": 3.9370840000010503,
+            "candidateMedianMs": 3.91241699999955,
+            "medianChangePct": -0.6265296854599423,
+            "baselineP95Ms": 4.040499999999156,
+            "candidateP95Ms": 4.063208999999915,
+            "p95DeltaMs": 0.02270900000075926,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-2",
+            "role": "gain",
+            "baselineMedianMs": 6.0645000000004075,
+            "candidateMedianMs": 6.071791999998823,
+            "medianChangePct": 0.12024074529499718,
+            "baselineP95Ms": 6.264374999998836,
+            "candidateP95Ms": 6.275291999998444,
+            "p95DeltaMs": 0.010916999999608379,
+            "candidateRead": true
+          },
+          {
+            "name": "boundary-unseen-8",
+            "role": "gain",
+            "baselineMedianMs": 3.6870830000007118,
+            "candidateMedianMs": 3.69512499999837,
+            "medianChangePct": 0.21811280076029504,
+            "baselineP95Ms": 3.8234169999996084,
+            "candidateP95Ms": 3.8152090000003227,
+            "p95DeltaMs": -0.008207999999285676,
+            "candidateRead": true
+          },
+          {
+            "name": "mesh-retain-unseen-9",
+            "role": "gain",
+            "baselineMedianMs": 1.6730829999978596,
+            "candidateMedianMs": 1.6687500000007276,
+            "medianChangePct": -0.2589829672011268,
+            "baselineP95Ms": 1.792250000002241,
+            "candidateP95Ms": 1.7872079999979178,
+            "p95DeltaMs": -0.005042000004323199,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-1",
+            "role": "terminal-miss",
+            "baselineMedianMs": 3.652249999999185,
+            "candidateMedianMs": 3.6175830000029237,
+            "medianChangePct": -0.9491957011778851,
+            "baselineP95Ms": 3.821458000002167,
+            "candidateP95Ms": 3.8164169999981823,
+            "p95DeltaMs": -0.005041000003984664,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-3",
+            "role": "terminal-miss",
+            "baselineMedianMs": 3.5778339999997115,
+            "candidateMedianMs": 3.5356659999997646,
+            "medianChangePct": -1.1785901749480354,
+            "baselineP95Ms": 3.7129580000000715,
+            "candidateP95Ms": 3.6717089999983727,
+            "p95DeltaMs": -0.04124900000169873,
+            "candidateRead": false
+          },
+          {
+            "name": "starvation-holdout-4",
+            "role": "gain",
+            "baselineMedianMs": 8.438417000001209,
+            "candidateMedianMs": 8.39758399999846,
+            "medianChangePct": -0.48389407637408066,
+            "baselineP95Ms": 8.715000000000146,
+            "candidateP95Ms": 8.705625000002328,
+            "p95DeltaMs": -0.009374999997817213,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 10.77654099999927,
+            "candidateMedianMs": 10.786416999999346,
+            "medianChangePct": 0.09164350601995608,
+            "baselineP95Ms": 10.976333999999042,
+            "candidateP95Ms": 10.97004200000083,
+            "p95DeltaMs": -0.006291999998211395,
+            "candidateRead": true
+          },
+          {
+            "name": "starvation-holdout-42",
+            "role": "prior",
+            "baselineMedianMs": 14.392875000001368,
+            "candidateMedianMs": 14.426167000001442,
+            "medianChangePct": 0.23130889415818867,
+            "baselineP95Ms": 14.600083999997878,
+            "candidateP95Ms": 14.614791999996669,
+            "p95DeltaMs": 0.01470799999879091,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 1.6777919999985897,
+            "candidateMedianMs": 1.6580420000027516,
+            "medianChangePct": -1.1771423392086033,
+            "baselineP95Ms": 1.7789999999986321,
+            "candidateP95Ms": 1.8036250000004657,
+            "p95DeltaMs": 0.02462500000183354,
+            "candidateRead": true
+          },
+          {
+            "name": "alternate-grid-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 1.8203339999963646,
+            "candidateMedianMs": 1.8098329999993439,
+            "medianChangePct": -0.5768721562659174,
+            "baselineP95Ms": 1.9807500000024447,
+            "candidateP95Ms": 1.957750000001397,
+            "p95DeltaMs": -0.023000000001047738,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-16",
+            "role": "gain",
+            "baselineMedianMs": 4.49649999999383,
+            "candidateMedianMs": 4.453499999995984,
+            "medianChangePct": -0.95629934388759,
+            "baselineP95Ms": 4.616416999997455,
+            "candidateP95Ms": 4.610000000000582,
+            "p95DeltaMs": -0.006416999996872619,
+            "candidateRead": true
+          },
+          {
+            "name": "header-rediscovery-holdout-18",
+            "role": "gain",
+            "baselineMedianMs": 3.43133300000045,
+            "candidateMedianMs": 3.421457999997074,
+            "medianChangePct": -0.2877890313582099,
+            "baselineP95Ms": 3.570791999998619,
+            "candidateP95Ms": 3.6179579999952693,
+            "p95DeltaMs": 0.0471659999966505,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-0",
+            "role": "gain",
+            "baselineMedianMs": 9.079791999996814,
+            "candidateMedianMs": 9.089584000001196,
+            "medianChangePct": 0.10784388017242019,
+            "baselineP95Ms": 9.233790999998746,
+            "candidateP95Ms": 9.23858299999847,
+            "p95DeltaMs": 0.004791999999724794,
+            "candidateRead": true
+          },
+          {
+            "name": "selected-mesh-holdout-39",
+            "role": "prior",
+            "baselineMedianMs": 25.71574999999575,
+            "candidateMedianMs": 25.700834000002942,
+            "medianChangePct": -0.05800336366938996,
+            "baselineP95Ms": 26.14958299999853,
+            "candidateP95Ms": 26.24266599999828,
+            "p95DeltaMs": 0.09308299999975134,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-10",
+            "role": "gain",
+            "baselineMedianMs": 8.403165999996418,
+            "candidateMedianMs": 8.419542000003275,
+            "medianChangePct": 0.19487893023730773,
+            "baselineP95Ms": 8.557459000003291,
+            "candidateP95Ms": 8.662833000002138,
+            "p95DeltaMs": 0.10537399999884656,
+            "candidateRead": true
+          },
+          {
+            "name": "small-parabola-validation-15",
+            "role": "gain",
+            "baselineMedianMs": 8.078416000003926,
+            "candidateMedianMs": 7.997665999995661,
+            "medianChangePct": -0.9995771449282431,
+            "baselineP95Ms": 8.186292000005778,
+            "candidateP95Ms": 8.197415999995428,
+            "p95DeltaMs": 0.011123999989649747,
+            "candidateRead": true
+          }
+        ],
+        "linearCapacityBytesBefore": {
+          "baseline": 1114112,
+          "candidate": 1114112
+        },
+        "linearCapacityBytesAfter": {
+          "baseline": 14483456,
+          "candidate": 14483456
+        }
+      }
+    ]
+  },
+  "current": {
+    "ts": [
+      {
+        "fork": 1,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 4.005833999999595,
+            "candidateMedianMs": 3.8833339999996497,
+            "medianChangePct": -3.058039848879357,
+            "baselineP95Ms": 6.243833999999879,
+            "candidateP95Ms": 4.9574579999998605,
+            "p95DeltaMs": -1.2863760000000184
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 3.0695419999992737,
+            "candidateMedianMs": 2.9404160000003685,
+            "medianChangePct": -4.206686209178301,
+            "baselineP95Ms": 3.159458999999515,
+            "candidateP95Ms": 3.155957999999373,
+            "p95DeltaMs": -0.003501000000142085
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 52.6145000000015,
+            "candidateMedianMs": 52.494958000001134,
+            "medianChangePct": -0.2272035275453721,
+            "baselineP95Ms": 57.658041000000594,
+            "candidateP95Ms": 58.31841600000007,
+            "p95DeltaMs": 0.6603749999994761
+          },
+          {
+            "name": "holdout-000",
+            "role": "terminal-miss",
+            "baselineMedianMs": 10.535249999998996,
+            "candidateMedianMs": 53.0307499999999,
+            "medianChangePct": 403.36489404622534,
+            "baselineP95Ms": 10.972125000000233,
+            "candidateP95Ms": 54.301917000000685,
+            "p95DeltaMs": 43.32979200000045
+          },
+          {
+            "name": "holdout-005",
+            "role": "prior",
+            "baselineMedianMs": 0.3487089999980526,
+            "candidateMedianMs": 0.34208399999988615,
+            "medianChangePct": -1.89986492984221,
+            "baselineP95Ms": 0.3760000000002037,
+            "candidateP95Ms": 0.39458400000148686,
+            "p95DeltaMs": 0.01858400000128313
+          },
+          {
+            "name": "holdout-010",
+            "role": "gain",
+            "baselineMedianMs": 1.3065000000024156,
+            "candidateMedianMs": 4.99541699999827,
+            "medianChangePct": 282.35109069950505,
+            "baselineP95Ms": 1.5177920000023732,
+            "candidateP95Ms": 5.322875000001659,
+            "p95DeltaMs": 3.8050829999992857
+          },
+          {
+            "name": "holdout-015",
+            "role": "terminal-miss",
+            "baselineMedianMs": 0.4276669999999285,
+            "candidateMedianMs": 3.0281660000000556,
+            "medianChangePct": 608.0663226296539,
+            "baselineP95Ms": 0.4864159999997355,
+            "candidateP95Ms": 3.1829170000019076,
+            "p95DeltaMs": 2.696501000002172
+          },
+          {
+            "name": "holdout-020",
+            "role": "gain",
+            "baselineMedianMs": 0.929374999999709,
+            "candidateMedianMs": 3.8601250000028813,
+            "medianChangePct": 315.34633490292833,
+            "baselineP95Ms": 1.035250000000815,
+            "candidateP95Ms": 4.052582999996957,
+            "p95DeltaMs": 3.0173329999961425
+          },
+          {
+            "name": "holdout-027",
+            "role": "gain",
+            "baselineMedianMs": 1.4582499999996799,
+            "candidateMedianMs": 5.753333000000566,
+            "medianChangePct": 294.53680781771504,
+            "baselineP95Ms": 1.5886250000003201,
+            "candidateP95Ms": 5.972458000000188,
+            "p95DeltaMs": 4.383832999999868
+          },
+          {
+            "name": "holdout-029",
+            "role": "gain",
+            "baselineMedianMs": 2.4577920000010636,
+            "candidateMedianMs": 13.793208000002778,
+            "medianChangePct": 461.2032263103147,
+            "baselineP95Ms": 4.195040999999037,
+            "candidateP95Ms": 16.383915999998862,
+            "p95DeltaMs": 12.188874999999825
+          },
+          {
+            "name": "holdout-046",
+            "role": "gain",
+            "baselineMedianMs": 1.6143750000010186,
+            "candidateMedianMs": 5.588665999999648,
+            "medianChangePct": 246.18140147091734,
+            "baselineP95Ms": 1.811334000001807,
+            "candidateP95Ms": 5.914000000000669,
+            "p95DeltaMs": 4.102665999998862
+          },
+          {
+            "name": "holdout-050",
+            "role": "prior",
+            "baselineMedianMs": 4.4447499999987485,
+            "candidateMedianMs": 4.474333000001934,
+            "medianChangePct": 0.6655717420146035,
+            "baselineP95Ms": 4.663416999999754,
+            "candidateP95Ms": 4.712541999997484,
+            "p95DeltaMs": 0.0491249999977299
+          },
+          {
+            "name": "holdout-051",
+            "role": "gain",
+            "baselineMedianMs": 1.8295840000027965,
+            "candidateMedianMs": 12.633624999998574,
+            "medianChangePct": 590.518992294383,
+            "baselineP95Ms": 3.0764170000002196,
+            "candidateP95Ms": 15.016499999997905,
+            "p95DeltaMs": 11.940082999997685
+          },
+          {
+            "name": "holdout-077",
+            "role": "gain",
+            "baselineMedianMs": 10.2064169999976,
+            "candidateMedianMs": 25.469833999999537,
+            "medianChangePct": 149.5472603167745,
+            "baselineP95Ms": 10.482916999997542,
+            "candidateP95Ms": 26.039958000001207,
+            "p95DeltaMs": 15.557041000003665
+          },
+          {
+            "name": "holdout-092",
+            "role": "gain",
+            "baselineMedianMs": 9.680374999999913,
+            "candidateMedianMs": 24.406708000002254,
+            "medianChangePct": 152.12564595898894,
+            "baselineP95Ms": 9.965791999999055,
+            "candidateP95Ms": 24.799125000001368,
+            "p95DeltaMs": 14.833333000002312
+          },
+          {
+            "name": "holdout-094",
+            "role": "gain",
+            "baselineMedianMs": 35.3929169999974,
+            "candidateMedianMs": 60.551542000001064,
+            "medianChangePct": 71.08378492794341,
+            "baselineP95Ms": 36.09300000000076,
+            "candidateP95Ms": 61.44225000000006,
+            "p95DeltaMs": 25.3492499999993
+          }
+        ]
+      },
+      {
+        "fork": 2,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 3.998833999999988,
+            "candidateMedianMs": 3.9975829999998496,
+            "medianChangePct": -0.03128411932424857,
+            "baselineP95Ms": 5.878249999999753,
+            "candidateP95Ms": 4.738207999999759,
+            "p95DeltaMs": -1.140041999999994
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 2.9251249999997526,
+            "candidateMedianMs": 3.076583000000028,
+            "medianChangePct": 5.177830007274498,
+            "baselineP95Ms": 3.137083999999959,
+            "candidateP95Ms": 3.161667000000307,
+            "p95DeltaMs": 0.024583000000347965
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 52.66045900000063,
+            "candidateMedianMs": 53.03162499999962,
+            "medianChangePct": 0.7048286457187691,
+            "baselineP95Ms": 58.32008399999995,
+            "candidateP95Ms": 58.251250000000255,
+            "p95DeltaMs": -0.06883399999969697
+          },
+          {
+            "name": "holdout-000",
+            "role": "terminal-miss",
+            "baselineMedianMs": 10.507417000000714,
+            "candidateMedianMs": 53.121917000000394,
+            "medianChangePct": 405.5658969278252,
+            "baselineP95Ms": 10.899999999999636,
+            "candidateP95Ms": 54.448333000000275,
+            "p95DeltaMs": 43.54833300000064
+          },
+          {
+            "name": "holdout-005",
+            "role": "prior",
+            "baselineMedianMs": 0.3937499999992724,
+            "candidateMedianMs": 0.3787499999998545,
+            "medianChangePct": -3.8095238093830197,
+            "baselineP95Ms": 0.5320420000025479,
+            "candidateP95Ms": 0.5042079999984708,
+            "p95DeltaMs": -0.027834000004077097
+          },
+          {
+            "name": "holdout-010",
+            "role": "gain",
+            "baselineMedianMs": 1.3277090000010503,
+            "candidateMedianMs": 5.043499999999767,
+            "medianChangePct": 279.8648649663275,
+            "baselineP95Ms": 1.4735000000000582,
+            "candidateP95Ms": 5.267500000001746,
+            "p95DeltaMs": 3.794000000001688
+          },
+          {
+            "name": "holdout-015",
+            "role": "terminal-miss",
+            "baselineMedianMs": 0.43425000000206637,
+            "candidateMedianMs": 2.99345799999719,
+            "medianChangePct": 589.339781228082,
+            "baselineP95Ms": 0.4704170000004524,
+            "candidateP95Ms": 3.104875000000902,
+            "p95DeltaMs": 2.63445800000045
+          },
+          {
+            "name": "holdout-020",
+            "role": "gain",
+            "baselineMedianMs": 0.9527499999967404,
+            "candidateMedianMs": 3.9310829999994894,
+            "medianChangePct": 312.60383101683954,
+            "baselineP95Ms": 1.0559589999975287,
+            "candidateP95Ms": 4.265665999999328,
+            "p95DeltaMs": 3.2097070000017993
+          },
+          {
+            "name": "holdout-027",
+            "role": "gain",
+            "baselineMedianMs": 1.5200000000004366,
+            "candidateMedianMs": 5.82220800000141,
+            "medianChangePct": 283.0399999999828,
+            "baselineP95Ms": 1.7214590000003227,
+            "candidateP95Ms": 6.190249999999651,
+            "p95DeltaMs": 4.468790999999328
+          },
+          {
+            "name": "holdout-029",
+            "role": "gain",
+            "baselineMedianMs": 2.4229579999991984,
+            "candidateMedianMs": 13.902125000000524,
+            "medianChangePct": 473.76665216669556,
+            "baselineP95Ms": 4.137375000002066,
+            "candidateP95Ms": 16.74745900000198,
+            "p95DeltaMs": 12.610083999999915
+          },
+          {
+            "name": "holdout-046",
+            "role": "gain",
+            "baselineMedianMs": 1.5986659999980475,
+            "candidateMedianMs": 5.564915999999357,
+            "medianChangePct": 248.09747627122576,
+            "baselineP95Ms": 1.7682089999980235,
+            "candidateP95Ms": 5.736833000002662,
+            "p95DeltaMs": 3.968624000004638
+          },
+          {
+            "name": "holdout-050",
+            "role": "prior",
+            "baselineMedianMs": 4.509083000000828,
+            "candidateMedianMs": 4.4696249999979045,
+            "medianChangePct": -0.8750781478832015,
+            "baselineP95Ms": 4.68895799999882,
+            "candidateP95Ms": 4.642541999997775,
+            "p95DeltaMs": -0.04641600000104518
+          },
+          {
+            "name": "holdout-051",
+            "role": "gain",
+            "baselineMedianMs": 1.7807079999984126,
+            "candidateMedianMs": 12.766250000000582,
+            "medianChangePct": 616.9198992766901,
+            "baselineP95Ms": 2.9526669999977457,
+            "candidateP95Ms": 15.01508300000205,
+            "p95DeltaMs": 12.062416000004305
+          },
+          {
+            "name": "holdout-077",
+            "role": "gain",
+            "baselineMedianMs": 10.183042000000569,
+            "candidateMedianMs": 25.422708000001876,
+            "medianChangePct": 149.6573027981271,
+            "baselineP95Ms": 10.405958999999712,
+            "candidateP95Ms": 25.821625000000495,
+            "p95DeltaMs": 15.415666000000783
+          },
+          {
+            "name": "holdout-092",
+            "role": "gain",
+            "baselineMedianMs": 9.70483299999978,
+            "candidateMedianMs": 24.568624999999884,
+            "medianChangePct": 153.15865816547736,
+            "baselineP95Ms": 10.035958000000392,
+            "candidateP95Ms": 24.882041000000754,
+            "p95DeltaMs": 14.846083000000363
+          },
+          {
+            "name": "holdout-094",
+            "role": "gain",
+            "baselineMedianMs": 35.56179200000042,
+            "candidateMedianMs": 60.538291999997455,
+            "medianChangePct": 70.2340871910975,
+            "baselineP95Ms": 36.14987499999552,
+            "candidateP95Ms": 61.14862500000163,
+            "p95DeltaMs": 24.998750000006112
+          }
+        ]
+      }
+    ],
+    "wasm": [
+      {
+        "fork": 1,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 1.5089590000002318,
+            "candidateMedianMs": 1.5113750000000437,
+            "medianChangePct": 0.1601103807201909,
+            "baselineP95Ms": 1.5572910000000775,
+            "candidateP95Ms": 1.547125000000051,
+            "p95DeltaMs": -0.010166000000026543
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 1.1832079999994676,
+            "candidateMedianMs": 1.1747910000003685,
+            "medianChangePct": -0.7113711197949013,
+            "baselineP95Ms": 1.234124999999949,
+            "candidateP95Ms": 1.2356250000002547,
+            "p95DeltaMs": 0.0015000000003055902
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 20.416165999999976,
+            "candidateMedianMs": 20.482624999999643,
+            "medianChangePct": 0.325521451969335,
+            "baselineP95Ms": 20.715250000000196,
+            "candidateP95Ms": 20.803459000000657,
+            "p95DeltaMs": 0.08820900000046095
+          },
+          {
+            "name": "holdout-000",
+            "role": "terminal-miss",
+            "baselineMedianMs": 4.173208000000159,
+            "candidateMedianMs": 21.83979199999885,
+            "medianChangePct": 423.3334164028733,
+            "baselineP95Ms": 4.363000000000284,
+            "candidateP95Ms": 22.026750000000902,
+            "p95DeltaMs": 17.66375000000062
+          },
+          {
+            "name": "holdout-005",
+            "role": "prior",
+            "baselineMedianMs": 0.13800000000082946,
+            "candidateMedianMs": 0.1382499999999709,
+            "medianChangePct": 0.18115941966660998,
+            "baselineP95Ms": 0.147000000000844,
+            "candidateP95Ms": 0.14729200000147102,
+            "p95DeltaMs": 0.0002920000006270129
+          },
+          {
+            "name": "holdout-010",
+            "role": "gain",
+            "baselineMedianMs": 0.454875000001266,
+            "candidateMedianMs": 2.5118750000001455,
+            "medianChangePct": 452.2121461925044,
+            "baselineP95Ms": 0.5448340000002645,
+            "candidateP95Ms": 2.605583000000479,
+            "p95DeltaMs": 2.0607490000002144
+          },
+          {
+            "name": "holdout-015",
+            "role": "terminal-miss",
+            "baselineMedianMs": 0.1584999999995489,
+            "candidateMedianMs": 2.451500000001033,
+            "medianChangePct": 1446.6876971659372,
+            "baselineP95Ms": 0.1729169999998703,
+            "candidateP95Ms": 2.5273340000003373,
+            "p95DeltaMs": 2.354417000000467
+          },
+          {
+            "name": "holdout-020",
+            "role": "gain",
+            "baselineMedianMs": 0.3197920000002341,
+            "candidateMedianMs": 2.080334000000221,
+            "medianChangePct": 550.5272176910923,
+            "baselineP95Ms": 0.36612500000046566,
+            "candidateP95Ms": 2.1604999999999563,
+            "p95DeltaMs": 1.7943749999994907
+          },
+          {
+            "name": "holdout-027",
+            "role": "gain",
+            "baselineMedianMs": 0.5210420000003069,
+            "candidateMedianMs": 2.869249999999738,
+            "medianChangePct": 450.6753774164172,
+            "baselineP95Ms": 0.6365829999995185,
+            "candidateP95Ms": 3.0059590000000753,
+            "p95DeltaMs": 2.369376000000557
+          },
+          {
+            "name": "holdout-029",
+            "role": "gain",
+            "baselineMedianMs": 0.9402499999996508,
+            "candidateMedianMs": 11.273583000000144,
+            "medianChangePct": 1098.9984578574135,
+            "baselineP95Ms": 1.0840000000007421,
+            "candidateP95Ms": 11.5189160000009,
+            "p95DeltaMs": 10.434916000000158
+          },
+          {
+            "name": "holdout-046",
+            "role": "gain",
+            "baselineMedianMs": 0.528915999999299,
+            "candidateMedianMs": 2.6847500000003492,
+            "medianChangePct": 407.5947787557774,
+            "baselineP95Ms": 0.6306249999997817,
+            "candidateP95Ms": 2.7608339999987948,
+            "p95DeltaMs": 2.130208999999013
+          },
+          {
+            "name": "holdout-050",
+            "role": "prior",
+            "baselineMedianMs": 1.6709999999984575,
+            "candidateMedianMs": 1.6514999999999418,
+            "medianChangePct": -1.1669658886016565,
+            "baselineP95Ms": 1.768207999999504,
+            "candidateP95Ms": 1.7532919999994192,
+            "p95DeltaMs": -0.01491600000008475
+          },
+          {
+            "name": "holdout-051",
+            "role": "gain",
+            "baselineMedianMs": 0.6387080000004062,
+            "candidateMedianMs": 5.730875000001106,
+            "medianChangePct": 797.2605635121935,
+            "baselineP95Ms": 0.774042000000918,
+            "candidateP95Ms": 5.866707999999562,
+            "p95DeltaMs": 5.092665999998644
+          },
+          {
+            "name": "holdout-077",
+            "role": "gain",
+            "baselineMedianMs": 4.149791000003461,
+            "candidateMedianMs": 10.632625000002008,
+            "medianChangePct": 156.2207349717887,
+            "baselineP95Ms": 4.327750000000378,
+            "candidateP95Ms": 10.801250000000437,
+            "p95DeltaMs": 6.473500000000058
+          },
+          {
+            "name": "holdout-092",
+            "role": "gain",
+            "baselineMedianMs": 4.134957999998733,
+            "candidateMedianMs": 15.060165999999299,
+            "medianChangePct": 264.2156945730504,
+            "baselineP95Ms": 4.26812499999869,
+            "candidateP95Ms": 15.307332999997016,
+            "p95DeltaMs": 11.039207999998325
+          },
+          {
+            "name": "holdout-094",
+            "role": "gain",
+            "baselineMedianMs": 15.66137499999968,
+            "candidateMedianMs": 23.700292000001355,
+            "medianChangePct": 51.32957355278089,
+            "baselineP95Ms": 15.911250000001019,
+            "candidateP95Ms": 24.030375000002095,
+            "p95DeltaMs": 8.119125000001077
+          }
+        ],
+        "linearCapacityBytesBefore": {
+          "baseline": 1114112,
+          "candidate": 1114112
+        },
+        "linearCapacityBytesAfter": {
+          "baseline": 14483456,
+          "candidate": 14483456
+        }
+      },
+      {
+        "fork": 2,
+        "cases": [
+          {
+            "name": "clean",
+            "role": "fixed",
+            "baselineMedianMs": 1.5177499999999782,
+            "candidateMedianMs": 1.5212080000001151,
+            "medianChangePct": 0.22783725910966446,
+            "baselineP95Ms": 1.56899999999996,
+            "candidateP95Ms": 1.5777909999997064,
+            "p95DeltaMs": 0.008790999999746418
+          },
+          {
+            "name": "blank",
+            "role": "fixed",
+            "baselineMedianMs": 1.1606249999999818,
+            "candidateMedianMs": 1.1707080000001042,
+            "medianChangePct": 0.8687560581688736,
+            "baselineP95Ms": 1.2022909999996045,
+            "candidateP95Ms": 1.2169169999997393,
+            "p95DeltaMs": 0.014626000000134809
+          },
+          {
+            "name": "noise",
+            "role": "fixed",
+            "baselineMedianMs": 20.373207999999977,
+            "candidateMedianMs": 20.367957999999817,
+            "medianChangePct": -0.02576913758579602,
+            "baselineP95Ms": 20.663290999999845,
+            "candidateP95Ms": 20.657499999999345,
+            "p95DeltaMs": -0.00579100000049948
+          },
+          {
+            "name": "holdout-000",
+            "role": "terminal-miss",
+            "baselineMedianMs": 4.231625000000349,
+            "candidateMedianMs": 21.84308300000157,
+            "medianChangePct": 416.1866422473581,
+            "baselineP95Ms": 4.389375000000655,
+            "candidateP95Ms": 22.132792000000336,
+            "p95DeltaMs": 17.74341699999968
+          },
+          {
+            "name": "holdout-005",
+            "role": "prior",
+            "baselineMedianMs": 0.13695900000129768,
+            "candidateMedianMs": 0.13716699999895354,
+            "medianChangePct": 0.151870266031362,
+            "baselineP95Ms": 0.14279200000055425,
+            "candidateP95Ms": 0.13954200000080164,
+            "p95DeltaMs": -0.0032499999997526174
+          },
+          {
+            "name": "holdout-010",
+            "role": "gain",
+            "baselineMedianMs": 0.44991699999991397,
+            "candidateMedianMs": 2.497416999998677,
+            "medianChangePct": 455.0839377038775,
+            "baselineP95Ms": 0.500291999998808,
+            "candidateP95Ms": 2.55908399999862,
+            "p95DeltaMs": 2.058791999999812
+          },
+          {
+            "name": "holdout-015",
+            "role": "terminal-miss",
+            "baselineMedianMs": 0.15912500000013097,
+            "candidateMedianMs": 2.457249999999476,
+            "medianChangePct": 1444.2262372332782,
+            "baselineP95Ms": 0.17595799999980954,
+            "candidateP95Ms": 2.538709000000381,
+            "p95DeltaMs": 2.3627510000005714
+          },
+          {
+            "name": "holdout-020",
+            "role": "gain",
+            "baselineMedianMs": 0.32345899999927497,
+            "candidateMedianMs": 2.091042000000016,
+            "medianChangePct": 546.4627665344613,
+            "baselineP95Ms": 0.3530829999999696,
+            "candidateP95Ms": 2.1476670000010927,
+            "p95DeltaMs": 1.794584000001123
+          },
+          {
+            "name": "holdout-027",
+            "role": "gain",
+            "baselineMedianMs": 0.5001249999986612,
+            "candidateMedianMs": 2.806457999999111,
+            "medianChangePct": 461.1513121732814,
+            "baselineP95Ms": 0.563916999999492,
+            "candidateP95Ms": 2.8958330000004935,
+            "p95DeltaMs": 2.3319160000010015
+          },
+          {
+            "name": "holdout-029",
+            "role": "gain",
+            "baselineMedianMs": 0.9783339999994496,
+            "candidateMedianMs": 11.43383300000096,
+            "medianChangePct": 1068.7044506280465,
+            "baselineP95Ms": 1.0748750000002474,
+            "candidateP95Ms": 11.612416000001758,
+            "p95DeltaMs": 10.53754100000151
+          },
+          {
+            "name": "holdout-046",
+            "role": "gain",
+            "baselineMedianMs": 0.5232919999998558,
+            "candidateMedianMs": 2.6867919999986043,
+            "medianChangePct": 413.44029719532205,
+            "baselineP95Ms": 0.6045420000009472,
+            "candidateP95Ms": 2.748290999999881,
+            "p95DeltaMs": 2.143748999998934
+          },
+          {
+            "name": "holdout-050",
+            "role": "prior",
+            "baselineMedianMs": 1.6867920000004233,
+            "candidateMedianMs": 1.6722909999989497,
+            "medianChangePct": -0.8596792017907307,
+            "baselineP95Ms": 1.7652909999997064,
+            "candidateP95Ms": 1.7831249999999272,
+            "p95DeltaMs": 0.01783400000022084
+          },
+          {
+            "name": "holdout-051",
+            "role": "gain",
+            "baselineMedianMs": 0.6482920000016748,
+            "candidateMedianMs": 5.718207999998413,
+            "medianChangePct": 782.0420427806669,
+            "baselineP95Ms": 0.7733749999988504,
+            "candidateP95Ms": 5.905624999999418,
+            "p95DeltaMs": 5.1322500000005675
+          },
+          {
+            "name": "holdout-077",
+            "role": "gain",
+            "baselineMedianMs": 4.153249999999389,
+            "candidateMedianMs": 10.613291000001482,
+            "medianChangePct": 155.54182868844984,
+            "baselineP95Ms": 4.277749999997468,
+            "candidateP95Ms": 10.793541999999434,
+            "p95DeltaMs": 6.515792000001966
+          },
+          {
+            "name": "holdout-092",
+            "role": "gain",
+            "baselineMedianMs": 4.11449999999968,
+            "candidateMedianMs": 15.120375000002241,
+            "medianChangePct": 267.48997448057884,
+            "baselineP95Ms": 4.297291999999288,
+            "candidateP95Ms": 15.383874999999534,
+            "p95DeltaMs": 11.086583000000246
+          },
+          {
+            "name": "holdout-094",
+            "role": "gain",
+            "baselineMedianMs": 15.658500000001368,
+            "candidateMedianMs": 23.604458000001614,
+            "medianChangePct": 50.745333205604325,
+            "baselineP95Ms": 15.89916599999924,
+            "candidateP95Ms": 23.85870799999975,
+            "p95DeltaMs": 7.959542000000511
+          }
+        ],
+        "linearCapacityBytesBefore": {
+          "baseline": 1114112,
+          "candidate": 1114112
+        },
+        "linearCapacityBytesAfter": {
+          "baseline": 14483456,
+          "candidate": 14483456
+        }
+      }
+    ]
+  },
+  "direct": [
+    {
+      "fork": 1,
+      "cases": [
+        {
+          "name": "clean",
+          "qrMedianMs": 1.5159590000000662,
+          "zxingMedianMs": 1.8630000000000564,
+          "qrP95Ms": 1.5705829999999423,
+          "zxingP95Ms": 2.000541999999996
+        },
+        {
+          "name": "blank",
+          "qrMedianMs": 1.1611249999998563,
+          "zxingMedianMs": 2.103290999999899,
+          "qrP95Ms": 1.2040839999999662,
+          "zxingP95Ms": 2.1693749999999454
+        },
+        {
+          "name": "noise",
+          "qrMedianMs": 20.323249999999916,
+          "zxingMedianMs": 7.660499999999956,
+          "qrP95Ms": 20.54037500000004,
+          "zxingP95Ms": 7.8586669999999685
+        }
+      ]
+    },
+    {
+      "fork": 2,
+      "cases": [
+        {
+          "name": "clean",
+          "qrMedianMs": 1.49675000000002,
+          "zxingMedianMs": 1.8872499999999945,
+          "qrP95Ms": 1.5924999999999727,
+          "zxingP95Ms": 1.9800409999999147
+        },
+        {
+          "name": "blank",
+          "qrMedianMs": 1.1532499999998436,
+          "zxingMedianMs": 2.1200000000001182,
+          "qrP95Ms": 1.1883750000001783,
+          "zxingP95Ms": 2.1687919999999394
+        },
+        {
+          "name": "noise",
+          "qrMedianMs": 20.306166000000303,
+          "zxingMedianMs": 7.6931250000002365,
+          "qrP95Ms": 20.62441600000011,
+          "zxingP95Ms": 7.91516700000011
+        }
+      ]
+    }
+  ],
+  "historicalReceiptIdentity": "All four bound-previous receipts have the final candidateGenerated identity"
+}

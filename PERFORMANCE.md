@@ -1,5 +1,88 @@
 # Performance and verification
 
+## Low-resolution recovery candidate, based on 0.3.14
+
+This is an uncommitted candidate, not a release claim. After every earlier
+path fails, a picture of at most 262,144 pixels with a repeatedly sighted
+low-pitch finder triple receives one terminal ordinary search on a
+four-times-axis bilinear enlargement. An existing inverse luminance can receive
+a sequential attempt. The two searches share a separate 90-map/one-second-look
+allowance. A picture that retained and attempted the step-21 quadratic surface
+is excluded, so curved terminal misses do not pay for another geometry pass.
+Earlier successful results, legacy Work counters and validation retain priority.
+
+| Accuracy scope | QR 0.3.14 | Candidate | ZXing-WASM 3.1.7 |
+| --- | ---: | ---: | ---: |
+| Earlier 824 positives | 687 | **696** | 634 |
+| Fresh 192 positives, first evaluated on M4 | 98 | **112** | 76 |
+| Combined 1,016 positives | 785 | **808** | 710 |
+| Combined 96 negative controls rejected | 96/96 | **96/96** | 96/96 |
+
+The nine earlier gains and 12 of the 14 fresh gains are QR-only; the other two
+fresh gains are also read by ZXing. The fresh 1.5-pixel subset improves from
+8/32 to 14/32 against ZXing's 2/32. Every reader remains 0/32 at one pixel per
+module. `decode-frames/frame-07.png` is one further valid recovery outside
+these totals. No candidate wrong payload or negative false read occurred.
+The independent qrcode encoder and existing synthetic renderer do not establish
+physical-camera accuracy. The fresh cases are now regression data.
+
+The initial fallback recovered 114/192 fresh positives, but the exact previous
+20-case timing replay exposed large regressions on its two quadratic terminal
+misses. The final descriptor exclusion intentionally declines fresh cases 102
+and 115, leaving 112/192 and restoring those timings. Rejected unbounded and
+180-map candidates and their receipts are retained separately.
+
+All 1,112 final accuracy/regression cases have equal documented TypeScript and
+WASM public results, normalising only internal finder bookkeeping to x/y
+locations. All 1,112 legacy Work records are preserved. The M4 passes 524
+TypeScript tests with photographs, the full Kotlin suite, and 50 Rust tests
+plus one doctest. The pack has 94 frames and two shared interpolation vectors.
+The byte-reproduced packaged WASM is 264,929 bytes, SHA-256
+`1f581db1eba826a3d1268adea88bf96cce1cf2202bf1d8710c6e74a40b40bc45`.
+
+### M4 timings
+
+Two independent processes per backend ran sequentially on the Apple M4 Max
+with native Node 24.21.0, 60 alternating measured pairs after at least ten
+warm-up pairs and 500 ms. Complete results and input hashes are asserted
+outside the timed calls.
+
+| Fixed case | Backend | 0.3.14 median range, ms | Candidate median range, ms | Change, fork 1 / 2 |
+| --- | --- | ---: | ---: | ---: |
+| Clean | TS | 3.999–4.006 | 3.883–3.998 | -3.06% / -0.03% |
+| Blank | TS | 2.925–3.070 | 2.940–3.077 | -4.21% / +5.18% |
+| Noise | TS | 52.615–52.660 | 52.495–53.032 | -0.23% / +0.70% |
+| Clean | WASM | 1.509–1.518 | 1.511–1.521 | +0.16% / +0.23% |
+| Blank | WASM | 1.161–1.183 | 1.171–1.175 | -0.71% / +0.87% |
+| Noise | WASM | 20.373–20.416 | 20.368–20.483 | +0.33% / -0.03% |
+
+There is no repeatable fixed-case median regression. The exact historical
+20-case workload's terminal misses change by -0.54% to +0.26% in TypeScript
+and -1.18% to +0.57% in WASM; its successful cases change by -1.58% to +1.21%
+and -1.18% to +1.07% respectively, with complete results preserved. All four
+historical receipts include the exact final generated JavaScript identity.
+
+The new qualifying persistent misses remain expensive: `holdout-000` rises
+from 10.507–10.535 ms to 53.031–53.122 ms in TypeScript and from
+4.173–4.232 ms to 21.840–21.843 ms in WASM. `holdout-015` rises from
+0.428–0.434 ms to 2.993–3.028 ms in TypeScript and from 0.158–0.159 ms to
+2.452–2.457 ms in WASM. The nine measured new reads cost 70.23–616.92% more
+in TypeScript and 50.75–1,099.00% more in WASM than their earlier misses.
+This is an explicit accuracy/latency trade-off on qualifying hard inputs.
+
+| Direct fixed frame | Candidate QR WASM median, ms | ZXing-WASM median, ms |
+| --- | ---: | ---: |
+| Clean | 1.497–1.516 | 1.863–1.887 |
+| Blank | 1.153–1.161 | 2.103–2.120 |
+| Noise | 20.306–20.323 | 7.660–7.693 |
+
+QR remains faster on these clean and blank frames and about 2.6 times slower
+on random-noise rejection. Both paired WASM runs finish with baseline and
+candidate linear-memory capacities of 14,483,456 bytes; capacity is not peak
+live heap. Desktop samples do not establish mobile or worst-case latency.
+
+[Full policy history, raw timings, accuracy receipts, reproduction and reviews](benchmarks/2026-11-17-m4/low-resolution-recovery/README.md).
+
 ## 0.3.14 quadratic mesh recovery
 
 

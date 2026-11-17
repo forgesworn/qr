@@ -1,6 +1,6 @@
 import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
-import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
+import { binarise, enlarge, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, singleFormatAgreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, readQuadraticMesh, type QuadraticMesh, type Candidate } from './refine.js'
 import { agreedVersion, readSymbol, curvatureHeader, versionPeerHeader, type ModuleReader, type Payload } from './symbol.js'
@@ -103,11 +103,15 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (rediscovered) return rediscovered
   const selectedMesh = recoverRediscoveredGrid(budget, true)
   if (selectedMesh) return selectedMesh
-  return recoverQuadraticMesh(luminance, inverse, budget)
+  const quadratic = recoverQuadraticMesh(luminance, inverse, budget)
+  if (quadratic) return quadratic
+  return recoverLowResolution(luminance, inverse, budget, inversion)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
 const MAX_MAPS = 4 * MAX_TRIPLES * 5 * 6
+/** Maps and second looks available to the terminal enlarged search. */
+const LOW_RESOLUTION_MAPS = 90
 /** The reduced-size pass's factors, coarse to fine. */
 const REDUCTIONS = [8, 4, 2] as const
 /** A reduced picture narrower or shorter than this cannot hold a version 1 symbol at a pixel a module. */
@@ -133,6 +137,7 @@ interface Budget {
   conflict?: { candidate: Candidate; inverseLuminance: boolean }
   versionPeer?: { candidate: Candidate; inverseLuminance: boolean }
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
+  lowResolution?: boolean
 }
 
 interface AttemptedCandidate {
@@ -241,6 +246,28 @@ function where(location: Location, f: number): DecodeResult['location'] {
   }
 }
 
+function recoverLowResolution(luminance: Luminance, inverse: Luminance | undefined, budget: Budget, inversion: 'both' | 'normal' | 'inverted'): DecodeResult | undefined {
+  if (!budget.lowResolution || budget.quadraticMesh || luminance.width * luminance.height > 512 * 512) return undefined
+  const retry: Budget = { maps: LOW_RESOLUTION_MAPS, second: 1, here: LOW_RESOLUTION_MAPS, invertedFallback: false, uniform: false, hints: [], curvature: [], meshGrids: [] }
+  for (const source of inverse === undefined ? [luminance] : [luminance, inverse]) {
+    retry.here = LOW_RESOLUTION_MAPS
+    const found = look(enlarge(source, 4), source === luminance ? inversion : 'normal', 1, retry)
+    if (!found) continue
+    const up = (p: Point): Point => ({ x: p.x / 4, y: p.y / 4 })
+    return {
+      ...found,
+      inverted: source === inverse || found.inverted,
+      location: {
+        topLeft: up(found.location.topLeft),
+        topRight: up(found.location.topRight),
+        bottomLeft: up(found.location.bottomLeft),
+        alignment: found.location.alignment === undefined ? undefined : up(found.location.alignment),
+      },
+    }
+  }
+  return undefined
+}
+
 function search(
   image: BitImage,
   edges: Edges,
@@ -259,6 +286,9 @@ function search(
     const ranked = finderTriples(image, findFinders(image, tolerance, work, edges))
     const triples = ranked.slice(0, MAX_TRIPLES)
     for (const triple of triples) {
+      if (f === 1 && image.width * image.height <= 512 * 512 &&
+          (triple[0].moduleSize + triple[1].moduleSize + triple[2].moduleSize) / 3 <= 2.5 &&
+          triple[0].count + triple[1].count + triple[2].count >= 9) budget.lowResolution = true
       const first = locate(image, triple, undefined, work, edges)
       // An estimate past version 40 by no more than the retries reach still
       // tries the sizes of 177 or less among them.

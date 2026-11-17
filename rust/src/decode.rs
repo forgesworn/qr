@@ -3,7 +3,7 @@
 
 use std::rc::Rc;
 
-use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
+use crate::binarise::{binarise, enlarge, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
 use crate::refine::{agreement, agreement_read, format_agrees, keep, read_quadratic_mesh, single_format_agreement, second_look_collect, second_look_collect_quadratic, sized, Candidate, QuadraticMesh, SECOND_LOOKS};
@@ -18,6 +18,8 @@ const MAX_TRIPLES: usize = 6;
 /// Maps sampled a frame at most, at every size together: four passes, six
 /// triples, five sizes, six maps a size.
 const MAX_MAPS: u32 = 4 * MAX_TRIPLES as u32 * 5 * 6;
+/// Maps available to the terminal enlarged search.
+const LOW_RESOLUTION_MAPS: u32 = 90;
 /// Maps each reduced size may take, out of what the frame has left.
 const REDUCED_MAPS: u32 = 30;
 /// The size retries, in the order they are tried.
@@ -104,6 +106,7 @@ struct Budget {
     here: u32,
     inverted_fallback: bool,
     uniform: bool,
+    low_resolution: bool,
 }
 
 /// Finds and reads one QR code. `channels` is 4 (RGBA) or 1 (grey); rows are
@@ -120,7 +123,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false, low_resolution: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
@@ -181,7 +184,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     if let Some(found) = recover_version_peer(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_alternate_grid(&budget) { return Some(found); }
     if let Some(found) = recover_rediscovered_grid(&budget) { return Some(found); }
-    recover_quadratic_mesh(&luminance, inverse_luminance.as_ref(), &budget)
+    if let Some(found) = recover_quadratic_mesh(&luminance, inverse_luminance.as_ref(), &budget) { return Some(found); }
+    recover_low_resolution(&luminance, inverse_luminance.as_ref(), &budget, inversion)
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -336,6 +340,11 @@ fn search_with_hints(
         let triples = finder_triples(image, &found);
         for ids in triples.iter().take(MAX_TRIPLES) {
             let triple: [Finder; 3] = ids.map(|i| found[i]);
+            if f == 1 && image.width * image.height <= 512 * 512
+                && (triple[0].module_size + triple[1].module_size + triple[2].module_size) / 3.0 <= 2.5
+                && triple[0].count + triple[1].count + triple[2].count >= 9 {
+                budget.low_resolution = true;
+            }
             let first = locate(image, &triple, None, work.as_deref_mut(), edges);
             // An estimate past version 40 by no more than the retries reach still
             // tries the sizes of 177 or less among them.
@@ -405,6 +414,11 @@ fn search_reference(
         let triples = finder_triples(image, &found);
         for ids in triples.iter().take(MAX_TRIPLES) {
             let triple: [Finder; 3] = ids.map(|i| found[i]);
+            if f == 1 && image.width * image.height <= 512 * 512
+                && (triple[0].module_size + triple[1].module_size + triple[2].module_size) / 3.0 <= 2.5
+                && triple[0].count + triple[1].count + triple[2].count >= 9 {
+                budget.low_resolution = true;
+            }
             let first = locate(image, &triple, None, work.as_deref_mut(), edges);
             // An estimate past version 40 by no more than the retries reach still
             // tries the sizes of 177 or less among them.
@@ -713,6 +727,33 @@ fn recover_quadratic_mesh(luminance: &Luminance, inverse: Option<&Luminance>, bu
         location: place(&candidate.location, 1) })
 }
 
+/// One separately bounded ordinary search after four-times-axis enlargement.
+fn recover_low_resolution(luminance: &Luminance, inverse: Option<&Luminance>, budget: &Budget, inversion: Inversion) -> Option<Reading> {
+    if !budget.low_resolution || budget.quadratic.is_some() || luminance.width * luminance.height > 512 * 512 { return None; }
+    let mut retry = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None,
+        attempted: Vec::new(), mesh_grids: Vec::new(), maps: LOW_RESOLUTION_MAPS, second: 1,
+        here: LOW_RESOLUTION_MAPS, inverted_fallback: false, uniform: false, low_resolution: false };
+    retry.here = LOW_RESOLUTION_MAPS;
+    if let Some(found) = look(&enlarge(luminance, 4), inversion, 1, &mut retry, None, false) {
+        return Some(scale_low_resolution(found, false));
+    }
+    if let Some(inverse) = inverse {
+        retry.here = LOW_RESOLUTION_MAPS;
+        if let Some(found) = look(&enlarge(inverse, 4), Inversion::Normal, 1, &mut retry, None, false) {
+            return Some(scale_low_resolution(found, true));
+        }
+    }
+    None
+}
+
+fn scale_low_resolution(mut found: Reading, public_inverse: bool) -> Reading {
+    let down = |p: Point| Point { x: p.x / 4.0, y: p.y / 4.0 };
+    found.inverted |= public_inverse;
+    found.location = Place { top_left: down(found.location.top_left), top_right: down(found.location.top_right),
+        bottom_left: down(found.location.bottom_left), alignment: found.location.alignment.map(down) };
+    found
+}
+
 fn recover_alternate_grid(budget: &Budget) -> Option<Reading> {
     let slot = budget.alternate.as_ref()?;
     if slot.late_attempted { return None; }
@@ -1019,7 +1060,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false, low_resolution: false };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -1187,7 +1228,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
+        Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false, low_resolution: false }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {

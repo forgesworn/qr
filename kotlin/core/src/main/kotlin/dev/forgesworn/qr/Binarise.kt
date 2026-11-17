@@ -1,5 +1,7 @@
 package dev.forgesworn.qr
 
+import kotlin.math.floor
+
 /** A greyscale picture: one byte per pixel, 0 black to 255 white. */
 internal class Luminance(val data: ByteArray, val width: Int, val height: Int)
 
@@ -209,6 +211,31 @@ internal fun shrink(image: Luminance, f: Int): Luminance {
         for (x in 0 until width) out[y * width + x] = ((sums[x] + half) / area).toByte()
     }
     return Luminance(out, width, height)
+}
+
+/** Bilinear enlargement by an integer factor, with pixel centres at i + 0.5. */
+internal fun enlarge(image: Luminance, f: Int): Luminance {
+    val width = image.width * f
+    val height = image.height * f
+    val data = ByteArray(width * height)
+    for (y in 0 until height) {
+        val fy = (y + 0.5) / f - 0.5
+        val y0 = floor(fy).toInt().coerceIn(0, image.height - 1)
+        val y1 = minOf(y0 + 1, image.height - 1)
+        val ay = (fy - y0).coerceIn(0.0, 1.0)
+        for (x in 0 until width) {
+            val fx = (x + 0.5) / f - 0.5
+            val x0 = floor(fx).toInt().coerceIn(0, image.width - 1)
+            val x1 = minOf(x0 + 1, image.width - 1)
+            val ax = (fx - x0).coerceIn(0.0, 1.0)
+            val top = (image.data[y0 * image.width + x0].toInt() and 0xff) * (1 - ax) +
+                (image.data[y0 * image.width + x1].toInt() and 0xff) * ax
+            val bottom = (image.data[y1 * image.width + x0].toInt() and 0xff) * (1 - ax) +
+                (image.data[y1 * image.width + x1].toInt() and 0xff) * ax
+            data[y * width + x] = floor(top * (1 - ay) + bottom * ay + 0.5).toInt().toByte()
+        }
+    }
+    return Luminance(data, width, height)
 }
 
 /** First quad pass reads unsigned bytes; later passes accumulate integer sums. */
