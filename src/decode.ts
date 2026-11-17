@@ -88,7 +88,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   }
   const meshResult = recoverMeshGrids(budget)
   if (meshResult) return meshResult
-  return recoverUnattemptedCurvature(luminance, inverse, budget, inverseCurvature, work)
+  const unattempted = recoverUnattemptedCurvature(luminance, inverse, budget, inverseCurvature, work)
+  if (unattempted) return unattempted
+  return recoverHeaderConflict(luminance, inverse, budget, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -111,6 +113,7 @@ interface Budget {
   curvature: Candidate[]
   meshGrids: MeshGrid[]
   attempted?: AttemptedCandidate[]
+  conflict?: { candidate: Candidate; inverseLuminance: boolean }
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
 }
 
@@ -252,7 +255,7 @@ function search(
             work.maps++
             if (f > 1) work.reduced = (work.reduced ?? 0) + 1
           }
-          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple, collectHints ? budget.curvature : inverseCurvature)
+          const result = read(image, location, inverted, candidates, strict, f, collectHints ? budget.hints : undefined, triple, collectHints ? budget.curvature : inverseCurvature, collectHints || inverseCurvature ? budget : undefined, inverseCurvature !== undefined)
           if (result) return result
           if (budget.maps === 0 || budget.here === 0) return undefined
         }
@@ -281,6 +284,8 @@ function read(
   hints?: VersionHint[],
   triple?: readonly [Finder, Finder, Finder],
   curvature?: Candidate[],
+  conflictBudget?: Budget,
+  inverseLuminance = false,
 ): DecodeResult | undefined {
   const { size, project, matrix } = location
   const modules = new Uint8Array(size * size)
@@ -317,7 +322,7 @@ function read(
   if (strict && !agreementRead(sample, size)) {
     // The inverse-luminance fallback keeps its ordinary two-copy gate. A map
     // with an exact version anchor may still qualify for deferred refinement.
-    if (curvature) keepCurvature(curvature, location, inverted, sample)
+    if (curvature) keepCurvature(curvature, location, inverted, sample, conflictBudget, inverseLuminance)
     return undefined
   }
   const straightRead = sample
@@ -342,7 +347,7 @@ function read(
     const sy = i < 8 ? 8 : size - 7 + (i - 8)
     sample(sx, sy); sample(sy, sx)
   }
-  if (curvature) keepCurvature(curvature, location, inverted, sample)
+  if (curvature) keepCurvature(curvature, location, inverted, sample, conflictBudget, inverseLuminance)
   const agreed = agreement(modules, size)
   if (agreed && sized(modules, size, agreed.mirrored)) keep(candidates, { location, inverted, ...agreed })
   if (agreed && hints && triple && hints.length < SECOND_LOOKS) {
@@ -358,11 +363,22 @@ function read(
 }
 
 /** Retains header-qualified maps within one luminance basis, never mixing polarity-specific thresholds. */
-function keepCurvature(candidates: Candidate[], location: Location, inverted: boolean, sample: ModuleReader): void {
+function keepCurvature(candidates: Candidate[], location: Location, inverted: boolean, sample: ModuleReader, conflictBudget?: Budget, inverseLuminance = false): void {
   const { size, matrix } = location
   for (const mirrored of [false, true]) {
-    const header = curvatureHeader(mirrored ? (x, y) => sample(y, x) : sample, size)
+    // One slot: first strong (0/1 errors) wins; first weak (2 errors) is kept
+    // only until a strong candidate appears. Normal curvature collection never stops.
+    const allowConflict = conflictBudget !== undefined && matrix !== undefined &&
+      (conflictBudget.conflict === undefined || conflictBudget.conflict.candidate.distance === 2)
+    const header = curvatureHeader(mirrored ? (x, y) => sample(y, x) : sample, size, allowConflict)
     if (!header) continue
+    if (header.conflict) {
+      if (conflictBudget && (!conflictBudget.conflict || header.distance <= 1)) {
+        const candidate: Candidate = { location, inverted, mirrored, ecc: header.ecc, mask: header.mask, distance: header.distance }
+        conflictBudget.conflict = { candidate, inverseLuminance }
+      }
+      continue
+    }
     const duplicate = candidates.some(c => c.inverted === inverted && c.mirrored === mirrored && c.ecc === header.ecc && c.mask === header.mask && c.location.size === size && c.location.matrix && matrix && c.location.matrix.every((v, i) => v === matrix[i]))
     if (!duplicate) keep(candidates, { location, inverted, mirrored, ...header })
   }
@@ -542,6 +558,37 @@ function recoverUnattemptedCurvature(luminance: Luminance, inverse: Luminance | 
         }
       }
       return undefined
+    }
+  }
+  return undefined
+}
+
+
+/**
+ * One final attempt at a map with an exact version anchor and a uniquely
+ * stronger format copy. Conflicting formats exclude it from all earlier queues.
+ */
+function recoverHeaderConflict(luminance: Luminance, inverse: Luminance | undefined,
+  budget: Budget, work?: Work): DecodeResult | undefined {
+  const retained = budget.conflict
+  if (!retained) return undefined
+  const { candidate, inverseLuminance } = retained
+  const image = inverseLuminance ? inverse : luminance
+  if (!image) return undefined
+  if (work) work.second++
+  let modules: Uint8Array | undefined
+  const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+    grid => { modules = grid })
+  const inverted = inverseLuminance || candidate.inverted
+  const location = where(candidate.location, 1)
+  if (payload) return { ...payload, mirrored: candidate.mirrored, inverted, location }
+  if (modules) {
+    const grid = modules, size = candidate.location.size
+    const read: ModuleReader = candidate.mirrored ? (x, y) => grid[x * size + y] === 1 : (x, y) => grid[y * size + x] === 1
+    if (formatAgrees(read, size, candidate.ecc, candidate.mask)) {
+      const result = readSymbol(read, size)
+      if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
+        return { ...result, mirrored: candidate.mirrored, inverted, location }
     }
   }
   return undefined

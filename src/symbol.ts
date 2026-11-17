@@ -421,8 +421,10 @@ function latin1(bytes: Uint8Array): string {
  * A deferred curved-map candidate needs an exact version word matching its size.
  * Each independently readable peer must agree; at least one format copy must
  * decode within the ordinary BCH radius. This admits a retry, never a result.
+ * The optional conflict mode tags a uniquely stronger format copy (0--2 errors
+ * versus 3); callers must keep it separate from ordinary curvature candidates.
  */
-export function curvatureHeader(read: ModuleReader, size: number): {ecc: ErrorCorrection; mask: number; distance: number} | undefined {
+export function curvatureHeader(read: ModuleReader, size: number, allowConflict = false): {ecc: ErrorCorrection; mask: number; distance: number; conflict?: true} | undefined {
   if (size < 45) return undefined
   let va = 0, vb = 0
   for (let k = 17; k >= 0; k--) {
@@ -441,7 +443,14 @@ export function curvatureHeader(read: ModuleReader, size: number): {ecc: ErrorCo
     b = (b << 1) | +read(i < 8 ? size - 1 - i : 8, i < 8 ? 8 : size - 7 + i - 8)
   }
   const first = nearest(FORMATS, [a]), second = nearest(FORMATS, [b])
-  if (first && second && first.bits !== second.bits) return undefined
+  if (first && second && first.bits !== second.bits) {
+    if (!allowConflict) return undefined
+    const firstDistance = popcount(first.bits ^ a), secondDistance = popcount(second.bits ^ b)
+    const distance = Math.min(firstDistance, secondDistance)
+    if (distance > 2 || Math.max(firstDistance, secondDistance) !== 3) return undefined
+    const stronger = firstDistance < secondDistance ? first : second
+    return { ecc: stronger.ecc, mask: stronger.mask, distance, conflict: true }
+  }
   const format = first ?? second
   if (!format) return undefined
   return { ecc: format.ecc, mask: format.mask, distance: Math.min(popcount(format.bits ^ a), popcount(format.bits ^ b)) }

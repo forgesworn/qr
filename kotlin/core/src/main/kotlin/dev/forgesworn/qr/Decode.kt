@@ -123,8 +123,11 @@ private class Budget(var maps: Int, var second: Int, var here: Int, var inverted
     val overflow = ArrayList<Overflow>()
     val curvature = ArrayList<Retry>(SECOND_LOOKS + 1)
     val meshGrids = ArrayList<MeshGrid>(SECOND_LOOKS)
+    var conflict: ConflictCandidate? = null
     var attempted: MutableList<AttemptedCandidate>? = null
 }
+
+private class ConflictCandidate(val candidate: Retry, val inverseLuminance: Boolean)
 
 private class AttemptedCandidate(val candidate: Retry, val factor: Int, val inverseLuminance: Boolean)
 
@@ -208,7 +211,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     }
     val meshResult = recoverMeshGrids(budget)
     if (meshResult != null) return meshResult
-    return recoverUnattemptedCurvature(luminance, inverse, budget, inverseCurvature, work)
+    val unattempted = recoverUnattemptedCurvature(luminance, inverse, budget, inverseCurvature, work)
+    if (unattempted != null) return unattempted
+    return recoverHeaderConflict(luminance, inverse, budget, work)
 }
 
 /**
@@ -295,7 +300,8 @@ private fun search(
                     }
                     val result = read(image, location, inverted, candidates, strict, f, scratch,
                         if (f == 1 && !strict) triple else null, budget,
-                        if (f == 1 && !strict) budget.curvature else inverseCurvature)
+                        if (f == 1 && !strict) budget.curvature else inverseCurvature,
+                        if (f == 1 && (!strict || inverseCurvature != null)) budget else null, inverseCurvature != null)
                     if (result != null) return result
                     if (budget.maps == 0 || budget.here == 0) return null
                 }
@@ -327,6 +333,8 @@ private fun read(
     triple: Array<Finder>? = null,
     budget: Budget? = null,
     curvature: MutableList<Retry>? = null,
+    conflictBudget: Budget? = null,
+    inverseLuminance: Boolean = false,
 ): DecodeResult? {
     val size = location.size
     val length = size * size
@@ -359,7 +367,7 @@ private fun read(
     // A strict read needs two agreeing copies in one orientation; sample only
     // those format modules before attempting either full symbol read.
     if (strict && agreementRead(sample, size) == null) {
-        if (curvature != null) keepCurvature(curvature, location, inverted, sample)
+        if (curvature != null) keepCurvature(curvature, location, inverted, sample, conflictBudget, inverseLuminance)
         return null
     }
     val straightRead = sample
@@ -384,7 +392,7 @@ private fun read(
         val sy = if (i < 8) 8 else size - 7 + (i - 8)
         sample.read(sx, sy); sample.read(sy, sx)
     }
-    if (curvature != null) keepCurvature(curvature, location, inverted, sample)
+    if (curvature != null) keepCurvature(curvature, location, inverted, sample, conflictBudget, inverseLuminance)
     val agreed = agreement(modules, size)
     if (agreed != null) {
         // Preserve the existing candidate decision before sampling additional version modules.
@@ -403,12 +411,20 @@ private fun read(
 }
 
 /** Retain header-qualified maps within one luminance basis. */
-private fun keepCurvature(candidates: MutableList<Retry>, location: Placement, inverted: Boolean, sample: ModuleReader) {
+private fun keepCurvature(candidates: MutableList<Retry>, location: Placement, inverted: Boolean, sample: ModuleReader, conflictBudget: Budget?, inverseLuminance: Boolean) {
     val size = location.size
     val matrix = location.matrix
     for (isMirrored in booleanArrayOf(false, true)) {
         val reader = if (isMirrored) ModuleReader { x, y -> sample.read(y, x) } else sample
-        val header = curvatureHeader(reader, size, isMirrored) ?: continue
+        val allowConflict = conflictBudget != null && matrix != null &&
+            (conflictBudget.conflict == null || conflictBudget.conflict!!.candidate.agreed.distance == 2)
+        val evidence = curvatureEvidence(reader, size, isMirrored, allowConflict) ?: continue
+        val header = evidence.agreed
+        if (evidence.conflict) {
+            if (conflictBudget != null && (conflictBudget.conflict == null || header.distance <= 1))
+                conflictBudget.conflict = ConflictCandidate(Retry(location, inverted, header), inverseLuminance)
+            continue
+        }
         val duplicate = candidates.any {
             val old = it.location.matrix
             it.inverted == inverted && it.agreed.mirrored == isMirrored && it.agreed.ecc == header.ecc &&
@@ -617,4 +633,25 @@ private fun recoverUnattemptedCurvature(luminance: Luminance, inverse: Luminance
         }
     }
     return null
+}
+
+/** One final attempt at a separately retained conflicting header. */
+private fun recoverHeaderConflict(luminance: Luminance, inverse: Luminance?, budget: Budget, work: Work?): DecodeResult? {
+    val retained = budget.conflict ?: return null
+    val candidate = retained.candidate
+    val image = (if (retained.inverseLuminance) inverse else luminance) ?: return null
+    if (work != null) work.second++
+    var modules: ByteArray? = null
+    val payload = secondLook(image, thresholds(image), candidate, work, true, true) { modules = it }
+    val inverted = retained.inverseLuminance || candidate.inverted
+    val location = where(candidate.location, 1)
+    if (payload != null) return result(payload, candidate.agreed.mirrored, inverted, location)
+    val grid = modules ?: return null
+    val size = candidate.location.size
+    val read = if (candidate.agreed.mirrored) ModuleReader { x, y -> grid[x * size + y].toInt() == 1 }
+        else ModuleReader { x, y -> grid[y * size + x].toInt() == 1 }
+    if (!formatAgrees(read, size, candidate.agreed.ecc, candidate.agreed.mask)) return null
+    val decoded = readSymbol(read, size) ?: return null
+    return if (decoded.ecc == candidate.agreed.ecc && decoded.mask == candidate.agreed.mask)
+        result(decoded, candidate.agreed.mirrored, inverted, location) else null
 }

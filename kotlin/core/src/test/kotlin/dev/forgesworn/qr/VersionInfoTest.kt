@@ -53,6 +53,47 @@ class VersionInfoTest {
     }
 
     @Test
+    fun conflictAdmissionRequiresStrongerFormatAndExactVersion() {
+        val qr = encode("Header conflict fixture", EncodeOptions(version = 12, ecc = ErrorCorrection.M, mask = 3))
+        val size = qr.size
+        val (bottom, top) = versionModules(size)
+        val formats = Array(2) { copy -> IntArray(15) { i ->
+            val x = if (copy == 0) FORMAT_COORDS[i][0] else if (i < 8) size - 1 - i else 8
+            val y = if (copy == 0) FORMAT_COORDS[i][1] else if (i < 8) 8 else size - 7 + i - 8
+            y * size + x
+        } }
+        fun write(indices: IntArray, word: Int) {
+            for (i in indices.indices) qr.modules[indices[i]] = ((word shr i) and 1).toByte()
+        }
+        val read = ModuleReader { x, y -> qr.modules[y * size + x].toInt() == 1 }
+        val first = formatBits(ErrorCorrection.M, 3)
+        val second = formatBits(ErrorCorrection.Q, 7)
+        for (distance in 0..3) for (swap in booleanArrayOf(false, true)) {
+            write(formats[if (swap) 1 else 0], first xor ((1 shl distance) - 1))
+            write(formats[if (swap) 0 else 1], second xor 7)
+            assertNull(curvatureHeader(read, size, false))
+            val captured = curvatureEvidence(read, size, false, true)
+            if (distance <= 2) {
+                assertNotNull(captured)
+                assertTrue(captured!!.conflict)
+                assertEquals(distance, captured.agreed.distance)
+                assertEquals(ErrorCorrection.M, captured!!.agreed.ecc)
+                assertEquals(3, captured!!.agreed.mask)
+            } else assertNull(captured)
+        }
+        write(formats[0], first); write(formats[1], first)
+        assertTrue(curvatureEvidence(read, size, false, true)?.conflict == false)
+        write(formats[0], first xor 1); write(formats[1], first xor 7)
+        assertTrue(curvatureEvidence(read, size, false, true)?.conflict == false)
+        write(formats[0], first); write(formats[1], second xor 7)
+        write(bottom, versionBits(12) xor 1); write(top, versionBits(12) xor 2)
+        assertNull(curvatureEvidence(read, size, false, true))
+        write(bottom, versionBits(12)); write(top, versionBits(13))
+        assertNull(curvatureEvidence(read, size, false, true))
+        assertNull(curvatureEvidence(ModuleReader { _, _ -> error("must not sample") }, 41, false, true))
+    }
+
+    @Test
     fun versionHintRequiresBothCopiesToAgreeIndependently() {
         for (version in listOf(7, 12, 40)) {
             val size = 17 + 4 * version

@@ -155,7 +155,12 @@ internal fun agreedVersion(read: ModuleReader, size: Int): Int? {
 }
 
 /** Header evidence for a deferred curved-map retry; this does not admit a result. */
-internal fun curvatureHeader(read: ModuleReader, size: Int, mirrored: Boolean): Agreement? {
+internal class CurvatureEvidence(val agreed: Agreement, val conflict: Boolean)
+
+internal fun curvatureHeader(read: ModuleReader, size: Int, mirrored: Boolean): Agreement? =
+    curvatureEvidence(read, size, mirrored)?.agreed
+
+internal fun curvatureEvidence(read: ModuleReader, size: Int, mirrored: Boolean, allowConflict: Boolean = false): CurvatureEvidence? {
     if (size < 45) return null
     var va = 0
     var vb = 0
@@ -181,9 +186,18 @@ internal fun curvatureHeader(read: ModuleReader, size: Int, mirrored: Boolean): 
     }
     val first = nearest(FORMATS, { it.bits }, intArrayOf(a))
     val second = nearest(FORMATS, { it.bits }, intArrayOf(b))
-    if (first != null && second != null && first.bits != second.bits) return null
+    if (first != null && second != null && first.bits != second.bits) {
+        if (!allowConflict) return null
+        val firstDistance = popcount(first.bits xor a)
+        val secondDistance = popcount(second.bits xor b)
+        val distance = minOf(firstDistance, secondDistance)
+        if (distance > 2 || maxOf(firstDistance, secondDistance) != 3) return null
+        val stronger = if (firstDistance < secondDistance) first else second
+        return CurvatureEvidence(Agreement(mirrored, stronger.ecc, stronger.mask, distance), true)
+    }
     val format = first ?: second ?: return null
-    return Agreement(mirrored, format.ecc, format.mask, minOf(popcount(format.bits xor a), popcount(format.bits xor b)))
+    return CurvatureEvidence(Agreement(mirrored, format.ecc, format.mask,
+        minOf(popcount(format.bits xor a), popcount(format.bits xor b))), false)
 }
 
 /**

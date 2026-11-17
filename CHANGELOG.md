@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.8
+
+- Retain one full-size curved map whose format copies disagree, with exact
+  version evidence and a uniquely stronger format copy. Prefer the first
+  zero/one-error copy over a two-error copy when the conflicting peer needs
+  three corrections. Try it only after every earlier path fails; final
+  two-copy format, version, Reed-Solomon and payload checks remain unchanged.
+- Improve the evaluated distortion sets from 44 to 48/96, 89 to 103/128 and
+  53 to 62/128. A separate set frozen before evaluation improves from 58 to
+  71/128, compared with ZXing's 67/128. Earlier curved sheets improve from
+  four to six reads out of 18. No earlier successful result changes in these
+  checks; ZXing still leads on one evaluated distortion set.
+- Bound the new recovery to one retained candidate and one terminal attempt,
+  raising the maximum to six second looks and 8,625,000 alignment probes.
+  Earlier attempts keep their order. This trades additional work on some
+  difficult frames for more correct reads.
+
 ## 0.3.7
 
 - After every earlier decoder path fails, allow one retained curved map that
