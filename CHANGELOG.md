@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- After every earlier read fails, give a picture of at most 262,144 pixels
+  whose finders show a small, repeatedly sighted module pitch one ordinary
+  search on a four-times bilinear enlargement, with its own allowance of 90
+  maps and one second look. Pictures that retained and attempted a quadratic
+  surface are excluded. Mirror the step in all three ports and add five shared
+  conformance fixtures and two enlargement vectors.
+- Read 808 of 1,016 photograph, synthetic and fresh low-resolution
+  positives, against 785 in 0.3.14 and 710 for pinned ZXing-WASM 3.1.7, with
+  all 96 negative controls rejected and no wrong payload. Fixed clean, blank
+  and noise timings show no repeatable regression; persistent misses that
+  qualify for the new step take several times longer. See PERFORMANCE.md.
+
 ## 0.3.14
 
 - After all earlier reads fail, sample one quadratic surface from the first

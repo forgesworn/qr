@@ -2,7 +2,7 @@
 
 ## Low-resolution recovery candidate, based on 0.3.14
 
-This is an uncommitted candidate, not a release claim. After every earlier
+This is an unreleased candidate, not a release claim. After every earlier
 path fails, a picture of at most 262,144 pixels with a repeatedly sighted
 low-pitch finder triple receives one terminal ordinary search on a
 four-times-axis bilinear enlargement. An existing inverse luminance can receive
