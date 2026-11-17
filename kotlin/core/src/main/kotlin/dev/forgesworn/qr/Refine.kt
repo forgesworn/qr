@@ -262,7 +262,7 @@ private const val FOUND = 24
  * continue to the symbol boundary; other cells use the outermost row and column.
  * Null below version 7, or when no pattern is found.
  */
-private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean): Placement? {
+private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean, collectQuadratic: ((QuadraticMesh) -> Unit)?): Placement? {
     val size = location.size
     val version = (size - 17) / 4
     if (version < 1 || version > 40) return null
@@ -400,6 +400,8 @@ private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean):
     }
     if (found == 0) return null
     if (work != null) work.meshes++
+    if (late && n == 3 && found == 6 && collectQuadratic != null)
+        collectQuadratic(QuadraticMesh(location, ox.copyOf(), oy.copyOf()))
     // The finder centres lie at module indices 3 and size - 4, not at the
     // synthetic lattice corners. Fit each corner from its three measured neighbours.
     val trusted = IntArray(state.size) { if (state[it] == 2) 1 else 0 }
@@ -469,11 +471,11 @@ private fun mesh(location: Placement, probe: Probe, work: Work?, late: Boolean):
  * by its header evidence. With [strict], the format copies of the modules
  * read again must also agree on them, as every read at reduced size must.
  */
-internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false, collectMesh: ((ByteArray) -> Unit)? = null, collectFinal: ((ByteArray) -> Unit)? = null): Payload? {
+internal fun secondLook(image: Luminance, t: Thresholds, candidate: Retry, work: Work? = null, strict: Boolean = false, late: Boolean = false, collectMesh: ((ByteArray) -> Unit)? = null, collectFinal: ((ByteArray) -> Unit)? = null, collectQuadratic: ((QuadraticMesh) -> Unit)? = null): Payload? {
     val mirrored = candidate.agreed.mirrored
     val probe = Probe(image, t, candidate.inverted)
     // 0. From version 7, the map bent onto the alignment patterns it can find.
-    val meshed = mesh(candidate.location, probe, work, late)
+    val meshed = mesh(candidate.location, probe, work, late, collectQuadratic)
     val location = meshed ?: candidate.location
     val size = location.size
     // 1. The timing patterns: shift whole columns and rows by what they show.
@@ -553,6 +555,84 @@ internal fun singleFormatAgreement(read: ModuleReader, size: Int, mirrored: Bool
     for (f in FORMAT_WORDS) {
         val distance = maxOf(Integer.bitCount(f.bits xor first), Integer.bitCount(f.bits xor second))
         if (distance <= AGREEMENT) return Agreement(mirrored, f.ecc, f.mask, distance)
+    }
+    return null
+}
+
+/** Six measured nodes of a three-by-three lattice, before fitting synthetic corners. */
+internal class QuadraticMesh(val location: Placement, val x: DoubleArray, val y: DoubleArray)
+internal class QuadraticResult(val payload: Payload, val mirrored: Boolean)
+
+/** One terminal curved-grid read from retained measurements, without another search. */
+internal fun readQuadraticMesh(image: Luminance, candidate: Retry, mesh: QuadraticMesh): QuadraticResult? {
+    val location = mesh.location
+    val size = location.size
+    val version = (size - 17) / 4
+    if (version < 1 || version > 40) return null
+    val c = ALIGNMENT_CENTRES[version - 1]
+    if (c.size != 3) return null
+    fun axis(z: Double): DoubleArray = DoubleArray(3) { i ->
+        var weight = 1.0
+        for (j in 0 until 3) if (j != i) weight *= (z - c[j]) / (c[i] - c[j]).toDouble()
+        weight
+    }
+    fun weights(x: Double, y: Double): DoubleArray {
+        val a = axis(x)
+        val b = axis(y)
+        return DoubleArray(9) { i -> a[i % 3] * b[i / 3] }
+    }
+    val corners = intArrayOf(0, 2, 6)
+    val anchors = arrayOf(weights(3.0, 3.0), weights((size - 4).toDouble(), 3.0), weights(3.0, (size - 4).toDouble()))
+    val ox = mesh.x.copyOf()
+    val oy = mesh.y.copyOf()
+    for (offsets in arrayOf(ox, oy)) {
+        val rows = Array(3) { r ->
+            val w = anchors[r]
+            var rhs = 0.0
+            for (i in 0 until 9) if (i !in corners) rhs -= w[i] * offsets[i]
+            doubleArrayOf(w[corners[0]], w[corners[1]], w[corners[2]], rhs)
+        }
+        for (j in 0 until 3) {
+            var pivot = j
+            for (i in j + 1 until 3) if (kotlin.math.abs(rows[i][j]) > kotlin.math.abs(rows[pivot][j])) pivot = i
+            val swap = rows[j]; rows[j] = rows[pivot]; rows[pivot] = swap
+            val divisor = rows[j][j]
+            if (!divisor.isFinite() || divisor == 0.0) return null
+            for (k in 0 until 4) rows[j][k] = rows[j][k] / divisor
+            for (i in 0 until 3) {
+                if (i == j) continue
+                val factor = rows[i][j]
+                for (k in 0 until 4) rows[i][k] = rows[i][k] - factor * rows[j][k]
+            }
+        }
+        for (i in 0 until 3) {
+            val value = rows[i][3]
+            if (!value.isFinite()) return null
+            offsets[corners[i]] = value
+        }
+    }
+    val levels = thresholds(image)
+    val probe = Probe(image, levels, candidate.inverted)
+    val modules = ByteArray(size * size)
+    val axes = Array(size) { axis(it.toDouble()) }
+    for (y in 0 until size) for (x in 0 until size) {
+        var dx = 0.0
+        var dy = 0.0
+        for (j in 0 until 3) for (i in 0 until 3) {
+            val weight = axes[x][i] * axes[y][j]
+            dx += weight * ox[j * 3 + i]
+            dy += weight * oy[j * 3 + i]
+        }
+        val point = location.at(x + dx, y + dy)
+        modules[y * size + x] = if (probe.at(point.x, point.y) > 0) 1 else 0
+    }
+    for (mirrored in booleanArrayOf(candidate.agreed.mirrored, !candidate.agreed.mirrored)) {
+        val read = if (mirrored) ModuleReader { x, y -> modules[x * size + y].toInt() == 1 }
+            else ModuleReader { x, y -> modules[y * size + x].toInt() == 1 }
+        val agreed = singleFormatAgreement(read, size, mirrored) ?: continue
+        val payload = readSymbol(read, size) ?: return null
+        if (payload.ecc != agreed.ecc || payload.mask != agreed.mask) return null
+        return QuadraticResult(payload, mirrored)
     }
     return null
 }

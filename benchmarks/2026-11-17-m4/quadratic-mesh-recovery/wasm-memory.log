@@ -1,0 +1,5 @@
+memory before the run: 1179648 bytes
+memory after warm-up (384 calls): 5242880 bytes
+memory after 1000 calls: 5242880 bytes
+memory at the end: 5242880 bytes (1000 rounds: 1000 frames read, 63 recovery fixtures read, 334 blank pictures read nothing, 143 calls refused)
+control, 1000 grid reads with the handles never freed: 1179648 bytes after 200, 1507328 bytes after 1000 more

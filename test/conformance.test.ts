@@ -27,6 +27,7 @@ import { versionPeerPicture } from './version-peer-fixture.js'
 import { alternateGridPicture } from './alternate-grid-fixture.js'
 import { headerRediscoveryPicture } from './header-rediscovery-fixture.js'
 import { selectedMeshPicture } from './selected-mesh-fixture.js'
+import { quadraticMeshPicture } from './quadratic-mesh-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -318,6 +319,10 @@ function build(write: boolean): Pack {
   for (const index of [6, 122] as const) own(`header-rediscovery-${index}`, headerRediscoveryPicture(index).image)
   // A failed final-grid read can still use its existing same-call mesh.
   for (const index of [42, 39] as const) own(`selected-mesh-${index}`, selectedMeshPicture(index).image)
+  // A fully measured sparse lattice supplies one terminal quadratic grid.
+  for (const [group, index] of [['starvation', 16], ['alternate', 16], ['alternate', 18], ['header', 16], ['header', 18]] as const) {
+    own(`quadratic-mesh-${group}-${index}`, quadraticMeshPicture(group, index).image)
+  }
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

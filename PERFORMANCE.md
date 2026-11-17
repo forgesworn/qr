@@ -1,5 +1,122 @@
 # Performance and verification
 
+## 0.3.14 quadratic mesh recovery
+
+
+The new fallback retains the first fully measured 3×3 alignment lattice encountered during an existing full-size late refinement. It preserves the six measured offsets and jointly fits the three synthetic corners so the surface remains anchored at the actual finder centres. After all earlier recovery paths fail, it samples one quadratic grid. It inspects the candidate orientation and then the opposite orientation, selects the first pair of agreeing format copies within two errors each, and performs one unchanged symbol read. A failed read does not try another orientation or descriptor.
+
+| Synthetic curve scope | 0.3.13 | QR 0.3.14 | ZXing-WASM 3.1.7 |
+| --- | ---: | ---: | ---: |
+| Earlier 1,120 cases | 653 | 743 | 569 |
+| Separately frozen 256 cases | 65 | 118 | 77 |
+| Combined 1,376 cases | 718 | 861 | 646 |
+
+QR 0.3.14 adds 143 exact reads and preserves every earlier complete successful result and input image. QR returned no wrong payload. There are 229 QR-only reads and 14 ZXing-only reads in the combined set; the latter comprise nine earlier cases and five from the new validation set. These are finite synthetic comparisons, not a claim that QR reads every code ZXing can read.
+
+The 256 validation frames were frozen before their candidate evaluation, with pixels and payloads disjoint from the earlier 1,120. They use versions 8, 10, 11 and 12, scales 2 and 3, both signs and axes, and four explicitly rendered profiles. Version dimensions overlap earlier work; this is not a wholly unseen-version study. The evaluated frames are now regression data. Each profile contributes 64 cases:
+
+| New synthetic profile | 0.3.13 | QR 0.3.14 | ZXing-WASM 3.1.7 |
+| --- | ---: | ---: | ---: |
+| Parabola | 32 | 61 | 27 |
+| Circular arch | 11 | 32 | 23 |
+| Cubic skew | 22 | 25 | 27 |
+| Double wave | 0 | 0 | 0 |
+
+The cubic-skew subset still favours ZXing, and neither reader succeeds on this double-wave subset. These mathematical renderings do not establish physical-camera or arbitrary-surface accuracy.
+
+The separate 888-case regression preserves the earlier correct counts: photographs 180/184, stress positives 172/224, previously qualified positives 69/128, validation 174/192 and synthetic 92/96. All 64 negative controls remain rejected. On photographs, pinned ZXing reports 171 correct, 12 misses and one wrong payload; QR reports 180 correct, four misses and no wrong payload. Do not describe that single finite photo comparison as a universal false-positive rate.
+
+The retained descriptor contains 18 doubles (144 logical bytes), plus candidate/location metadata. Its version 7–13 scope bounds the extra active grid and bilinear samples to 69² = 4,761. The existing conservative retained-grid bound remains 281,961 module bytes; it excludes this active grid, descriptor/metadata, threshold buffers, temporaries and allocator capacity. No peak-heap claim follows from these figures.
+
+Legacy Work remains equal across these comparisons because it measures the existing search/refinement paths. The new threshold computation, sampling and symbol read are deliberately separate: **at most eight legacy second looks plus one terminal pass**, not unchanged total work. Successful earlier paths can still pay for the bounded offset snapshot.
+
+
+### Production verification
+
+The packaged WASM is **261,831 bytes**, 8,908 bytes larger than 0.3.13,
+SHA-256 `022993bfb6895152421aaf22673484c8d6fb60be3edae44d5eb85c927f28e326`.
+Its Rust/build source SHA-256 is
+`bcef67af506d43ebf88b4dd6d6e5f1f61620a13687ea02bb4374a84e8c708fa9`.
+All 2,264 curved and regression inputs have equal public TypeScript/WASM
+results. Only location points are normalised to their documented x/y fields;
+internal TypeScript finder bookkeeping is not part of the WASM API. All other
+fields are compared, including bytes, corrections, ECI and orientation.
+Earlier TypeScript successes are compared as raw complete results.
+Input preservation for the packaged comparison combines the qualified
+TypeScript per-reader check, byte-identical production JavaScript and the
+check after the packaged WASM call.
+
+Related photograph transformations remain **2,872/2,944** correct with no
+wrong payloads. The curved-sheet set improves from **10/18 to 12/18**.
+Every earlier complete successful result and legacy Work counter is preserved.
+Photo transformations are related views of 184 photographs, not independent
+photographs. Their oracle supplies exact expected text rather than independently
+supplied raw payload bytes.
+
+All **516 TypeScript tests** with required photographs, **123 Kotlin tests**,
+and **49 Rust tests plus one doctest** pass. Rust default and all-feature
+configurations both pass. Five newly generated official conformance frames
+bring the pack to 89; all 84 previous frame entries and other pack sections
+remain unchanged. All five new regression fixtures fail on exact 0.3.13
+JavaScript and pass with the candidate.
+
+Standalone WASM matches 89 pack frames, 712 Work counters, 2,000 option
+comparisons and all 148 encoder vectors. Native/standalone module-grid and
+renderer comparisons pass. Its 1,000-round lifetime check, after 384 warm-up
+calls across 24 recovery fixtures, remains at 5,242,880 bytes of linear-memory
+capacity; deliberately unfreed handles grow the control. This measures capacity,
+not peak live heap. The packaged build also passes Chrome, worker, six host
+character-set cases and session/reset checks. These are desktop browser checks,
+not physical-camera acceptance.
+
+### Measured timings
+
+Two independent processes per backend ran sequentially on the Apple M4 Max,
+using native arm64 Node 24.21.0. Each of the 20 paired cases has 60 alternating
+measured pairs after at least ten warm-up pairs and 500 ms. Full result and
+input assertions run outside the timed call. This is a working desktop with
+other applications open; no task-owned QR build, test or benchmark ran
+concurrently. These results do not establish mobile performance or worst-case
+latency.
+
+The workload includes all five original target gains, seven other gains
+including circular-arch and cubic-skew examples, three prior successes,
+two confirmed terminal-sampling misses and clean/blank/noise controls.
+The copied-source observer examined 228 frozen cases, preserving production,
+hooks-off and hooks-on complete results, Work and pixels. It selected the first
+two actual terminal-sampling misses and first descriptor-retaining earlier
+success; `timing-audit.json` binds their exact inputs. Timed decoders contain
+no observer hooks. Every earlier successful result remains identical.
+
+Across the twelve sampled new reads, WASM median latency changes by
+**+0.18% to +4.27%**, and TypeScript by **+0.66% to +6.06%**, relative to the
+earlier misses. The two confirmed terminal misses change by **+0.10% to +1.53%**
+for WASM and **+1.24% to +2.04%** for TypeScript. The descriptor-retaining
+prior success changes by **−0.51% to +1.38%** for WASM and **+0.23% to +0.88%**
+for TypeScript. These are ranges across cases and both processes, not an
+aggregate throughput result. The trade-off is more exact reads at a measured
+additional cost on these hard inputs.
+
+### Direct comparison
+
+Both libraries receive the same three fixed 1280 × 720 RGBA frames, including
+their public wrappers. ZXing-WASM 3.1.7 uses QR-only decoding with try-harder,
+rotation, inversion and downscaling enabled, one symbol and plain text. Its
+binary SHA-256 is `33c8c50be17d0bb05454b4fd3ffb5b5ab9a8e8d1c0ebeb21a1adf4a89c1a8b59`.
+Each of two sequential processes uses the same 60-pair/warm-up contract.
+
+| Fixed frame | QR 0.3.14 WASM median | ZXing-WASM 3.1.7 median | QR p95 | ZXing p95 |
+|---|---:|---:|---:|---:|
+| Clean | 1.595–1.618 ms | 2.016–2.027 ms | 1.703–1.703 ms | 2.181–2.186 ms |
+| Blank | 1.216–1.238 ms | 2.231–2.237 ms | 1.282–1.347 ms | 2.315–2.340 ms |
+| Noise | 21.304–21.321 ms | 8.013–8.079 ms | 21.708–22.651 ms | 8.316–8.405 ms |
+
+QR is faster on these clean and blank frames. Random-noise rejection remains
+about 2.6× slower than ZXing. Neither the accuracy gain nor unchanged legacy
+Work implies a general speed improvement.
+
+[All paired cases, raw timings, identities and reproduction](benchmarks/2026-11-17-m4/quadratic-mesh-recovery/README.md).
+
 ## 0.3.13 selected mesh recovery
 
 The existing header-rediscovery path selects the first qualifying final grid

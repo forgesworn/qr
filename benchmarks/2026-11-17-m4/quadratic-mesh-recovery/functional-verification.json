@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "functionalSession": 54301,
+  "backendSession": 3374,
+  "standaloneAndBrowserSession": 81519,
+  "tests": {
+    "typescript": 516,
+    "kotlin": 123,
+    "rust": 49,
+    "rustDoctests": 1
+  },
+  "packFrames": 89,
+  "packCounters": 712,
+  "optionComparisons": 2000,
+  "encoderVectors": 148,
+  "browserCharsetCases": 6,
+  "relatedPhotoViews": 2944,
+  "packagedComparisonCases": 2264,
+  "normalisation": "Only cross-backend location points are reduced to public x/y; all other fields retained. Raw complete TypeScript baseline comparisons are unchanged.",
+  "prepublicationPending": [],
+  "logs": {
+    "kotlin-tests.log": "15dcf4e082230dea62d1398e4f0250401d33897326b49586e393fc2a29660c70",
+    "browser.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "render.log": "4752c4082b4e87b00be5f9a16b3aef8c6b8870ced3ac3a0c8079ae34994c4fda",
+    "standalone-pack.log": "3d27d5538f638c29c2579ab3c9ef7d743ee388d5bb341c78b23b4b776dbe7bcf",
+    "rust-default.log": "87666e099bbef524b7eda6c4478cc03827b1f79d7da85b0c0d5950c0bd12ee5b",
+    "rust-features.log": "664f1356c61a64892a84ee75f1b76fed52fad9d406c33739cb549b2ca1c7e5f9",
+    "symbols.log": "a9914dd41edd379030941f22b694454eb515ff051cd769c413012948b4f83db8",
+    "typescript-tests.log": "82ace5385ab0da08ba5c5cc72cc4052ac93b5cd9536ff3205ab535a6cea0d436",
+    "wasm-memory.log": "78a7e39af3aa3c8e980970344a3e09baf698401f0ed49dd931dc59d965457470",
+    "standalone-encode.log": "2079026d5cfc7ec6116d670d54fa9d2def827c86aeabfc30ab95a824eea3c123",
+    "standalone-options.log": "cda8ff644c0a3884bd579e6113cb9c218c2fc1e506a1793cc7fee00bb1965f95",
+    "backend-validation.log": "a2783b4220e873fb9a0b3caf159fda7f48062a79f3b87fa33c57fd93b2b17433"
+  },
+  "prepublication": {
+    "passed": true,
+    "m4Session": 82202,
+    "jsrLocalSession": 50294,
+    "logs": {
+      "docs-build.log": "92f0033c0ef3685c5491e8dc9e4049c9bef52dff58c07c348592187fd4d42f0c",
+      "docs-browser.json": "30881429122d055f3da3ed86c5f8eef9784264fae500baa77ad5feb4d620e70e",
+      "docs-browser.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "package-check.log": "bb2afb5a05e394dacded79c20cd9ffd3e38857018131c5bdf0724878dc127cdd",
+      "maven-stage.log": "1f619da35554ed79f973be71edaef0a9278609e83edefc2c528c1e34a41023ff",
+      "maven-check.log": "7e03cef886f6d5d1d92b8922e5dda85b412ad77962bf4a3ae4b3260940f7df0f",
+      "crate-package.log": "20cd7c5d4f4491f220b4bf6b1f05f0357dd1f4eb68918946877b0f4f64dbd820",
+      "crate-consumer.log": "29c30744258898ed13d87617dccbeadef697922735650c6159d25524b28f9d52",
+      "rustdoc.log": "b9a2c6b94b2004ccd71f19eeca9597884df0f11dd0112bcc2bfdcad759334481",
+      "jsr-check.log": "44a3396ed256c3e63ed13d8b59a2af483254d9009a159453c088424bf4eafbb2"
+    }
+  }
+}

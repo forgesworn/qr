@@ -1,0 +1,5 @@
+const fs=require('node:fs'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process')
+const [root,base]=process.argv.slice(2),sha=b=>crypto.createHash('sha256').update(b).digest('hex')
+const source=fs.readFileSync(root+'/test/png.ts','utf8');assert.equal(sha(source),sha(execFileSync('git',['-C',root,'show','v0.3.13:test/png.ts'])))
+const ts=require(root+'/node_modules/typescript'),result=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022},reportDiagnostics:true});assert.equal(result.diagnostics.length,0)
+fs.writeFileSync(base+'/png.mjs',result.outputText,{flag:'wx'});fs.writeFileSync(base+'/png-binding.json',JSON.stringify({sourceSha256:sha(source),outputSha256:sha(result.outputText),compiler:ts.version})+'\n',{flag:'wx'})

@@ -1,0 +1,99 @@
+{
+  "passed": true,
+  "integrationSha256": "aae2599580731917b8a414e9bf437cdf9d785428fd392eafc8db109ef8b25cc4",
+  "checks": [
+    {
+      "name": "wasm-build",
+      "command": [
+        "npm",
+        "run",
+        "build:wasm"
+      ],
+      "exitCode": 0,
+      "seconds": 7.986329078674316,
+      "logSha256": "4a31a0d3c6c11061085889eeebd248e6e5035581a7a2626c14e76737fdd19894"
+    },
+    {
+      "name": "typescript-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "seconds": 0.4960000514984131,
+      "logSha256": "18169c4a5a1aad159a6789617cd0aad78cde521b08ce8917ce5ebf0e76c6cd64"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "seconds": 0.7335810661315918,
+      "logSha256": "863a43443fd84aa28f782c220c4fcbd46cc22771031b17f83a88968796af3f14"
+    },
+    {
+      "name": "typescript-tests",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--maxWorkers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 29.39209794998169,
+      "logSha256": "82ace5385ab0da08ba5c5cc72cc4052ac93b5cd9536ff3205ab535a6cea0d436"
+    },
+    {
+      "name": "rust-default",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j",
+        "1"
+      ],
+      "exitCode": 0,
+      "seconds": 91.87764596939087,
+      "logSha256": "87666e099bbef524b7eda6c4478cc03827b1f79d7da85b0c0d5950c0bd12ee5b"
+    },
+    {
+      "name": "rust-features",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--all-features",
+        "-j",
+        "1"
+      ],
+      "exitCode": 0,
+      "seconds": 58.49773406982422,
+      "logSha256": "664f1356c61a64892a84ee75f1b76fed52fad9d406c33739cb549b2ca1c7e5f9"
+    },
+    {
+      "name": "kotlin-tests",
+      "command": [
+        "./gradlew",
+        "test",
+        "--console=plain",
+        "--no-daemon",
+        "--max-workers=2"
+      ],
+      "exitCode": 0,
+      "seconds": 26.50053095817566,
+      "logSha256": "15dcf4e082230dea62d1398e4f0250401d33897326b49586e393fc2a29660c70"
+    }
+  ],
+  "wasm": {
+    "abi": 2,
+    "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "target": "wasm32-unknown-unknown",
+    "sourceSha256": "bcef67af506d43ebf88b4dd6d6e5f1f61620a13687ea02bb4374a84e8c708fa9",
+    "sha256": "022993bfb6895152421aaf22673484c8d6fb60be3edae44d5eb85c927f28e326",
+    "bytes": 261831
+  }
+}

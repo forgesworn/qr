@@ -2,7 +2,7 @@
 // find nothing, a few maps admitted by header evidence are read again
 // with their module centres moved onto the edges the picture shows, sampling
 // grey rather than black and white.
-import { thresholdAt, type Luminance, type Thresholds } from './binarise.js'
+import { thresholds, thresholdAt, type Luminance, type Thresholds } from './binarise.js'
 import { EC_ORDER, FORMAT_COORDS, formatBits, type ErrorCorrection } from './encode.js'
 import type { Location, Point, Work } from './locate.js'
 import { readSymbol, readVersion, type ModuleReader, type Payload } from './symbol.js'
@@ -263,7 +263,7 @@ const FOUND = 24
  * With `late`, predicted nodes get one further search using a frozen pair of
  * accepted anchors; ordinary second looks retain their original single pass.
  */
-function mesh(location: Location, probe: Probe, work?: Work, late = false): Location | undefined {
+function mesh(location: Location, probe: Probe, work?: Work, late = false, collectQuadratic?: (mesh: QuadraticMesh) => void): Location | undefined {
   const { size, project } = location
   const version = (size - 17) / 4
   const c = ALIGNMENT_CENTRES[version - 1]
@@ -393,6 +393,10 @@ function mesh(location: Location, probe: Probe, work?: Work, late = false): Loca
   }
   if (found === 0) return undefined
   if (work) work.meshes++
+  // Keep only measurements, before the existing bilinear corner fit.
+  if (late && n === 3 && found === 6 && collectQuadratic) {
+    collectQuadratic({ location, x: ox.slice(), y: oy.slice() })
+  }
   // Measurements and searches are complete before fitting the outer corners.
   // The three synthetic lattice corners are not alignment measurements: the
   // actual finder centres lie at module indices 3 and size - 4, not c[0]/c[n-1].
@@ -464,11 +468,11 @@ function mesh(location: Location, probe: Probe, work?: Work, late = false): Loca
  * `late` enables the deferred recovery's extra alignment pass.
  * After failure, `collectMesh` may retain the unrefined mesh for step 14.
  */
-export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false, collectMesh?: (modules: Uint8Array) => void, collectFinal?: (modules: Uint8Array) => void): Payload | undefined {
+export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate, work?: Work, strict = false, late = false, collectMesh?: (modules: Uint8Array) => void, collectFinal?: (modules: Uint8Array) => void, collectQuadratic?: (mesh: QuadraticMesh) => void): Payload | undefined {
   const { inverted, mirrored } = candidate
   const probe = probeFor(image, t, inverted)
   // 0. From version 7, the map bent onto the alignment patterns it can find.
-  const meshed = mesh(candidate.location, probe, work, late)
+  const meshed = mesh(candidate.location, probe, work, late, collectQuadratic)
   const location = meshed ?? candidate.location
   const { size, project } = location
   // 1. The timing patterns: shift whole columns and rows by what they show.
@@ -541,6 +545,83 @@ export function singleFormatAgreement(read: ModuleReader, size: number): { ecc: 
   for (const f of FORMATS) {
     const distance = Math.max(popcount(f.bits ^ first), popcount(f.bits ^ second))
     if (distance <= AGREEMENT) return { ecc: f.ecc, mask: f.mask, distance }
+  }
+  return undefined
+}
+
+/** Six measured nodes of a three-by-three lattice; synthetic corners are refitted later. */
+export interface QuadraticMesh {
+  readonly location: Location
+  readonly x: Float64Array
+  readonly y: Float64Array
+}
+
+/** One terminal curved-grid read from retained measurements, without another search. */
+export function readQuadraticMesh(image: Luminance, candidate: Candidate, mesh: QuadraticMesh): { payload: Payload; mirrored: boolean } | undefined {
+  const { size, project } = mesh.location
+  const c = ALIGNMENT_CENTRES[(size - 17) / 4 - 1]
+  if (!c || c.length !== 3) return undefined
+  const axis = (z: number): number[] => c.map((_, i) => {
+    let weight = 1
+    for (let j = 0; j < 3; j++) if (j !== i) weight *= (z - c[j]!) / (c[i]! - c[j]!)
+    return weight
+  })
+  const weights = (x: number, y: number): number[] => {
+    const a = axis(x), b = axis(y)
+    return b.flatMap(v => a.map(u => u * v))
+  }
+  const corners = [0, 2, 6]
+  const anchors = [weights(3, 3), weights(size - 4, 3), weights(3, size - 4)]
+  const ox = mesh.x.slice(), oy = mesh.y.slice()
+  // Jointly solve the three synthetic corners so the actual finder centres stay fixed.
+  // The six measured nodes are unchanged; neither expected data nor image samples enter the fit.
+  for (const offsets of [ox, oy]) {
+    const rows = anchors.map(w => {
+      let rhs = 0
+      for (let i = 0; i < 9; i++) if (!corners.includes(i)) rhs -= w[i]! * offsets[i]!
+      return [...corners.map(i => w[i]!), rhs]
+    })
+    for (let j = 0; j < 3; j++) {
+      let pivot = j
+      for (let i = j + 1; i < 3; i++) if (Math.abs(rows[i]![j]!) > Math.abs(rows[pivot]![j]!)) pivot = i
+      ;[rows[j], rows[pivot]] = [rows[pivot]!, rows[j]!]
+      const divisor = rows[j]![j]!
+      if (!Number.isFinite(divisor) || divisor === 0) return undefined
+      for (let k = 0; k < 4; k++) rows[j]![k] = rows[j]![k]! / divisor
+      for (let i = 0; i < 3; i++) {
+        if (i === j) continue
+        const factor = rows[i]![j]!
+        for (let k = 0; k < 4; k++) rows[i]![k] = rows[i]![k]! - factor * rows[j]![k]!
+      }
+    }
+    for (let i = 0; i < 3; i++) {
+      const value = rows[i]![3]!
+      if (!Number.isFinite(value)) return undefined
+      offsets[corners[i]!] = value
+    }
+  }
+  const levels = thresholds(image)
+  const probe = probeFor(image, levels, candidate.inverted)
+  const modules = new Uint8Array(size * size)
+  const axes = Array.from({ length: size }, (_, i) => axis(i))
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    let dx = 0, dy = 0
+    for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++) {
+      const weight = axes[x]![i]! * axes[y]![j]!
+      dx += weight * ox[j * 3 + i]!
+      dy += weight * oy[j * 3 + i]!
+    }
+    const point = project(x + dx, y + dy)
+    modules[y * size + x] = probe(point.x, point.y) > 0 ? 1 : 0
+  }
+  // Select by strict header evidence before one symbol read. A failed selection never backfills.
+  for (const mirrored of [candidate.mirrored, !candidate.mirrored]) {
+    const read: ModuleReader = mirrored ? (x, y) => modules[x * size + y] === 1 : (x, y) => modules[y * size + x] === 1
+    const agreed = singleFormatAgreement(read, size)
+    if (!agreed) continue
+    const payload = readSymbol(read, size)
+    if (!payload || payload.ecc !== agreed.ecc || payload.mask !== agreed.mask) return undefined
+    return { payload, mirrored }
   }
   return undefined
 }

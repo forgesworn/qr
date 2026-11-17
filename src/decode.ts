@@ -2,7 +2,7 @@ import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
 import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
-import { agreement, agreementRead, singleFormatAgreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
+import { agreement, agreementRead, singleFormatAgreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, readQuadraticMesh, type QuadraticMesh, type Candidate } from './refine.js'
 import { agreedVersion, readSymbol, curvatureHeader, versionPeerHeader, type ModuleReader, type Payload } from './symbol.js'
 import { FORMAT_COORDS } from './encode.js'
 
@@ -101,7 +101,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (alternate) return alternate
   const rediscovered = recoverRediscoveredGrid(budget)
   if (rediscovered) return rediscovered
-  return recoverRediscoveredGrid(budget, true)
+  const selectedMesh = recoverRediscoveredGrid(budget, true)
+  if (selectedMesh) return selectedMesh
+  return recoverQuadraticMesh(luminance, inverse, budget)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -125,6 +127,7 @@ interface Budget {
   meshGrids: MeshGrid[]
   alternateInverse?: Candidate[]
   alternateGrid?: AlternateGrid
+  quadraticMesh?: { candidate: Candidate; inverseLuminance: boolean; mesh: QuadraticMesh }
   rediscoveredGrid?: RediscoveredGrid
   attempted?: AttemptedCandidate[]
   conflict?: { candidate: Candidate; inverseLuminance: boolean }
@@ -721,6 +724,9 @@ function sameAlternateHypothesis(a: Candidate, b: Candidate): boolean {
 function alternateSecondLook(budget: Budget, inverseLuminance: boolean,
   ...args: Parameters<typeof secondLook>): Payload | undefined {
   const candidate = args[2], pending = budget.alternateGrid
+  if (!budget.quadraticMesh) args[8] = mesh => {
+    if (!budget.quadraticMesh) budget.quadraticMesh = { candidate, inverseLuminance, mesh }
+  }
   // Only a slot selected during this synchronous call may receive its mesh.
   // Wrap an existing collector; never introduce sampling or backfill an old slot.
   const collectSelectedMesh = args[6]
@@ -814,4 +820,17 @@ function recoverRediscoveredGrid(budget: Budget, mesh = false): DecodeResult | u
   if (!payload || payload.ecc !== candidate.ecc || payload.mask !== candidate.mask) return undefined
   return { ...payload, mirrored: candidate.mirrored, inverted: inverseLuminance || candidate.inverted,
     location: where(candidate.location, 1) }
+}
+
+/** The first fully measured sparse late mesh receives one terminal curved read. */
+function recoverQuadraticMesh(luminance: Luminance, inverse: Luminance | undefined, budget: Budget): DecodeResult | undefined {
+  const retained = budget.quadraticMesh
+  if (!retained) return undefined
+  const image = retained.inverseLuminance ? inverse : luminance
+  if (!image) return undefined
+  const result = readQuadraticMesh(image, retained.candidate, retained.mesh)
+  if (!result) return undefined
+  return { ...result.payload, mirrored: result.mirrored,
+    inverted: retained.inverseLuminance || retained.candidate.inverted,
+    location: where(retained.candidate.location, 1) }
 }

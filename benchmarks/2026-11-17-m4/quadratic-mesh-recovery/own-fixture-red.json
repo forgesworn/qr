@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "scope": "Allfive new public regression fixtures fail on exact released0.3.13 JavaScript",
+  "fixtureSourceSha256": "2fcc3831d480392109f8ee862a0bccc46694248fc3fbd89031496fc3ff76d226",
+  "rows": [
+    {
+      "group": "starvation",
+      "index": 16,
+      "pixelsSha256": "2f4c50f90467c8fbeffffe69d3422710406332a6d417e32c1c6f61895df31d9c",
+      "status": "miss"
+    },
+    {
+      "group": "alternate",
+      "index": 16,
+      "pixelsSha256": "e01ca2d221825ba11c8924c63065be79898a5cae336546fd01c60a85ebfae87e",
+      "status": "miss"
+    },
+    {
+      "group": "alternate",
+      "index": 18,
+      "pixelsSha256": "a352b44655020ecff5e7f038f5fcd498b889fb3cac8637048c7237d6b9cf247a",
+      "status": "miss"
+    },
+    {
+      "group": "header",
+      "index": 16,
+      "pixelsSha256": "7871d351074e3be8fac1e8eab3d621101be8031f2cf2ebcdb688359fd5c8bf75",
+      "status": "miss"
+    },
+    {
+      "group": "header",
+      "index": 18,
+      "pixelsSha256": "9cff2c45bdb2bf5a784e5d8d89cc6b82de96f9f179ddaf555ca9baa24d7cf4fa",
+      "status": "miss"
+    }
+  ]
+}

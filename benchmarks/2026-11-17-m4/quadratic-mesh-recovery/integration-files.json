@@ -1,0 +1,22 @@
+{
+  "SPEC.md": "3bb8b5b4704ebafca740bdd5cff9d625e3a9df913ffa60ef075f62ec830fd336",
+  "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt": "5d496835c121eaefb3554f2810f51e18d14870790ff184f2b0a690c925ec9738",
+  "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Refine.kt": "6712ac2924f3a5dc57a7d068043db8e2d7511092462c17b01cd04bdd20730346",
+  "package-lock.json": "2a5faf7bd8727c3f1c090d9f6c54090234e99c760feac583e2e24be1fa229de4",
+  "package.json": "e0dd09d10934cdb9f6808d4e93455c8274815c20c0d580a4dbc37ad7be81b242",
+  "rust/Cargo.lock": "79e149fe2eaf92a3cb195c14debf824f61c372d81aa449a0b32f98f5b03d661c",
+  "rust/Cargo.toml": "5641513c870c580effc8e4e0759650486bf5dd2ab8606479cd9fdc76d5dbf375",
+  "rust/src/decode.rs": "2c63b7836311fa8c891361befa4fd3c08bc2bca2a2c9d8f0dd32394c62565d8c",
+  "rust/src/refine.rs": "cbfaf5a54f76578aa4abac868dbbedb6805651581cf340ffaae572f8ea9bf84c",
+  "src/decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+  "src/refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+  "test/conformance.test.ts": "6e8c0db9296870a92181c6ba43a967237fdbc32c84cfba817e0769e4f2620511",
+  "vectors/conformance.json": "d58051790394841954d3f90503c380fa5ecdc21c3112b1e5967da39a4ce28f92",
+  "test/quadratic-mesh-fixture.ts": "2fcc3831d480392109f8ee862a0bccc46694248fc3fbd89031496fc3ff76d226",
+  "test/quadratic-mesh.test.ts": "0d08f89c8c7321e379fb374595d9f620e53fea0f867f703d4ee5115230167a49",
+  "vectors/conformance/quadratic-mesh-alternate-16.png": "7e4a62def9e27ddb0c8d90fbe8a4595c47b3d8c5e7d61fe6c0a704cfa375b9ba",
+  "vectors/conformance/quadratic-mesh-alternate-18.png": "466bf4ef7a75002946742716a52e577b94ceb454b0f2b087f40a6671908a0ccb",
+  "vectors/conformance/quadratic-mesh-header-16.png": "4b92a3c2f79562e3c36cc0aad8a8ebc65cb402441ffa45fad882febda22f9559",
+  "vectors/conformance/quadratic-mesh-header-18.png": "9f946d720d55a292da5d4ea539e48df514a2c148815c7dcf176e3bfe7c73d16a",
+  "vectors/conformance/quadratic-mesh-starvation-16.png": "95e102750cf0582603d283dfcf0f54edbabc7af988e1ecbd05a6534acbd6f8c4"
+}

@@ -22,7 +22,8 @@ camera permissions determine its wider privacy behaviour.
 
 ## Measured accuracy
 
-The recorded comparison uses our optional packaged WASM and ZXing-WASM 3.1.7.
+The comparison uses QR and pinned ZXing-WASM 3.1.7. The final packaged
+TypeScript and WASM results match across all 2,264 accuracy and regression cases.
 Each reader receives the same inputs. A correct read requires the expected
 payload; the synthetic suites also check its bytes.
 
@@ -35,70 +36,75 @@ payload; the synthetic suites also check its bytes.
 | Eroded finders within that stress set | **18/28** | 3/28 |
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
-| Evaluated curved distortion set | **48/96** | 42/96 |
-| Earlier curved distortion set | **109/128** | 106/128 |
-| Previous curved holdout | **68/128** | 52/128 |
-| Earlier separate curved holdout | **74/128** | 67/128 |
-| Previous curved set frozen before evaluation | **82/128** | 70/128 |
-| Previous curved set frozen before version-peer evaluation | **70/128** | 53/128 |
-| Curved set frozen before alternate-grid evaluation | **64/128** | 57/128 |
-| Curved set frozen before header-rediscovery evaluation | **60/128** | 53/128 |
-| Latest curved set frozen before selected-mesh evaluation | **78/128** | 69/128 |
+| Evaluated curved distortion set | **52/96** | 42/96 |
+| Earlier curved distortion set | **124/128** | 106/128 |
+| Previous curved holdout | **80/128** | 52/128 |
+| Earlier separate curved holdout | **82/128** | 67/128 |
+| Previous curved set frozen before evaluation | **90/128** | 70/128 |
+| Previous curved set frozen before version-peer evaluation | **79/128** | 53/128 |
+| Curved set frozen before alternate-grid evaluation | **77/128** | 57/128 |
+| Curved set frozen before header-rediscovery evaluation | **72/128** | 53/128 |
+| Curved set frozen before selected-mesh evaluation | **87/128** | 69/128 |
+| New curved set frozen before quadratic evaluation | **118/256** | 77/256 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.13
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.14
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-Version 0.3.13 reuses the direct alignment mesh captured by the same refinement
-call that supplied the selected header. It tries that mesh only after the
-refined-grid read and every earlier path fail, using the same strict header,
-version and payload checks. This recovers five more curved images, including
-one in the separate 128-image set frozen before evaluation. Across all nine
-evaluated curved sets, QR reads 653/1,120 (58.3%) against ZXing's 569/1,120
-(50.8%). Both read 555; QR alone reads 98, ZXing alone reads 14, and neither
-reads 453. Earlier successful results, metadata and work counts remain identical
-in these checks, with no wrong QR payloads observed. The 888-case regression
-suite and its 64 negative controls are unchanged. These are measured dataset
-results, not a universal accuracy claim.
-See [the release evidence](../benchmarks/2026-11-17-m4/selected-mesh-recovery/README.md)
+Version 0.3.14 fits a terminal quadratic surface to six already measured
+alignment nodes and three finder anchors. It runs only after all earlier
+reads fail, chooses the first strict format agreement before one symbol read,
+and preserves the existing version and payload checks. Across the earlier
+1,120 curved frames QR improves from 653 to 743 exact reads against ZXing's
+569. The separately frozen 256-frame set improves from 65 to 118 against
+ZXing's 77. Combined, that is **861/1,376 versus 646/1,376**, with 143 gains
+over 0.3.13. Both read 632; QR alone reads 229, ZXing alone reads 14, and
+neither reads 501. Earlier complete successful results and inputs are
+preserved, with no wrong QR payloads observed. The 888-case regression suite
+and its 64 negative controls are unchanged.
+
+The new validation set contains 64 images per mathematical profile: QR reads
+61 parabolas versus ZXing's 27, 32 circular arches versus 23, and 25 cubic
+skews versus 27. Neither reads any of its 64 double-wave cases. Pixels and
+payloads were disjoint from the earlier 1,120 before evaluation; version
+sizes overlap earlier work. These are synthetic renderings, not evidence of
+accuracy on arbitrary physical surfaces or cameras, and the evaluated set is
+now regression data.
+See [the release evidence](../benchmarks/2026-11-17-m4/quadratic-mesh-recovery/README.md)
 and [full methodology and history](../PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-| Fixed frame | QR 0.3.13 WASM median | ZXing-WASM 3.1.7 median |
+| Fixed frame | QR 0.3.14 WASM median | ZXing-WASM 3.1.7 median |
 |---|---:|---:|
-| Clean QR | 1.519–1.545 ms | 1.882–1.892 ms |
-| Blank | 1.172–1.181 ms | 2.109–2.120 ms |
-| Random noise, no QR | 20.273–20.419 ms | 7.689–7.749 ms |
+| Clean | 1.595–1.618 ms | 2.016–2.027 ms |
+| Blank | 1.216–1.238 ms | 2.231–2.237 ms |
+| Noise | 21.304–21.321 ms | 8.013–8.079 ms |
 
-These are packaged API timings, including each library's wrapper, on three fixed
-1280×720 RGBA frames. Both readers receive identical pixels; their complete
-results remain stable and neither changes the input. Two sequential M4 Max,
-native Node 24.21.0 processes use 60 alternating measured pairs after at least
-ten warm-up pairs and 500 ms. They do not establish mobile latency, battery use
-or general throughput. Pure TypeScript has different costs.
-Measurements were made on a working desktop with other applications open. No task-owned QR build, test or benchmark ran concurrently; alternating baseline and candidate calls share the same host conditions.
+These are public-API timings on three fixed 1280 × 720 RGBA frames. Two
+sequential native Node 24.21.0 processes on an M4 Max use 60 alternating pairs
+after at least ten warm-up pairs and 500 ms. Complete results and inputs stay
+unchanged. Other desktop applications were open; no task-owned QR computation
+ran concurrently. This does not establish mobile latency or general throughput.
 
-Version 0.3.13 adds no image sampling or secondary attempt. Compared with
-0.3.12, it can retain one more existing mesh grid and perform one additional
-strict symbol validation. The caps remain eight second looks, 11,500,000
-alignment probes and 720 maps. The conservative retained-grid bound is
-281,961 module bytes; active buffers, metadata and allocator capacity are
-additional. The packaged WASM is 252,923 bytes, up 404 bytes from 0.3.12.
-Unchanged search counters do not imply unchanged CPU time because they do not
-count symbol validation.
+The twelve sampled new curved reads cost 0.18–4.27% more WASM median time
+than the earlier misses; TypeScript costs 0.66–6.06% more. Two confirmed
+terminal-sampling misses cost 0.10–1.53% more in WASM and 1.24–2.04% more in
+TypeScript. Accuracy improves at a measured runtime cost. Random-noise
+rejection remains about 2.6× slower than ZXing.
 
-Across two paired M4 runs, the five new reads change WASM median latency by 0.19–0.89% relative to the earlier misses. The two selected-mesh cases that still fail to decode change by -0.24–0.40%; earlier successful curved cases change by -0.45–0.84%. These measurements do not establish a general speed improvement or a worst-case bound.
-
-The paired pure-TypeScript clean-frame median rises from 3.785–3.824 ms to
-3.968–4.017 ms (3.77–6.15% per fork); blank-frame medians rise from
-2.937–2.953 ms to 3.077–3.080 ms (4.32–4.78%). These measured regressions
-are part of the accuracy trade-off. Their cause is not established by these
-timings; no general TypeScript speed improvement is claimed.
+Version 0.3.14 keeps the eight legacy second looks, 11,500,000 alignment probes
+and 720 maps, then permits one additional terminal threshold computation,
+at most 4,761 bilinear module samples and one symbol read. Legacy Work does
+not count this added pass. Earlier successful paths can still pay for one
+bounded offset snapshot. The descriptor uses 144 logical bytes plus metadata;
+the existing 281,961-byte retained-grid bound excludes the new active grid,
+threshold buffers, temporaries and allocator capacity. These are not peak-heap
+bounds. The packaged WASM is 261,831 bytes, 8,908 bytes larger than 0.3.13.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

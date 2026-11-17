@@ -3,7 +3,7 @@
 //! with their module centres moved onto the edges the picture shows, sampling
 //! grey rather than black and white.
 
-use crate::binarise::{threshold_at, Luminance, Thresholds};
+use crate::binarise::{threshold_at, thresholds, Luminance, Thresholds};
 use crate::locate::Work;
 use crate::place::{Location, Point};
 use crate::symbol::{read_symbol, read_version, Ecc, Payload, FORMATS, FORMAT_COORDS};
@@ -382,7 +382,7 @@ const FOUND: i32 = 24;
 
 /// The map bent onto the alignment patterns the picture shows (decoder step 8,
 /// the mesh). `None` below version 7, or when no pattern is found.
-fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>, late: bool) -> Option<Map> {
+fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>, late: bool, quadratic: Option<&mut Option<QuadraticMesh>>) -> Option<Map> {
     let size = location.size;
     let matrix = location.matrix;
     let version = (size - 17) / 4;
@@ -536,6 +536,15 @@ fn mesh(location: &Location, probe: &Probe, work: Option<&mut Work>, late: bool)
     if found == 0 {
         return None;
     }
+    if late && n == 3 && found == 6 {
+        if let Some(slot) = quadratic {
+            let mut x = [0.0; 9];
+            let mut y = [0.0; 9];
+            x.copy_from_slice(&ox);
+            y.copy_from_slice(&oy);
+            *slot = Some(QuadraticMesh { location: location.clone(), x, y });
+        }
+    }
     // Synthetic corners constrain the measured map at the actual finder centres.
     // Only measured neighbours justify a fit or subsequent extrapolation.
     let mut trusted: Vec<bool> = state.iter().map(|&value| value == 2).collect();
@@ -588,10 +597,14 @@ pub(crate) fn second_look_collect(image: &Luminance, t: &Thresholds, candidate: 
 
 /// Move the already-read failed final grid only when an alternate is available.
 pub(crate) fn second_look_collect_final(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool, collect_mesh: Option<&mut Vec<u8>>, collect_final: Option<&mut Option<Vec<u8>>>) -> Option<Payload> {
+    second_look_collect_quadratic(image, t, candidate, work, strict, late, collect_mesh, collect_final, None)
+}
+
+pub(crate) fn second_look_collect_quadratic(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool, collect_mesh: Option<&mut Vec<u8>>, collect_final: Option<&mut Option<Vec<u8>>>, quadratic: Option<&mut Option<QuadraticMesh>>) -> Option<Payload> {
     let (inverted, mirrored) = (candidate.inverted, candidate.mirrored);
     let probe = Probe { image, t, inverted };
     // 0. From version 7, the map bent onto the alignment patterns it can find.
-    let map = mesh(&candidate.location, &probe, work, late).unwrap_or(Map::Plain(candidate.location.matrix));
+    let map = mesh(&candidate.location, &probe, work, late, quadratic).unwrap_or(Map::Plain(candidate.location.matrix));
     let size = candidate.location.size;
     // 1. The timing patterns: shift whole columns and rows by what they show.
     let cols = walk(size, |k| map.project(k as f64, 6.0), |k| map.project((k + 1) as f64, 6.0), &probe);
@@ -667,6 +680,113 @@ pub(crate) fn second_look_collect_final(image: &Luminance, t: &Thresholds, candi
                 collected[y * size + x] = (probe.at(p.x, p.y) > 0.0) as u8;
             }
         }
+    }
+    None
+}
+
+/// The six measured nodes of a three-by-three lattice, before corner fitting.
+pub(crate) struct QuadraticMesh {
+    location: Location,
+    x: [f64; 9],
+    y: [f64; 9],
+}
+
+fn quadratic_axis(c: &[u8], z: f64) -> [f64; 3] {
+    let mut result = [1.0; 3];
+    for i in 0..3 {
+        for j in 0..3 {
+            if j != i {
+                result[i] *= (z - c[j] as f64) / (c[i] as f64 - c[j] as f64);
+            }
+        }
+    }
+    result
+}
+
+fn quadratic_weights(c: &[u8], x: f64, y: f64) -> [f64; 9] {
+    let a = quadratic_axis(c, x);
+    let b = quadratic_axis(c, y);
+    let mut weights = [0.0; 9];
+    for j in 0..3 {
+        for i in 0..3 {
+            weights[j * 3 + i] = a[i] * b[j];
+        }
+    }
+    weights
+}
+
+/// Read once from retained measured nodes after all earlier paths have failed.
+pub(crate) fn read_quadratic_mesh(image: &Luminance, candidate: &Candidate, mesh: &QuadraticMesh) -> Option<(Payload, bool)> {
+    let size = mesh.location.size;
+    let version = (size - 17) / 4;
+    let c = *ALIGNMENT_CENTRES.get(version.checked_sub(1)?)?;
+    if c.len() != 3 { return None; }
+    let corners = [0usize, 2, 6];
+    let anchors = [quadratic_weights(c, 3.0, 3.0),
+        quadratic_weights(c, (size - 4) as f64, 3.0),
+        quadratic_weights(c, 3.0, (size - 4) as f64)];
+    let mut ox = mesh.x;
+    let mut oy = mesh.y;
+    // Solve the synthetic corners together, preserving the three finder anchors.
+    for offsets in [&mut ox, &mut oy] {
+        let mut rows = [[0.0; 4]; 3];
+        for i in 0..3 {
+            let mut rhs = 0.0;
+            for k in 0..9 {
+                if !corners.contains(&k) { rhs -= anchors[i][k] * offsets[k]; }
+            }
+            for j in 0..3 { rows[i][j] = anchors[i][corners[j]]; }
+            rows[i][3] = rhs;
+        }
+        for j in 0..3 {
+            let mut pivot = j;
+            for i in j + 1..3 {
+                if rows[i][j].abs() > rows[pivot][j].abs() { pivot = i; }
+            }
+            rows.swap(j, pivot);
+            let divisor = rows[j][j];
+            if !divisor.is_finite() || divisor == 0.0 { return None; }
+            for k in 0..4 { rows[j][k] /= divisor; }
+            for i in 0..3 {
+                if i == j { continue; }
+                let factor = rows[i][j];
+                for k in 0..4 {
+                    let pivot_value = rows[j][k];
+                    rows[i][k] = rows[i][k] - factor * pivot_value;
+                }
+            }
+        }
+        for i in 0..3 {
+            let value = rows[i][3];
+            if !value.is_finite() { return None; }
+            offsets[corners[i]] = value;
+        }
+    }
+    let levels = thresholds(image);
+    let probe = Probe { image, t: &levels, inverted: candidate.inverted };
+    let mut modules = vec![0u8; size * size];
+    let axes: Vec<[f64; 3]> = (0..size).map(|i| quadratic_axis(c, i as f64)).collect();
+    for y in 0..size {
+        for x in 0..size {
+            let mut dx = 0.0;
+            let mut dy = 0.0;
+            for j in 0..3 {
+                for i in 0..3 {
+                    let weight = axes[x][i] * axes[y][j];
+                    dx += weight * ox[j * 3 + i];
+                    dy += weight * oy[j * 3 + i];
+                }
+            }
+            let point = plain(&mesh.location.matrix, x as f64 + dx, y as f64 + dy);
+            modules[y * size + x] = (probe.at(point.x, point.y) > 0.0) as u8;
+        }
+    }
+    for mirrored in [candidate.mirrored, !candidate.mirrored] {
+        let read = |x: usize, y: usize| modules[if mirrored { x * size + y } else { y * size + x }] == 1;
+        let Some(agreed) = single_format_agreement(&read, size) else { continue; };
+        let payload = read_symbol(read, size)?;
+        if payload.ecc != agreed.ecc || payload.mask != agreed.mask { return None; }
+        return Some((payload, mirrored));
     }
     None
 }

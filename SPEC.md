@@ -1351,6 +1351,57 @@ map or second look. Earlier successes, including the retained final-grid read,
 retain priority. They may have paid the bounded header checks and retention
 before succeeding.
 
+### 21. Read a quadratic surface from a fully measured sparse lattice
+
+During an existing full-size late second look, retain the first mesh whose
+alignment lattice has three rows and three columns and whose six non-finder
+nodes were all measured successfully. These are versions 7–13. Retain the
+original location, candidate orientation, polarity and luminance basis, plus
+copies of its nine horizontal and nine vertical offsets immediately after
+alignment searches finish and before the existing bilinear corner fit. The
+three finder-corner entries are synthetic, not alignment measurements. No
+new search or sampling occurs during retention. Never replace or backfill
+this descriptor, including when its eventual fit or read fails.
+
+After all earlier paths, including both step-20 reads, fail, form one tensor
+quadratic interpolant from these offsets. For lattice coordinates c[0..2],
+the one-dimensional weight of node i at z is the product over j != i of
+(z-c[j])/(c[i]-c[j]); the weight of node (i,j) is the horizontal weight times
+the vertical weight. Preserve all six measured offsets exactly. Jointly solve
+the three synthetic corner offsets (indices 0, 2 and 6, row-major) so the
+interpolated offset is zero at the actual finder centres (3,3), (size-4,3)
+and (3,size-4), separately for each offset component. These are module indices;
+the original projective map still applies its half-module centre convention.
+
+Use three-by-three Gaussian elimination, choosing the greatest absolute pivot
+in the remaining rows, retaining the earlier row on ties. Normalise each pivot
+row across all four augmented columns, then eliminate that column from every
+other row in order. A zero or non-finite pivot, or a non-finite fitted
+corner, ends this recovery. Expected data never selects a descriptor or enters
+the fit. The six measured nodes remain fixed throughout.
+
+Recompute thresholds for the retained original or inverse-luminance image.
+At each legal module centre, interpolate the two offsets, add them to its
+module indices and project through the retained original map. Sample once
+using the existing bilinear greyscale probe and candidate polarity. This is
+one new grid; do not apply a timing walk or edge refinement to it.
+
+Inspect this grid in the original candidate orientation, then the opposite
+orientation. Select the first orientation whose two format copies agree with
+one format word within two bits each, using the existing level/mask order.
+The selected tuple may equal or differ from the earlier candidate. Perform
+one ordinary symbol read only after this strict selection; require its level
+and mask to match. Version, Reed–Solomon, zero-data and segment validation
+remain unchanged. A failed symbol read ends the recovery without trying the
+other orientation or a later descriptor. Return the retained full-size location
+and the selected orientation and public polarity.
+
+Earlier successes retain priority and their complete results, although they
+may have paid for one offset snapshot. The terminal image sampling and symbol
+read are separate from the eight legacy second-look attempts and are not
+counted by their existing Work fields. Equal counters do not imply equal CPU
+work, latency or allocation.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1446,6 +1497,16 @@ among them.
   references do not change the eight-attempt, 720-map or
   11,500,000-alignment-probe limits. This bound excludes active refinement
   buffers and allocator or garbage-collector capacity.
+
+- Step 21 retains 18 double-precision offsets (144 logical bytes) and bounded
+  candidate/location metadata, without retaining another grid during earlier
+  paths. It adds one terminal threshold computation, at most 69 x 69 = 4,761
+  bilinear greyscale probes, two orientation-specific header inspections and
+  one symbol read. These are outside the legacy Work counters. The terminal
+  active grid uses at most 4,761 module bytes, with fit/weight temporaries and
+  the existing threshold block buffers; none is a peak-heap bound. The legacy
+  eight second looks, 720 maps and 11,500,000 alignment probes are unchanged,
+  with this one separately bounded terminal sampling pass in addition.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

@@ -1,0 +1,1026 @@
+{
+  "passed": true,
+  "completion": {
+    "passed": true,
+    "exitCode": 0,
+    "session": 82881,
+    "observedAt": "2026-11-17T09:51:43.209100+00:00",
+    "rawHashes": {
+      "ts-1.json": "3100491a34838be202534b7c89f938796c9a57ecb70e9d77204bbd2e28409eb3",
+      "ts-2.json": "b2636716fd7d09377b4b00212b32f441dddac9c084a5d29ad38b8859a72a4b74",
+      "wasm-1.json": "2f8676af8debc0a40dc9e8b6d7f4ab8c7ea45dcc5620222d18bda2b94fb3cb3d",
+      "wasm-2.json": "8c18c9bd0b502be91511a281aa716222101546c60f5ac65410f179c3641753a3",
+      "direct-1.json": "0c0c837596cfa3c4681fb956b0d5eb804307cebfa4c3e8378db2df1c908bd6d5",
+      "direct-2.json": "7eaab7b9ac58b31b6f8c4c9c0c63bb6b5e682a12c224725c5e38065a446f6e3c"
+    }
+  },
+  "completionSha256": "74d979dca6400b71ca01fd553d15ba0f20df0cccfbb0b9b6721c10a83519d68d",
+  "cases": 20,
+  "binding": {
+    "productionBackendsSha256": "8088f9f3e29377c204bae5af19d9aa0504656110ff2bb0cb23ec8ddbc660d181",
+    "helperSha256": "06eb848be3a4d240c7d8b3338cecafcc5dd1c3c9e06c8d6d9e64a5eff7cce44e",
+    "wasmSha256": "022993bfb6895152421aaf22673484c8d6fb60be3edae44d5eb85c927f28e326",
+    "wasmBytes": 261831,
+    "manifest": {
+      "abi": 2,
+      "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "target": "wasm32-unknown-unknown",
+      "sourceSha256": "bcef67af506d43ebf88b4dd6d6e5f1f61620a13687ea02bb4374a84e8c708fa9",
+      "sha256": "022993bfb6895152421aaf22673484c8d6fb60be3edae44d5eb85c927f28e326",
+      "bytes": 261831
+    },
+    "revision": "b1d95074fb442d87004be1c8bd22b8d8e5c8646f",
+    "qualificationSha256": "28722ebe27b37fbdbfb5bc130d9a8ef305b42b4f4493adde3855b50f4c7a27bb",
+    "regressionSha256": "edfa02caa9c72f3963473066d842e4d60e3f6cb60a97bd9c5edba10f38cac47a",
+    "candidateSources": {
+      "binarise.ts": "b5a1cbe394158b1f1512afa3a23c086cdec1a3533ed596a0fae06322769e00ac",
+      "canvas.ts": "1ad3b6d67162bfc8ad7c6cf54223213c761984eaf4ae40c61003dd191b9fefa7",
+      "decode.ts": "46c4d5569a9e0f28c839b0127e0c65ef8e0b679b18a51b8fb54c35b31fef4d76",
+      "encode.ts": "566b3c7ca470a49d6ca4b0e24ac52650f0e0bef0f7e1ea3d7d56faf1f4a5aa8e",
+      "errors.ts": "2bc14569a5baafc15b639241da5321ffa454f2870b7b20200e2c6a0689421323",
+      "image.ts": "80e071a3315f85d1e7813b7fa0f7d184686c19f466bbaae2ba192872f8016bbf",
+      "index.ts": "ba9b64321b1a0a4d2830f033c57a6c23ed8549044d32e9ffa009e3d11cf62ced",
+      "locate.ts": "d911b106051eb4a4cd7200c42634c18c9b2077e0ebfda12a06be5f3c7f3ec824",
+      "refine.ts": "f405e4591eeacd581227b7faec34eceda2f7a0f96df07471d50cc0bab25aeef2",
+      "rs.ts": "33f5d49c86ccea1217649a9765d8783340e71ac46672b3e143c7b3c15f11272a",
+      "scanner.ts": "7a8c1e8230bb6bd606c883991c829e3bcbb3268238f9cc0a20e176ca15312b24",
+      "session.ts": "c4847985d50abc1c99ffa5b95aad0ff7fe1b20d64b32fba37a7ae597276dfdd0",
+      "svg.ts": "c1b2a8dbd5649b5d42aae636bde4ab32d015877f3131f77ed6dc1fd4eda08bce",
+      "symbol.ts": "2d9861f6f59918cf3b79bb393367ef151c752118426866875846c0ca9f454ca2",
+      "tables.ts": "b97c50a7e912316312804f97bc7be4c02696c444c7e4d903a9b9d3ff2207338c",
+      "terminal.ts": "23268370c9e430c44fa676e13221aa7cd733a86eed7fe56a617d1f9991bb3737",
+      "text.ts": "df121a928143109b29ff452cdcafeb67212f46daca45bb3b315de6dbc5d06daa",
+      "wasm-text.ts": "44a0b278fb9c6114799a1186b4e7a59f59018099dd35fb117fd02042657f152d",
+      "wasm.ts": "372ad6181b7051b5889167a7c747ae76ac071d3d66d805bb974863ee2dfcabe7"
+    },
+    "candidateJs": {
+      "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+      "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+      "decode.ts": "dab00b5878a8b8998552e2e07ea5739deea78e1a2cffd92b6159c13225ab188b",
+      "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+      "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+      "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+      "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+      "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+      "refine.ts": "91a152b9b8ad103c322040a88aabcfbc01bd04e076208ce5ad93b836c82e615c",
+      "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+      "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+      "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+      "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+      "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+      "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+      "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+      "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+      "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+      "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+    },
+    "baselineJs": {
+      "binarise.ts": "856c42444d58b6d8491fe2d02f038f9bad41c0cb5c1cdbf6163281a642a0e1de",
+      "canvas.ts": "c9af70261df7e235d5f76214ac284c913dfc800e03ca8705bda63716cb0bbea6",
+      "decode.ts": "13ff70bb030574a06b09c5fc122f6b52f61ed8aa7da708b28546f472f23871d4",
+      "encode.ts": "a4370c8553b44c09b4e6138b610f3b2aec164321fd354889ed913079ad736afe",
+      "errors.ts": "5284b5849c71234c53c7682bb28a751fcca610b0044732284285152c52110378",
+      "image.ts": "faf461da20300647d6ed8b0969f65e9eabc8a9b7e2003224ab43ab8cdfba9f1f",
+      "index.ts": "f7ff4605eb2a1d995dec850b0fb2c700da9cfe1f3f2c2465e0b20b1fd050a707",
+      "locate.ts": "0fb93cf40f8502b1ce3b9d5a562bec9798917022f40f43f464b580fe78127dfd",
+      "refine.ts": "9900d3a1245fa8b9d53698269c8704c2c4b290d555df662757e2168f1842c668",
+      "rs.ts": "dad35309ef69d9a517729f256137b14cc8e92b6b4f8b29de71c4f86f2a0a2301",
+      "scanner.ts": "597f85fc12fec2b5c4aea9ccffb529f714d06a241655ea495023d4e8cd7cca2d",
+      "session.ts": "bdc71a394b2f50e44b5d7399b28c3d3db25d85aaced903c515b1bce777e5a431",
+      "svg.ts": "9538b30358563ac9141358010f9328e60927d9c25f7b1cdf89f61a20f36d1594",
+      "symbol.ts": "e10739969d4ed9a106f8ef874a457ffe6db8972433ce945c0a326e87697ce634",
+      "tables.ts": "f60d3c2b3dbea7b0e5f100d8730dc8989c87bdc1ce4369eccc83691411da1c0d",
+      "terminal.ts": "4eac337232ac3493b0a774360406ff198e277f8946a6f860da4d4c84829423ed",
+      "text.ts": "89dc630979dca674704853ec73b1f34626c8054096c067a3e6d5939ed61033ac",
+      "wasm-text.ts": "c41315757de656c1cf3bffc1b1841a809d7443684213a56c5d7e0e777756fc4f",
+      "wasm.ts": "3911d2123529462744e58ff7472ea2aa01c15b7e9bc224675cedf11dab938ca8"
+    }
+  },
+  "rows": {
+    "ts": [
+      {
+        "name": "clean",
+        "role": "fixed",
+        "pixelSha256": "fa11541828a9cd172d3d08c9f9a0c4588dd69dcffafa21cc92b53e02bd0e3e8a",
+        "baselineMedianMs": [
+          3.84662500000195,
+          3.9573329999984708
+        ],
+        "candidateMedianMs": [
+          3.8892500000001746,
+          3.9350410000006377
+        ],
+        "medianChangePercent": [
+          1.1081142559569157,
+          -0.5633086727308889
+        ],
+        "p95ChangeMs": [
+          0.001999999996769475,
+          0.11354199999914272
+        ]
+      },
+      {
+        "name": "blank",
+        "role": "fixed",
+        "pixelSha256": "86c54487903d6066f37a9f1436221ebb267ad66a861dcd892dd5d20aa456c971",
+        "baselineMedianMs": [
+          2.9467079999994894,
+          2.972458000000188
+        ],
+        "candidateMedianMs": [
+          2.929375000003347,
+          2.9631250000020373
+        ],
+        "medianChangePercent": [
+          -0.5882157307797509,
+          -0.31398256924571877
+        ],
+        "p95ChangeMs": [
+          0.05774999999994179,
+          0.44529099999635946
+        ]
+      },
+      {
+        "name": "noise",
+        "role": "fixed",
+        "pixelSha256": "a8f45cdbc1cf37281e9dcc8da4f65db2f662778802cbee394208d97bbe31889f",
+        "baselineMedianMs": [
+          51.890542000001005,
+          52.57808400000067
+        ],
+        "candidateMedianMs": [
+          51.98466700000063,
+          52.82795800000167
+        ],
+        "medianChangePercent": [
+          0.1813914373829828,
+          0.4752436395381032
+        ],
+        "p95ChangeMs": [
+          -0.8725430000013148,
+          -0.7714589999995951
+        ]
+      },
+      {
+        "name": "boundary-unseen-0",
+        "role": "retained-prior-success",
+        "pixelSha256": "84187f93cd55ab63695bca97c2effcd79620de6783eb6ab2697a9f1a42b5e3d2",
+        "baselineMedianMs": [
+          10.206167000000278,
+          10.292083000000275
+        ],
+        "candidateMedianMs": [
+          10.229167000001326,
+          10.38275000000067
+        ],
+        "medianChangePercent": [
+          0.22535394532587905,
+          0.8809392617645129
+        ],
+        "p95ChangeMs": [
+          0.0075409999990370125,
+          0.012291999999433756
+        ]
+      },
+      {
+        "name": "boundary-unseen-2",
+        "role": "gain",
+        "pixelSha256": "87c05079d3eaca12d28a3ff157442e8836a30a6843bcc1dda4a13637ad0c6bcb",
+        "baselineMedianMs": [
+          14.66912500000035,
+          14.83020899999974
+        ],
+        "candidateMedianMs": [
+          14.902875000003405,
+          15.186499999999796
+        ],
+        "medianChangePercent": [
+          1.593482910555677,
+          2.4024678276621803
+        ],
+        "p95ChangeMs": [
+          0.10645900000235997,
+          0.004541000002063811
+        ]
+      },
+      {
+        "name": "boundary-unseen-8",
+        "role": "gain",
+        "pixelSha256": "d96d20c829c4f79618a04d81f1f2c4872d9cc2e4cd3153ed95e8f2431cfc1506",
+        "baselineMedianMs": [
+          8.578541999999288,
+          8.631290999997873
+        ],
+        "candidateMedianMs": [
+          8.792041000000609,
+          8.886374999998225
+        ],
+        "medianChangePercent": [
+          2.4887562478721703,
+          2.955340052842792
+        ],
+        "p95ChangeMs": [
+          0.1462920000012673,
+          0.2789169999996375
+        ]
+      },
+      {
+        "name": "mesh-retain-unseen-9",
+        "role": "gain",
+        "pixelSha256": "3075ecdd9439287912f32c727615b375c44edfd5d84fb2bca35120f05212f8ff",
+        "baselineMedianMs": [
+          4.118000000002212,
+          4.107542000001558
+        ],
+        "candidateMedianMs": [
+          4.367583999999624,
+          4.272292000001471
+        ],
+        "medianChangePercent": [
+          6.060806216543901,
+          4.0109145566825655
+        ],
+        "p95ChangeMs": [
+          0.13641700000152923,
+          0.20504200000141282
+        ]
+      },
+      {
+        "name": "starvation-holdout-1",
+        "role": "terminal-miss",
+        "pixelSha256": "83fe5e9f1a80a2679a911c32ea143c326af2b865ef3542c5e75373daf1176d4b",
+        "baselineMedianMs": [
+          8.947542000001704,
+          9.065791999993962
+        ],
+        "candidateMedianMs": [
+          9.095790999999736,
+          9.250625000000582
+        ],
+        "medianChangePercent": [
+          1.6568684449651538,
+          2.0387959486247054
+        ],
+        "p95ChangeMs": [
+          0.35912500000267755,
+          0.19104199999856064
+        ]
+      },
+      {
+        "name": "starvation-holdout-3",
+        "role": "terminal-miss",
+        "pixelSha256": "437ab8c80f2bd293944ad8e251818f337934d4d41505385916fa8b64600a7715",
+        "baselineMedianMs": [
+          8.773583000001963,
+          8.823833999995259
+        ],
+        "candidateMedianMs": [
+          8.944290999999794,
+          8.932833999999275
+        ],
+        "medianChangePercent": [
+          1.9457045086117342,
+          1.2352906911448525
+        ],
+        "p95ChangeMs": [
+          0.13816700000461424,
+          0.21333299999969313
+        ]
+      },
+      {
+        "name": "starvation-holdout-4",
+        "role": "gain",
+        "pixelSha256": "3e834d0a4c1b43bd0101046bcd6d3cc19d17da6542970d8f6311d6f19d583e81",
+        "baselineMedianMs": [
+          21.46549999999843,
+          21.61329200000182
+        ],
+        "candidateMedianMs": [
+          21.689416999994137,
+          21.852500000000873
+        ],
+        "medianChangePercent": [
+          1.0431483077297354,
+          1.1067633750519557
+        ],
+        "p95ChangeMs": [
+          0.1888330000001588,
+          0.1121249999923748
+        ]
+      },
+      {
+        "name": "starvation-holdout-16",
+        "role": "gain",
+        "pixelSha256": "2f4c50f90467c8fbeffffe69d3422710406332a6d417e32c1c6f61895df31d9c",
+        "baselineMedianMs": [
+          24.937958000002254,
+          24.933708000004117
+        ],
+        "candidateMedianMs": [
+          25.150249999998778,
+          25.222374999997555
+        ],
+        "medianChangePercent": [
+          0.8512806060404055,
+          1.1577379505422591
+        ],
+        "p95ChangeMs": [
+          0.5195420000018203,
+          0.35750099999131635
+        ]
+      },
+      {
+        "name": "starvation-holdout-42",
+        "role": "prior",
+        "pixelSha256": "69d818691e692f883bbef0074859d794ded59e75aa5166187efe5c95d74fd085",
+        "baselineMedianMs": [
+          34.795416999993904,
+          34.99079199999687
+        ],
+        "candidateMedianMs": [
+          34.8582499999975,
+          35.04837499999849
+        ],
+        "medianChangePercent": [
+          0.18057837905378626,
+          0.16456615215116877
+        ],
+        "p95ChangeMs": [
+          0.03091600000334438,
+          -0.019541000001481734
+        ]
+      },
+      {
+        "name": "alternate-grid-holdout-16",
+        "role": "gain",
+        "pixelSha256": "e01ca2d221825ba11c8924c63065be79898a5cae336546fd01c60a85ebfae87e",
+        "baselineMedianMs": [
+          3.917250000005879,
+          3.8535830000037095
+        ],
+        "candidateMedianMs": [
+          4.052332999999635,
+          4.019583999994211
+        ],
+        "medianChangePercent": [
+          3.448414065825589,
+          4.307705322302424
+        ],
+        "p95ChangeMs": [
+          0.1575410000004922,
+          0.18908400000509573
+        ]
+      },
+      {
+        "name": "alternate-grid-holdout-18",
+        "role": "gain",
+        "pixelSha256": "777974f02cad4c17d65791bf3322e315ed4e7cee37dc6abd36becf47e90895e6",
+        "baselineMedianMs": [
+          4.091208000005281,
+          4.112165999998979
+        ],
+        "candidateMedianMs": [
+          4.301542000001064,
+          4.292334000005212
+        ],
+        "medianChangePercent": [
+          5.141122133010856,
+          4.381340636693132
+        ],
+        "p95ChangeMs": [
+          0.15687500000058208,
+          0.18237399999634363
+        ]
+      },
+      {
+        "name": "header-rediscovery-holdout-16",
+        "role": "gain",
+        "pixelSha256": "7871d351074e3be8fac1e8eab3d621101be8031f2cf2ebcdb688359fd5c8bf75",
+        "baselineMedianMs": [
+          10.516083000002254,
+          10.492208999996365
+        ],
+        "candidateMedianMs": [
+          10.749541999997746,
+          10.78058400000009
+        ],
+        "medianChangePercent": [
+          2.220018613351016,
+          2.7484679346725382
+        ],
+        "p95ChangeMs": [
+          0.2853739999991376,
+          0.22137500000098953
+        ]
+      },
+      {
+        "name": "header-rediscovery-holdout-18",
+        "role": "gain",
+        "pixelSha256": "9cff2c45bdb2bf5a784e5d8d89cc6b82de96f9f179ddaf555ca9baa24d7cf4fa",
+        "baselineMedianMs": [
+          7.946125000002212,
+          7.93895799999882
+        ],
+        "candidateMedianMs": [
+          8.16570800000045,
+          8.166833999996015
+        ],
+        "medianChangePercent": [
+          2.763397253355282,
+          2.8703514994943724
+        ],
+        "p95ChangeMs": [
+          0.30012600000191014,
+          0.21637399999599438
+        ]
+      },
+      {
+        "name": "selected-mesh-holdout-0",
+        "role": "gain",
+        "pixelSha256": "0b786bf3c2cfad632fbc69ecc0918cfa8d0f2385b137d98ac55a318325fbe486",
+        "baselineMedianMs": [
+          21.036792000006244,
+          20.90166599999793
+        ],
+        "candidateMedianMs": [
+          21.29858300000342,
+          21.178584000001138
+        ],
+        "medianChangePercent": [
+          1.2444435444201707,
+          1.3248608986634602
+        ],
+        "p95ChangeMs": [
+          -0.030583000007027294,
+          0.1922500000000582
+        ]
+      },
+      {
+        "name": "selected-mesh-holdout-39",
+        "role": "prior",
+        "pixelSha256": "79bfd28a1c50a326dc0b2ac2723dde4d03c330d1fd9a48f4b2dfeecbd5259a72",
+        "baselineMedianMs": [
+          61.99158399999578,
+          61.82162499999686
+        ],
+        "candidateMedianMs": [
+          62.2019999999975,
+          62.11583300000348
+        ],
+        "medianChangePercent": [
+          0.33942671960396353,
+          0.4758981990632405
+        ],
+        "p95ChangeMs": [
+          0.06604100001277402,
+          0.830707999994047
+        ]
+      },
+      {
+        "name": "small-parabola-validation-10",
+        "role": "gain",
+        "pixelSha256": "d4c457e7bca569c756381f159ad01932eea955ca222aaa0c862eba54427831f1",
+        "baselineMedianMs": [
+          20.033167000001413,
+          20.02262500001234
+        ],
+        "candidateMedianMs": [
+          20.290875000006054,
+          20.464749999999185
+        ],
+        "medianChangePercent": [
+          1.2864066874929136,
+          2.208127056200526
+        ],
+        "p95ChangeMs": [
+          0.5671249999868451,
+          0.4808329999796115
+        ]
+      },
+      {
+        "name": "small-parabola-validation-15",
+        "role": "gain",
+        "pixelSha256": "5edda29808cf2dfa552a7f4cb727f6ae6a24c8cb0cc004b84ed152f98d454bea",
+        "baselineMedianMs": [
+          18.968500000002678,
+          18.760624999995343
+        ],
+        "candidateMedianMs": [
+          19.09412500000326,
+          19.1038750000007
+        ],
+        "medianChangePercent": [
+          0.6622822047107846,
+          1.8296298764323593
+        ],
+        "p95ChangeMs": [
+          0.1652919999905862,
+          0.44629100000020117
+        ]
+      }
+    ],
+    "wasm": [
+      {
+        "name": "clean",
+        "role": "fixed",
+        "pixelSha256": "fa11541828a9cd172d3d08c9f9a0c4588dd69dcffafa21cc92b53e02bd0e3e8a",
+        "baselineMedianMs": [
+          1.5317499999982829,
+          1.5348750000011933
+        ],
+        "candidateMedianMs": [
+          1.508332999997947,
+          1.535291000000143
+        ],
+        "medianChangePercent": [
+          -1.5287742778104962,
+          0.027103184229937405
+        ],
+        "p95ChangeMs": [
+          -0.03341700000237324,
+          -0.01920799999788869
+        ]
+      },
+      {
+        "name": "blank",
+        "role": "fixed",
+        "pixelSha256": "86c54487903d6066f37a9f1436221ebb267ad66a861dcd892dd5d20aa456c971",
+        "baselineMedianMs": [
+          1.1925420000006852,
+          1.2075829999994312
+        ],
+        "candidateMedianMs": [
+          1.1737090000024182,
+          1.2058749999996508
+        ],
+        "medianChangePercent": [
+          -1.579231590858543,
+          -0.14143955320514712
+        ],
+        "p95ChangeMs": [
+          -0.01766700000007404,
+          -0.02599999999802094
+        ]
+      },
+      {
+        "name": "noise",
+        "role": "fixed",
+        "pixelSha256": "a8f45cdbc1cf37281e9dcc8da4f65db2f662778802cbee394208d97bbe31889f",
+        "baselineMedianMs": [
+          20.48804100000052,
+          21.315875000000233
+        ],
+        "candidateMedianMs": [
+          20.41558399999849,
+          21.29529200000252
+        ],
+        "medianChangePercent": [
+          -0.35365509080165225,
+          -0.0965618347720354
+        ],
+        "p95ChangeMs": [
+          -0.09129199999733828,
+          0.04799999999886495
+        ]
+      },
+      {
+        "name": "boundary-unseen-0",
+        "role": "retained-prior-success",
+        "pixelSha256": "84187f93cd55ab63695bca97c2effcd79620de6783eb6ab2697a9f1a42b5e3d2",
+        "baselineMedianMs": [
+          3.964749999999185,
+          4.140499999997701
+        ],
+        "candidateMedianMs": [
+          3.9444169999987935,
+          4.197582999997394
+        ],
+        "medianChangePercent": [
+          -0.5128444416519495,
+          1.3786499215004078
+        ],
+        "p95ChangeMs": [
+          -0.004542000002402347,
+          -0.02162500000122236
+        ]
+      },
+      {
+        "name": "boundary-unseen-2",
+        "role": "gain",
+        "pixelSha256": "87c05079d3eaca12d28a3ff157442e8836a30a6843bcc1dda4a13637ad0c6bcb",
+        "baselineMedianMs": [
+          6.023500000002969,
+          6.3240829999995185
+        ],
+        "candidateMedianMs": [
+          6.060124999999971,
+          6.390292000000045
+        ],
+        "medianChangePercent": [
+          0.6080351954342866,
+          1.0469343935007203
+        ],
+        "p95ChangeMs": [
+          0.1002920000028098,
+          0.04537499999787542
+        ]
+      },
+      {
+        "name": "boundary-unseen-8",
+        "role": "gain",
+        "pixelSha256": "d96d20c829c4f79618a04d81f1f2c4872d9cc2e4cd3153ed95e8f2431cfc1506",
+        "baselineMedianMs": [
+          3.6017090000023018,
+          3.7663329999995767
+        ],
+        "candidateMedianMs": [
+          3.7012090000025637,
+          3.876250000001164
+        ],
+        "medianChangePercent": [
+          2.7625774319968155,
+          2.918408967066899
+        ],
+        "p95ChangeMs": [
+          0.09479100000316976,
+          0.0806250000023283
+        ]
+      },
+      {
+        "name": "mesh-retain-unseen-9",
+        "role": "gain",
+        "pixelSha256": "3075ecdd9439287912f32c727615b375c44edfd5d84fb2bca35120f05212f8ff",
+        "baselineMedianMs": [
+          1.6140420000010636,
+          1.7437089999984892
+        ],
+        "candidateMedianMs": [
+          1.6458330000023125,
+          1.8181669999976293
+        ],
+        "medianChangePercent": [
+          1.9696513474387833,
+          4.270093232254046
+        ],
+        "p95ChangeMs": [
+          0.012834000004659174,
+          0.08945899999889662
+        ]
+      },
+      {
+        "name": "starvation-holdout-1",
+        "role": "terminal-miss",
+        "pixelSha256": "83fe5e9f1a80a2679a911c32ea143c326af2b865ef3542c5e75373daf1176d4b",
+        "baselineMedianMs": [
+          3.528874999999971,
+          3.802125000001979
+        ],
+        "candidateMedianMs": [
+          3.582791000000725,
+          3.8057500000031723
+        ],
+        "medianChangePercent": [
+          1.5278523609012717,
+          0.09534142094727027
+        ],
+        "p95ChangeMs": [
+          0.033791999998356914,
+          0.07091700000091805
+        ]
+      },
+      {
+        "name": "starvation-holdout-3",
+        "role": "terminal-miss",
+        "pixelSha256": "437ab8c80f2bd293944ad8e251818f337934d4d41505385916fa8b64600a7715",
+        "baselineMedianMs": [
+          3.5159590000002936,
+          3.6864580000001297
+        ],
+        "candidateMedianMs": [
+          3.5666670000027807,
+          3.735583999998198
+        ],
+        "medianChangePercent": [
+          1.4422238712818558,
+          1.3326070715593774
+        ],
+        "p95ChangeMs": [
+          0.04695899999933317,
+          0.05645799999911105
+        ]
+      },
+      {
+        "name": "starvation-holdout-4",
+        "role": "gain",
+        "pixelSha256": "3e834d0a4c1b43bd0101046bcd6d3cc19d17da6542970d8f6311d6f19d583e81",
+        "baselineMedianMs": [
+          8.54424999999901,
+          8.597541999999521
+        ],
+        "candidateMedianMs": [
+          8.573749999999563,
+          8.74316700000054
+        ],
+        "medianChangePercent": [
+          0.34526143313404756,
+          1.6937980646215767
+        ],
+        "p95ChangeMs": [
+          0.09783199999947101,
+          0.12187600000106613
+        ]
+      },
+      {
+        "name": "starvation-holdout-16",
+        "role": "gain",
+        "pixelSha256": "2f4c50f90467c8fbeffffe69d3422710406332a6d417e32c1c6f61895df31d9c",
+        "baselineMedianMs": [
+          10.727666999999201,
+          11.211290999999619
+        ],
+        "candidateMedianMs": [
+          10.869333999999071,
+          11.322707999999693
+        ],
+        "medianChangePercent": [
+          1.3205760395049726,
+          0.9937927755160114
+        ],
+        "p95ChangeMs": [
+          0.11429199999838602,
+          0.19554200000493438
+        ]
+      },
+      {
+        "name": "starvation-holdout-42",
+        "role": "prior",
+        "pixelSha256": "69d818691e692f883bbef0074859d794ded59e75aa5166187efe5c95d74fd085",
+        "baselineMedianMs": [
+          14.49816699999792,
+          14.856332999999722
+        ],
+        "candidateMedianMs": [
+          14.573458000002574,
+          14.97083399999974
+        ],
+        "medianChangePercent": [
+          0.5193139243372169,
+          0.7707218194423993
+        ],
+        "p95ChangeMs": [
+          0.09104200000001583,
+          0.009916000002704095
+        ]
+      },
+      {
+        "name": "alternate-grid-holdout-16",
+        "role": "gain",
+        "pixelSha256": "e01ca2d221825ba11c8924c63065be79898a5cae336546fd01c60a85ebfae87e",
+        "baselineMedianMs": [
+          1.5998340000005555,
+          1.625833000005514
+        ],
+        "candidateMedianMs": [
+          1.6277499999996508,
+          1.6764169999951264
+        ],
+        "medianChangePercent": [
+          1.7449310365378778,
+          3.1112666546589285
+        ],
+        "p95ChangeMs": [
+          0.06341700000120909,
+          0.07195899999351241
+        ]
+      },
+      {
+        "name": "alternate-grid-holdout-18",
+        "role": "gain",
+        "pixelSha256": "777974f02cad4c17d65791bf3322e315ed4e7cee37dc6abd36becf47e90895e6",
+        "baselineMedianMs": [
+          1.7728340000030585,
+          1.850124999997206
+        ],
+        "candidateMedianMs": [
+          1.8147080000053393,
+          1.8583330000037677
+        ],
+        "medianChangePercent": [
+          2.3619808736863535,
+          0.44364569997021874
+        ],
+        "p95ChangeMs": [
+          0.1340009999985341,
+          0.05762400000094203
+        ]
+      },
+      {
+        "name": "header-rediscovery-holdout-16",
+        "role": "gain",
+        "pixelSha256": "7871d351074e3be8fac1e8eab3d621101be8031f2cf2ebcdb688359fd5c8bf75",
+        "baselineMedianMs": [
+          4.563625000002503,
+          4.601709000002302
+        ],
+        "candidateMedianMs": [
+          4.710665999999037,
+          4.674958999996306
+        ],
+        "medianChangePercent": [
+          3.222021967108457,
+          1.5917999159435814
+        ],
+        "p95ChangeMs": [
+          0.20191699999850243,
+          0.13162499999452848
+        ]
+      },
+      {
+        "name": "header-rediscovery-holdout-18",
+        "role": "gain",
+        "pixelSha256": "9cff2c45bdb2bf5a784e5d8d89cc6b82de96f9f179ddaf555ca9baa24d7cf4fa",
+        "baselineMedianMs": [
+          3.5602080000026035,
+          3.509417000001122
+        ],
+        "candidateMedianMs": [
+          3.6433749999996508,
+          3.6194160000013653
+        ],
+        "medianChangePercent": [
+          2.336015199027308,
+          3.134395257109901
+        ],
+        "p95ChangeMs": [
+          0.06041700000059791,
+          0.10650000000896398
+        ]
+      },
+      {
+        "name": "selected-mesh-holdout-0",
+        "role": "gain",
+        "pixelSha256": "0b786bf3c2cfad632fbc69ecc0918cfa8d0f2385b137d98ac55a318325fbe486",
+        "baselineMedianMs": [
+          9.431166000002122,
+          9.394416999995883
+        ],
+        "candidateMedianMs": [
+          9.525207999999111,
+          9.435457999999926
+        ],
+        "medianChangePercent": [
+          0.9971407564766332,
+          0.4368658534538161
+        ],
+        "p95ChangeMs": [
+          0.11450000000331784,
+          0.08749999999417923
+        ]
+      },
+      {
+        "name": "selected-mesh-holdout-39",
+        "role": "prior",
+        "pixelSha256": "79bfd28a1c50a326dc0b2ac2723dde4d03c330d1fd9a48f4b2dfeecbd5259a72",
+        "baselineMedianMs": [
+          26.43224999999802,
+          26.637707999994745
+        ],
+        "candidateMedianMs": [
+          26.38679100000445,
+          26.603250000000116
+        ],
+        "medianChangePercent": [
+          -0.17198308881603008,
+          -0.12935797627422474
+        ],
+        "p95ChangeMs": [
+          0.07641699999658158,
+          -0.034166999997978564
+        ]
+      },
+      {
+        "name": "small-parabola-validation-10",
+        "role": "gain",
+        "pixelSha256": "d4c457e7bca569c756381f159ad01932eea955ca222aaa0c862eba54427831f1",
+        "baselineMedianMs": [
+          8.68554199999926,
+          8.688708000001498
+        ],
+        "candidateMedianMs": [
+          8.720541999995476,
+          8.743999999998778
+        ],
+        "medianChangePercent": [
+          0.4029685193649435,
+          0.6363661892800465
+        ],
+        "p95ChangeMs": [
+          0.09083400000235997,
+          0.10108300000138115
+        ]
+      },
+      {
+        "name": "small-parabola-validation-15",
+        "role": "gain",
+        "pixelSha256": "5edda29808cf2dfa552a7f4cb727f6ae6a24c8cb0cc004b84ed152f98d454bea",
+        "baselineMedianMs": [
+          8.086499999997613,
+          8.29816700000083
+        ],
+        "candidateMedianMs": [
+          8.180500000002212,
+          8.312958000002254
+        ],
+        "medianChangePercent": [
+          1.1624312125718905,
+          0.17824418334100312
+        ],
+        "p95ChangeMs": [
+          0.07108299999526935,
+          0.09858299999177689
+        ]
+      }
+    ],
+    "direct": [
+      {
+        "name": "clean",
+        "qrMedianMs": [
+          1.6179999999999382,
+          1.595333000000096
+        ],
+        "zxingMedianMs": [
+          2.0162920000000213,
+          2.0269590000000335
+        ],
+        "qrP95Ms": [
+          1.702541999999994,
+          1.702874999999949
+        ],
+        "zxingP95Ms": [
+          2.1812499999998636,
+          2.1864160000000084
+        ]
+      },
+      {
+        "name": "blank",
+        "qrMedianMs": [
+          1.2384169999997994,
+          1.2157499999998436
+        ],
+        "zxingMedianMs": [
+          2.2372499999999036,
+          2.23112500000002
+        ],
+        "qrP95Ms": [
+          1.3469159999999647,
+          1.2823339999999916
+        ],
+        "zxingP95Ms": [
+          2.3400830000000497,
+          2.315417000000025
+        ]
+      },
+      {
+        "name": "noise",
+        "qrMedianMs": [
+          21.32074999999986,
+          21.303917000000183
+        ],
+        "zxingMedianMs": [
+          8.013374999999996,
+          8.079083000000082
+        ],
+        "qrP95Ms": [
+          22.650666,
+          21.707625000000007
+        ],
+        "zxingP95Ms": [
+          8.404541999999765,
+          8.315541999999823
+        ]
+      }
+    ]
+  },
+  "linearCapacityBytes": [
+    {
+      "before": {
+        "baseline": 1114112,
+        "candidate": 1114112
+      },
+      "after": {
+        "baseline": 14483456,
+        "candidate": 14483456
+      }
+    },
+    {
+      "before": {
+        "baseline": 1114112,
+        "candidate": 1114112
+      },
+      "after": {
+        "baseline": 14483456,
+        "candidate": 14483456
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process')
+const [root,source,out,manifest]=process.argv.slice(2).map(p=>path.resolve(p)),sha=x=>crypto.createHash('sha256').update(x).digest('hex')
+assert.equal(execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),'b1d95074fb442d87004be1c8bd22b8d8e5c8646f')
+const names=fs.readdirSync(source).filter(n=>n.endsWith('.ts')).sort(),expected=JSON.parse(fs.readFileSync(manifest))
+assert.deepEqual(names,Object.keys(expected).sort());for(const n of names)assert.equal(sha(fs.readFileSync(source+'/'+n)),expected[n])
+const ts=require(root+'/node_modules/typescript'),host={getCurrentDirectory:()=>root,getCanonicalFileName:x=>x,getNewLine:()=> '\n'},check=(items,label)=>{if(items.length){process.stderr.write(ts.formatDiagnosticsWithColorAndContext(items,host));throw Error(label)}}
+const config=ts.readConfigFile(root+'/tsconfig.json',ts.sys.readFile);check(config.error?[config.error]:[],'config')
+const parsed=ts.parseJsonConfigFileContent(config.config,ts.sys,root);check(parsed.errors,'parse')
+const options={...parsed.options,rootDir:source,outDir:out+'/public',noEmit:true},files=names.map(n=>source+'/'+n)
+check(ts.getPreEmitDiagnostics(ts.createProgram(files,options)),'Typecheck')
+fs.mkdirSync(out);fs.writeFileSync(out+'/package.json','{"type":"module"}\n')
+const emitted=ts.createProgram(files,{...options,noEmit:false}).emit();check(emitted.diagnostics,'emit');assert(!emitted.emitSkipped)
+fs.writeFileSync(out+'/identity.json',JSON.stringify({typechecked:true,compiler:ts.version,sources:expected,generated:Object.fromEntries(names.map(n=>[n,sha(fs.readFileSync(out+'/public/'+n.replace(/\.ts$/,'.js')))])),builderSha256:sha(fs.readFileSync(__filename)),tsconfigSha256:sha(fs.readFileSync(root+'/tsconfig.json'))},null,2)+'\n')

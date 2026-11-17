@@ -6,7 +6,7 @@ use std::rc::Rc;
 use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
-use crate::refine::{agreement, agreement_read, format_agrees, keep, single_format_agreement, second_look_collect, second_look_collect_final, sized, Candidate, SECOND_LOOKS};
+use crate::refine::{agreement, agreement_read, format_agrees, keep, read_quadratic_mesh, single_format_agreement, second_look_collect, second_look_collect_quadratic, sized, Candidate, QuadraticMesh, SECOND_LOOKS};
 #[cfg(test)]
 use crate::refine::second_look;
 use crate::symbol::{agreed_version, curvature_header, curvature_header_with_conflict, version_peer_header, read_symbol, Ecc, Payload, FORMAT_COORDS};
@@ -94,6 +94,7 @@ struct ConflictCandidate {
 struct Budget {
     alternate: Option<AlternateGrid>,
     rediscovered: Option<RediscoveredGrid>,
+    quadratic: Option<(Candidate, bool, QuadraticMesh)>,
     conflict: Option<ConflictCandidate>,
     version_peer: Option<ConflictCandidate>,
     attempted: Vec<AttemptedCandidate>,
@@ -119,7 +120,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { alternate: None, rediscovered: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
@@ -179,7 +180,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     if let Some(found) = recover_ordinary_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_version_peer(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_alternate_grid(&budget) { return Some(found); }
-    recover_rediscovered_grid(&budget)
+    if let Some(found) = recover_rediscovered_grid(&budget) { return Some(found); }
+    recover_quadratic_mesh(&luminance, inverse_luminance.as_ref(), &budget)
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -628,8 +630,13 @@ fn alternate_second_look(luminance: &Luminance, levels: &crate::binarise::Thresh
     let mut final_grid = None;
     let mut collect_mesh = collect_mesh;
     let capture = selected.is_some() || budget.rediscovered.is_none();
-    let result = second_look_collect_final(luminance, levels, candidate, work, true, true,
-        collect_mesh.as_mut().map(|grid| &mut **grid), if capture { Some(&mut final_grid) } else { None });
+    let mut quadratic = None;
+    let result = second_look_collect_quadratic(luminance, levels, candidate, work, true, true,
+        collect_mesh.as_mut().map(|grid| &mut **grid), if capture { Some(&mut final_grid) } else { None },
+        if budget.quadratic.is_none() { Some(&mut quadratic) } else { None });
+    if let Some(mesh) = quadratic {
+        budget.quadratic = Some((candidate.clone(), inverse_luminance, mesh));
+    }
     if let Some(modules) = final_grid {
         let rediscovered = if budget.rediscovered.is_none() {
             rediscovered_header(candidate, &modules)
@@ -695,6 +702,15 @@ fn recover_rediscovered_grid(budget: &Budget) -> Option<Reading> {
         }
     }
     None
+}
+
+/// One terminal read from the first fully measured sparse late mesh.
+fn recover_quadratic_mesh(luminance: &Luminance, inverse: Option<&Luminance>, budget: &Budget) -> Option<Reading> {
+    let (candidate, inverse_luminance, mesh) = budget.quadratic.as_ref()?;
+    let image = if *inverse_luminance { inverse? } else { luminance };
+    let (payload, mirrored) = read_quadratic_mesh(image, candidate, mesh)?;
+    Some(Reading { payload, mirrored, inverted: *inverse_luminance || candidate.inverted,
+        location: place(&candidate.location, 1) })
 }
 
 fn recover_alternate_grid(budget: &Budget) -> Option<Reading> {
@@ -1003,7 +1019,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { alternate: None, rediscovered: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -1171,7 +1187,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { alternate: None, rediscovered: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
+        Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {
