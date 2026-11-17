@@ -16,6 +16,8 @@ permissions:
 
 jobs:
   release:
+    # The embedded crate has an independent embedded-vX.Y.Z release lifecycle.
+    if: ${{ startsWith(inputs.tag || github.event.release.tag_name, 'v') }}
     uses: forgesworn/anvil/.github/workflows/release.yml@v0
     with:
       tag: ${{ inputs.tag || '' }}

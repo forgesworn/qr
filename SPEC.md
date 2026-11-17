@@ -163,6 +163,52 @@ margin cap or alter representable renderings. Terminal output grows
 quadratically with the side, so callers must bound untrusted margins and
 account for normal allocation limits.
 
+### Embedded fixed-buffer Rust encoder
+
+`forgesworn-qr-embedded` (`rust/embedded`) is a separate `no_std` encoder for versions
+1–8, all four levels, optional UTF-8 ECI and automatic or explicit masks.
+Its default build offers raw-byte encoding and `encode_simple_text`, which
+uses one numeric segment for a non-empty digit string, one alphanumeric
+segment for other non-empty text wholly in that alphabet, otherwise one
+UTF-8 byte segment. The empty string is one empty byte segment. This explicit
+single-mode API is not the main encoder's optimal text API.
+
+The optional `optimal` feature adds `encode_text` with a separate caller-owned
+`TextPlanner`. Its version, segmentation cost, mask and module matrix follow
+the encoder rules above exactly. Raw-byte and single-mode encoding need no
+planner even when the feature is enabled. Existing encoder APIs and vectors
+are unchanged. Named-mode overrides, decoding and renderers are outside this
+crate. The runtime has no dependencies and bundles the standard tables and
+this specification, checked against the originals in CI. A separate, unpublished
+conformance harness uses the main encoder and shared vectors as test oracles;
+those dependencies and fixtures are not part of the distributed crate. Both
+the source crate and its extracted distribution run through that harness.
+
+Its options add an explicit maximum version (default 8); minimum version
+defaults to 1. An exact version must be inside that inclusive range. Invalid
+version ranges and masks, short output slices and capacity failures return
+distinct errors. A capacity failure never silently exceeds the maximum.
+The early length check bounds text by the best-case numeric capacity in UTF-8
+bytes and raw input by byte capacity, before constructing a plan.
+
+The caller supplies a 301-byte `Workspace` and an output slice of at least
+301 bytes: 602 bytes of caller buffers. The optional planner adds 980 bytes
+on the measured host. Interleaved codewords and the reserved-module map reuse
+the same scratch buffer; mask candidates are applied and undone in the output.
+The Reed-Solomon phase also has 57 bytes of local arrays, wiped on drop.
+These figures exclude scalar locals, call frames, input and compiler spills;
+they are not a whole-stack bound.
+Modules are packed into bits; callers draw through `Symbol::is_dark` rather
+than a byte-per-module array. A symbol borrows the output exclusively and is
+not cloneable. Workspace and planner arrays are wiped before and after each
+ordinary return, including errors. Planner decisions are also cleared before
+the Reed-Solomon and matrix stages. Errors clear the entire output slice;
+dropping a successful symbol clears that slice. Volatile stores and a compiler
+fence protect these buffer writes from dead-store elimination. These guarantees do not cover
+borrowed input, compiler temporaries, registers, padding, panic, power loss or
+deliberately forgotten objects. They do not establish a whole-device secret
+erasure guarantee.
+
 ## Vectors
 
 `vectors/encode-vectors.json` holds 148 symbols produced with an
