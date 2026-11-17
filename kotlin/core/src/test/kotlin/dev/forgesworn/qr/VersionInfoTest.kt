@@ -94,6 +94,56 @@ class VersionInfoTest {
     }
 
     @Test
+    fun versionPeerAdmissionRequiresExactAnchorAndAgreeingFormats() {
+        val qr = encode("Version peer fixture", EncodeOptions(version = 12, ecc = ErrorCorrection.M, mask = 3))
+        val size = qr.size
+        val (bottom, top) = versionModules(size)
+        val original = qr.modules.copyOf()
+        val formats = Array(2) { copy -> IntArray(15) { i ->
+            val x = if (copy == 0) FORMAT_COORDS[i][0] else if (i < 8) size - 1 - i else 8
+            val y = if (copy == 0) FORMAT_COORDS[i][1] else if (i < 8) 8 else size - 7 + i - 8
+            y * size + x
+        } }
+        fun write(indices: IntArray, word: Int) {
+            for (i in indices.indices) qr.modules[indices[i]] = ((word shr i) and 1).toByte()
+        }
+        val read = ModuleReader { x, y -> qr.modules[y * size + x].toInt() == 1 }
+        for (swap in booleanArrayOf(false, true)) {
+            original.copyInto(qr.modules)
+            val anchor = if (swap) top else bottom
+            val peer = if (swap) bottom else top
+            write(peer, versionBits(13) xor 7)
+            val admitted = versionPeerHeader(read, size, false)
+            assertNotNull(admitted)
+            assertEquals(ErrorCorrection.M, admitted!!.ecc)
+            assertEquals(3, admitted.mask)
+            assertNull(curvatureHeader(read, size, false))
+            for (damage in 0..2) {
+                write(peer, versionBits(13) xor ((1 shl damage) - 1))
+                assertNull(versionPeerHeader(read, size, false))
+            }
+            write(peer, versionBits(12))
+            assertNull(versionPeerHeader(read, size, false))
+            write(peer, 0)
+            assertNull(versionPeerHeader(read, size, false))
+            write(peer, versionBits(13) xor 7)
+            write(anchor, versionBits(12) xor 1)
+            assertNull(versionPeerHeader(read, size, false))
+            write(anchor, versionBits(12))
+            write(formats[0], formatBits(ErrorCorrection.M, 3) xor 7)
+            write(formats[1], formatBits(ErrorCorrection.M, 3) xor 7)
+            assertNotNull(versionPeerHeader(read, size, false))
+            assertTrue(!formatAgrees(read, size, ErrorCorrection.M, 3))
+            write(formats[0], formatBits(ErrorCorrection.M, 3))
+            write(formats[1], formatBits(ErrorCorrection.Q, 7))
+            assertNull(versionPeerHeader(read, size, false))
+            write(formats[1], 0)
+            assertNull(versionPeerHeader(read, size, false))
+        }
+        assertNull(versionPeerHeader(ModuleReader { _, _ -> error("must not sample") }, 41, false))
+    }
+
+    @Test
     fun versionHintRequiresBothCopiesToAgreeIndependently() {
         for (version in listOf(7, 12, 40)) {
             val size = 17 + 4 * version

@@ -455,3 +455,34 @@ export function curvatureHeader(read: ModuleReader, size: number, allowConflict 
   if (!format) return undefined
   return { ecc: format.ecc, mask: format.mask, distance: Math.min(popcount(format.bits ^ a), popcount(format.bits ^ b)) }
 }
+
+
+/**
+ * An exact matching version word with a contradictory peer at the outer BCH
+ * radius can indicate warped header sampling. Both decoded format copies must
+ * agree. This only admits late refinement; it never admits a decoded payload.
+ */
+export function versionPeerHeader(read: ModuleReader, size: number): {ecc: ErrorCorrection; mask: number; distance: number} | undefined {
+  if (size < 45 || size > 177 || (size - 17) % 4 !== 0) return undefined
+  let va = 0, vb = 0
+  for (let k = 17; k >= 0; k--) {
+    const i = Math.floor(k / 3), j = k % 3
+    va = (va << 1) | +read(i, size - 11 + j)
+    vb = (vb << 1) | +read(size - 11 + j, i)
+  }
+  const version = (size - 17) / 4, expected = versionBits(version)
+  if (va !== expected && vb !== expected) return undefined
+  const word = va === expected ? vb : va
+  const peer = nearest(VERSIONS, [word])
+  if (!peer || peer.version === version || popcount(peer.bits ^ word) !== 3) return undefined
+  let a = 0, b = 0
+  for (let i = 14; i >= 0; i--) {
+    const [x, y] = FORMAT_COORDS[i]!
+    a = (a << 1) | +read(x, y)
+    b = (b << 1) | +read(i < 8 ? size - 1 - i : 8, i < 8 ? 8 : size - 7 + i - 8)
+  }
+  const first = nearest(FORMATS, [a]), second = nearest(FORMATS, [b])
+  if (!first || !second || first.bits !== second.bits) return undefined
+  return { ecc: first.ecc, mask: first.mask,
+    distance: Math.min(popcount(first.bits ^ a), popcount(second.bits ^ b)) }
+}

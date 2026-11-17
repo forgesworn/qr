@@ -548,6 +548,40 @@ pub(crate) fn curvature_header_with_conflict<R: Fn(usize, usize) -> bool>(read: 
     Some((ecc, mask, (bits ^ a).count_ones().min((bits ^ b).count_ones()), false))
 }
 
+/// Exact version anchor with a contradictory distance-three version peer and
+/// two independently decoded, agreeing format copies, for late recovery only.
+pub(crate) fn version_peer_header<R: Fn(usize, usize) -> bool>(read: &R, size: usize) -> Option<(Ecc, u8, u32)> {
+    if !(45..=177).contains(&size) || (size - 17) % 4 != 0 { return None; }
+    let mut va = 0u32;
+    let mut vb = 0u32;
+    for k in (0..=17).rev() {
+        let i = k / 3;
+        let j = k % 3;
+        va = (va << 1) | read(i, size - 11 + j) as u32;
+        vb = (vb << 1) | read(size - 11 + j, i) as u32;
+    }
+    let version = (size - 17) / 4;
+    let expected = version_bits_of(version as u32);
+    if va != expected && vb != expected { return None; }
+    let word = if va == expected { vb } else { va };
+    let peer = nearest(&VERSIONS, &[word])?;
+    if peer + 7 == version || (VERSIONS[peer] ^ word).count_ones() != 3 { return None; }
+    let mut a = 0u32;
+    let mut b = 0u32;
+    for i in (0..15).rev() {
+        let (x, y) = FORMAT_COORDS[i];
+        a = (a << 1) | read(x, y) as u32;
+        let (x, y) = if i < 8 { (size - 1 - i, 8) } else { (8, size - 7 + i - 8) };
+        b = (b << 1) | read(x, y) as u32;
+    }
+    let words = FORMATS.map(|f| f.0);
+    let first = nearest(&words, &[a])?;
+    let second = nearest(&words, &[b])?;
+    if first != second { return None; }
+    let (bits, ecc, mask) = FORMATS[first];
+    Some((ecc, mask, (bits ^ a).count_ones().min((bits ^ b).count_ones())))
+}
+
 /// The errors a block of this symbol may have had corrected: half of its check
 /// codewords once the p of Table 9 is withheld to catch a misdecode. Only
 /// versions 1 to 3 withhold any.
@@ -1284,6 +1318,31 @@ mod curvature_header_tests {
         assert_eq!(check(v12 ^ 1, v12 ^ 2, m3, q7 ^ 7, true), None);
         assert_eq!(check(v12, v13 ^ 1, m3, q7 ^ 7, true), None);
         assert_eq!(check(v12, v12, m3, q7 ^ 7, false), None);
+    }
+
+    #[test]
+    fn version_peer_requires_exact_anchor_and_two_agreeing_formats() {
+        let v12 = version_bits_of(12);
+        let v13 = version_bits_of(13);
+        let m3 = FORMATS.iter().find(|f| f.1 == Ecc::M && f.2 == 3).unwrap().0;
+        let q7 = FORMATS.iter().find(|f| f.1 == Ecc::Q && f.2 == 7).unwrap().0;
+        let check = |va, vb, fa, fb| {
+            let grid = header(va, vb, fa, fb);
+            super::version_peer_header(&|x, y| grid[y * 65 + x] == 1, 65)
+        };
+        assert_eq!(check(v12, v13 ^ 7, m3 ^ 1, m3 ^ 7), Some((Ecc::M, 3, 1)));
+        assert_eq!(check(v13 ^ 7, v12, m3 ^ 7, m3 ^ 1), Some((Ecc::M, 3, 1)));
+        assert_eq!(check(v12, v13, m3, m3), None);
+        assert_eq!(check(v12, v13 ^ 1, m3, m3), None);
+        assert_eq!(check(v12, v13 ^ 3, m3, m3), None);
+        assert_eq!(check(v12, v13 ^ 15, m3, m3), None);
+        assert_eq!(check(v12 ^ 1, v13 ^ 7, m3, m3), None);
+        assert_eq!(check(v12, v12 ^ 7, m3, m3), None);
+        assert_eq!(check(v12, v13 ^ 7, m3, q7), None);
+        assert_eq!(check(v12, v13 ^ 7, m3, 0), None);
+        assert_eq!(super::version_peer_header(&|_, _| false, 41), None);
+        assert_eq!(super::version_peer_header(&|_, _| panic!("invalid size must not sample"), 46), None);
+        assert_eq!(super::version_peer_header(&|_, _| panic!("invalid size must not sample"), 178), None);
     }
 
     #[test]

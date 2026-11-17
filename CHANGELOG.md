@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.10
+
+- After all earlier paths fail, refine one retained map with an exact version
+  word, a weak contradictory peer and two agreeing format copies. Keep strict
+  final validation and every earlier successful result and its metadata.
+- Improve the earlier distortion set from 106 to 108/128 against ZXing’s
+  106/128, and curved sheets from nine to ten reads out of 18. The separate
+  newly frozen 128-case set remains at 67 reads against ZXing’s 53.
+- Mirror the recovery across TypeScript, Rust and Kotlin. Bound work to eight
+  second looks and 11,500,000 alignment probes, with the map cap still 720.
+  This adds work to qualifying difficult failures in return for more correct reads.
+
 ## 0.3.9
 
 - After every earlier decoder path fails, give one retained curved map that

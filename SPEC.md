@@ -348,6 +348,8 @@ pipeline:
     retained map with exact version evidence and uniquely stronger format evidence.
 17. Ordinary-only curved map: after earlier paths fail, give one retained map
     that received only ordinary refinement the late alignment pass.
+18. Conflicting version peer: after earlier paths fail, refine one map with an
+    exact matching version word, a weak contradictory peer and agreeing formats.
 
 ### Reusable camera decoder
 
@@ -1239,6 +1241,45 @@ maximum to seven second looks; the original four and steps 15 and 16 keep their
 existing scheduling. Remembering an attempt does not retain a new image plane
 or sampling closure.
 
+### 18. Refine one map with conflicting version evidence
+
+During the existing full-size map collection, inspect an orientation only after
+its ordinary curvature admission has rejected it. Before any version-peer map
+has been retained, require a projective map of a valid version 7–40 size with:
+
+- one version copy exactly equal to the codeword for the sampled size;
+- its other copy independently BCH-decoding to a different version at exactly
+  three bit errors;
+- both format copies independently BCH-decoding within three errors to the same
+  error-correction level and mask.
+
+Retain the first qualifying map in actual collection order, across the original
+and inverse-luminance bases. Keep its orientation, polarity, level, mask, minimum
+format distance and luminance basis. Do not replace it, grow a queue or search
+for another map. Existing curvature and format-conflict collection, ranking and
+all earlier successful return paths remain unchanged.
+
+After all earlier recovery paths, including step 17, fail, attempt this map
+only if it has no matching full-size late attempt. Match matrix coefficients,
+size, orientation, polarity, level, mask and luminance basis exactly. Ordinary
+attempts do not exclude it. Record step 17's actual late attempt after its
+selection, extending the attempt ledger to seven records.
+
+Use the strict second look with late frozen-anchor alignment. If that read
+fails, validate its direct mesh as in step 14. Both final format copies must
+agree with the selected level and mask within two errors. Ordinary version,
+Reed–Solomon and segment checks remain unchanged; there is no new requirement
+that both final version words be exact. Return after this one attempt, even on
+failure, with the same full-size location and public-polarity handling as the
+other terminal recoveries.
+
+One retained slot suffices for this policy: all earlier late candidates come
+from gates which reject a decoded version copy contradicting the sampled size.
+The same matrix, orientation, polarity and full-size luminance basis sample the
+same header. Thus the retained class cannot later match an earlier late attempt;
+the final identity check remains defensive. An ordinary attempt may match and
+is intentionally allowed. This proof must be revisited if those gates change.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1310,12 +1351,17 @@ among them.
   It adds no finder or map search. Its optional direct mesh capture adds at most
   31,329 grey probes and one strict grid read; all seven optional captures add
   at most 219,303 grey probes, separate from `Work.probed`.
-- The step 15, 16 and 17 temporary grids have sequential lifetimes, separate
+- Step 18 adds at most one terminal attempt, raising the maximum to eight and
+  the conservative alignment-search bound to 11,500,000 probes. It adds no finder
+  or map search. Its optional direct mesh capture adds at most 31,329 grey probes
+  and one strict grid read; all eight captures add at most 250,632 grey probes,
+  separate from `Work.probed`.
+- The step 15–18 temporary grids have sequential lifetimes, separate
   from step 14's four retained grids. At most 156,645 bytes of optional mesh
   grids remain logically retained together, plus bounded metadata for five
-  grids, six attempted-candidate records with phase flags and one conflict
-  candidate. This excludes active refinement buffers and allocator or
-  garbage-collector capacity. Earlier successful paths avoid later terminal
+  grids, seven attempted-candidate records with phase flags, one format-conflict
+  candidate and one version-peer candidate. This excludes active refinement
+  buffers and allocator or garbage-collector capacity. Earlier successful paths avoid later terminal
   attempts, but may pay bounded header-classification, candidate retention and
   attempt-recording costs before they succeed.
 
