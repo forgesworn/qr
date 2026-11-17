@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.9
+
+- After every earlier decoder path fails, give one retained curved map that
+  received only ordinary refinement the late alignment pass. Match its exact
+  map, header hypothesis and luminance basis; retain strict final validation
+  and the priority of all earlier successful results and metadata.
+- Improve the earlier distortion set from 103 to 106/128, matching ZXing,
+  and two evaluated holdouts from 62 to 63/128 and 71 to 72/128. A new set
+  frozen before policy evaluation improves from 79 to 80/128, compared with
+  ZXing's 70/128. Curved sheets improve from six to nine reads out of 18.
+  No earlier successful result changes in these checks.
+- Mirror the recovery across TypeScript, Rust and Kotlin with three new shared
+  regression frames. Bound refinement to seven second looks and 10,062,500
+  alignment probes; the 720-map limit and existing admission rules are unchanged.
+  This trades additional work on some difficult failures for more correct reads.
+
 ## 0.3.8
 
 - Retain one full-size curved map whose format copies disagree, with exact

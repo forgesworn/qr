@@ -340,6 +340,14 @@ pipeline:
     full-resolution maps anchored by an exact version word. A bounded late
     alignment pass may repair predictions missed on the first sweep.
     See "Curved-map recovery" below.
+14. Deferred mesh reading: after earlier paths fail, validate retained mesh
+    grids before their timing and edge corrections. See step 14 below.
+15. Unattempted curved map: after earlier paths fail and the original four
+    second looks are exhausted, try one retained map never refined at full size.
+16. Conflicting format headers: after earlier paths fail, try one separately
+    retained map with exact version evidence and uniquely stronger format evidence.
+17. Ordinary-only curved map: after earlier paths fail, give one retained map
+    that received only ordinary refinement the late alignment pass.
 
 ### Reusable camera decoder
 
@@ -1203,6 +1211,34 @@ Earlier successful results and all their metadata retain priority. This raises
 the total maximum from five to six second looks, with the original four and
 step 15 retaining their existing scheduling.
 
+### 17. Give one ordinary-refined map the late alignment pass
+
+An ordinary second look does not include step 13's late frozen-anchor search.
+Remember the refinement phase of each earlier second look, including steps 15
+and 16, in at most six attempted-candidate records. Append terminal records only
+after their existing selection, so the earlier scheduling is unchanged.
+
+After every earlier return path, including step 16, fails, inspect the retained
+step 13 curvature queues: original luminance first, then inverse luminance,
+each in its existing order. Select the first projective map with an ordinary
+full-size attempt and no late full-size attempt. Match matrix coefficients,
+size, orientation, polarity, error-correction level, mask and luminance basis
+exactly, as in step 15. A reduced attempt does not count as a full-size attempt.
+These maps already passed the existing exact-version and non-conflicting-header
+admission; do not collect new candidates or search for new maps.
+
+Try only that candidate with the strict second look and late alignment pass.
+If the final refined read fails, validate its direct mesh as in step 14. Both
+format copies must agree with the selected level and mask within two errors;
+ordinary version, Reed-Solomon and segment checks remain mandatory. Return
+after this one attempt even when it fails. Resolve full-size location and
+public inverted polarity as for earlier reads.
+
+All earlier successful results and metadata retain priority. This raises the
+maximum to seven second looks; the original four and steps 15 and 16 keep their
+existing scheduling. Remembering an attempt does not retain a new image plane
+or sampling closure.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1269,13 +1305,19 @@ among them.
   limits; optional direct capture adds at most 31,329 grey probes and one strict
   grid read. The six optional captures together add at most 187,974 grey probes,
   separate from `Work.probed`.
-- The step 15 and step 16 temporary grids have sequential lifetimes, separate
+- Step 17 adds at most one further terminal attempt, raising the maximum to
+  seven and the conservative alignment-search bound to 10,062,500 probes.
+  It adds no finder or map search. Its optional direct mesh capture adds at most
+  31,329 grey probes and one strict grid read; all seven optional captures add
+  at most 219,303 grey probes, separate from `Work.probed`.
+- The step 15, 16 and 17 temporary grids have sequential lifetimes, separate
   from step 14's four retained grids. At most 156,645 bytes of optional mesh
   grids remain logically retained together, plus bounded metadata for five
-  grids, four attempted-candidate records and one conflict candidate. This
-  excludes active refinement buffers and allocator or garbage-collector capacity. Earlier successful paths avoid both
-  terminal attempts, but may pay the bounded header-classification and candidate
-  retention cost during ordinary curvature collection.
+  grids, six attempted-candidate records with phase flags and one conflict
+  candidate. This excludes active refinement buffers and allocator or
+  garbage-collector capacity. Earlier successful paths avoid later terminal
+  attempts, but may pay bounded header-classification, candidate retention and
+  attempt-recording costs before they succeed.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

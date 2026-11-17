@@ -22,6 +22,7 @@ import { meshBoundaryPicture } from './mesh-boundary-fixture.js'
 import { meshReadingPicture } from './mesh-reading-fixture.js'
 import { starvedCurvaturePicture } from './starved-curvature-fixture.js'
 import { headerConflictPicture } from './header-conflict-fixture.js'
+import { ordinaryCurvaturePicture } from './ordinary-curvature-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -303,6 +304,9 @@ function build(write: boolean): Pack {
 
   // Separate conflicting-header retry: strong, weak, priority and sixth-attempt cases.
   for (const index of [32, 42, 72, 76] as const) own(`header-conflict-${index}`, headerConflictPicture(index).image)
+
+  // Ordinary-only retained maps need the late alignment pass after earlier failures.
+  for (const index of [73, 79, 88] as const) own(`ordinary-curvature-${index}`, ordinaryCurvaturePicture(index).image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

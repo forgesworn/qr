@@ -9,8 +9,8 @@ import org.junit.Test
  * The search's work on frames built to be costly, counted rather than timed,
  * so the bounds hold on any machine. The counter is internal to the module.
  */
-/** At most six second looks and two searches at each of 46 lattice points. */
-internal const val MESH_PROBES = 6L * 92 * 25 * 25 * 25
+/** At most seven second looks and two searches at each of 46 lattice points. */
+internal const val MESH_PROBES = 7L * 92 * 25 * 25 * 25
 
 class WorkTest {
     private class Frame(val data: ByteArray, val width: Int, val height: Int)
@@ -48,7 +48,7 @@ class WorkTest {
             assertTrue(perPixel(b, large) < 1.5)
             // Four times the pixels, not much more than four times the work.
             assertTrue(perPixel(b, large) < perPixel(a, small) * 1.1)
-            assertTrue(a.second + b.second <= 2 * 6)
+            assertTrue(a.second + b.second <= 2 * 7)
             assertTrue(a.probed + b.probed <= 2 * MESH_PROBES)
         }
     }
@@ -61,8 +61,8 @@ class WorkTest {
         assertNull(decodeCounted(frame.data, frame.width, frame.height, work))
         // Four passes, six triples, five sizes, at most six maps a size.
         assertTrue(work.maps <= 4 * 6 * 5 * 6)
-        // The second look reads at most six of them again.
-        assertTrue(work.second <= 6)
+        // The second look reads at most seven of them again.
+        assertTrue(work.second <= 7)
         // Each may search 46 lattice points twice, at 25 x 25 quarter-module
         // offsets of 25 modules each.
         assertTrue(work.probed <= MESH_PROBES)
