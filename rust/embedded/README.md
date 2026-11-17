@@ -6,9 +6,8 @@ encoder with fixed caller-owned buffers. It is a separate crate in the
 [SPEC.md](SPEC.md), standard tables and conformance vectors as the full encoder.
 It needs Rust 1.87 or newer and no allocator, operating system or display driver.
 
-Version 0.1.0 is prepared locally and has not yet been published to crates.io.
-Until publication, use the source path or the verified vendor exporter below.
-Once available, the package dependency is:
+Add the package to your application, or use the source path or verified vendor
+exporter below when working from a source checkout:
 
 ```toml
 [dependencies]

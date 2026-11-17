@@ -829,9 +829,9 @@ TypeScript and time it.
 [forgesworn-qr-embedded](https://github.com/forgesworn/qr/tree/main/rust/embedded)
 is a separate, allocation-free `no_std` encoder for versions 1–8, with 602 bytes
 of caller buffers and optional optimal text planning. It shares this
-specification, standard tables and encoder conformance vectors. Its independent
-0.1.0 package is prepared locally; registry publication is pending. The
-embedded guide documents the API, measured savings and board-testing scope.
+specification, standard tables and encoder conformance vectors. It has its own
+version lifecycle, starting at 0.1.0. The embedded guide documents installation,
+the API, measured savings and board-testing scope.
 
 ## Development
 

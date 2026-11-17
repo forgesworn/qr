@@ -112,9 +112,8 @@ a crate. This checks registry authentication without releasing another version.
 ## Embedded Rust encoder
 
 `forgesworn-qr-embedded` is a separate, dependency-free `no_std` crate under
-`rust/embedded`, with its own initial version, 0.1.0. It is prepared locally;
-crates.io publication and trusted-publisher registration are pending. It does
-not change the existing 0.3.14 package versions or their release tags.
+`rust/embedded`, with its own initial version, 0.1.0. It does not change the
+existing 0.3.14 package versions or their release tags.
 
 The crate supports versions 1–8, fixed caller-owned buffers and optional
 optimal text planning. See the [embedded guide](../rust/embedded/README.md).
