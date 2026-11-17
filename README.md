@@ -76,11 +76,11 @@ the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.9'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.9/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.10'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.10/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.9` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.10` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -721,7 +721,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.9") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.10") }
 ```
 
 See [distribution](docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -751,7 +751,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.9`; see the [Rust guide](rust/README.md) and
+`cargo add forgesworn-qr@0.3.10`; see the [Rust guide](rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately

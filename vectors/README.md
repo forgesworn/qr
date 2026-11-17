@@ -68,7 +68,7 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then twenty-nine in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then thirty-one in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
@@ -81,7 +81,11 @@ sheets requiring trusted mesh continuation beyond the alignment lattice, and
 two deferred mesh reads covering reduced coordinates and inverted polarity,
 and three terminal curved-map retries covering normal, inverted and mirrored
 symbols, four conflicting-format retries, and three ordinary-only maps needing
-the late alignment pass).
+the late alignment pass, and two conflicting-version maps).
+
+The version-peer regeneration adds two mirrored curved maps with an exact
+version word and a weak contradictory peer. They fail on 0.3.9 and pass after
+strict late refinement repairs the headers.
 
 The ordinary-curvature regeneration adds those three late-pass retries. They
 fail on 0.3.8 and read after the ordinary-only map receives late refinement,

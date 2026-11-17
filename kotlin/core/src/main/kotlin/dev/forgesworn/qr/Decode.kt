@@ -124,6 +124,7 @@ private class Budget(var maps: Int, var second: Int, var here: Int, var inverted
     val curvature = ArrayList<Retry>(SECOND_LOOKS + 1)
     val meshGrids = ArrayList<MeshGrid>(SECOND_LOOKS)
     var conflict: ConflictCandidate? = null
+    var versionPeer: ConflictCandidate? = null
     var attempted: MutableList<AttemptedCandidate>? = null
 }
 
@@ -215,7 +216,9 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (unattempted != null) return unattempted
     val conflict = recoverHeaderConflict(luminance, inverse, budget, work)
     if (conflict != null) return conflict
-    return recoverOrdinaryCurvature(luminance, inverse, budget, inverseCurvature, work)
+    val ordinary = recoverOrdinaryCurvature(luminance, inverse, budget, inverseCurvature, work)
+    if (ordinary != null) return ordinary
+    return recoverVersionPeer(luminance, inverse, budget, work)
 }
 
 /**
@@ -420,7 +423,14 @@ private fun keepCurvature(candidates: MutableList<Retry>, location: Placement, i
         val reader = if (isMirrored) ModuleReader { x, y -> sample.read(y, x) } else sample
         val allowConflict = conflictBudget != null && matrix != null &&
             (conflictBudget.conflict == null || conflictBudget.conflict!!.candidate.agreed.distance == 2)
-        val evidence = curvatureEvidence(reader, size, isMirrored, allowConflict) ?: continue
+        val evidence = curvatureEvidence(reader, size, isMirrored, allowConflict)
+        if (evidence == null) {
+            if (conflictBudget != null && matrix != null && conflictBudget.versionPeer == null) {
+                val peer = versionPeerHeader(reader, size, isMirrored)
+                if (peer != null) conflictBudget.versionPeer = ConflictCandidate(Retry(location, inverted, peer), inverseLuminance)
+            }
+            continue
+        }
         val header = evidence.agreed
         if (evidence.conflict) {
             if (conflictBudget != null && (conflictBudget.conflict == null || header.distance <= 1))
@@ -584,10 +594,10 @@ private fun decodeGrid(at: (Int) -> Boolean, size: Int): DecodeResult? {
     return if (mirrored != null) result(mirrored, mirrored = true, inverted = false, location = null) else null
 }
 
-/** Remember the six earlier attempts and their refinement phases. */
+/** Remember the seven earlier attempts and their refinement phases. */
 private fun rememberAttempt(budget: Budget, candidate: Retry, factor: Int, inverseLuminance: Boolean, late: Boolean = false) {
-    val attempted = budget.attempted ?: ArrayList<AttemptedCandidate>(SECOND_LOOKS + 2).also { budget.attempted = it }
-    if (attempted.size < SECOND_LOOKS + 2) attempted.add(AttemptedCandidate(candidate, factor, inverseLuminance, late))
+    val attempted = budget.attempted ?: ArrayList<AttemptedCandidate>(SECOND_LOOKS + 3).also { budget.attempted = it }
+    if (attempted.size < SECOND_LOOKS + 3) attempted.add(AttemptedCandidate(candidate, factor, inverseLuminance, late))
 }
 
 /** Locator homographies are compared exactly, never by temporary mesh geometry. */
@@ -672,6 +682,7 @@ private fun recoverOrdinaryCurvature(luminance: Luminance, inverse: Luminance?, 
                 alreadyAttempted(budget, candidate, inverseLuminance, true)) continue
             if (work != null) work.second++
             var modules: ByteArray? = null
+            rememberAttempt(budget, candidate, 1, inverseLuminance, true)
             val payload = secondLook(image, thresholds(image), candidate, work, true, true) { modules = it }
             val inverted = inverseLuminance || candidate.inverted
             val location = where(candidate.location, 1)
@@ -691,4 +702,26 @@ private fun recoverOrdinaryCurvature(luminance: Luminance, inverse: Luminance?, 
         }
     }
     return null
+}
+
+/** First retained version-peer map only, after all existing recovery paths. */
+private fun recoverVersionPeer(luminance: Luminance, inverse: Luminance?, budget: Budget, work: Work?): DecodeResult? {
+    val retained = budget.versionPeer ?: return null
+    val candidate = retained.candidate
+    if (alreadyAttempted(budget, candidate, retained.inverseLuminance, true)) return null
+    val image = (if (retained.inverseLuminance) inverse else luminance) ?: return null
+    if (work != null) work.second++
+    var modules: ByteArray? = null
+    val payload = secondLook(image, thresholds(image), candidate, work, true, true) { modules = it }
+    val inverted = retained.inverseLuminance || candidate.inverted
+    val location = where(candidate.location, 1)
+    if (payload != null) return result(payload, candidate.agreed.mirrored, inverted, location)
+    val grid = modules ?: return null
+    val size = candidate.location.size
+    val read = if (candidate.agreed.mirrored) ModuleReader { x, y -> grid[x * size + y].toInt() == 1 }
+        else ModuleReader { x, y -> grid[y * size + x].toInt() == 1 }
+    if (!formatAgrees(read, size, candidate.agreed.ecc, candidate.agreed.mask)) return null
+    val decoded = readSymbol(read, size) ?: return null
+    return if (decoded.ecc == candidate.agreed.ecc && decoded.mask == candidate.agreed.mask)
+        result(decoded, candidate.agreed.mirrored, inverted, location) else null
 }

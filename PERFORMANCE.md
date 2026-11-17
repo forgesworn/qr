@@ -1,5 +1,115 @@
 # Performance and verification
 
+## 0.3.10 conflicting-version recovery
+
+After every earlier decoder path fails, one retained map can receive strict
+late refinement when it has an exact version word matching its size, a decoded
+contradictory peer at three errors, and two agreeing decoded format copies.
+The first qualifying map retains its original luminance basis and orientation.
+An earlier ordinary attempt does not exclude it; an earlier late attempt does.
+Final format, version, Reed-Solomon and segment validation remain unchanged.
+
+| Dataset | QR 0.3.9 | QR 0.3.10 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Evaluated distortion set | 48/96 | 48/96 | 42/96 |
+| Earlier distortion set | 106/128 | **108/128** | 106/128 |
+| Previous holdout | 63/128 | 63/128 | 52/128 |
+| Earlier separate holdout | 72/128 | 72/128 | 67/128 |
+| Previous frozen set | 80/128 | 80/128 | 70/128 |
+| New set frozen before policy evaluation | 67/128 | 67/128 | 53/128 |
+| Earlier curved sheets | 9/18 | **10/18** | — |
+| Original photographs | 180/184 | 180/184 | 171/184 |
+| All photo rotations, mirrors and polarities | 2,872/2,944 | 2,872/2,944 | — |
+
+The prototype preserves complete earlier successful results and metadata across
+736 curved images, the 888-case regression, 2,944 photo views and 18 sheets.
+All 64 negative controls are rejected and no wrong QR payload is observed.
+QR leads on all six evaluated distortion sets. These finite synthetic sets do
+not establish universal accuracy or performance on any particular camera.
+The new 128 inputs were frozen before policy evaluation, with no repeated pixels
+or payloads from the earlier 608; they are now regression data. Photo views are
+related observations, and their independent oracle supplies text rather than bytes.
+
+The diagnostic covers all 14 remaining ZXing-only distortion misses and 21
+successful controls. Hook-off and hook-on runs preserve complete released
+results, Work and input pixels. An unattempted-only selector recovers one map;
+allowing earlier ordinary refinement recovers two. Both become strict refined
+reads with zero corrected codewords, and all four final header words are exact.
+One previously had two ordinary attempts and the other had none. This isolates
+late geometry refinement from weaker payload validation. The two own-encoder
+regressions reproduce the independent pixels exactly, fail on 0.3.9 and pass
+with the new recovery. All 77 earlier conformance entries remain identical in
+the expanded 79-frame pack. All 506 TypeScript tests with required photographs,
+Rust all-feature tests and doctests, and Kotlin tests pass.
+
+The maximum becomes eight second looks and 11,500,000 alignment probes, with
+the map cap unchanged at 720. There is one extra candidate/basis record and at
+most seven attempt records. Four original retained grids plus one sequential
+terminal grid retain at most 156,645 module bytes logically; active buffers and
+allocator/GC capacity are additional. Eight optional direct captures add at most
+250,632 grey probes, separate from `Work.probed`. Rejected-header classification
+adds bounded work during collection until the single slot fills; earlier
+successes avoid the new terminal attempt but can pay this classification cost.
+
+The packaged WASM is 240,027 bytes, 2,813 bytes larger than 0.3.9, SHA-256
+`27bfa219e20a1daa072d19a0bbad468ce945c76b5a3599972c959d98d37ce614`.
+
+Final packaged WASM matches complete TypeScript results and preserves input
+pixels across the 888-case regression, all 736 curved images, 2,944 photo views
+and 18 sheets. The standalone 79-frame pack matches all 632 work counters.
+Browser, worker, six character-set and session/reset checks pass. A separate
+1,000-round allocation check exercises 63 recovery reads across 14 fixtures:
+WASM capacity stays at 5,242,880 bytes after warm-up, while the intentionally
+unfreed-handle control grows. This workload includes two additional recovery
+fixtures compared with 0.3.9, so its capacity is not a matched memory comparison.
+Capacity is not peak live allocation. Source, emitted JavaScript and packaged
+WASM identities are bound in `production-binding.json`.
+
+Two independent paired processes per backend ran sequentially on the Apple M4 Max with
+native Node 24.21.0. Each covers 38 cases with 60 alternating measured pairs after at
+least ten warm-up pairs and 500 ms. Assertions and input hashing run outside the timed
+decoder call.
+
+| Case | WASM 0.3.9 median range | WASM 0.3.10 median range | Paired change |
+|---|---:|---:|---:|
+| version-peer-recovered-120 | 51.81–51.94 ms, miss | 62.32–62.44 ms, read | +19.99% and +20.52% |
+| version-peer-recovered-122 | 44.04–44.10 ms, miss | 54.13–54.25 ms, read | +22.74% and +23.21% |
+| known-version-peer-miss-55 | 30.72–30.76 ms, miss | 36.71–36.96 ms, miss | +19.49% and +20.16% |
+| holdout-version-peer-miss-37 | 15.59–15.63 ms, miss | 18.25–18.26 ms, miss | +16.76% and +17.10% |
+| fresh-version-peer-miss-45 | 12.43–12.43 ms, miss | 16.06–16.09 ms, miss | +29.45% and +29.22% |
+| fresh-version-peer-miss-61 | 21.37–21.45 ms, miss | 25.05–25.07 ms, miss | +16.78% and +17.33% |
+| fresh-version-peer-miss-77 | 25.98–26.02 ms, miss | 31.86–31.89 ms, miss | +22.45% and +22.77% |
+
+WASM new reads cost 19.99–23.21% more than their earlier misses; the five qualifying
+persistent misses cost 16.76–29.45% more. Main-noise medians change by +0.63% and
++0.06%, clean by +0.45% and -0.70%, and blank by +1.12% and -1.01%. Existing
+curved-success median changes range from -1.09% to +0.75%. Clean p95 changes by +0.01 ms
+and -0.01 ms. These results do not establish a general speed improvement.
+
+TypeScript new reads cost 20.39–23.77% more than their earlier misses; the five
+qualifying persistent misses cost 16.04–26.73% more. Main-noise medians change by +0.20%
+and +1.10%, clean by -0.11% and -0.19%, and blank by +4.48% and +4.51%. Existing
+curved-success median changes range from -1.02% to +1.62%. Clean p95 changes by +0.33 ms
+and +0.42 ms. These results do not establish a general speed improvement.
+
+Both paired WASM runs finish with the same 14,483,456-byte linear-memory capacity for
+baseline and candidate. Capacity is not peak live allocation. Raw samples and p95 values
+are retained. Desktop measurements do not establish mobile latency or worst-case time
+bounds.
+
+| Fixed frame | QR 0.3.10 WASM median | ZXing-WASM 3.1.7 median |
+|---|---:|---:|
+| Clean QR | 1.513–1.518 ms | 1.849–1.879 ms |
+| Blank | 1.169–1.180 ms | 2.086–2.150 ms |
+| Random noise, no QR | 20.275–20.352 ms | 7.681–7.703 ms |
+
+These direct timings include each packaged API wrapper on identical fixed 1280×720 RGBA
+frames, with two sequential processes and 60 alternating measured pairs. They do not
+establish general throughput; ZXing remains faster on this random-noise rejection
+workload.
+
+See the [reproduction instructions and per-case evidence](benchmarks/2026-11-17-m4/version-peer-recovery/README.md).
+
 ## 0.3.9 ordinary-only curvature refinement
 
 A retained curved map can receive an ordinary second look without ever receiving

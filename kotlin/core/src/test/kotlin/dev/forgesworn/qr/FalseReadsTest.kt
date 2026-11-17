@@ -371,7 +371,7 @@ class FalseReadsTest {
                 val work = Work()
                 val got = decodeCounted(frame.data, frame.width, frame.height, work)
                 if (got != null) assertEquals(text, got.text)
-                assertTrue(work.second <= 7)
+                assertTrue(work.second <= 8)
                 if (kind == Kind.CODEWORDS) {
                     codewordTrials++
                     if (got == null) codewordNothing++
@@ -396,7 +396,7 @@ class FalseReadsTest {
             val got = decodeCounted(frame.data, frame.width, frame.height, work)
             if (got != null) assertEquals(text, got.text)
             assertNull(got)
-            assertTrue(work.second <= 7)
+            assertTrue(work.second <= 8)
             assertTrue(work.probed <= MESH_PROBES)
             if (work.meshes > 0) meshed++
         }
@@ -419,7 +419,7 @@ class FalseReadsTest {
             if (got != null) assertEquals(text, got.text)
             assertNull(got)
             assertTrue(work.maps <= 4 * 6 * 5 * 6)
-            assertTrue(work.second <= 7)
+            assertTrue(work.second <= 8)
             assertTrue(work.probed <= MESH_PROBES)
             if (over(frame)) past++
             if (work.meshes > 0) meshed++
@@ -446,7 +446,7 @@ class FalseReadsTest {
                 if (got != null) assertEquals(text, got.text)
                 assertTrue(work.maps <= 4 * 6 * 5 * 6)
                 assertTrue(work.reduced <= reducedMaps)
-                assertTrue(work.second <= 7)
+                assertTrue(work.second <= 8)
                 assertTrue(work.probed <= MESH_PROBES)
                 if (kind == Kind.CODEWORDS) {
                     assertNull(got)
@@ -481,7 +481,7 @@ class FalseReadsTest {
                     assertTrue(work.reduced > 0)
                     assertTrue(work.reduced <= reducedMaps)
                     assertTrue(work.maps <= 4 * 6 * 5 * 6)
-                    assertTrue(work.second <= 7)
+                    assertTrue(work.second <= 8)
                     trials++
                     if (work.maps < 4 * 6 * 5 * 6 && factorsWithTriples(frame) == 3) everyFactor++
                 }
@@ -498,7 +498,7 @@ class FalseReadsTest {
             assertNull(decodeCounted(frame.data, frame.width, frame.height, work))
             assertTrue(work.maps <= 4 * 6 * 5 * 6)
             assertTrue(work.reduced <= reducedMaps)
-            assertTrue(work.second <= 7)
+            assertTrue(work.second <= 8)
             if (work.reduced > 0) reached++
         }
         // The finder tiles at least are mapped at reduced size.
@@ -512,7 +512,7 @@ class FalseReadsTest {
             assertNull("${frame.width} x ${frame.height}", decodeCounted(frame.data, frame.width, frame.height, work))
             assertTrue(work.maps <= 4 * 6 * 5 * 6)
             assertTrue(work.reduced <= reducedMaps)
-            assertTrue(work.second <= 7)
+            assertTrue(work.second <= 8)
         }
     }
 
@@ -521,7 +521,7 @@ class FalseReadsTest {
         for (frame in empty(Random(31))) {
             val work = Work()
             assertNull(decodeCounted(frame.data, frame.width, frame.height, work))
-            assertTrue(work.second <= 7)
+            assertTrue(work.second <= 8)
         }
     }
 }

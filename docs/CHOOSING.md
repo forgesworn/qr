@@ -36,41 +36,37 @@ payload; the synthetic suites also check its bytes.
 | Wrong payloads in the stress set | 0 | 0 |
 | False reads on its 32 negative controls | 0 | 0 |
 | Evaluated curved distortion set | **48/96** | 42/96 |
-| Earlier curved distortion set | **106/128** | **106/128** |
+| Earlier curved distortion set | **108/128** | 106/128 |
 | Previous curved holdout | **63/128** | 52/128 |
 | Earlier separate curved holdout | **72/128** | 67/128 |
-| Latest curved set frozen before evaluation | **80/128** | 70/128 |
+| Previous curved set frozen before evaluation | **80/128** | 70/128 |
+| Latest curved set frozen before evaluation | **67/128** | 53/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.9
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.10
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-A final late alignment pass for retained maps previously given only ordinary
-refinement raises the earlier 128-case result from 103 to 106, matching ZXing.
-Two evaluated holdouts improve from 62 to 63/128 and 71 to 72/128. A new 128-case
-set frozen before policy evaluation improves from 79 to 80/128, against ZXing's
-70/128; it is now regression data. QR leads on four of these five distortion
-sets and ties on one. This does not establish a universal accuracy lead.
-Earlier successful results and metadata remain identical in these checks, with
-no incorrect QR payloads observed. Earlier geometry changes can alter correction
-counts and optional alignment locations.
+One final strict late pass for a retained map with conflicting version evidence
+raises the earlier 128-case result from 106 to 108, against ZXing's 106. A new
+128-case set frozen before evaluating this policy stays at 67 correct reads,
+against ZXing's 53; it is now regression data. QR leads on all six evaluated
+curved distortion sets: 438/736 correct reads (59.5%) in total, against
+ZXing’s 390/736 (53.0%). Earlier successful results and metadata remain identical
+in these checks, with no wrong QR payloads observed. These are measured dataset
+results, not a universal accuracy claim.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-| Frame | QR 0.3.9 WASM median range | ZXing-WASM 3.1.7 median range |
+| Fixed frame | QR 0.3.10 WASM median | ZXing-WASM 3.1.7 median |
 |---|---:|---:|
-| Clean QR | **1.49–1.50 ms** | 1.84–1.86 ms |
-| Blank | **1.14–1.19 ms** | 2.08–2.15 ms |
-| Random noise, no QR | 19.90–19.95 ms | **7.55–7.59 ms** |
-
-QR takes about 19% less time on this clean frame and 45% less time on the blank frame;
-ZXing rejects this random-noise frame about 2.6 times faster. See the
-[direct comparison receipts](../benchmarks/2026-11-17-m4/ordinary-curvature-refinement/README.md).
+| Clean QR | 1.513–1.518 ms | 1.849–1.879 ms |
+| Blank | 1.169–1.180 ms | 2.086–2.150 ms |
+| Random noise, no QR | 20.275–20.352 ms | 7.681–7.703 ms |
 
 These are packaged API timings, including each library's wrapper, on three fixed
 1280×720 RGBA frames. Both readers receive identical pixels; their complete
@@ -79,16 +75,15 @@ native Node 24.21.0 processes use 60 alternating measured pairs after at least
 ten warm-up pairs and 500 ms. They do not establish mobile latency, battery use
 or general throughput. Pure TypeScript has different costs.
 
-Version 0.3.9 adds one final late refinement for a retained ordinary-only map.
-It records the phases of up to six earlier attempts and allows at most seven
-second looks, 10,062,500 alignment probes and 720 maps. The three terminal mesh
-grids have sequential lifetimes, keeping the 156,645-byte logical optional grid
-bound; active buffers and allocator capacity are additional.
-The six newly recovered curved images cost 13–18% more in WASM than the old
-failed reads, while two persistent misses cost 13–16% more. Routine WASM medians
-are essentially unchanged in the paired runs. TypeScript clean-frame p95 rises
-by 0.89–1.09 ms despite small median changes; these measurements do not establish
-a general speed improvement.
+Version 0.3.10 adds one final late refinement for a retained version-peer map.
+It retains one candidate/basis record and at most seven attempt records, with
+caps of eight second looks, 11,500,000 alignment probes and 720 maps. The
+156,645-byte logical optional grid bound remains unchanged; active buffers and
+allocator capacity are additional.
+The two new recoveries cost 19.99–23.21% more in WASM than the earlier failed attempts.
+Five qualifying images that still fail cost 16.76–29.45% more. Earlier curved successes
+have median changes from -1.09% to +0.75%. The additional recovery is an explicit
+accuracy/time trade-off.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

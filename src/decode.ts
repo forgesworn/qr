@@ -3,7 +3,7 @@ export type { ImageLike, DecodeOptions } from './image.js'
 import { binarise, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, type Candidate } from './refine.js'
-import { agreedVersion, readSymbol, curvatureHeader, type ModuleReader, type Payload } from './symbol.js'
+import { agreedVersion, readSymbol, curvatureHeader, versionPeerHeader, type ModuleReader, type Payload } from './symbol.js'
 import { FORMAT_COORDS } from './encode.js'
 
 /** A symbol found in a picture. */
@@ -92,7 +92,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (unattempted) return unattempted
   const conflict = recoverHeaderConflict(luminance, inverse, budget, work)
   if (conflict) return conflict
-  return recoverOrdinaryCurvature(luminance, inverse, budget, inverseCurvature, work)
+  const ordinary = recoverOrdinaryCurvature(luminance, inverse, budget, inverseCurvature, work)
+  if (ordinary) return ordinary
+  return recoverVersionPeer(luminance, inverse, budget, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -116,6 +118,7 @@ interface Budget {
   meshGrids: MeshGrid[]
   attempted?: AttemptedCandidate[]
   conflict?: { candidate: Candidate; inverseLuminance: boolean }
+  versionPeer?: { candidate: Candidate; inverseLuminance: boolean }
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
 }
 
@@ -373,8 +376,19 @@ function keepCurvature(candidates: Candidate[], location: Location, inverted: bo
     // only until a strong candidate appears. Normal curvature collection never stops.
     const allowConflict = conflictBudget !== undefined && matrix !== undefined &&
       (conflictBudget.conflict === undefined || conflictBudget.conflict.candidate.distance === 2)
-    const header = curvatureHeader(mirrored ? (x, y) => sample(y, x) : sample, size, allowConflict)
-    if (!header) continue
+    const read: ModuleReader = mirrored ? (x, y) => sample(y, x) : sample
+    const header = curvatureHeader(read, size, allowConflict)
+    if (!header) {
+      // Existing curvature and format-conflict ranking is unchanged. Only a
+      // rejected map can fill the first version-peer slot, across both bases.
+      if (conflictBudget && matrix && !conflictBudget.versionPeer) {
+        const peer = versionPeerHeader(read, size)
+        if (peer) conflictBudget.versionPeer = {
+          candidate: { location, inverted, mirrored, ...peer }, inverseLuminance,
+        }
+      }
+      continue
+    }
     if (header.conflict) {
       if (conflictBudget && (!conflictBudget.conflict || header.distance <= 1)) {
         const candidate: Candidate = { location, inverted, mirrored, ecc: header.ecc, mask: header.mask, distance: header.distance }
@@ -510,10 +524,10 @@ function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, can
 }
 
 
-/** Remembers the six earlier attempts and their refinement phase; no storage on a direct read. */
+/** Remembers the seven earlier attempts and their refinement phase; no storage on a direct read. */
 function rememberAttempt(budget: Budget, candidate: Candidate, factor: number, inverseLuminance: boolean, late = false): void {
   const attempted = budget.attempted ??= []
-  if (attempted.length < SECOND_LOOKS + 2) attempted.push({ candidate, factor, inverseLuminance, late })
+  if (attempted.length < SECOND_LOOKS + 3) attempted.push({ candidate, factor, inverseLuminance, late })
 }
 
 /** Candidates are original locator homographies, never the temporary bent mesh. */
@@ -618,6 +632,7 @@ function recoverOrdinaryCurvature(luminance: Luminance, inverse: Luminance | und
         alreadyAttempted(budget, candidate, inverseLuminance, true)) continue
       if (work) work.second++
       let modules: Uint8Array | undefined
+      rememberAttempt(budget, candidate, 1, inverseLuminance, true)
       const payload = secondLook(image, thresholds(image), candidate, work, true, true,
         grid => { modules = grid })
       const inverted = inverseLuminance || candidate.inverted
@@ -633,6 +648,39 @@ function recoverOrdinaryCurvature(luminance: Luminance, inverse: Luminance | und
         }
       }
       return undefined
+    }
+  }
+  return undefined
+}
+
+
+/**
+ * First version-peer map only, after all released recovery paths fail. Earlier
+ * late queues reject this header class; the identity check remains defensive.
+ * An ordinary attempt does not include the late frozen-anchor refinement.
+ */
+function recoverVersionPeer(luminance: Luminance, inverse: Luminance | undefined,
+  budget: Budget, work?: Work): DecodeResult | undefined {
+  const retained = budget.versionPeer
+  if (!retained) return undefined
+  const { candidate, inverseLuminance } = retained
+  if (alreadyAttempted(budget, candidate, inverseLuminance, true)) return undefined
+  const image = inverseLuminance ? inverse : luminance
+  if (!image) return undefined
+  if (work) work.second++
+  let modules: Uint8Array | undefined
+  const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+    grid => { modules = grid })
+  const inverted = inverseLuminance || candidate.inverted
+  const location = where(candidate.location, 1)
+  if (payload) return { ...payload, mirrored: candidate.mirrored, inverted, location }
+  if (modules) {
+    const grid = modules, size = candidate.location.size
+    const read: ModuleReader = candidate.mirrored ? (x, y) => grid[x * size + y] === 1 : (x, y) => grid[y * size + x] === 1
+    if (formatAgrees(read, size, candidate.ecc, candidate.mask)) {
+      const result = readSymbol(read, size)
+      if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
+        return { ...result, mirrored: candidate.mirrored, inverted, location }
     }
   }
   return undefined
