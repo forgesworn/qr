@@ -571,6 +571,11 @@ pub(crate) fn second_look_with_late(image: &Luminance, t: &Thresholds, candidate
 }
 
 pub(crate) fn second_look_collect(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool, collect_mesh: Option<&mut Vec<u8>>) -> Option<Payload> {
+    second_look_collect_final(image, t, candidate, work, strict, late, collect_mesh, None)
+}
+
+/// Move the already-read failed final grid only when an alternate is available.
+pub(crate) fn second_look_collect_final(image: &Luminance, t: &Thresholds, candidate: &Candidate, work: Option<&mut Work>, strict: bool, late: bool, collect_mesh: Option<&mut Vec<u8>>, collect_final: Option<&mut Option<Vec<u8>>>) -> Option<Payload> {
     let (inverted, mirrored) = (candidate.inverted, candidate.mirrored);
     let probe = Probe { image, t, inverted };
     // 0. From version 7, the map bent onto the alignment patterns it can find.
@@ -641,6 +646,7 @@ pub(crate) fn second_look_collect(image: &Luminance, t: &Thresholds, candidate: 
         read_symbol(read, size).filter(keeps).filter(|r| !strict || format_agrees(&read, size, r.ecc, r.mask))
     };
     if result.is_some() { return result; }
+    if let Some(collected) = collect_final { *collected = Some(modules); }
     if let (Map::Bent { .. }, Some(collected)) = (&map, collect_mesh) {
         collected.resize(size * size, 0);
         for y in 0..size {

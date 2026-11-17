@@ -24,6 +24,7 @@ import { starvedCurvaturePicture } from './starved-curvature-fixture.js'
 import { headerConflictPicture } from './header-conflict-fixture.js'
 import { ordinaryCurvaturePicture } from './ordinary-curvature-fixture.js'
 import { versionPeerPicture } from './version-peer-fixture.js'
+import { alternateGridPicture } from './alternate-grid-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -309,6 +310,8 @@ function build(write: boolean): Pack {
   // Ordinary-only retained maps need the late alignment pass after earlier failures.
   for (const index of [73, 79, 88] as const) own(`ordinary-curvature-${index}`, ordinaryCurvaturePicture(index).image)
   for (const index of [120, 122] as const) own(`version-peer-${index}`, versionPeerPicture(index).image)
+  // The same sampled geometry supports a retained mirrored format hypothesis.
+  own('alternate-grid-90', alternateGridPicture().image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

@@ -350,6 +350,8 @@ pipeline:
     that received only ordinary refinement the late alignment pass.
 18. Conflicting version peer: after earlier paths fail, refine one map with an
     exact matching version word, a weak contradictory peer and agreeing formats.
+19. Alternate grid reading: after earlier paths fail, validate one retained
+    orientation and format hypothesis using an already sampled refinement grid.
 
 ### Reusable camera decoder
 
@@ -1280,6 +1282,37 @@ same header. Thus the retained class cannot later match an earlier late attempt;
 the final identity check remains defensive. An ordinary attempt may match and
 is intentionally allowed. This proof must be revisited if those gates change.
 
+### 19. Read an alternate hypothesis from an existing grid
+
+During a full-size late refinement, after its final grid fails to read, consider
+the existing curvature queue for the same luminance basis, in queue order.
+Require the same size, finite homography coefficients and polarity, but a
+different combination of mirrored orientation, error-correction level and mask.
+Exclude an alternate that already received a matching full-size late attempt.
+Keep the first eligible alternate only, together with that failed final grid
+and its direct mesh grid if the existing call already captures one. Introduce
+no image sampling or mesh capture. The queues and attempt history do not change
+during refinement; selecting the eligible alternative before refinement is
+equivalent provided it is retained only after the final read fails.
+
+Every earlier successful return keeps priority. Invalidate the saved alternate
+if it subsequently receives a matching full-size late attempt, including the
+eighth attempt in step 18. Match geometry, luminance basis, polarity, orientation,
+level and mask. An invalidated slot is never replaced by another alternative.
+
+After all earlier paths fail, validate the saved final grid under the alternate
+orientation. Require both format copies to agree within the existing strict
+radius, and ordinary version, Reed–Solomon and segment validation with matching
+level and mask. If it fails, apply the same checks once to the saved mesh grid,
+when present. Try no further candidate. Return the alternate's full-size
+location and public inverted polarity as for earlier reads.
+
+This adds at most two strict symbol validations, including possible
+Reed–Solomon work, outside the existing `Work` counters. It adds no finder,
+map, alignment probe, image sample or secondary attempt. Retention may occur
+before an earlier path eventually succeeds; only these extra symbol reads wait
+until every earlier path fails.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1356,12 +1389,16 @@ among them.
   or map search. Its optional direct mesh capture adds at most 31,329 grey probes
   and one strict grid read; all eight captures add at most 250,632 grey probes,
   separate from `Work.probed`.
-- The step 15–18 temporary grids have sequential lifetimes, separate
-  from step 14's four retained grids. At most 156,645 bytes of optional mesh
-  grids remain logically retained together, plus bounded metadata for five
-  grids, seven attempted-candidate records with phase flags, one format-conflict
-  candidate and one version-peer candidate. This excludes active refinement
-  buffers and allocator or garbage-collector capacity. Earlier successful paths avoid later terminal
+- Step 19 leaves the eight-attempt and 11,500,000-alignment-probe limits
+  unchanged. Its saved final/mesh pair occupies at most 62,658 module bytes.
+  Conservatively, step 14's four retained grids, this pair and one subsequent
+  step 15–18 temporary grid retain at most 219,303 module bytes together.
+  Ports may copy the selected existing mesh for ownership without resampling;
+  this bound includes that copy. Bounded metadata includes seven grid records,
+  seven attempted-candidate records with phase flags, one format-conflict
+  candidate, one version-peer candidate and one alternate candidate with its
+  invalidation flag. This excludes active refinement buffers and allocator or
+  garbage-collector capacity. Earlier successful paths avoid later terminal
   attempts, but may pay bounded header-classification, candidate retention and
   attempt-recording costs before they succeed.
 

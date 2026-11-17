@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "previousFrames": 79,
+  "frames": 80,
+  "unchangedPreviousFrames": 79,
+  "newFrame": "conformance/alternate-grid-90.png",
+  "newWork": {
+    "steps": 213398,
+    "compared": 120,
+    "scanned": 6134698,
+    "maps": 340,
+    "second": 5,
+    "meshes": 5,
+    "probed": 1765625,
+    "reduced": 60
+  }
+}

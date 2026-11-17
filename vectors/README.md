@@ -81,7 +81,13 @@ sheets requiring trusted mesh continuation beyond the alignment lattice, and
 two deferred mesh reads covering reduced coordinates and inverted polarity,
 and three terminal curved-map retries covering normal, inverted and mirrored
 symbols, four conflicting-format retries, and three ordinary-only maps needing
-the late alignment pass, and two conflicting-version maps).
+the late alignment pass, two conflicting-version maps, and one alternate
+orientation reading of an existing refinement grid).
+
+The alternate-grid regeneration adds a mirrored version-23 picture. It fails
+on 0.3.10 and reads when the existing grid is strictly validated under a
+retained alternative format hypothesis. No additional sampling is needed.
+All 79 previous frames, stages, results and work counts remain unchanged.
 
 The version-peer regeneration adds two mirrored curved maps with an exact
 version word and a weak contradictory peer. They fail on 0.3.9 and pass after

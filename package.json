@@ -1,6 +1,6 @@
 {
   "name": "@forgesworn/qr",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Dependency-free QR code encoder and decoder for TypeScript, browsers, workers and Node, with optional WebAssembly and tracked camera scanning.",
   "type": "module",
   "main": "./dist/index.js",
