@@ -1,5 +1,100 @@
 # Performance and verification
 
+## 0.3.9 ordinary-only curvature refinement
+
+A retained curved map can receive an ordinary second look without ever receiving
+the late frozen-anchor alignment pass. After every earlier return path fails,
+the decoder now selects the first such retained map, matching its exact matrix,
+size, orientation, polarity, header hypothesis and luminance basis. It attempts
+one strict late refinement and, if needed, a strict direct mesh read. Candidate
+admission and final format, version, Reed-Solomon and segment checks are unchanged.
+
+| Dataset | QR 0.3.8 | QR 0.3.9 | ZXing-WASM 3.1.7 |
+|---|---:|---:|---:|
+| Evaluated distortion set | 48/96 | 48/96 | 42/96 |
+| Earlier distortion set | 103/128 | **106/128** | 106/128 |
+| Previous holdout | 62/128 | **63/128** | 52/128 |
+| Earlier separate holdout | 71/128 | **72/128** | 67/128 |
+| New set frozen before policy evaluation | 79/128 | **80/128** | 70/128 |
+| Earlier curved sheets | 6/18 | **9/18** | — |
+| Original photographs | 180/184 | 180/184 | 171/184 |
+| All photo rotations, mirrors and polarities | 2,872/2,944 | 2,872/2,944 | — |
+
+No earlier successful result or metadata changes in these checks, and no wrong
+QR payload is observed. The 888-case regression preserves earlier results and
+rejects all 64 negative controls. The new 128 inputs were frozen before policy
+evaluation, with no repeated pixels or payloads from the earlier 480, and are
+now regression data. QR leads on four of these five distortion sets and ties on
+one; these finite synthetic sets do not establish a universal accuracy lead or
+performance on a particular camera. Photo transformations are related views;
+photos independently supply expected text, while synthetic cases also check bytes.
+
+The diagnostic covers all 18 remaining ZXing-only distortion misses and 24
+successful controls. Its disabled and enabled forms preserve complete released
+results, work counters and input pixels. Five failures qualify for a paired
+replay of the same candidate: strict ordinary refinement fails on all five,
+while strict late refinement reads all five. The latter finds three extra
+alignment nodes in four cases and seven in the fifth; the final refined reads
+succeed without needing direct-mesh fallback. The prototype also recovers one
+image in the newly frozen set and three earlier curved sheets.
+
+Three own-encoder fixtures fail on 0.3.8 and pass with the new recovery. They
+cover mirrored normal and inverted pictures at two and four pixels per module.
+They use six attempts; two separate evaluated failures exercise all seven.
+The expanded 77-frame conformance pack preserves all 74 earlier entries,
+including stages, complete results and work counts. All 498 TypeScript tests,
+required photograph tests, Rust tests and Kotlin tests pass.
+
+The change records the phases of at most six earlier attempts and adds at most
+one final second look. The maximum is seven attempts and 10,062,500 alignment
+probes, with the 720-map limit unchanged. Optional direct captures add at most
+219,303 grey probes across all seven attempts, separate from `Work.probed`.
+The three terminal grids have sequential lifetimes: logically retained optional
+grids remain bounded at 156,645 bytes, plus metadata including six attempt
+records. This excludes active refinement buffers and allocator/GC capacity.
+Earlier successes avoid the new final attempt but can pay for phase bookkeeping.
+
+The packaged WASM is 237,214 bytes, 2,423 bytes larger than 0.3.8, SHA-256
+`a23bf1023029911f699d203f7a66f8a1c1d8241ba9f72b2e7dc0d1eabc51f469`.
+
+Final packaged WASM matches complete TypeScript results and preserves input
+pixels across the 888-case regression, 608 curved images, 2,944 photo views and
+18 sheets. The standalone pack matches all 616 work counters. Browser, worker,
+six character-set and session/reset checks pass. A separate 1,000-round
+allocation check exercises 63 recovery reads across 12 fixtures: WASM capacity
+stays at 4,325,376 bytes after warm-up, while the intentionally unfreed-handle
+control grows. Capacity is not peak live allocation.
+
+Two independent paired processes per backend ran sequentially on the Apple M4
+Max with native Node 24.21.0. Each covers 31 cases with 60 alternating measured
+pairs after at least ten warm-up pairs and 500 ms. WASM main-noise medians change
+by -0.05% and -0.07%, clean by +0.46% and -1.11%, and blank by +0.52% and -0.63%.
+Existing curved-success medians vary between -0.46% and +0.54%. These changes
+do not establish a general speed improvement.
+
+| Case | WASM 0.3.8 median range | WASM 0.3.9 median range | Paired change |
+|---|---:|---:|---:|
+| New recovery 73 | 28.50–28.58 ms, miss | 33.67–33.78 ms, read | +18.13%, +18.22% |
+| New recovery 79 | 31.46–31.47 ms, miss | 36.59–36.73 ms, read | +16.30%, +16.71% |
+| New recovery 88 | 34.44–34.58 ms, miss | 39.52–39.76 ms, read | +14.75%, +15.01% |
+| Previous holdout 104 | 48.76–48.93 ms, miss | 57.19–57.60 ms, read | +17.29%, +17.72% |
+| Earlier separate holdout 88 | 35.43–35.44 ms, miss | 40.46–40.56 ms, read | +14.20%, +14.43% |
+| New frozen set 122 | 61.93–62.26 ms, miss | 70.08–70.72 ms, read | +13.15%, +13.59% |
+
+The six new reads cost 13.15–18.22% more in WASM than their earlier misses;
+two qualifying persistent misses cost 13.20–15.73% more. TypeScript new reads
+cost 14.04–17.82% more, with those misses costing 12.69–16.17% more. This is an
+explicit accuracy/time trade-off. TypeScript main-noise medians change by -0.56%
+and -0.96%; clean by -0.43% and +1.96%, and blank by -4.32% and +4.38%.
+Existing curved-success medians vary between -0.71% and +1.42%. Despite small
+clean-frame median changes, TypeScript clean p95 rises by 0.89 and 1.09 ms in
+the two forks; other routine tails are mixed. All raw samples and p95 values
+are retained. Both WASM versions finish the paired run at 14,483,456 bytes of
+linear-memory capacity. Desktop measurements do not establish mobile latency
+or worst-case time bounds.
+
+See the [reproduction instructions and per-case evidence](benchmarks/2026-11-17-m4/ordinary-curvature-refinement/README.md).
+
 ## 0.3.8 conflicting-format recovery
 
 A distorted code can have one reliable format header and a conflicting peer

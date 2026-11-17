@@ -68,7 +68,7 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then twenty-two in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then twenty-nine in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
@@ -80,7 +80,17 @@ perspective frame whose correct finder triple ranks seventh, and two curved
 sheets requiring trusted mesh continuation beyond the alignment lattice, and
 two deferred mesh reads covering reduced coordinates and inverted polarity,
 and three terminal curved-map retries covering normal, inverted and mirrored
-symbols).
+symbols, four conflicting-format retries, and three ordinary-only maps needing
+the late alignment pass).
+
+The ordinary-curvature regeneration adds those three late-pass retries. They
+fail on 0.3.8 and read after the ordinary-only map receives late refinement,
+including mirrored normal and inverted pictures at two and four pixels per
+module. All 74 previous frames, stages, results and work counts remain unchanged.
+
+The header-conflict regeneration adds four retries covering stronger and weaker
+format evidence, priority for a later stronger candidate, and an inverted
+sixth-attempt recovery. All 70 previous entries remain unchanged.
 
 The starved-curvature regeneration adds those three terminal retries. They
 need one fifth attempt after all earlier paths fail; all 67 previous frames,

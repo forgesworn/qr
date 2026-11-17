@@ -62,11 +62,12 @@ struct Overflow {
     inverted: bool,
 }
 
-/// One of the original second looks, including its image basis.
+/// One of the earlier second looks, including its image basis and phase.
 struct AttemptedCandidate {
     candidate: Candidate,
     factor: usize,
     inverse_luminance: bool,
+    late: bool,
 }
 
 /// A failed meshed read retained for deferred validation.
@@ -168,8 +169,9 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         }
     }
     if let Some(found) = recover_mesh_grids(&budget.mesh_grids) { return Some(found); }
-    if let Some(found) = recover_unattempted_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &budget, work.as_deref_mut()) { return Some(found); }
-    recover_header_conflict(&luminance, inverse_luminance.as_ref(), &budget, work.as_deref_mut())
+    if let Some(found) = recover_unattempted_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
+    if let Some(found) = recover_header_conflict(&luminance, inverse_luminance.as_ref(), &mut budget, work.as_deref_mut()) { return Some(found); }
+    recover_ordinary_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &budget, work.as_deref_mut())
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -565,11 +567,26 @@ fn recover_overflow(luminance: &Luminance, overflow: &[Overflow], budget: &mut B
     None
 }
 
+/// Remember the original attempts and the two terminal attempts after selection.
+fn remember_attempt(budget: &mut Budget, candidate: &Candidate, factor: usize, inverse_luminance: bool, late: bool) {
+    if budget.attempted.len() < SECOND_LOOKS + 2 {
+        budget.attempted.push(AttemptedCandidate { candidate: candidate.clone(), factor, inverse_luminance, late });
+    }
+}
+
+/// Compare the same full-size map, image basis and header hypothesis.
+fn same_attempt(attempt: &AttemptedCandidate, candidate: &Candidate, inverse_luminance: bool) -> bool {
+    let previous = &attempt.candidate;
+    attempt.factor == 1 && attempt.inverse_luminance == inverse_luminance
+        && previous.location.size == candidate.location.size
+        && previous.mirrored == candidate.mirrored && previous.inverted == candidate.inverted
+        && previous.ecc == candidate.ecc && previous.mask == candidate.mask
+        && previous.location.matrix == candidate.location.matrix
+}
+
 /// Keep only failed meshed reads, with their original public location and polarity.
 fn mesh_attempt(luminance: &Luminance, levels: &crate::binarise::Thresholds, candidate: &Candidate, budget: &mut Budget, work: Option<&mut Work>, strict: bool, late: bool, f: usize, public_inverse: bool) -> Option<Payload> {
-    if budget.attempted.len() < SECOND_LOOKS {
-        budget.attempted.push(AttemptedCandidate { candidate: candidate.clone(), factor: f, inverse_luminance: public_inverse });
-    }
+    remember_attempt(budget, candidate, f, public_inverse, late);
     let mut modules = Vec::new();
     let collect = if budget.mesh_grids.len() < SECOND_LOOKS { Some(&mut modules) } else { None };
     let result = second_look_collect(luminance, levels, candidate, work, strict, late, collect);
@@ -615,20 +632,14 @@ fn recover_curvature(luminance: &Luminance, candidates: &[Candidate], budget: &m
 
 /// After all existing paths fail, try one retained curvature map that has not
 /// already had a second look at full size on the same luminance basis.
-fn recover_unattempted_curvature(luminance: &Luminance, inverse: Option<&Luminance>, candidates: &[Candidate], inverse_candidates: &[Candidate], budget: &Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+fn recover_unattempted_curvature(luminance: &Luminance, inverse: Option<&Luminance>, candidates: &[Candidate], inverse_candidates: &[Candidate], budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
     if budget.second != 0 { return None; }
     for (image, queue, inverse_luminance) in [(Some(luminance), candidates, false), (inverse, inverse_candidates, true)] {
         let Some(image) = image else { continue; };
         for candidate in queue {
-            let attempted = budget.attempted.iter().any(|attempt| {
-                let previous = &attempt.candidate;
-                attempt.factor == 1 && attempt.inverse_luminance == inverse_luminance
-                    && previous.location.size == candidate.location.size
-                    && previous.mirrored == candidate.mirrored && previous.inverted == candidate.inverted
-                    && previous.ecc == candidate.ecc && previous.mask == candidate.mask
-                    && previous.location.matrix == candidate.location.matrix
-            });
+            let attempted = budget.attempted.iter().any(|attempt| same_attempt(attempt, candidate, inverse_luminance));
             if attempted { continue; }
+            remember_attempt(budget, candidate, 1, inverse_luminance, true);
             if let Some(w) = work.as_deref_mut() { w.second += 1; }
             let levels = thresholds(image);
             let mut modules = Vec::new();
@@ -650,15 +661,17 @@ fn recover_unattempted_curvature(luminance: &Luminance, inverse: Option<&Luminan
 }
 
 /// One final strict read of the retained conflicting-format map.
-fn recover_header_conflict(luminance: &Luminance, inverse: Option<&Luminance>, budget: &Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+fn recover_header_conflict(luminance: &Luminance, inverse: Option<&Luminance>, budget: &mut Budget, mut work: Option<&mut Work>) -> Option<Reading> {
     let retained = budget.conflict.as_ref()?;
-    let image = if retained.inverse_luminance { inverse? } else { luminance };
-    let candidate = &retained.candidate;
+    let inverse_luminance = retained.inverse_luminance;
+    let image = if inverse_luminance { inverse? } else { luminance };
+    let candidate = retained.candidate.clone();
+    remember_attempt(budget, &candidate, 1, inverse_luminance, true);
     if let Some(w) = work.as_deref_mut() { w.second += 1; }
     let levels = thresholds(image);
     let mut modules = Vec::new();
-    let payload = second_look_collect(image, &levels, candidate, work.as_deref_mut(), true, true, Some(&mut modules));
-    let inverted = retained.inverse_luminance || candidate.inverted;
+    let payload = second_look_collect(image, &levels, &candidate, work.as_deref_mut(), true, true, Some(&mut modules));
+    let inverted = inverse_luminance || candidate.inverted;
     let location = place(&candidate.location, 1);
     if let Some(payload) = payload {
         return Some(Reading { payload, mirrored: candidate.mirrored, inverted, location });
@@ -667,6 +680,34 @@ fn recover_header_conflict(luminance: &Luminance, inverse: Option<&Luminance>, b
         let grid = MeshGrid { modules, size: candidate.location.size, ecc: candidate.ecc,
             mask: candidate.mask, mirrored: candidate.mirrored, inverted, location };
         return recover_mesh_grids(std::slice::from_ref(&grid));
+    }
+    None
+}
+
+/// Give one retained ordinary-only map the late frozen-anchor pass.
+fn recover_ordinary_curvature(luminance: &Luminance, inverse: Option<&Luminance>, candidates: &[Candidate], inverse_candidates: &[Candidate], budget: &Budget, mut work: Option<&mut Work>) -> Option<Reading> {
+    for (image, queue, inverse_luminance) in [(Some(luminance), candidates, false), (inverse, inverse_candidates, true)] {
+        let Some(image) = image else { continue; };
+        for candidate in queue {
+            let ordinary = budget.attempted.iter().any(|attempt| !attempt.late && same_attempt(attempt, candidate, inverse_luminance));
+            let late = budget.attempted.iter().any(|attempt| attempt.late && same_attempt(attempt, candidate, inverse_luminance));
+            if !ordinary || late { continue; }
+            if let Some(w) = work.as_deref_mut() { w.second += 1; }
+            let levels = thresholds(image);
+            let mut modules = Vec::new();
+            let payload = second_look_collect(image, &levels, candidate, work.as_deref_mut(), true, true, Some(&mut modules));
+            let inverted = inverse_luminance || candidate.inverted;
+            let location = place(&candidate.location, 1);
+            if let Some(payload) = payload {
+                return Some(Reading { payload, mirrored: candidate.mirrored, inverted, location });
+            }
+            if !modules.is_empty() {
+                let grid = MeshGrid { modules, size: candidate.location.size, ecc: candidate.ecc,
+                    mask: candidate.mask, mirrored: candidate.mirrored, inverted, location };
+                return recover_mesh_grids(std::slice::from_ref(&grid));
+            }
+            return None;
+        }
     }
     None
 }

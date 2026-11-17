@@ -1,0 +1,53 @@
+{
+  "fixtureSha256": "33e42140ac64042e502f629d157340e11225c4320f487e92305a922b9bc9f4e1",
+  "rows": [
+    {
+      "index": 73,
+      "pixelSha256": "5a9e9fb8f53bda7dc037f69b157b113563fe456c0ce3556b1e72465a4678d4e8",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 98408,
+        "compared": 53,
+        "scanned": 491769,
+        "maps": 198,
+        "second": 6,
+        "meshes": 6,
+        "probed": 2156250,
+        "reduced": 30
+      }
+    },
+    {
+      "index": 79,
+      "pixelSha256": "2182af439687fbe2d963b375854be3ddb617ba93b1e648df1b06a03699c9732b",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 126712,
+        "compared": 126,
+        "scanned": 1032198,
+        "maps": 302,
+        "second": 6,
+        "meshes": 6,
+        "probed": 2156250,
+        "reduced": 30
+      }
+    },
+    {
+      "index": 88,
+      "pixelSha256": "3f44b66fe5f72d95cf2e0ff2f136f438fb7ee6296dc6db71dfc33f031248154f",
+      "before": false,
+      "after": true,
+      "work": {
+        "steps": 194443,
+        "compared": 177,
+        "scanned": 5672781,
+        "maps": 291,
+        "second": 6,
+        "meshes": 6,
+        "probed": 2156250,
+        "reduced": 60
+      }
+    }
+  ]
+}

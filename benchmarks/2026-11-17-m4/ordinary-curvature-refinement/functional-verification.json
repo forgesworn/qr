@@ -1,0 +1,58 @@
+{
+  "version": "0.3.9",
+  "baselineCommit": "29c18aa8c63df53ced3d08ed4dbd0fa1f876905d",
+  "sourceState": "Uncommitted candidate; source and binary hashes identify tested bytes. Browser revision reports baseline checkout HEAD, not candidate source identity.",
+  "sources": {
+    "src/decode.ts": "232e71255c6d71ab6afc22102fd02928e4b7d66a48c189e3b13c5050d63c52ce",
+    "rust/src/decode.rs": "a296389a4e5444c781edd72e4d3beb00b8e30044f56a35a268ef11d3c8a554c8",
+    "kotlin/core/src/main/kotlin/dev/forgesworn/qr/Decode.kt": "60609731262ede1353c8edc693c4fc9d91595a5d175ab14961bbaa96f437eb3f",
+    "wasm/qr.wasm": "a23bf1023029911f699d203f7a66f8a1c1d8241ba9f72b2e7dc0d1eabc51f469",
+    "wasm/manifest.json": "28ef966dda1ad65291e92281fc5b2d4afb787f6763648fdf3c90abe008219225",
+    "vectors/conformance.json": "3bb189a84ede1d7ac4594622aa4e6fee395081864be4d3b975d4a4b96aa7b6b2"
+  },
+  "checks": {
+    "typescriptTests": 498,
+    "requiredPhotographs": true,
+    "rustAllFeaturesAndDoctests": true,
+    "kotlinTests": true,
+    "conformanceFrames": 77,
+    "unchangedEarlierConformanceFrames": 74,
+    "standalonePack": {
+      "read": 69,
+      "miss": 8,
+      "comparedCounters": 616,
+      "differences": 0
+    },
+    "allocation": {
+      "rounds": 1000,
+      "recoveryFixtures": 12,
+      "recoveryReads": 63,
+      "capacityAfter200": 4325376,
+      "capacityAtEnd": 4325376,
+      "unfreedControlBefore": 1179648,
+      "unfreedControlAfter": 1507328
+    },
+    "browserWorker": true,
+    "browserCharsetCases": 6,
+    "browserSession": true
+  },
+  "receipts": {
+    "production-backends.json": "96e8c96a3780d3871341cf8181eea08530ad5f1776872d2498e6849f19464dc3",
+    "production-qualified.json": "7fbe81ea1942cde5137a449d21912e47cd7ae885c7125b7e4607fdd1c2ad4920",
+    "production-photos.json": "ae0726f72c7f2daae59a8ec5a08062278b347c563eecd3c28c1764537289f4db",
+    "production-sheet.json": "36f4632dbd717c89ff950223f5bad04e11d40d1df71281719c2fe3f98ceae7e2",
+    "browser.json": "1ddb26d879facbbc1dfe4ed1586a607c6e32d006eb192f3141fd10efc1ee0156",
+    "ts-1.json": "e20c98173c75bfbd7c6d3e014c85e56831c8e22820dc2ccb5f4bdfe24826f9ed",
+    "ts-2.json": "55f1d44d854e8ee3b5b7ef8d90445c00d6fe1c852be7f1c9520a6086bb012a7f",
+    "wasm-1.json": "ef5fee10f8901ca13025d47bbae03779a32ec9b3b9a4dc9d215bd41ec2a0f17f",
+    "wasm-2.json": "50b02270f95ca4090b7aacd5a1b53611a93c62a16bcbb16e800f5f347ca492f8",
+    "direct-1.json": "f6c42f6536bcde9ee3cc8be9458151ee49ea7095a8800c332cbf6b03b277c2a2",
+    "direct-2.json": "314e566b235acf5e498b238cf5943f785e02028f83932d05886c0541ff44d788",
+    "conformance-comparison.json": "0f23ddf687a92b93ed2a0218b6fc7c7e3e782c40bd8fb6300233d442fae9efe6"
+  },
+  "privateLogHashes": {
+    "production-tests-final.log": "f2a2328d8d6352c58c2e8a5499b330f81f7c4bcc193e068e39f5c051a015ccc5",
+    "production-verify.log": "8f5460a90448f4dbb8e1a845bba1a0b685d61414222f10c902a0a9f92545554b",
+    "baseline-tests.log": "f7df193d79abd7d46a3bacf3e637633d72e4c8589876e991707aa68c4cad613d"
+  }
+}

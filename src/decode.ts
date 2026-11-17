@@ -90,7 +90,9 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (meshResult) return meshResult
   const unattempted = recoverUnattemptedCurvature(luminance, inverse, budget, inverseCurvature, work)
   if (unattempted) return unattempted
-  return recoverHeaderConflict(luminance, inverse, budget, work)
+  const conflict = recoverHeaderConflict(luminance, inverse, budget, work)
+  if (conflict) return conflict
+  return recoverOrdinaryCurvature(luminance, inverse, budget, inverseCurvature, work)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -121,6 +123,7 @@ interface AttemptedCandidate {
   candidate: Candidate
   factor: number
   inverseLuminance: boolean
+  late: boolean
 }
 
 interface MeshGrid {
@@ -499,7 +502,7 @@ function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, can
     if (budget.second === 0) break
     budget.second--
     if (work) work.second++
-    rememberAttempt(budget, candidate, 1, publicInverse)
+    rememberAttempt(budget, candidate, 1, publicInverse, true)
     const result = secondLook(luminance, levels, candidate, work, true, true, meshCollector(budget, candidate, 1, publicInverse))
     if (result) return { ...result, mirrored: candidate.mirrored, inverted: candidate.inverted, location: where(candidate.location, 1) }
   }
@@ -507,17 +510,18 @@ function recoverCurvature(luminance: Luminance, budget: Budget, work?: Work, can
 }
 
 
-/** Only the original four attempts are remembered; no storage on a direct read. */
-function rememberAttempt(budget: Budget, candidate: Candidate, factor: number, inverseLuminance: boolean): void {
+/** Remembers the six earlier attempts and their refinement phase; no storage on a direct read. */
+function rememberAttempt(budget: Budget, candidate: Candidate, factor: number, inverseLuminance: boolean, late = false): void {
   const attempted = budget.attempted ??= []
-  if (attempted.length < SECOND_LOOKS) attempted.push({ candidate, factor, inverseLuminance })
+  if (attempted.length < SECOND_LOOKS + 2) attempted.push({ candidate, factor, inverseLuminance, late })
 }
 
 /** Candidates are original locator homographies, never the temporary bent mesh. */
-function alreadyAttempted(budget: Budget, candidate: Candidate, inverseLuminance: boolean): boolean {
+function alreadyAttempted(budget: Budget, candidate: Candidate, inverseLuminance: boolean, late?: boolean): boolean {
   const matrix = candidate.location.matrix
   return (budget.attempted ?? []).some(attempt => {
-    if (attempt.factor !== 1 || attempt.inverseLuminance !== inverseLuminance) return false
+    if (attempt.factor !== 1 || attempt.inverseLuminance !== inverseLuminance ||
+      (late !== undefined && attempt.late !== late)) return false
     const other = attempt.candidate
     if (other.location.size !== candidate.location.size || other.mirrored !== candidate.mirrored ||
       other.inverted !== candidate.inverted || other.ecc !== candidate.ecc || other.mask !== candidate.mask) return false
@@ -543,6 +547,7 @@ function recoverUnattemptedCurvature(luminance: Luminance, inverse: Luminance | 
       if (!candidate.location.matrix || alreadyAttempted(budget, candidate, inverseLuminance)) continue
       if (work) work.second++
       let modules: Uint8Array | undefined
+      rememberAttempt(budget, candidate, 1, inverseLuminance, true)
       const payload = secondLook(image, thresholds(image), candidate, work, true, true,
         grid => { modules = grid })
       const inverted = inverseLuminance || candidate.inverted
@@ -577,6 +582,7 @@ function recoverHeaderConflict(luminance: Luminance, inverse: Luminance | undefi
   if (!image) return undefined
   if (work) work.second++
   let modules: Uint8Array | undefined
+  rememberAttempt(budget, candidate, 1, inverseLuminance, true)
   const payload = secondLook(image, thresholds(image), candidate, work, true, true,
     grid => { modules = grid })
   const inverted = inverseLuminance || candidate.inverted
@@ -589,6 +595,44 @@ function recoverHeaderConflict(luminance: Luminance, inverse: Luminance | undefi
       const result = readSymbol(read, size)
       if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
         return { ...result, mirrored: candidate.mirrored, inverted, location }
+    }
+  }
+  return undefined
+}
+
+
+/**
+ * An ordinary refinement does not include the late frozen-anchor pass. After
+ * every earlier recovery fails, try that pass on the first retained map which
+ * had only ordinary refinement. This is one attempt, even when it fails.
+ */
+function recoverOrdinaryCurvature(luminance: Luminance, inverse: Luminance | undefined,
+  budget: Budget, inverseCandidates: Candidate[] | undefined, work?: Work): DecodeResult | undefined {
+  for (const inverseLuminance of [false, true]) {
+    const image = inverseLuminance ? inverse : luminance
+    const candidates = inverseLuminance ? inverseCandidates : budget.curvature
+    if (!image || !candidates) continue
+    for (const candidate of candidates) {
+      if (!candidate.location.matrix ||
+        !alreadyAttempted(budget, candidate, inverseLuminance, false) ||
+        alreadyAttempted(budget, candidate, inverseLuminance, true)) continue
+      if (work) work.second++
+      let modules: Uint8Array | undefined
+      const payload = secondLook(image, thresholds(image), candidate, work, true, true,
+        grid => { modules = grid })
+      const inverted = inverseLuminance || candidate.inverted
+      const location = where(candidate.location, 1)
+      if (payload) return { ...payload, mirrored: candidate.mirrored, inverted, location }
+      if (modules) {
+        const grid = modules, size = candidate.location.size
+        const read: ModuleReader = candidate.mirrored ? (x, y) => grid[x * size + y] === 1 : (x, y) => grid[y * size + x] === 1
+        if (formatAgrees(read, size, candidate.ecc, candidate.mask)) {
+          const result = readSymbol(read, size)
+          if (result && result.ecc === candidate.ecc && result.mask === candidate.mask)
+            return { ...result, mirrored: candidate.mirrored, inverted, location }
+        }
+      }
+      return undefined
     }
   }
   return undefined
