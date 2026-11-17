@@ -352,6 +352,8 @@ pipeline:
     exact matching version word, a weak contradictory peer and agreeing formats.
 19. Alternate grid reading: after earlier paths fail, validate one retained
     orientation and format hypothesis using an already sampled refinement grid.
+20. Refined header rediscovery: after earlier paths fail, validate the first
+    different strict format hypothesis discovered on a failed refinement grid.
 
 ### Reusable camera decoder
 
@@ -1313,6 +1315,31 @@ map, alignment probe, image sample or secondary attempt. Retention may occur
 before an earlier path eventually succeeds; only these extra symbol reads wait
 until every earlier path fails.
 
+### 20. Rediscover a header on an existing refined grid
+
+During each existing full-size late refinement, inspect its failed final grid
+until one eligible hypothesis has been retained. Only versions 7–40 qualify.
+Read the grid first in the refinement's original mirrored orientation, then
+in the opposite orientation. In each orientation require both format copies
+to agree with the same format word within two bits each. Keep the first
+combination of orientation, error-correction level and mask that differs from
+the refinement's original hypothesis. Retain that grid, location, polarity and
+luminance basis. Do not replace, invalidate or backfill the slot, even if a
+later refinement uses the same hypothesis or the eventual symbol read fails.
+
+After every earlier path, including step 19, fails, validate the retained grid
+once. Require strict format agreement and ordinary version, Reed–Solomon and
+segment validation, with the selected error-correction level and mask. Return
+the full-size location and public inverted polarity as for earlier reads.
+The existing version validation applies unchanged; this step adds no new
+version-header acceptance rule.
+
+This adds at most sixteen orientation-specific header checks across the eight
+existing late attempts and one strict symbol validation outside the `Work`
+counters. It introduces no image sampling, mesh capture, alignment search,
+map or second look. Earlier successes retain priority, although they may have
+paid the bounded header checks and grid retention before succeeding.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1401,6 +1428,12 @@ among them.
   garbage-collector capacity. Earlier successful paths avoid later terminal
   attempts, but may pay bounded header-classification, candidate retention and
   attempt-recording costs before they succeed.
+- Step 20 retains at most one additional grid of 31,329 module bytes, bringing
+  the conservative combined retained-grid bound to 250,632 module bytes plus
+  metadata. Ports may share ownership with step 19 when both retain the same
+  grid. The extra grid record and candidate do not change the eight-attempt,
+  720-map or 11,500,000-alignment-probe limits. This bound excludes active
+  refinement buffers and allocator or garbage-collector capacity.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

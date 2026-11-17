@@ -1,0 +1,7 @@
+{
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "cpu": "Apple M4 Max",
+  "platform": "darwin",
+  "measurementContext": "Working desktop with other applications open; no concurrent task-owned QR builds, tests or benchmark jobs. Paired baseline/candidate measurements share the same host."
+}

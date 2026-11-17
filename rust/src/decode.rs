@@ -1,10 +1,12 @@
 //! The whole decoder: the ordinary search in each polarity (SPEC.md steps 3 to
 //! 7), the second look (step 8) and the reduced-size pass (step 9).
 
+use std::rc::Rc;
+
 use crate::binarise::{binarise, invert, invert_luminance, thresholds, to_luminance, BitImage, Luminance, Reductions};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
-use crate::refine::{agreement, agreement_read, format_agrees, keep, second_look_collect, second_look_collect_final, sized, Candidate, SECOND_LOOKS};
+use crate::refine::{agreement, agreement_read, format_agrees, keep, single_format_agreement, second_look_collect, second_look_collect_final, sized, Candidate, SECOND_LOOKS};
 #[cfg(test)]
 use crate::refine::second_look;
 use crate::symbol::{agreed_version, curvature_header, curvature_header_with_conflict, version_peer_header, read_symbol, Ecc, Payload, FORMAT_COORDS};
@@ -91,6 +93,7 @@ struct ConflictCandidate {
 /// of the maps this size may take.
 struct Budget {
     alternate: Option<AlternateGrid>,
+    rediscovered: Option<RediscoveredGrid>,
     conflict: Option<ConflictCandidate>,
     version_peer: Option<ConflictCandidate>,
     attempted: Vec<AttemptedCandidate>,
@@ -116,7 +119,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { alternate: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
+    let mut budget = Budget { alternate: None, rediscovered: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
@@ -175,7 +178,8 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     if let Some(found) = recover_header_conflict(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_ordinary_curvature(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
     if let Some(found) = recover_version_peer(&luminance, inverse_luminance.as_ref(), &curvature, &inverse_curvature, &mut budget, work.as_deref_mut()) { return Some(found); }
-    recover_alternate_grid(&budget)
+    if let Some(found) = recover_alternate_grid(&budget) { return Some(found); }
+    recover_rediscovered_grid(&budget)
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -592,7 +596,7 @@ fn same_attempt(attempt: &AttemptedCandidate, candidate: &Candidate, inverse_lum
 struct AlternateGrid {
     candidate: Candidate,
     inverse_luminance: bool,
-    final_grid: Vec<u8>,
+    final_grid: Rc<Vec<u8>>,
     mesh: Option<Vec<u8>>,
     late_attempted: bool,
 }
@@ -614,23 +618,74 @@ fn alternate_second_look(luminance: &Luminance, levels: &crate::binarise::Thresh
     if let Some(slot) = budget.alternate.as_mut() {
         if slot.inverse_luminance == inverse_luminance && alternate_geometry(&slot.candidate, candidate)
             && alternate_hypothesis(&slot.candidate, candidate) { slot.late_attempted = true; }
-        return second_look_collect(luminance, levels, candidate, work, true, true, collect_mesh);
     }
-    let selected = alternatives.iter().find(|alternative| {
-        alternate_geometry(candidate, alternative) && !alternate_hypothesis(candidate, alternative) &&
-            !budget.attempted.iter().any(|attempt| attempt.late && same_attempt(attempt, alternative, inverse_luminance))
-    });
+    let selected = if budget.alternate.is_none() {
+        alternatives.iter().find(|alternative| {
+            alternate_geometry(candidate, alternative) && !alternate_hypothesis(candidate, alternative) &&
+                !budget.attempted.iter().any(|attempt| attempt.late && same_attempt(attempt, alternative, inverse_luminance))
+        })
+    } else { None };
     let mut final_grid = None;
     let mut collect_mesh = collect_mesh;
+    let capture = selected.is_some() || budget.rediscovered.is_none();
     let result = second_look_collect_final(luminance, levels, candidate, work, true, true,
-        collect_mesh.as_mut().map(|grid| &mut **grid), if selected.is_some() { Some(&mut final_grid) } else { None });
-    if let (Some(candidate), Some(final_grid)) = (selected, final_grid) {
-        // The existing path owns the mesh; the selected alternative needs one
-        // copy of those same already-sampled modules, without new probes.
-        let mesh = collect_mesh.and_then(|grid| if grid.is_empty() { None } else { Some(grid.clone()) });
-        budget.alternate = Some(AlternateGrid { candidate: candidate.clone(), inverse_luminance, final_grid, mesh, late_attempted: false });
+        collect_mesh.as_mut().map(|grid| &mut **grid), if capture { Some(&mut final_grid) } else { None });
+    if let Some(modules) = final_grid {
+        let rediscovered = if budget.rediscovered.is_none() {
+            rediscovered_header(candidate, &modules)
+        } else { None };
+        match (selected, rediscovered) {
+            (Some(alternative), Some(header)) => {
+                let modules = Rc::new(modules);
+                let mesh = collect_mesh.and_then(|grid| if grid.is_empty() { None } else { Some(grid.clone()) });
+                budget.alternate = Some(AlternateGrid { candidate: alternative.clone(), inverse_luminance, final_grid: Rc::clone(&modules), mesh, late_attempted: false });
+                budget.rediscovered = Some(RediscoveredGrid { candidate: header, inverse_luminance, modules });
+            }
+            (Some(alternative), None) => {
+                let mesh = collect_mesh.and_then(|grid| if grid.is_empty() { None } else { Some(grid.clone()) });
+                budget.alternate = Some(AlternateGrid { candidate: alternative.clone(), inverse_luminance, final_grid: Rc::new(modules), mesh, late_attempted: false });
+            }
+            (None, Some(header)) => budget.rediscovered = Some(RediscoveredGrid { candidate: header, inverse_luminance, modules: Rc::new(modules) }),
+            (None, None) => {}
+        }
     }
     result
+}
+
+/// The first different strict format hypothesis found on a failed full-size grid.
+struct RediscoveredGrid {
+    candidate: Candidate,
+    inverse_luminance: bool,
+    modules: Rc<Vec<u8>>,
+}
+
+fn rediscovered_header(original: &Candidate, modules: &[u8]) -> Option<Candidate> {
+    let size = original.location.size;
+    if !(45..=177).contains(&size) || (size - 17) % 4 != 0 { return None; }
+    for mirrored in [original.mirrored, !original.mirrored] {
+        let read = |x: usize, y: usize| modules[if mirrored { x * size + y } else { y * size + x }] == 1;
+        let Some(agreed) = single_format_agreement(&read, size) else { continue; };
+        if mirrored == original.mirrored && agreed.ecc == original.ecc && agreed.mask == original.mask { continue; }
+        let mut candidate = original.clone();
+        candidate.mirrored = mirrored;
+        candidate.ecc = agreed.ecc;
+        candidate.mask = agreed.mask;
+        candidate.distance = agreed.distance;
+        return Some(candidate);
+    }
+    None
+}
+
+fn recover_rediscovered_grid(budget: &Budget) -> Option<Reading> {
+    let slot = budget.rediscovered.as_ref()?;
+    let candidate = &slot.candidate;
+    let size = candidate.location.size;
+    let read = |x: usize, y: usize| slot.modules[if candidate.mirrored { x * size + y } else { y * size + x }] == 1;
+    if !format_agrees(&read, size, candidate.ecc, candidate.mask) { return None; }
+    let payload = read_symbol(read, size)?;
+    if payload.ecc != candidate.ecc || payload.mask != candidate.mask { return None; }
+    Some(Reading { payload, mirrored: candidate.mirrored,
+        inverted: slot.inverse_luminance || candidate.inverted, location: place(&candidate.location, 1) })
 }
 
 fn recover_alternate_grid(budget: &Budget) -> Option<Reading> {
@@ -638,7 +693,7 @@ fn recover_alternate_grid(budget: &Budget) -> Option<Reading> {
     if slot.late_attempted { return None; }
     let candidate = &slot.candidate;
     let size = candidate.location.size;
-    for modules in [Some(&slot.final_grid), slot.mesh.as_ref()].into_iter().flatten() {
+    for modules in [Some(slot.final_grid.as_slice()), slot.mesh.as_deref()].into_iter().flatten() {
         let read = |x: usize, y: usize| modules[if candidate.mirrored { x * size + y } else { y * size + x }] == 1;
         if !format_agrees(&read, size, candidate.ecc, candidate.mask) { continue; }
         if let Some(payload) = read_symbol(read, size) {
@@ -939,7 +994,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { alternate: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
+        let mut budget = Budget { alternate: None, rediscovered: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -1107,7 +1162,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { alternate: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
+        Budget { alternate: None, rediscovered: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {

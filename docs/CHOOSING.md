@@ -37,37 +37,37 @@ payload; the synthetic suites also check its bytes.
 | False reads on its 32 negative controls | 0 | 0 |
 | Evaluated curved distortion set | **48/96** | 42/96 |
 | Earlier curved distortion set | **109/128** | 106/128 |
-| Previous curved holdout | **64/128** | 52/128 |
-| Earlier separate curved holdout | **72/128** | 67/128 |
-| Previous curved set frozen before evaluation | **80/128** | 70/128 |
-| Previous curved set frozen before version-peer evaluation | **67/128** | 53/128 |
-| Latest curved set frozen before evaluation | **62/128** | 57/128 |
+| Previous curved holdout | **67/128** | 52/128 |
+| Earlier separate curved holdout | **74/128** | 67/128 |
+| Previous curved set frozen before evaluation | **81/128** | 70/128 |
+| Previous curved set frozen before version-peer evaluation | **69/128** | 53/128 |
+| Curved set frozen before alternate-grid evaluation | **64/128** | 57/128 |
+| Latest curved set frozen before evaluation | **59/128** | 53/128 |
 
 These are finite datasets, including synthetic images made with our existing
 renderer. They do not establish accuracy on every camera, application or kind
 of damage. The evaluated sets are regression data, not unseen validation.
-Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.11
+Both readers miss all 28 finder-occlusion cases in that stress set. QR 0.3.12
 reads 2,872/2,944 rotated, mirrored and inverted views of the 184 photographs,
 including all 16 views of one dense curved photo. These transformations are
 related views, not independent photographs.
 
-Version 0.3.11 reuses an existing refinement grid under one retained alternate
-orientation and format hypothesis. This recovers two more of the previous 736
-curved images: 440 correct reads against ZXing's 390. The new 128-image set,
-frozen before evaluation, stays at 62 correct reads against ZXing's 57.
-Across all seven evaluated curved sets, QR reads 502/864 (58.1%) against
-ZXing's 447/864 (51.7%). Earlier successful results and metadata remain identical
+Version 0.3.12 rechecks an existing refinement grid when its two format headers
+agree on a different orientation or format hypothesis. This recovers eleven
+more curved images, including one in the new 128-image set frozen before
+evaluation. Across all eight evaluated curved sets, QR reads 571/992 (57.6%)
+against ZXing's 500/992 (50.4%). Earlier successful results and metadata remain identical
 in these checks, with no wrong QR payloads observed. These are measured dataset
 results, not a universal accuracy claim.
 See [full methodology, identities and per-case evidence](../PERFORMANCE.md).
 
 ## Speed and trade-offs
 
-| Fixed frame | QR 0.3.11 WASM median | ZXing-WASM 3.1.7 median |
+| Fixed frame | QR 0.3.12 WASM median | ZXing-WASM 3.1.7 median |
 |---|---:|---:|
-| Clean QR | 1.517–1.519 ms | 1.892–1.896 ms |
-| Blank | 1.161–1.165 ms | 2.125–2.129 ms |
-| Random noise, no QR | 20.334–20.342 ms | 7.739–7.742 ms |
+| Clean QR | 1.521–1.526 ms | 1.889–1.896 ms |
+| Blank | 1.167–1.180 ms | 2.118–2.137 ms |
+| Random noise, no QR | 20.265–20.303 ms | 7.703–7.729 ms |
 
 These are packaged API timings, including each library's wrapper, on three fixed
 1280×720 RGBA frames. Both readers receive identical pixels; their complete
@@ -75,14 +75,16 @@ results remain stable and neither changes the input. Two sequential M4 Max,
 native Node 24.21.0 processes use 60 alternating measured pairs after at least
 ten warm-up pairs and 500 ms. They do not establish mobile latency, battery use
 or general throughput. Pure TypeScript has different costs.
+Measurements were made on a working desktop with other applications open. No task-owned QR build, test or benchmark ran concurrently; alternating baseline and candidate calls share the same host conditions.
 
-Version 0.3.11 adds no image sampling or secondary attempt. It can retain one
-existing final/mesh pair and perform two additional strict symbol validations.
+Version 0.3.12 adds no image sampling or secondary attempt. Compared with
+0.3.11, it can retain one additional existing grid, check at most sixteen
+orientations and perform one additional strict symbol validation.
 The caps remain eight second looks, 11,500,000 alignment probes and 720 maps.
-The conservative retained-grid bound is 219,303 module bytes; active buffers,
+The conservative retained-grid bound is 250,632 module bytes; active buffers,
 metadata and allocator capacity are additional. Unchanged search counters do
 not imply unchanged CPU time because they do not count symbol validation.
-WASM median changes for the two new reads range from +0.22% to +0.87% relative to the earlier misses. Existing successful-case median changes range from -0.39% to +0.81%. These measurements do not establish a general speed improvement or the worst-case extra symbol-validation cost.
+Across two paired M4 runs, the five measured new reads change WASM median latency by -0.34–0.32% relative to their earlier misses. The three cases with a selected header that still fails to decode change by -0.58–0.01%; earlier successful curved cases change by -0.88–1.46%. These measurements do not establish a general speed improvement or a worst-case bound.
 
 Accuracy takes priority over rejecting an unsuccessful frame quickly. A tested
 mandatory finder-ring filter was rejected because it excluded known successful

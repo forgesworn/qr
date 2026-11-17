@@ -527,3 +527,20 @@ export function secondLook(image: Luminance, t: Thresholds, candidate: Candidate
   }
   return undefined
 }
+
+
+/** The existing strict format rule for one supplied orientation, without cross-orientation ranking. */
+export function singleFormatAgreement(read: ModuleReader, size: number): { ecc: ErrorCorrection; mask: number; distance: number } | undefined {
+  let first = 0
+  let second = 0
+  for (let i = 14; i >= 0; i--) {
+    const [x, y] = FORMAT_COORDS[i]!
+    first = (first << 1) | (read(x, y) ? 1 : 0)
+    second = (second << 1) | (read(i < 8 ? size - 1 - i : 8, i < 8 ? 8 : size - 7 + (i - 8)) ? 1 : 0)
+  }
+  for (const f of FORMATS) {
+    const distance = Math.max(popcount(f.bits ^ first), popcount(f.bits ^ second))
+    if (distance <= AGREEMENT) return { ecc: f.ecc, mask: f.mask, distance }
+  }
+  return undefined
+}
