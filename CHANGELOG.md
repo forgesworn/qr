@@ -13,6 +13,10 @@
   all 96 negative controls rejected and no wrong payload. Fixed clean, blank
   and noise timings show no repeatable regression; persistent misses that
   qualify for the new step take several times longer. See PERFORMANCE.md.
+- Speed up the TypeScript decoder without changing any result or Work
+  counter. Against v0.3.14 in paired M4 runs, RGBA frames decode 19–20%
+  faster when clean, 26% when blank and 4–12% on random noise. Rust, Kotlin
+  and the packaged WASM are unchanged.
 
 ## 0.3.14
 

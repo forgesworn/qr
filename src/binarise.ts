@@ -30,6 +30,22 @@ export function toLuminance(
     for (let y = 0; y < height; y++) out.set(data.subarray(y * rowStride, y * rowStride + width), y * width)
     return { data: out, width, height }
   }
+  if (LITTLE_ENDIAN && data.byteOffset % 4 === 0) {
+    // One load a pixel: on a little-endian host the word is a | b | g | r from
+    // its high byte down, so each channel is the same byte the loop below reads.
+    const words = new Uint32Array(data.buffer, data.byteOffset, data.length >>> 2)
+    for (let y = 0; y < height; y++) {
+      let w = y * rowStride
+      let o = y * width
+      for (let end = o + width; o < end; o++, w++) {
+        const v = words[w]!
+        const a = v >>> 24
+        const grey = ((v & 255) * 77 + ((v >>> 8) & 255) * 150 + ((v >>> 16) & 255) * 29) >> 8
+        out[o] = a === 255 ? grey : (grey * a + 255 * (255 - a)) / 255
+      }
+    }
+    return { data: out, width, height }
+  }
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const i = (y * rowStride + x) * 4
@@ -41,6 +57,9 @@ export function toLuminance(
   }
   return { data: out, width, height }
 }
+
+/** Typed arrays use the host's byte order; the word path above assumes little-endian. */
+const LITTLE_ENDIAN = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1
 
 const BLOCK = 8
 const MIN_DYNAMIC_RANGE = 24

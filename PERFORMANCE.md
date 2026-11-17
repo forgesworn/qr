@@ -1,5 +1,36 @@
 # Performance and verification
 
+## Exact TypeScript speed-ups, based on the low-resolution candidate
+
+The TypeScript decoder reads RGBA pixels a word at a time, keeps the
+alignment merge frontier the Rust and Kotlin ports already use, scores
+alignment candidates from offsets computed once per basis, walks
+cross-checks by pixel index and looks up Reed–Solomon syndromes. Every
+result and Work counter is unchanged: complete results and counters are
+identical on 5,778 regression and development images, and all 525
+TypeScript tests pass with photographs required. Rust, Kotlin, SPEC, vectors
+and the packaged WASM are unchanged.
+
+| RGBA frame, TypeScript | Median change against v0.3.14, two paired M4 processes |
+| --- | ---: |
+| Clean 1280 x 720 | −19.4% / −19.9% |
+| Blank 1280 x 720 | −25.6% / −26.0% |
+| Main noise 1280 x 720 | −12.0% / −11.9% |
+| Other noise, six cases | −4.1% to −11.9% |
+| Stripes | −22.3% / −20.8% |
+| Checkerboard | −19.9% / −18.3% |
+| Gradient | −10.4% / −9.6% |
+
+Every case's p95 also falls. In the low-resolution candidate's own workload,
+v0.3.14's earlier successes change by −0.8% to −3.8%; its qualifying
+persistent misses and new reads keep the enlarged search's documented cost.
+The desktop was in use during the runs, so these are paired ratios rather
+than quiet-machine times. The same alignment changes made the WASM build
+5–18% slower on noise and were not adopted there; the WASM backend is
+unchanged and random-noise rejection stays slower than ZXing-WASM's.
+
+[Changes, exactness receipt, raw timings and reproduction](benchmarks/2026-11-17-m4/typescript-exact-speed/README.md).
+
 ## Noise-rejection policy screen, based on the low-resolution candidate
 
 No decoder change follows from this screen. It tested 21 search-policy

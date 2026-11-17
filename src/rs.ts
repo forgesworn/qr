@@ -15,6 +15,14 @@ function evaluate(poly: readonly number[], x: number): number {
   return y
 }
 
+// QR blocks have at most 30 check codewords, so at most 30 syndrome roots.
+// Row j multiplies every byte by α^j, so each syndrome step is one lookup.
+const SYNDROME_ROOTS = 30
+const SYNDROME_MUL = new Uint8Array(SYNDROME_ROOTS * 256)
+for (let j = 0; j < SYNDROME_ROOTS; j++) {
+  for (let a = 1; a < 256; a++) SYNDROME_MUL[j * 256 + a] = EXP[LOG[a]! + j]!
+}
+
 /**
  * Corrects `block` (data codewords then `ecCount` check codewords) in place.
  * Returns the number of codewords corrected, or -1 when the block has more
@@ -26,8 +34,13 @@ export function correct(block: Uint8Array, ecCount: number): number {
   let clean = true
   for (let j = 0; j < ecCount; j++) {
     let s = 0
-    const x = EXP[j]!
-    for (let i = 0; i < n; i++) s = gfMul(s, x) ^ block[i]!
+    if (j < SYNDROME_ROOTS) {
+      const row = j * 256
+      for (let i = 0; i < n; i++) s = SYNDROME_MUL[row + s]! ^ block[i]!
+    } else {
+      const x = EXP[j]!
+      for (let i = 0; i < n; i++) s = gfMul(s, x) ^ block[i]!
+    }
     syndromes.push(s)
     if (s !== 0) clean = false
   }

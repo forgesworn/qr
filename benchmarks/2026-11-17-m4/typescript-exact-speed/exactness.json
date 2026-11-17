@@ -1,0 +1,79 @@
+{
+  "description": "Complete-result hashes (every field, finder bookkeeping included) and every Work counter, baseline against candidate, per image",
+  "host": {
+    "cpu": "Apple M4 Max",
+    "node": "v24.21.0"
+  },
+  "baselineJavascriptSha256": "a7bd9146722e65c939cec27f92cea5ca6a4d42441e04b46c68aac94820891183",
+  "candidateJavascriptSha256": "f019b9a76c7a91924b1869d33ed186a1e5ccc611f61fc70d1515b57f4d1f095b",
+  "images": 5778,
+  "resultDiffs": 0,
+  "workDiffs": 0,
+  "suites": {
+    "photos184": {
+      "images": 184,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "photoTransforms2944": {
+      "images": 2944,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "stress256": {
+      "images": 256,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "qualified160": {
+      "images": 160,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "validation192": {
+      "images": 192,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "synthetic96": {
+      "images": 96,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "lowres224": {
+      "images": 224,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "curved1120": {
+      "images": 1120,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "curvedNew256": {
+      "images": 256,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "conformance94": {
+      "images": 94,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "spreadDev120": {
+      "images": 120,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "step9Dev120": {
+      "images": 120,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    },
+    "negatives12": {
+      "images": 12,
+      "resultDiffs": 0,
+      "workDiffs": 0
+    }
+  }
+}
