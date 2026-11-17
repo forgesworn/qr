@@ -1,0 +1,663 @@
+{
+ "seconds": 10.018,
+ "count": 120,
+ "suites": {
+  "spreadDev120": {
+   "base": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5339,
+    "ms": 1424.1
+   },
+   "P1": {
+    "correct": 105,
+    "read": 0,
+    "miss": 15,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5794,
+    "ms": 1322.4
+   },
+   "P3": {
+    "correct": 109,
+    "read": 0,
+    "miss": 11,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 4991,
+    "ms": 1399.8
+   },
+   "r0": {
+    "correct": 68,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6804,
+    "ms": 1672.2
+   }
+  }
+ },
+ "differences": {
+  "P1": [
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-4",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 2,
+    "variantMaps": 20
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-6",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 3,
+    "variantMaps": 6
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-11",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 30,
+    "variantMaps": 59
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-13",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 118,
+    "variantMaps": 124
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-15",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 171,
+    "variantMaps": 169
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-17",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 142,
+    "variantMaps": 196
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-30",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 90
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-33",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 139
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-34",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 138
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-36",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 167
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-37",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 6,
+    "variantMaps": 85
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-38",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 126,
+    "variantMaps": 206
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-39",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 1,
+    "variantMaps": 179
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-53",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 158
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-56",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 186
+   }
+  ],
+  "r0": [
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-4",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 2,
+    "variantMaps": 6
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-6",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 3,
+    "variantMaps": 2
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-11",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 30,
+    "variantMaps": 19
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-13",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 118,
+    "variantMaps": 92
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-17",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 142,
+    "variantMaps": 126
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-28",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 93,
+    "variantMaps": 39
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-30",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 33
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-33",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 48
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-34",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 65
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-37",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 6,
+    "variantMaps": 50
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-38",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 126,
+    "variantMaps": 135
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-39",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 1,
+    "variantMaps": 98
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-53",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 79
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-56",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 103
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-64",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 13
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-66",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 76
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-67",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 10,
+    "variantMaps": 23
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-68",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 9,
+    "variantMaps": 79
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-69",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 37
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-70",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 11,
+    "variantMaps": 69
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-74",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 13,
+    "variantMaps": 183
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-78",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 22,
+    "variantMaps": 197
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-84",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 38
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-86",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 44
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-87",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 84,
+    "variantMaps": 46
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-88",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 87
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-89",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 77
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-90",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 9,
+    "variantMaps": 102
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-91",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 115
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-94",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 20,
+    "variantMaps": 149
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-95",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 20,
+    "variantMaps": 139
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-96",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 454,
+    "variantMaps": 198
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-97",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 303,
+    "variantMaps": 164
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-98",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 248,
+    "variantMaps": 144
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-99",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 15,
+    "variantMaps": 171
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-102",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 6,
+    "variantMaps": 43
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-103",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 3
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-104",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 37,
+    "variantMaps": 43
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-105",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 12
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-106",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 24
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-107",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 8,
+    "variantMaps": 4
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-108",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 35,
+    "variantMaps": 70
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-109",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 46
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-110",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 24,
+    "variantMaps": 73
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-111",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 8,
+    "variantMaps": 54
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-113",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 89,
+    "variantMaps": 59
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-115",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 14,
+    "variantMaps": 129
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-116",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 191,
+    "variantMaps": 117
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-118",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 164,
+    "variantMaps": 102
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-119",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 217,
+    "variantMaps": 122
+   }
+  ],
+  "P3": [
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-13",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 118,
+    "variantMaps": 140
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-39",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 1,
+    "variantMaps": 209
+   }
+  ]
+ }
+}

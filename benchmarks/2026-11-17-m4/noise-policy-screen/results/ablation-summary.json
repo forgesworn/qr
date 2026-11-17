@@ -1,0 +1,1684 @@
+{
+ "seconds": 63.03,
+ "count": 5538,
+ "suites": {
+  "photos184": {
+   "base": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 770.2
+   },
+   "r0": {
+    "correct": 179,
+    "read": 0,
+    "miss": 5,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 529,
+    "ms": 692.9
+   },
+   "r04": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1032,
+    "ms": 692.9
+   }
+  },
+  "photoTransforms2944": {
+   "base": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33104,
+    "ms": 5307.8
+   },
+   "r0": {
+    "correct": 2856,
+    "read": 0,
+    "miss": 88,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 11410,
+    "ms": 5060.3
+   },
+   "r04": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 23517,
+    "ms": 4666.8
+   }
+  },
+  "stress256": {
+   "base": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12380,
+    "ms": 1668.8
+   },
+   "r0": {
+    "correct": 166,
+    "read": 0,
+    "miss": 58,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 8109,
+    "ms": 1288.1
+   },
+   "r04": {
+    "correct": 174,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 10052,
+    "ms": 1520.4
+   }
+  },
+  "qualified160": {
+   "base": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14498,
+    "ms": 2084.7
+   },
+   "r0": {
+    "correct": 68,
+    "read": 0,
+    "miss": 60,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 8248,
+    "ms": 1886.9
+   },
+   "r04": {
+    "correct": 73,
+    "read": 0,
+    "miss": 55,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 11803,
+    "ms": 2296.5
+   }
+  },
+  "validation192": {
+   "base": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8952,
+    "ms": 1219.4
+   },
+   "r0": {
+    "correct": 171,
+    "read": 0,
+    "miss": 21,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 2930,
+    "ms": 705.9
+   },
+   "r04": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6149,
+    "ms": 961.1
+   }
+  },
+  "synthetic96": {
+   "base": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3170,
+    "ms": 468.5
+   },
+   "r0": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 948,
+    "ms": 312.1
+   },
+   "r04": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 2129,
+    "ms": 374
+   }
+  },
+  "lowres224": {
+   "base": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23217,
+    "ms": 3378.6
+   },
+   "r0": {
+    "correct": 97,
+    "read": 0,
+    "miss": 95,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 11336,
+    "ms": 2507.3
+   },
+   "r04": {
+    "correct": 108,
+    "read": 0,
+    "miss": 84,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 17399,
+    "ms": 2840.7
+   }
+  },
+  "curved1120": {
+   "base": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 297589,
+    "ms": 65531.8
+   },
+   "r0": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 114009,
+    "ms": 51509.1
+   },
+   "r04": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 211393,
+    "ms": 58485.5
+   }
+  },
+  "curvedNew256": {
+   "base": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 35495,
+    "ms": 4937.2
+   },
+   "r0": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 12952,
+    "ms": 3934.3
+   },
+   "r04": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 25790,
+    "ms": 4564.9
+   }
+  },
+  "conformance94": {
+   "base": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 10318,
+    "ms": 2306.2
+   },
+   "r0": {
+    "correct": 78,
+    "read": 0,
+    "miss": 9,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 5018,
+    "ms": 1976.7
+   },
+   "r04": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 7496,
+    "ms": 2090.3
+   }
+  },
+  "negatives12": {
+   "base": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 308.3
+   },
+   "r0": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 840,
+    "ms": 253.9
+   },
+   "r04": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1280,
+    "ms": 289.9
+   }
+  }
+ },
+ "differences": {
+  "r0": [
+   {
+    "suite": "photos184",
+    "name": "s2-qrcode-2-high-res-1",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 450,
+    "variantMaps": 175
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r0/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 37
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r1/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 10
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r2/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 32
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r3/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 23
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r1/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 37
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r2/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 18,
+    "variantMaps": 40
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-16/r3/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 20
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-17/r3/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 29,
+    "variantMaps": 30
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-1-17/r0/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 33,
+    "variantMaps": 44
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/n/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 85,
+    "variantMaps": 26
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 83,
+    "variantMaps": 27
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/n/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 6
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 6
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/m/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 6
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 6
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/m/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 6
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 39,
+    "variantMaps": 6
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-3-04/r1/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 9
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-3-06/r1/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 23,
+    "variantMaps": 12
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-3-09/r3/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 98,
+    "variantMaps": 27
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r0/n/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 450,
+    "variantMaps": 175
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r0/n/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 432,
+    "variantMaps": 172
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r1/n/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 447,
+    "variantMaps": 182
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r1/n/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 396,
+    "variantMaps": 174
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r2/n/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 384,
+    "variantMaps": 176
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r2/n/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 351,
+    "variantMaps": 170
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r3/n/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 389,
+    "variantMaps": 150
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r3/n/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 378,
+    "variantMaps": 148
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r0/m/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 486,
+    "variantMaps": 173
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r0/m/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 466,
+    "variantMaps": 167
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r1/m/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 350,
+    "variantMaps": 168
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r1/m/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 360,
+    "variantMaps": 164
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r2/m/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 426,
+    "variantMaps": 176
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r2/m/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 372,
+    "variantMaps": 164
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r3/m/n",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 421,
+    "variantMaps": 176
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s2-qrcode-2-high-res-1/r3/m/i",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 391,
+    "variantMaps": 170
+   },
+   {
+    "suite": "stress256",
+    "name": "perspective-18",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 32,
+    "variantMaps": 123
+   },
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-18",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 4
+   },
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-24",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 254,
+    "variantMaps": 188
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-12",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 8,
+    "variantMaps": 84
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-13",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 75
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-14",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 11,
+    "variantMaps": 45
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-15",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 32,
+    "variantMaps": 77
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-17",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 58
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-24",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 19,
+    "variantMaps": 124
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-25",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 295,
+    "variantMaps": 153
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-27",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 253,
+    "variantMaps": 152
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-045",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 63,
+    "variantMaps": 18
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-051",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 62,
+    "variantMaps": 12
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-054",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 9,
+    "variantMaps": 16
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-055",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 58,
+    "variantMaps": 16
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-061",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 25,
+    "variantMaps": 26
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-066",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 107,
+    "variantMaps": 106
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-070",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 84
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-076",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 67,
+    "variantMaps": 61
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-080",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 312,
+    "variantMaps": 167
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-086",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 38,
+    "variantMaps": 107
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-089",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 41,
+    "variantMaps": 65
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-092",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 174,
+    "variantMaps": 75
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-101",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 116,
+    "variantMaps": 111
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-110",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 280,
+    "variantMaps": 138
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-111",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 138,
+    "variantMaps": 161
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-122",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 323,
+    "variantMaps": 168
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-4",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 8
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-40",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 21
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-156",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 9,
+    "variantMaps": 18
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-188",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 5,
+    "variantMaps": 7
+   },
+   {
+    "suite": "synthetic96",
+    "name": "held-out-52",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 5,
+    "variantMaps": 8
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-048",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 10,
+    "variantMaps": 25
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-049",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 10,
+    "variantMaps": 18
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-051",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 8,
+    "variantMaps": 8
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-053",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 6
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-056",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 9
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-071",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 29,
+    "variantMaps": 15
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-077",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 176,
+    "variantMaps": 49
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-082",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 39,
+    "variantMaps": 49
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-085",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 60,
+    "variantMaps": 13
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-095",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 100,
+    "variantMaps": 46
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-096",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 103,
+    "variantMaps": 101
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-097",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 88
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-098",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 67,
+    "variantMaps": 73
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-102",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 282,
+    "variantMaps": 135
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-104",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 77,
+    "variantMaps": 101
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-107",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 27,
+    "variantMaps": 84
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-111",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 110,
+    "variantMaps": 46
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-112",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 291,
+    "variantMaps": 111
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-118",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 52,
+    "variantMaps": 70
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-120",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 120,
+    "variantMaps": 119
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-124",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 118,
+    "variantMaps": 80
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-127",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 87
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-129",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 180,
+    "variantMaps": 64
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-143",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 18,
+    "variantMaps": 124
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-149",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 314,
+    "variantMaps": 131
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-157",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 248,
+    "variantMaps": 120
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-159",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 240,
+    "variantMaps": 127
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-164",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 150,
+    "variantMaps": 123
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-166",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 368,
+    "variantMaps": 125
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-168",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 83,
+    "variantMaps": 176
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-170",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 320,
+    "variantMaps": 148
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-173",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 206,
+    "variantMaps": 103
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-174",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 15,
+    "variantMaps": 176
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-178",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 336,
+    "variantMaps": 150
+   },
+   {
+    "suite": "curved1120",
+    "name": "known96/boundary-unseen-33",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 310,
+    "variantMaps": 141
+   },
+   {
+    "suite": "curved1120",
+    "name": "known128/mesh-retain-unseen-16",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 62,
+    "variantMaps": 10
+   },
+   {
+    "suite": "curved1120",
+    "name": "versionPeerFresh128/version-peer-holdout-113",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 261,
+    "variantMaps": 157
+   },
+   {
+    "suite": "curved1120",
+    "name": "headerRediscoveryFresh128/header-rediscovery-holdout-82",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 314,
+    "variantMaps": 170
+   },
+   {
+    "suite": "curved1120",
+    "name": "selectedMeshFresh128/selected-mesh-holdout-50",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 300,
+    "variantMaps": 162
+   },
+   {
+    "suite": "curvedNew256",
+    "name": "small-parabola-validation-40",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 114,
+    "variantMaps": 35
+   },
+   {
+    "suite": "curvedNew256",
+    "name": "small-parabola-validation-100",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 87,
+    "variantMaps": 16
+   },
+   {
+    "suite": "curvedNew256",
+    "name": "small-parabola-validation-164",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 232,
+    "variantMaps": 108
+   },
+   {
+    "suite": "curvedNew256",
+    "name": "small-parabola-validation-170",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 204,
+    "variantMaps": 75
+   },
+   {
+    "suite": "curvedNew256",
+    "name": "small-parabola-validation-228",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 202,
+    "variantMaps": 74
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-07.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 236,
+    "variantMaps": 72
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-18.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 9,
+    "variantMaps": 123
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-30.png",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 26
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-38.png",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 52
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-43.png",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 18,
+    "variantMaps": 18
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-44.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 154,
+    "variantMaps": 82
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-45.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 11,
+    "variantMaps": 85
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-46.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 9,
+    "variantMaps": 95
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-48.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 7,
+    "variantMaps": 70
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/version-hint-blur-40.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 295,
+    "variantMaps": 153
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/low-resolution-51.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 62,
+    "variantMaps": 12
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/low-resolution-92.png",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 174,
+    "variantMaps": 75
+   }
+  ],
+  "r04": [
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-20",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 347,
+    "variantMaps": 206
+   },
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-21",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 334,
+    "variantMaps": 192
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-27",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 253,
+    "variantMaps": 197
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-080",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 312,
+    "variantMaps": 261
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-101",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 116,
+    "variantMaps": 160
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-102",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 73,
+    "variantMaps": 137
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-110",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 280,
+    "variantMaps": 219
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-111",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 138,
+    "variantMaps": 252
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-117",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 16,
+    "variantMaps": 257
+   },
+   {
+    "suite": "qualified160",
+    "name": "holdout-122",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 323,
+    "variantMaps": 275
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-157",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 248,
+    "variantMaps": 182
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-159",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 240,
+    "variantMaps": 199
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-164",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 150,
+    "variantMaps": 187
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-166",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 368,
+    "variantMaps": 249
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-170",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 320,
+    "variantMaps": 264
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-173",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 206,
+    "variantMaps": 169
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-178",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 336,
+    "variantMaps": 262
+   },
+   {
+    "suite": "curved1120",
+    "name": "known96/boundary-unseen-41",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 405,
+    "variantMaps": 232
+   }
+  ]
+ }
+}

@@ -1,0 +1,307 @@
+{
+  "revision": "85aec980b5c29f53a3c6d94b38d352fbe7237e97",
+  "javascriptSha256": "a7bd9146722e65c939cec27f92cea5ca6a4d42441e04b46c68aac94820891183",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "backend": "typescript",
+  "cpu": "Apple M4 Max",
+  "iterations": 200,
+  "loadBefore": [
+    8.56982421875,
+    4.95068359375,
+    4.3193359375
+  ],
+  "loadAfter": [
+    7.79296875,
+    4.90234375,
+    4.3095703125
+  ],
+  "work": [
+    {
+      "name": "clean",
+      "steps": 6615,
+      "compared": 24,
+      "scanned": 5476,
+      "maps": 1,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "blank",
+      "steps": 0,
+      "compared": 0,
+      "scanned": 0,
+      "maps": 0,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "noise",
+      "steps": 413395,
+      "compared": 112,
+      "scanned": 938890,
+      "maps": 371,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0,
+      "reduced": 90
+    }
+  ],
+  "sampleDurationMs": 9015.958,
+  "self": [
+    {
+      "name": "findAlignments file://dist/locate.js:375",
+      "ms": 1685.378,
+      "percent": 18.69327696513227
+    },
+    {
+      "name": "findFinders file://dist/locate.js:146",
+      "ms": 1256.817,
+      "percent": 13.939916312831093
+    },
+    {
+      "name": "alignmentScore file://dist/locate.js:513",
+      "ms": 1235.303,
+      "percent": 13.701294970540014
+    },
+    {
+      "name": "crossCheck file://dist/locate.js:66",
+      "ms": 604.746,
+      "percent": 6.707506845085126
+    },
+    {
+      "name": "correct file://dist/rs.js:21",
+      "ms": 517.962,
+      "percent": 5.744946904144851
+    },
+    {
+      "name": "sample file://dist/decode.js:291",
+      "ms": 471.294,
+      "percent": 5.227331360682913
+    },
+    {
+      "name": "toLuminance file://dist/binarise.js:6",
+      "ms": 412.707,
+      "percent": 4.5775168872792
+    },
+    {
+      "name": "locateImpl file://dist/locate.js:566",
+      "ms": 400.91,
+      "percent": 4.44667111359658
+    },
+    {
+      "name": "mirroredRead file://dist/decode.js:333",
+      "ms": 335.714,
+      "percent": 3.7235532818586776
+    },
+    {
+      "name": "thresholds file://dist/binarise.js:32",
+      "ms": 313.121,
+      "percent": 3.4729642706853783
+    },
+    {
+      "name": "readSymbol file://dist/symbol.js:111",
+      "ms": 294.464,
+      "percent": 3.2660311860370244
+    },
+    {
+      "name": "binarise file://dist/binarise.js:134",
+      "ms": 273.083,
+      "percent": 3.028885005897321
+    },
+    {
+      "name": "(anonymous) file://dist/locate.js:630",
+      "ms": 133.968,
+      "percent": 1.4858986698917631
+    },
+    {
+      "name": "(anonymous) file://dist/locate.js:460",
+      "ms": 128.959,
+      "percent": 1.4303416231530803
+    },
+    {
+      "name": "quads file://dist/binarise.js:228",
+      "ms": 124.5,
+      "percent": 1.380884871025353
+    },
+    {
+      "name": "agreementRead file://dist/refine.js:29",
+      "ms": 121.455,
+      "percent": 1.3471114217701547
+    },
+    {
+      "name": "read file://dist/decode.js:282",
+      "ms": 82.083,
+      "percent": 0.9104190591837273
+    },
+    {
+      "name": "readVersion file://dist/symbol.js:66",
+      "ms": 58.585,
+      "percent": 0.6497922905142194
+    },
+    {
+      "name": "nearest file://dist/symbol.js:15",
+      "ms": 58.002,
+      "percent": 0.6433259782266066
+    },
+    {
+      "name": "row file://dist/locate.js:8",
+      "ms": 51.292,
+      "percent": 0.5689023839729511
+    },
+    {
+      "name": "run file://dist/locate.js:317",
+      "ms": 46.29,
+      "percent": 0.5134229773474988
+    },
+    {
+      "name": "(anonymous) file://dist/binarise.js:258",
+      "ms": 42.292,
+      "percent": 0.46907938124822673
+    },
+    {
+      "name": "invert file://dist/binarise.js:159",
+      "ms": 41.414,
+      "percent": 0.4593410927601925
+    },
+    {
+      "name": "consider file://dist/locate.js:165",
+      "ms": 40.373,
+      "percent": 0.4477948987783661
+    },
+    {
+      "name": "near file://dist/locate.js:623",
+      "ms": 38.329,
+      "percent": 0.42512398571510646
+    }
+  ],
+  "inclusive": [
+    {
+      "name": "(root) :0",
+      "ms": 9015.958,
+      "percent": 100
+    },
+    {
+      "name": "(anonymous) file://scripts/profile-decode.mjs:0",
+      "ms": 8921.584,
+      "percent": 98.95325599342854
+    },
+    {
+      "name": "decodeCounted file://dist/decode.js:16",
+      "ms": 8906.917,
+      "percent": 98.79057777332149
+    },
+    {
+      "name": "look file://dist/decode.js:149",
+      "ms": 8009.837,
+      "percent": 88.84066451951085
+    },
+    {
+      "name": "search file://dist/decode.js:232",
+      "ms": 7646.218,
+      "percent": 84.80760447198179
+    },
+    {
+      "name": "locate file://dist/locate.js:559",
+      "ms": 3663.058,
+      "percent": 40.628605412758134
+    },
+    {
+      "name": "locateImpl file://dist/locate.js:566",
+      "ms": 3657.349,
+      "percent": 40.565284354696416
+    },
+    {
+      "name": "read file://dist/decode.js:282",
+      "ms": 1987.393,
+      "percent": 22.043059650455337
+    },
+    {
+      "name": "findFinders file://dist/locate.js:146",
+      "ms": 1940.477,
+      "percent": 21.522693428696098
+    },
+    {
+      "name": "findAlignments file://dist/locate.js:375",
+      "ms": 1824.131,
+      "percent": 20.232248198139345
+    },
+    {
+      "name": "readSymbol file://dist/symbol.js:111",
+      "ms": 1657.063,
+      "percent": 18.379222707115538
+    },
+    {
+      "name": "alignmentScore file://dist/locate.js:513",
+      "ms": 1235.303,
+      "percent": 13.701294970540014
+    },
+    {
+      "name": "consider file://dist/locate.js:165",
+      "ms": 652.745,
+      "percent": 7.239885101505575
+    },
+    {
+      "name": "word file://dist/symbol.js:132",
+      "ms": 651.002,
+      "percent": 7.22055271331122
+    },
+    {
+      "name": "crossCheck file://dist/locate.js:66",
+      "ms": 604.746,
+      "percent": 6.707506845085126
+    },
+    {
+      "name": "correct file://dist/rs.js:21",
+      "ms": 517.962,
+      "percent": 5.744946904144851
+    },
+    {
+      "name": "sample file://dist/decode.js:291",
+      "ms": 471.294,
+      "percent": 5.227331360682913
+    },
+    {
+      "name": "toLuminance file://dist/binarise.js:6",
+      "ms": 412.707,
+      "percent": 4.5775168872792
+    },
+    {
+      "name": "mirroredRead file://dist/decode.js:333",
+      "ms": 336.38,
+      "percent": 3.7309401840603074
+    },
+    {
+      "name": "thresholds file://dist/binarise.js:32",
+      "ms": 313.121,
+      "percent": 3.4729642706853783
+    },
+    {
+      "name": "recoverOverflow file://dist/decode.js:443",
+      "ms": 311.206,
+      "percent": 3.451724153994506
+    },
+    {
+      "name": "binarise file://dist/binarise.js:134",
+      "ms": 273.083,
+      "percent": 3.028885005897321
+    },
+    {
+      "name": "agreementRead file://dist/refine.js:29",
+      "ms": 172.163,
+      "percent": 1.909536402010746
+    },
+    {
+      "name": "(anonymous) file://dist/binarise.js:258",
+      "ms": 166.792,
+      "percent": 1.8499642522735797
+    },
+    {
+      "name": "(anonymous) file://dist/locate.js:630",
+      "ms": 133.968,
+      "percent": 1.4858986698917631
+    }
+  ]
+}

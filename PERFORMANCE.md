@@ -1,5 +1,25 @@
 # Performance and verification
 
+## Noise-rejection policy screen, based on the low-resolution candidate
+
+No decoder change follows from this screen. It tested 21 search-policy
+variants on 5,538 regression images and two new development sets, looking
+for work on frames without a symbol that could be cut without losing a
+read. Every variant either lost a read or was not run on the development
+set that targets its change. The strongest, trying size retries upward
+only, cut the main WASM noise frame by 15.6% and 15.8% in two paired M4
+processes, but lost four thinned-module and six reduced-size development
+reads. Noise rejection stays about 2.6 times slower than ZXing-WASM 3.1.7.
+Its time is spread across finder search (39% of the WASM profile), location
+(35%), grid reading (12%) and image preparation (12%).
+
+The development sets add one accuracy finding: large modules with heavy
+grain and spread ink, where ZXing-WASM reads 24 of 30 and QR 20. On the
+other new styles QR leads, for example 110 of 120 thinned or thickened codes
+against 82. These are synthetic renderings, not camera evidence.
+
+[Variants, profiles, timings and reproduction](benchmarks/2026-11-17-m4/noise-policy-screen/README.md).
+
 ## Low-resolution recovery candidate, based on 0.3.14
 
 This is an unreleased candidate, not a release claim. After every earlier

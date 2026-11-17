@@ -1,0 +1,610 @@
+{
+ "seconds": 80.031,
+ "count": 5778,
+ "suites": {
+  "photos184": {
+   "base": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 492.8
+   },
+   "Px": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1013,
+    "ms": 426.3
+   }
+  },
+  "photoTransforms2944": {
+   "base": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33104,
+    "ms": 4623.6
+   },
+   "Px": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 24131,
+    "ms": 4014.6
+   }
+  },
+  "stress256": {
+   "base": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12380,
+    "ms": 1610.8
+   },
+   "Px": {
+    "correct": 173,
+    "read": 0,
+    "miss": 51,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 9013,
+    "ms": 1195.6
+   }
+  },
+  "qualified160": {
+   "base": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14498,
+    "ms": 1946
+   },
+   "Px": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 10246,
+    "ms": 1585.7
+   }
+  },
+  "validation192": {
+   "base": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8952,
+    "ms": 1137
+   },
+   "Px": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6427,
+    "ms": 907.4
+   }
+  },
+  "synthetic96": {
+   "base": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3170,
+    "ms": 449.8
+   },
+   "Px": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 2223,
+    "ms": 347.4
+   }
+  },
+  "lowres224": {
+   "base": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23217,
+    "ms": 3144.1
+   },
+   "Px": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 16561,
+    "ms": 2628.2
+   }
+  },
+  "curved1120": {
+   "base": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 297589,
+    "ms": 56402.6
+   },
+   "Px": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 210759,
+    "ms": 49631.8
+   }
+  },
+  "curvedNew256": {
+   "base": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 35495,
+    "ms": 4629.9
+   },
+   "Px": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 25778,
+    "ms": 4223.8
+   }
+  },
+  "conformance94": {
+   "base": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 10318,
+    "ms": 2223.8
+   },
+   "Px": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 7601,
+    "ms": 1974.5
+   }
+  },
+  "spreadDev120": {
+   "base": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5339,
+    "ms": 1048.9
+   },
+   "Px": {
+    "correct": 106,
+    "read": 0,
+    "miss": 14,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5494,
+    "ms": 1084.8
+   }
+  },
+  "step9Dev120": {
+   "base": {
+    "correct": 106,
+    "read": 0,
+    "miss": 14,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6010,
+    "ms": 1209.9
+   },
+   "Px": {
+    "correct": 102,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5018,
+    "ms": 1175.7
+   }
+  },
+  "negatives12": {
+   "base": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 299.4
+   },
+   "Px": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1301,
+    "ms": 259.4
+   }
+  }
+ },
+ "differences": {
+  "Px": [
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-18",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 10
+   },
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-20",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 347,
+    "variantMaps": 192
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-25",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 295,
+    "variantMaps": 216
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/version-hint-blur-40.png",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 295,
+    "variantMaps": 216
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-4",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 2,
+    "variantMaps": 20
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-6",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 3,
+    "variantMaps": 6
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-11",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 30,
+    "variantMaps": 59
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-13",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 118,
+    "variantMaps": 124
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-15",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 171,
+    "variantMaps": 169
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-17",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 142,
+    "variantMaps": 196
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-30",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 90
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-33",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 139
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-34",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 138
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-36",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 167
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-37",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 6,
+    "variantMaps": 85
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-53",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 158
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-56",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 186
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-3",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 4,
+    "variantMaps": 79
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-5",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 4,
+    "variantMaps": 96
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-10",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 4,
+    "variantMaps": 54
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-11",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 5,
+    "variantMaps": 125
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-47",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 10,
+    "variantMaps": 116
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-62",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 366,
+    "variantMaps": 189
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-63",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 144,
+    "variantMaps": 155
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-70",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 120,
+    "variantMaps": 167
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-71",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 34,
+    "variantMaps": 103
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-86",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 165,
+    "variantMaps": 115
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-93",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 5,
+    "variantMaps": 18
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-94",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 50,
+    "variantMaps": 90
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-95",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 75,
+    "variantMaps": 116
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-100",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 5,
+    "variantMaps": 71
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-101",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 3,
+    "variantMaps": 90
+   }
+  ]
+ }
+}

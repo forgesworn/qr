@@ -1,0 +1,710 @@
+{
+ "seconds": 97.072,
+ "count": 5778,
+ "suites": {
+  "photos184": {
+   "base": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 459.8
+   },
+   "R15s": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1345,
+    "ms": 445.1
+   },
+   "L4x": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 449.3
+   }
+  },
+  "photoTransforms2944": {
+   "base": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33104,
+    "ms": 4588.2
+   },
+   "R15s": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 31741,
+    "ms": 4469.8
+   },
+   "L4x": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 32596,
+    "ms": 4476.8
+   }
+  },
+  "stress256": {
+   "base": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12380,
+    "ms": 1582.8
+   },
+   "R15s": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 11407,
+    "ms": 1548.2
+   },
+   "L4x": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12287,
+    "ms": 1544.2
+   }
+  },
+  "qualified160": {
+   "base": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14498,
+    "ms": 1992.8
+   },
+   "R15s": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 13796,
+    "ms": 1968
+   },
+   "L4x": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14402,
+    "ms": 1875.9
+   }
+  },
+  "validation192": {
+   "base": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8952,
+    "ms": 1146.4
+   },
+   "R15s": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8634,
+    "ms": 1134.1
+   },
+   "L4x": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8971,
+    "ms": 1148.8
+   }
+  },
+  "synthetic96": {
+   "base": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3170,
+    "ms": 453.2
+   },
+   "R15s": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3065,
+    "ms": 444.9
+   },
+   "L4x": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3158,
+    "ms": 437.9
+   }
+  },
+  "lowres224": {
+   "base": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23217,
+    "ms": 3112.3
+   },
+   "R15s": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 22144,
+    "ms": 3037.4
+   },
+   "L4x": {
+    "correct": 111,
+    "read": 0,
+    "miss": 81,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23172,
+    "ms": 3030.5
+   }
+  },
+  "curved1120": {
+   "base": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 297589,
+    "ms": 56599.7
+   },
+   "R15s": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 280723,
+    "ms": 55857.8
+   },
+   "L4x": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 295485,
+    "ms": 56347.7
+   }
+  },
+  "curvedNew256": {
+   "base": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 35495,
+    "ms": 4591.4
+   },
+   "R15s": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33250,
+    "ms": 4560.8
+   },
+   "L4x": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 34276,
+    "ms": 4539
+   }
+  },
+  "conformance94": {
+   "base": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 10318,
+    "ms": 2201
+   },
+   "R15s": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 9598,
+    "ms": 2165.3
+   },
+   "L4x": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 10137,
+    "ms": 2179.4
+   }
+  },
+  "spreadDev120": {
+   "base": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5339,
+    "ms": 1052.9
+   },
+   "R15s": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 4949,
+    "ms": 1046.9
+   },
+   "L4x": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5349,
+    "ms": 1050.1
+   }
+  },
+  "step9Dev120": {
+   "base": {
+    "correct": 106,
+    "read": 0,
+    "miss": 14,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6010,
+    "ms": 1220
+   },
+   "R15s": {
+    "correct": 105,
+    "read": 0,
+    "miss": 15,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5506,
+    "ms": 1200.3
+   },
+   "L4x": {
+    "correct": 106,
+    "read": 0,
+    "miss": 14,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6059,
+    "ms": 1224.4
+   }
+  },
+  "negatives12": {
+   "base": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 314.6
+   },
+   "R15s": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1453,
+    "ms": 299.3
+   },
+   "L4x": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1701,
+    "ms": 293.7
+   }
+  }
+ },
+ "differences": {
+  "R15s": [
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/n/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 85,
+    "variantMaps": 69
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 83,
+    "variantMaps": 67
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/n/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 15
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/n/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 15
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/m/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 15
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r1/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 15
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/m/n",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 31,
+    "variantMaps": 15
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-2-12/r2/m/i",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 39,
+    "variantMaps": 15
+   },
+   {
+    "suite": "stress256",
+    "name": "blur-noise-27",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 253,
+    "variantMaps": 219
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-46",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 124,
+    "variantMaps": 133
+   }
+  ],
+  "L4x": [
+   {
+    "suite": "stress256",
+    "name": "blur-noise-00",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 8,
+    "variantMaps": 8
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-42",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 180,
+    "variantMaps": 181
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-159",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 15,
+    "variantMaps": 15
+   },
+   {
+    "suite": "synthetic96",
+    "name": "held-out-56",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 19,
+    "variantMaps": 19
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-011",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 2,
+    "variantMaps": 2
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-015",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 2,
+    "variantMaps": 2
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-030",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 41,
+    "variantMaps": 41
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-042",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 9,
+    "variantMaps": 9
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-052",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 143,
+    "variantMaps": 67
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-077",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 176,
+    "variantMaps": 176
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-085",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 60,
+    "variantMaps": 60
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-087",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 124,
+    "variantMaps": 124
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-114",
+    "kind": "lost",
+    "base": "correct",
+    "variant": "miss",
+    "baseMaps": 193,
+    "variantMaps": 191
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-118",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 52,
+    "variantMaps": 52
+   },
+   {
+    "suite": "conformance94",
+    "name": "decode-frames/frame-23.png",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 1,
+    "variantMaps": 1
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-109",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 7
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-119",
+    "kind": "changed",
+    "base": "correct",
+    "variant": "correct",
+    "baseMaps": 8,
+    "variantMaps": 8
+   }
+  ]
+ }
+}

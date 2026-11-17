@@ -1,0 +1,308 @@
+{
+  "revision": "85aec980b5c29f53a3c6d94b38d352fbe7237e97",
+  "javascriptSha256": "a7bd9146722e65c939cec27f92cea5ca6a4d42441e04b46c68aac94820891183",
+  "node": "v24.21.0",
+  "arch": "arm64",
+  "backend": "wasm",
+  "wasmSha256": "e045e1d488e910a5aa12300f7d33ff231fa65275d1f15193b23cd09b27a624c8",
+  "cpu": "Apple M4 Max",
+  "iterations": 400,
+  "loadBefore": [
+    5.98388671875,
+    5.40869140625,
+    4.638671875
+  ],
+  "loadAfter": [
+    5.53759765625,
+    5.32958984375,
+    4.619140625
+  ],
+  "work": [
+    {
+      "name": "clean",
+      "steps": 6615,
+      "compared": 24,
+      "scanned": 5476,
+      "maps": 1,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "blank",
+      "steps": 0,
+      "compared": 0,
+      "scanned": 0,
+      "maps": 0,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0
+    },
+    {
+      "name": "noise",
+      "steps": 413395,
+      "compared": 112,
+      "scanned": 938890,
+      "maps": 371,
+      "second": 0,
+      "meshes": 0,
+      "probed": 0,
+      "reduced": 90
+    }
+  ],
+  "sampleDurationMs": 8106.75,
+  "self": [
+    {
+      "name": "_ZN13forgesworn_qr5place11locate_impl17h50880c7abf65afceE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 1948.667,
+      "percent": 24.037585962315354
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate12find_finders17h6b1e985e5351fea6E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 1804.894,
+      "percent": 22.2640885681685
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate11cross_check17hef278083461b8968E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 858.533,
+      "percent": 10.590347549881272
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate5Edges3row17he5a7ff8d25101658E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 660.832,
+      "percent": 8.151626730810744
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place15alignment_score17hd4ee797e43003235E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 550.871,
+      "percent": 6.795213864989052
+    },
+    {
+      "name": "_ZN13forgesworn_qr6symbol7correct17ha845e2f36b770cb5E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 490.87,
+      "percent": 6.055077558824436
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode19read_with_curvature17h15962275ad7921ceE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 348.838,
+      "percent": 4.303056095229285
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise12to_luminance17hc56789783a7645e0E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 265.666,
+      "percent": 3.2770962469546983
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise8binarise17h0a3d0d9dd32bc872E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 260.323,
+      "percent": 3.2111882073580658
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10thresholds17ha87faba941b5a283E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 230.502,
+      "percent": 2.8433342584882966
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions5level17h328957c5dbc1215dE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 85.499,
+      "percent": 1.0546643229407593
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode15look_with_hints17hd1b5eddf656041ecE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 80.251,
+      "percent": 0.9899281462978382
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable9quicksort9quicksort17h47919e890ef36b6fE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 57.71,
+      "percent": 0.7118759058809018
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode6decode17h69d54b7fd9ec15d1E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 57.125,
+      "percent": 0.704659697165942
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate12finder_ratio17h4a466060be5486a3E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 53.96,
+      "percent": 0.6656181577080827
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place14finder_triples17h287fceb5d8071832E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 48.627,
+      "percent": 0.5998334721065779
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode19read_with_curvature28_$u7b$$u7b$closure$u7d$$u7d$17h4f3bbe42423ba0c3E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 45.209,
+      "percent": 0.5576710765719924
+    },
+    {
+      "name": "_RNvMs0_NtCsjS594RgRNR8_8dlmalloc8dlmallocINtB5_8DlmallocNtNtB7_3sys6SystemE4freeCsljiztaTWNn0_3std wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 30.875,
+      "percent": 0.38085545995620934
+    },
+    {
+      "name": "_RNvMs0_NtCsjS594RgRNR8_8dlmalloc8dlmallocINtB5_8DlmallocNtNtB7_3sys6SystemE6mallocCsljiztaTWNn0_3std wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 30.167,
+      "percent": 0.3721219971011811
+    },
+    {
+      "name": "_RNvCsGIExRX8pES_7___rustc13___rdl_realloc wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 27.751,
+      "percent": 0.342319671878373
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions3get17hf1e0d67e5654e50dE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 24.709,
+      "percent": 0.30479538656058225
+    },
+    {
+      "name": "decode file://dist/wasm.js:149",
+      "ms": 23.916,
+      "percent": 0.2950134147469701
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place17black_white_black28_$u7b$$u7b$closure$u7d$$u7d$17hc5cb256820f1298aE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 22.5,
+      "percent": 0.2775464890369137
+    },
+    {
+      "name": "_ZN13forgesworn_qr6refine9agreement17h43ce4c9edee45689E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 15.791,
+      "percent": 0.1947882937058624
+    },
+    {
+      "name": "post node:inspector:115",
+      "ms": 11.875,
+      "percent": 0.14648286921392667
+    }
+  ],
+  "inclusive": [
+    {
+      "name": "(root) :0",
+      "ms": 8106.75,
+      "percent": 100
+    },
+    {
+      "name": "(anonymous) file://scripts/profile-decode.mjs:0",
+      "ms": 8066.918,
+      "percent": 99.50865636660808
+    },
+    {
+      "name": "decode file://dist/wasm.js:149",
+      "ms": 8055.043,
+      "percent": 99.36217349739415
+    },
+    {
+      "name": "read file://scripts/profile-decode.mjs:26",
+      "ms": 8055.043,
+      "percent": 99.36217349739415
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode6decode17h69d54b7fd9ec15d1E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 8031.127,
+      "percent": 99.06716008264718
+    },
+    {
+      "name": "read_picture wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 8031.127,
+      "percent": 99.06716008264718
+    },
+    {
+      "name": "js-to-wasm:i:i wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 8031.127,
+      "percent": 99.06716008264718
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode15look_with_hints17hd1b5eddf656041ecE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 7365.922,
+      "percent": 90.86159064976717
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode17search_with_hints17hb4cef8333fa201cbE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 7009.72,
+      "percent": 86.46769667252597
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate12find_finders17h6b1e985e5351fea6E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 3157.597,
+      "percent": 38.950220495266294
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place11locate_impl17h50880c7abf65afceE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 2852.578,
+      "percent": 35.187689271286274
+    },
+    {
+      "name": "_ZN13forgesworn_qr6decode19read_with_curvature17h15962275ad7921ceE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 942.168,
+      "percent": 11.622018688130261
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate11cross_check17hef278083461b8968E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 908.868,
+      "percent": 11.21124988435563
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate5Edges3row17he5a7ff8d25101658E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 664.583,
+      "percent": 8.197896814383077
+    },
+    {
+      "name": "_ZN13forgesworn_qr5place15alignment_score17hd4ee797e43003235E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 550.871,
+      "percent": 6.795213864989052
+    },
+    {
+      "name": "_ZN13forgesworn_qr6symbol7correct17ha845e2f36b770cb5E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 526.33,
+      "percent": 6.4924908255466125
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise12to_luminance17hc56789783a7645e0E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 267.916,
+      "percent": 3.3048508958583898
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise8binarise17h0a3d0d9dd32bc872E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 261.114,
+      "percent": 3.2209455083726524
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10thresholds17ha87faba941b5a283E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 231.252,
+      "percent": 2.8525858081228606
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions3get17hf1e0d67e5654e50dE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 111.749,
+      "percent": 1.3784685601504918
+    },
+    {
+      "name": "_ZN13forgesworn_qr8binarise10Reductions5level17h328957c5dbc1215dE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 87.04,
+      "percent": 1.0736731735899097
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable5drift4sort17h308f94465345ff69E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 61.46,
+      "percent": 0.7581336540537207
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable14driftsort_main17hf4545f9211d238bcE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 61.46,
+      "percent": 0.7581336540537207
+    },
+    {
+      "name": "_ZN4core5slice4sort6stable9quicksort9quicksort17h47919e890ef36b6fE wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 57.71,
+      "percent": 0.7118759058809018
+    },
+    {
+      "name": "_ZN13forgesworn_qr6locate12finder_ratio17h4a466060be5486a3E wasm://wasm/forgesworn_qr.wasm-0011412a:1",
+      "ms": 53.96,
+      "percent": 0.6656181577080827
+    }
+  ]
+}
