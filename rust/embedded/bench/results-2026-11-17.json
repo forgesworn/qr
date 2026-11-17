@@ -1,0 +1,96 @@
+{
+  "baseline": {
+    "version": "1.8.1",
+    "source_sha256": "6be49d1cc9f2c8d9f7c597df9a8c2aa6378ee33075a3e463d2ffbc96817b6e57",
+    "archive_sha256": "d0e2c0bf8be8a1c4a4f48973dabf26943f05da2bfc2d3180aae62409dbba6f0c"
+  },
+  "recorded_utc": "2026-11-17T10:57:43.703967+00:00",
+  "host_platform": "macOS-14.6.1-arm64-arm-64bit-Mach-O",
+  "host_machine": "arm64",
+  "host_cpu": "Apple M1",
+  "candidate_source_sha256": "9944a55d8804cc9030b7bef7104055f5c83a447e66534439e8d492da6533ff79",
+  "tables_source_sha256": "3bf4fdf9d7f24851be3c8386820b8ca14d198fd908887ba5fefea3c70b7ef13d",
+  "harness_sha256": {
+    "compare.py": "d3dcef67d71ac8fc852d51e5e7c1c2d843f4589c193359a43d62d0a497737044",
+    "host.rs": "f85b2c8e58f3ebeeed25a66f63abfe1cbf4a38e3f6cc88828de30dc9f9e2e5a4",
+    "probe.rs": "a15475964cc0a4402a9f48cf06c4982890289a5aeff69c34a5c113224ed0d937",
+    "workloads.rs": "7f9a3cda0792d370bd6cb88fd1e05b9fd214b44221089f07842d50200ac33c74"
+  },
+  "host_compiler": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "target_compiler": "rustc 1.87.0-nightly (1dc879ca2 2025-05-27) (1.87.0.0)",
+  "host_output": [
+    "buffers,compact,602,optimal,1582",
+    "symbol,0,baseline,25,330",
+    "symbol,0,compact,25,322",
+    "symbol,0,optimal,25,322",
+    "timing_us,0,baseline,324.200,307.194,523.192",
+    "timing_us,0,compact,165.860,152.952,195.645",
+    "timing_us,0,optimal,174.641,148.511,232.762",
+    "symbol,1,baseline,37,688",
+    "symbol,1,compact,37,688",
+    "symbol,1,optimal,37,688",
+    "timing_us,1,baseline,799.426,764.012,926.815",
+    "timing_us,1,compact,387.560,360.887,563.459",
+    "timing_us,1,optimal,409.990,383.445,433.400",
+    "symbol,2,baseline,41,819",
+    "symbol,2,compact,41,819",
+    "symbol,2,optimal,33,549",
+    "timing_us,2,baseline,1137.179,1014.555,1627.429",
+    "timing_us,2,compact,495.687,473.415,1098.489",
+    "timing_us,2,optimal,346.490,323.646,443.156"
+  ],
+  "targets": {
+    "riscv32imac-unknown-none-elf": {
+      "baseline": {
+        "flash_sections_bytes": 18970,
+        "static_ram_bytes": 0,
+        "sections": {
+          ".text": 15522,
+          ".rodata": 3448
+        }
+      },
+      "compact": {
+        "flash_sections_bytes": 9586,
+        "static_ram_bytes": 0,
+        "sections": {
+          ".text": 6738,
+          ".rodata": 2848
+        }
+      },
+      "optimal": {
+        "flash_sections_bytes": 12392,
+        "static_ram_bytes": 0,
+        "sections": {
+          ".text": 9292,
+          ".rodata": 3100
+        }
+      }
+    },
+    "xtensa-esp32-none-elf": {
+      "baseline": {
+        "flash_sections_bytes": 18998,
+        "static_ram_bytes": 0,
+        "sections": {
+          ".text": 15534,
+          ".rodata": 3464
+        }
+      },
+      "compact": {
+        "flash_sections_bytes": 10358,
+        "static_ram_bytes": 0,
+        "sections": {
+          ".text": 7510,
+          ".rodata": 2848
+        }
+      },
+      "optimal": {
+        "flash_sections_bytes": 12958,
+        "static_ram_bytes": 0,
+        "sections": {
+          ".text": 9858,
+          ".rodata": 3100
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+[package]
+name = "forgesworn-qr-embedded-conformance"
+version = "0.0.0"
+edition = "2021"
+publish = false
+autotests = false
+
+[features]
+default = []
+optimal = ["forgesworn-qr-embedded/optimal"]
+
+[dev-dependencies]
+forgesworn-qr-embedded = { path = "..", default-features = false }
+forgesworn-qr = { path = "../.." }
+serde_json = "1"
+
+[[test]]
+name = "compact"
+path = "../tests/compact.rs"
+
+[[test]]
+name = "parity"
+path = "../tests/parity.rs"
+required-features = ["optimal"]
+
+[[test]]
+name = "no_alloc"
+path = "../tests/no_alloc.rs"
+
+[[example]]
+name = "compare"
+path = "../examples/compare.rs"
+required-features = ["optimal"]

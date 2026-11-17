@@ -109,6 +109,39 @@ The trusted publisher is registered for `forgesworn/qr`, workflow
 `verify_only=true` to exchange a short-lived publishing token without uploading
 a crate. This checks registry authentication without releasing another version.
 
+## Embedded Rust encoder
+
+`forgesworn-qr-embedded` is a separate, dependency-free `no_std` crate under
+`rust/embedded`, with its own initial version, 0.1.0. It is prepared locally;
+crates.io publication and trusted-publisher registration are pending. It does
+not change the existing 0.3.14 package versions or their release tags.
+
+The crate supports versions 1–8, fixed caller-owned buffers and optional
+optimal text planning. See the [embedded guide](../rust/embedded/README.md).
+The distributed archive includes its MIT licence and the shared specification.
+Its unpublished `conformance/` harness checks the actual extracted crate against
+the full encoder and the same encoder vectors used by the other ports. CI also
+checks both feature configurations, zero allocations, Rust 1.87, a separate
+`no_std` consumer and bare-metal ARM/RISC-V builds.
+
+```sh
+python3 scripts/check-embedded-package.py
+# During local preparation with uncommitted changes:
+python3 scripts/check-embedded-package.py --allow-dirty
+```
+
+After an approved revision is merged, create a separate stable GitHub release
+tag such as `embedded-v0.1.0`, then dispatch `release-rust-embedded.yml` with
+that tag. The workflow defaults to `dry_run=true`; it verifies the release
+identity, MSRV, recipient archive and full shared conformance before any upload.
+Initial publication uses `bootstrap=true` and a temporary environment secret;
+remove that secret after the initial publication. Register the separate crate's
+trusted publisher for `forgesworn/qr`, workflow `release-rust-embedded.yml`,
+environment `crates-publish`. Later releases use the short-lived OIDC token.
+Successful publication is followed by public archive comparison and a consumer
+using the exact registry version. Board acceptance is recorded by consumers
+such as Heartwood and is separate from crate publication.
+
 ## JSR and Maven Central release workflows
 
 The published coordinates are `@forgesworn/qr` on JSR and

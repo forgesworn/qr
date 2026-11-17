@@ -137,3 +137,26 @@ jobs:
           cmp target/ci-conformance/typescript-renderings.txt target/ci-conformance/native-renderings.txt
       - name: Check WebAssembly memory is released after repeated reads
         run: node bench/wasm-leak.mjs
+
+  embedded:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - run: rustup toolchain install stable --profile minimal --component clippy,rustfmt
+      - run: rustup toolchain install 1.87.0 --profile minimal --target thumbv7em-none-eabi,riscv32imac-unknown-none-elf
+      - name: Check source conformance in both configurations
+        run: |
+          cargo +stable test --locked --manifest-path rust/embedded/conformance/Cargo.toml --target-dir rust/target --no-default-features -- --nocapture
+          cargo +stable test --locked --manifest-path rust/embedded/conformance/Cargo.toml --target-dir rust/target --all-features -- --nocapture
+          cargo +stable clippy --locked --manifest-path rust/embedded/conformance/Cargo.toml --target-dir rust/target --all-targets --all-features -- -Dwarnings
+          cargo +stable fmt --manifest-path rust/embedded/Cargo.toml --check
+          cargo +stable fmt --manifest-path rust/embedded/conformance/Cargo.toml --check
+      - name: Verify the actual embedded crate and Rust 1.87 consumer
+        run: python3 scripts/check-embedded-package.py
+      - name: Build without an operating system or allocator
+        run: |
+          for target in thumbv7em-none-eabi riscv32imac-unknown-none-elf; do
+            cargo +1.87.0 build --locked --manifest-path rust/embedded/Cargo.toml --target-dir rust/target --release --target "$target" --no-default-features
+            cargo +1.87.0 build --locked --manifest-path rust/embedded/Cargo.toml --target-dir rust/target --release --target "$target" --all-features
+          done

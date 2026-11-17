@@ -826,6 +826,13 @@ cargo build --release --target wasm32-unknown-unknown    # the WebAssembly modul
 `rust/bench/` also holds the scripts that compare the module with the
 TypeScript and time it.
 
+[forgesworn-qr-embedded](https://github.com/forgesworn/qr/tree/main/rust/embedded)
+is a separate, allocation-free `no_std` encoder for versions 1–8, with 602 bytes
+of caller buffers and optional optimal text planning. It shares this
+specification, standard tables and encoder conformance vectors. Its independent
+0.1.0 package is prepared locally; registry publication is pending. The
+embedded guide documents the API, measured savings and board-testing scope.
+
 ## Development
 
 ```bash
