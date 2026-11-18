@@ -3,5 +3,11 @@
 ^alex@alexcrichton[.]com$
 ^orsonpeters@gmail[.]com$
 ^amanieu@gmail[.]com$
+# Public copyright notices in the pinned Dokka HTML asset licences.
+^julian@juliangruber[.]com$
+^luke[.]edwards05@gmail[.]com$
+^mail@substack[.]net$
+^nathan@tootallnate[.]net$
+^sindresorhus@gmail[.]com$
 # Existing public project funding address in README.md and package.json.
 ^profusemeat89@walletofsatoshi[.]com$

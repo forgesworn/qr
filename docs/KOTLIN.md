@@ -8,7 +8,7 @@ Add the dependency from Maven Central in Gradle.
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.16") }
 ```
 
 ## Run a round trip with a padded luminance plane

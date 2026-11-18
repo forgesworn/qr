@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.16
+
+- Publish the Kotlin API reference in Dokka's standard HTML format, with the
+  licence texts and notices for its bundled assets in the Maven Javadoc JAR.
+- Publish the full MIT licence with the browser demo.
+
 ## 0.3.15
 
 - Make the four-times low-resolution enlargement faster in TypeScript, Rust

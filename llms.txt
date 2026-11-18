@@ -81,10 +81,10 @@ has reproduction steps, known misses and timing trade-offs.
 
 ## Native Rust
 
-- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.15, Rust 1.96+, no runtime dependencies.
+- [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.16, Rust 1.96+, no runtime dependencies.
 - [Rust API documentation](https://docs.rs/forgesworn-qr): native API, examples and character-set limits.
 - [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md): application entry points, pixel layout, input and resource contracts.
 - [Embedded encoder crate](https://crates.io/crates/forgesworn-qr-embedded): `forgesworn-qr-embedded` 0.1.1, allocation-free `no_std` encoding for versions 1–8, 543 bytes of caller buffers in the default configuration. Rust 1.87+.
-- Kotlin is available as self-contained source under `kotlin/core/src/main/kotlin` and on Maven Central as `io.github.forgesworn:qr:0.3.15`. It requires JVM 17 and the Kotlin standard library. Imports use `dev.forgesworn.qr`.
-- Use `deno add jsr:@forgesworn/qr@0.3.15` in a Deno project. JSR provides the same TypeScript API and the optional `jsr:@forgesworn/qr@0.3.15/wasm` entry point.
+- Kotlin is available as self-contained source under `kotlin/core/src/main/kotlin` and on Maven Central as `io.github.forgesworn:qr:0.3.16`. It requires JVM 17 and the Kotlin standard library. Imports use `dev.forgesworn.qr`.
+- Use `deno add jsr:@forgesworn/qr@0.3.16` in a Deno project. JSR provides the same TypeScript API and the optional `jsr:@forgesworn/qr@0.3.16/wasm` entry point.
 - The library publishes matching versions on npm, JSR, crates.io and Maven Central. JSR 0.3.1 was a packaging fix for library 0.3.0, and JSR 0.3.0 was yanked. See the distribution guide for provenance, signing and release verification.
