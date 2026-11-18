@@ -9,6 +9,7 @@ import { strict as assert } from 'node:assert'
 const root = fileURLToPath(new URL('../', import.meta.url))
 const out = resolve(root, '_site')
 const origin = 'https://forgesworn.github.io/qr/'
+const licence = 'LICENSE.txt'
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json')))
 const pages = [
   ['docs/index.md', 'index.html', 'QR code encoder and decoder for TypeScript and WebAssembly'],
@@ -76,21 +77,22 @@ for (const [source, target, title, summary] of pages) {
   }
   const canonical = origin + (target === 'index.html' ? '' : target)
   const description = summary ?? (source === 'docs/index.md' ? pkg.description : `${title}. Documentation for @forgesworn/qr ${pkg.version}.`)
-  const schema = { '@context': 'https://schema.org', '@type': 'SoftwareSourceCode', name: '@forgesworn/qr', description: pkg.description, codeRepository: 'https://github.com/forgesworn/qr', url: origin, license: 'https://opensource.org/license/mit', programmingLanguage: ['TypeScript', 'Rust', 'Kotlin'], version: pkg.version, runtimePlatform: ['Browsers', 'Web Workers', 'Node.js 22.13+', 'Deno', 'JVM 17+', 'Native Rust'], sameAs: ['https://www.npmjs.com/package/@forgesworn/qr', 'https://jsr.io/@forgesworn/qr', 'https://crates.io/crates/forgesworn-qr', 'https://central.sonatype.com/artifact/io.github.forgesworn/qr'], author: { '@type': 'Organization', name: 'ForgeSworn', url: 'https://github.com/forgesworn' } }
+  const schema = { '@context': 'https://schema.org', '@type': 'SoftwareSourceCode', name: '@forgesworn/qr', description: pkg.description, codeRepository: 'https://github.com/forgesworn/qr', url: origin, license: origin + licence, programmingLanguage: ['TypeScript', 'Rust', 'Kotlin'], version: pkg.version, runtimePlatform: ['Browsers', 'Web Workers', 'Node.js 22.13+', 'Deno', 'JVM 17+', 'Native Rust'], sameAs: ['https://www.npmjs.com/package/@forgesworn/qr', 'https://jsr.io/@forgesworn/qr', 'https://crates.io/crates/forgesworn-qr', 'https://central.sonatype.com/artifact/io.github.forgesworn/qr'], author: { '@type': 'Organization', name: 'ForgeSworn', url: 'https://github.com/forgesworn' } }
   const html = `<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} | ForgeSworn QR</title><meta name="description" content="${esc(description)}">
-<link rel="canonical" href="${canonical}"><link rel="stylesheet" href="style.css"><link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="canonical" href="${canonical}"><link rel="license" href="${licence}"><link rel="stylesheet" href="style.css"><link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${canonical}">
 <meta name="twitter:card" content="summary"><link rel="sitemap" type="application/xml" href="sitemap.xml"><link rel="alternate" type="text/plain" href="llms-full.txt" title="Complete plain-text documentation">
 <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script></head>
 <body><a class="skip" href="#content">Skip to content</a><header><a class="brand" href="./"><img src="icon.svg" alt="" width="32" height="32">ForgeSworn <strong>QR</strong></a><nav aria-label="Main"><a href="guide.html">Guide</a><a href="browser.html#try-it">Demo</a><a href="choosing.html">Why QR</a><a href="performance.html">Evidence</a><a href="https://github.com/forgesworn/qr">GitHub</a></nav></header>
 <main id="content"><p class="eyebrow">QR ${esc(pkg.version)} · MIT · No runtime dependencies</p>${body}</main>
-<footer><p>ForgeSworn QR · <a href="distribution.html">Downloads</a> · <a href="security.html">Security</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/forgesworn/qr/blob/main/${source}">Page source</a></p><p>Static documentation. No analytics, cookies or third-party scripts.</p></footer></body></html>`
+<footer><p>ForgeSworn QR · <a href="distribution.html">Downloads</a> · <a href="security.html">Security</a> · <a href="${licence}">MIT licence</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/forgesworn/qr/blob/main/${source}">Page source</a></p><p>Static documentation. No analytics, cookies or third-party scripts.</p></footer></body></html>`
   writeFileSync(resolve(out, target), html)
 }
 for (const [page, slug] of links) assert(slugsByPage.get(page)?.has(slug), `Broken documentation anchor: ${page}#${slug}`)
 for (const name of ['llms.txt', 'llms-full.txt']) writeFileSync(resolve(out, name), read(name))
+copyFileSync(resolve(root, 'LICENSE'), resolve(out, licence))
 writeFileSync(resolve(out, 'style.css'), read('docs/style.css'))
 copyFileSync(resolve(root, 'docs/browser-demo.js'), resolve(out, 'browser-demo.js'))
 copyFileSync(resolve(root, 'vectors/conformance/contrast-thresholds-dark.png'), resolve(out, 'faint-qr.png'))

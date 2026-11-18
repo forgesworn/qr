@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    id("org.jetbrains.dokka-javadoc") version "2.2.0"
+    id("org.jetbrains.dokka") version "2.2.0"
     `maven-publish`
     signing
 }
@@ -20,7 +20,8 @@ java {
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
-    from(tasks.named("dokkaGeneratePublicationJavadoc"))
+    from(tasks.named("dokkaGeneratePublicationHtml"))
+    from("src/javadoc/notices") { into("META-INF/third-party") }
 }
 
 tasks.withType<Jar>().configureEach {

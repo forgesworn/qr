@@ -35,8 +35,16 @@ for suffix in ["", "-sources", "-javadoc"]:
             for source in (root / "kotlin/core/src/main/kotlin").rglob("*.kt"):
                 assert jar.read(str(source.relative_to(root / "kotlin/core/src/main/kotlin"))) == source.read_bytes()
         else:
-            assert any(n.endswith("index.html") for n in names)
-            assert any("EncodeKt" in n and n.endswith(".html") for n in names), "Missing Kotlin API documentation"
+            assert "index.html" in names
+            assert "core/dev.forgesworn.qr/encode.html" in names, "Missing Kotlin API documentation"
+            assert not {"stylesheet.css", "resources/glass.png", "resources/x.png"}.intersection(names)
+            javadoc = root / "kotlin/core/src/javadoc"
+            notices = javadoc / "notices"
+            for filename in ["DOKKA-LICENSE.txt", "DOKKA-NOTICE.txt", "DOKKA-HTML-LICENSES.txt", "README.md"]:
+                assert jar.read(f"META-INF/third-party/{filename}") == (notices / filename).read_bytes(), filename
+            for line in (javadoc / "dokka-assets.sha256").read_text().splitlines():
+                digest, filename = line.split()
+                assert hashlib.sha256(jar.read(filename)).hexdigest() == digest, f"Audited Dokka asset changed: {filename}"
 for path in folder.iterdir():
     for algorithm in ["md5", "sha1", "sha256", "sha512"]:
         checksum = Path(str(path) + "." + algorithm)

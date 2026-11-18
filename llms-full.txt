@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.15
+# @forgesworn/qr 0.3.16
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -84,11 +84,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.15'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.16'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.16/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.15` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.16` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -746,7 +746,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.16") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -776,7 +776,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.15`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.16`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -987,7 +987,7 @@ Add the dependency from Maven Central in Gradle.
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.16") }
 ```
 
 ## Run a round trip with a padded luminance plane
@@ -1295,9 +1295,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.15
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.15
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.15
+npm install --save-exact @forgesworn/qr@0.3.16
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.16
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.16
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -1307,12 +1307,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.15
+deno add jsr:@forgesworn/qr@0.3.16
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.15'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.16'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.16/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1327,16 +1327,21 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.16") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
 library is a runtime dependency. The Maven group and Kotlin package differ.
 
+From version 0.3.16, the Javadoc JAR contains the Kotlin API reference in Dokka
+HTML format and includes the [third-party notices](https://github.com/forgesworn/qr/blob/main/kotlin/core/src/javadoc/notices/README.md)
+under `META-INF/third-party/`. The documentation site serves the
+[MIT licence](https://forgesworn.github.io/qr/LICENSE.txt) with the browser demo.
+
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.15
+cargo add forgesworn-qr@0.3.16
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and

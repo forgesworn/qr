@@ -25,9 +25,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.15
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.15
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.15
+npm install --save-exact @forgesworn/qr@0.3.16
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.16
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.16
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -37,12 +37,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.15
+deno add jsr:@forgesworn/qr@0.3.16
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.15'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.16'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.16/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -57,16 +57,21 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.16") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
 library is a runtime dependency. The Maven group and Kotlin package differ.
 
+From version 0.3.16, the Javadoc JAR contains the Kotlin API reference in Dokka
+HTML format and includes the [third-party notices](../kotlin/core/src/javadoc/notices/README.md)
+under `META-INF/third-party/`. The documentation site serves the
+[MIT licence](https://forgesworn.github.io/qr/LICENSE.txt) with the browser demo.
+
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.15
+cargo add forgesworn-qr@0.3.16
 ```
 
 See the [Rust guide](../rust/README.md) for API contracts, pixel layout and
