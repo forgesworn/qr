@@ -1,6 +1,6 @@
 import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
-import { binarise, contrastThresholds, enlarge, invert, invertLuminance, levelBlocks, reductions, thresholds, toLuminance, type BitImage, type BlockLevels, type Luminance, type Thresholds } from './binarise.js'
+import { binarise, contrastThresholds, enlarge, invert, invertLuminance, levelBlocks, reductions, shrink, thresholds, toLuminance, type BitImage, type BlockLevels, type Luminance, type Thresholds } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, singleFormatAgreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, readQuadraticMesh, type QuadraticMesh, type Candidate } from './refine.js'
 import { agreedVersion, readSymbol, curvatureHeader, versionPeerHeader, type ModuleReader, type Payload } from './symbol.js'
@@ -107,7 +107,11 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (quadratic) return quadratic
   const lowResolution = recoverLowResolution(luminance, inverse, budget, inversion)
   if (lowResolution) return lowResolution
-  return recoverContrastThresholds(luminance, budget, inversion)
+  const contrast = recoverContrastThresholds(luminance, budget, inversion)
+  if (contrast) return contrast
+  if (!budget.intermediateReduction || Math.min(width, height) < MIN_REDUCED * INTERMEDIATE_REDUCTION) return undefined
+  const retry: Budget = { maps: REDUCED_MAPS, second: 1, here: REDUCED_MAPS, invertedFallback: false, uniform: false, hints: [], curvature: [], meshGrids: [] }
+  return look(shrink(luminance, INTERMEDIATE_REDUCTION), inversion, INTERMEDIATE_REDUCTION, retry)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
@@ -118,6 +122,8 @@ const LOW_RESOLUTION_MAPS = 90
 const CONTRAST_MAPS = 30
 /** The reduced-size pass's factors, coarse to fine. */
 const REDUCTIONS = [8, 4, 2] as const
+/** One intermediate reduction for a textured picture whose usual sizes all failed. */
+const INTERMEDIATE_REDUCTION = 3
 /** A reduced picture narrower or shorter than this cannot hold a version 1 symbol at a pixel a module. */
 const MIN_REDUCED = 21
 /** Maps each reduced size may take, out of what the frame has left. */
@@ -142,6 +148,7 @@ interface Budget {
   versionPeer?: { candidate: Candidate; inverseLuminance: boolean }
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
   lowResolution?: boolean
+  intermediateReduction?: boolean
   /** The original picture's full-size block levels, from its first ordinary search. */
   blocks?: BlockLevels
 }
@@ -309,6 +316,10 @@ function search(
   for (const tolerance of [0.5, 0.8]) {
     const ranked = finderTriples(image, findFinders(image, tolerance, work, edges))
     const triples = ranked.slice(0, MAX_TRIPLES)
+    // A repeatedly seen reduced-size triple can justify another scale even
+    // when earlier triples use up this size's map allowance.
+    if (f > 1 && f !== INTERMEDIATE_REDUCTION && !budget.intermediateReduction &&
+        triples.some(triple => triple.every(finder => finder.count >= 3))) budget.intermediateReduction = true
     for (const triple of triples) {
       if (f === 1 && image.width * image.height <= 512 * 512 &&
           (triple[0].moduleSize + triple[1].moduleSize + triple[2].moduleSize) / 3 <= 2.5 &&

@@ -2,7 +2,7 @@
   "abi": 2,
   "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)",
   "target": "wasm32-unknown-unknown",
-  "sourceSha256": "6ea37894048950ae5676d4a87760b3fd0c80e0c5ba1ee63c0d2eaf6d6e2ebeb5",
-  "sha256": "372d36e7e5750710f34e9f1274c078c8b54a10cd108c7adbbf4494e1a66be6a0",
-  "bytes": 268638
+  "sourceSha256": "367894fef8a7dd612fb2b705abe826ac5c605b5d6676dbcb0aff5230e9a9b57e",
+  "sha256": "5c645b4c67aec32061112c522acfaec71f1d66aca13e32c52106dbd51a05c27b",
+  "bytes": 272253
 }

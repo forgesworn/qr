@@ -302,6 +302,9 @@ pub fn shrink(image: &Luminance, f: usize) -> Luminance {
 
 /// Bilinear enlargement by an integer factor, with pixel centres at i + 0.5.
 pub fn enlarge(image: &Luminance, f: usize) -> Luminance {
+    if f == 4 && image.width > 0 && image.height > 0 {
+        return enlarge_four(image);
+    }
     let width = image.width * f;
     let height = image.height * f;
     let mut data = vec![0u8; width * height];
@@ -320,6 +323,58 @@ pub fn enlarge(image: &Luminance, f: usize) -> Luminance {
             data[y * width + x] = (top * (1.0 - ay) + bottom * ay).round() as u8;
         }
     }
+    Image { data, width, height }
+}
+
+/// At 4x, both interior weights are eighths. Keep two horizontal rows in
+/// eighths and round only after both interpolations.
+fn enlarge_four(image: &Luminance) -> Luminance {
+    let width = image.width * 4;
+    let height = image.height * 4;
+    let mut data = vec![0u8; width * height];
+    let mut top = vec![0i16; width];
+    let mut bottom = vec![0i16; width];
+    let horizontal = |out: &mut [i16], source: &[u8]| {
+        let mut left = i16::from(source[0]);
+        out[..2].fill(left * 8);
+        for (values, &right) in out[2..width - 2].chunks_exact_mut(4).zip(&source[1..]) {
+            let right = i16::from(right);
+            let step = 2 * (right - left);
+            let first = 7 * left + right;
+            values.copy_from_slice(&[first, first + step, first + 2 * step, first + 3 * step]);
+            left = right;
+        }
+        out[width - 2..].fill(left * 8);
+    };
+    let clamped_rows = |out: &mut [u8], row: &[i16]| {
+        let (first, second) = out.split_at_mut(width);
+        for (pixel, &v) in first.iter_mut().zip(row) {
+            *pixel = ((v + 4) >> 3) as u8;
+        }
+        second.copy_from_slice(first);
+    };
+    horizontal(&mut top, &image.data[..image.width]);
+    clamped_rows(&mut data[..2 * width], &top);
+    for y in 1..image.height {
+        horizontal(&mut bottom, &image.data[y * image.width..(y + 1) * image.width]);
+        let start = (4 * y - 2) * width;
+        let (row0, rest) = data[start..start + 4 * width].split_at_mut(width);
+        let (row1, rest) = rest.split_at_mut(width);
+        let (row2, row3) = rest.split_at_mut(width);
+        for x in 0..width {
+            let a = top[x];
+            let b = bottom[x];
+            let step = 2 * (b - a);
+            // The denominator is 64, so adding 32 gives half-up rounding.
+            let first = 7 * a + b + 32;
+            row0[x] = (first >> 6) as u8;
+            row1[x] = ((first + step) >> 6) as u8;
+            row2[x] = ((first + 2 * step) >> 6) as u8;
+            row3[x] = ((first + 3 * step) >> 6) as u8;
+        }
+        std::mem::swap(&mut top, &mut bottom);
+    }
+    clamped_rows(&mut data[(height - 2) * width..], &top);
     Image { data, width, height }
 }
 

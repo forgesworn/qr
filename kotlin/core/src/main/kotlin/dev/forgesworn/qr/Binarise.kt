@@ -312,6 +312,7 @@ internal fun shrink(image: Luminance, f: Int): Luminance {
 
 /** Bilinear enlargement by an integer factor, with pixel centres at i + 0.5. */
 internal fun enlarge(image: Luminance, f: Int): Luminance {
+    if (f == 4 && image.width > 0 && image.height > 0) return enlargeFour(image)
     val width = image.width * f
     val height = image.height * f
     val data = ByteArray(width * height)
@@ -332,6 +333,63 @@ internal fun enlarge(image: Luminance, f: Int): Luminance {
             data[y * width + x] = floor(top * (1 - ay) + bottom * ay + 0.5).toInt().toByte()
         }
     }
+    return Luminance(data, width, height)
+}
+
+/** At 4x, both interior weights are eighths. Keep two horizontal rows in
+ * eighths and round only after both interpolations. */
+private fun enlargeFour(image: Luminance): Luminance {
+    val width = image.width * 4
+    val height = image.height * 4
+    val data = ByteArray(width * height)
+    var top = IntArray(width)
+    var bottom = IntArray(width)
+    fun horizontal(out: IntArray, start: Int) {
+        var left = image.data[start].toInt() and 0xff
+        out[0] = left * 8
+        out[1] = out[0]
+        for (x in 1 until image.width) {
+            val right = image.data[start + x].toInt() and 0xff
+            val step = 2 * (right - left)
+            val first = 7 * left + right
+            val i = 4 * x - 2
+            out[i] = first
+            out[i + 1] = first + step
+            out[i + 2] = first + 2 * step
+            out[i + 3] = first + 3 * step
+            left = right
+        }
+        out[width - 2] = left * 8
+        out[width - 1] = out[width - 2]
+    }
+    fun clampedRows(start: Int) {
+        for (x in 0 until width) data[start + x] = ((top[x] + 4) shr 3).toByte()
+        data.copyInto(data, start + width, start, start + width)
+    }
+    horizontal(top, 0)
+    clampedRows(0)
+    for (y in 1 until image.height) {
+        horizontal(bottom, y * image.width)
+        val row0 = (4 * y - 2) * width
+        val row1 = row0 + width
+        val row2 = row1 + width
+        val row3 = row2 + width
+        for (x in 0 until width) {
+            val a = top[x]
+            val b = bottom[x]
+            val step = 2 * (b - a)
+            // The denominator is 64, so adding 32 gives half-up rounding.
+            val first = 7 * a + b + 32
+            data[row0 + x] = (first shr 6).toByte()
+            data[row1 + x] = ((first + step) shr 6).toByte()
+            data[row2 + x] = ((first + 2 * step) shr 6).toByte()
+            data[row3 + x] = ((first + 3 * step) shr 6).toByte()
+        }
+        val swap = top
+        top = bottom
+        bottom = swap
+    }
+    clampedRows((height - 2) * width)
     return Luminance(data, width, height)
 }
 

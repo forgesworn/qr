@@ -1,5 +1,54 @@
 # Performance and verification
 
+## Faster low-resolution retry and recovery of grainy symbols
+
+Baseline `37f6f8a` includes the contrast-only retry. The fourfold enlargement
+reuses two rows of weighted pixel sums and produces the same pixels. When
+earlier searches fail, step 24 tries a threefold reduction if an earlier
+reduced search saw each finder in a ranked triple at least three times. The
+retry requires both copies of the format information to agree in all ports.
+
+| Accuracy scope | Baseline | Candidate | ZXing-WASM 3.1.7 |
+| --- | ---: | ---: | ---: |
+| Heavy grain with spread ink, development set | 21/30 | 27/30 | 24/30 |
+| Heavy grain with spread ink, frozen set | 25/30 | 26/30 | 20/30 |
+| All textures in the frozen set | 114/120 | 115/120 | 93/120 |
+
+The M4 Max run compared 6,503 inputs, including 184 photographs, 2,944
+transformed views of those photographs, existing synthetic and conformance
+sets, 600 targeted controls and 120 new textured frames. It recovered seven
+exact payloads. Every earlier result and legacy Work counter matched, and
+all 617 inputs labelled as no-read were rejected. No wrong payload was
+observed. The packaged WebAssembly matched the full public TypeScript result
+on every input.
+
+The two texture sets use the same renderer and the independent `qrcode`
+1.5.4 encoder. The development grain subset uses the previously recorded
+ZXing readings. The second set uses `framesFor(rivals, { seed: 0x61ce5d10,
+prefix: 'r3-val' })` and was frozen before any reader saw its pixels. The
+added read `r3-val-82` also reads in ZXing-WASM. See the
+[texture generator](benchmarks/2026-11-17-m4/noise-policy-screen/harness/erosion/step9.mjs)
+and the [development results](benchmarks/2026-11-17-m4/noise-policy-screen/README.md).
+
+| M4 Max decode timing | TypeScript median | Packaged WebAssembly median |
+| --- | ---: | ---: |
+| 11 frames reaching fourfold enlargement | 32.5–59.3% lower | 24.1–68.2% lower |
+| Fixed clean, blank and random-noise frames | within 1.7% | within 3.2% |
+| `step9-dev-64`, a new read | 6.45–6.58 ms higher | 3.28–3.46 ms higher |
+| `step9-dev-87`, still a miss | 2.88–2.96 ms higher | 1.74–1.76 ms higher |
+
+Node 24.21.0 on arm64 ran two fresh processes per backend, with at least ten
+warm-up pairs and half a second of warm-up per frame. Each process timed 60
+pairs with alternating reader order. It checked the result and input bytes
+outside the timed calls. The enlargement cases are indices 0, 10, 15,
+20, 27, 29, 46, 51, 77, 92 and 94. Nine read both times and two missed both
+times. At the 95th percentile, those cases took 28.3–57.1% less time in
+TypeScript and 23.9–66.0% less time in WebAssembly. In isolation, fourfold
+enlargement was 5.6–5.8 times as fast in TypeScript across 116 × 99, 320 × 240
+and 512 × 512 inputs. These are desktop timings with the listed fixtures.
+[Fixed timing frames](scripts/comparison-fixtures.mjs) and
+[enlargement fixtures](benchmarks/2026-11-16-m4/overflow-recovery/fresh160/generate.mjs).
+
 ## Contrast-only threshold retry, based on the TypeScript speed-ups
 
 This is an unreleased candidate, not a release claim. After every other path

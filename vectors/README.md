@@ -53,7 +53,8 @@ greyscale the decoder must make of it, one byte a pixel: `(77 R + 150 G +
 
 `grey` is `width` by `height` pixels in hex; `enlarged` is the picture
 enlarged by `factor` in each axis with pixel-centre bilinear interpolation
-and half-up rounding (SPEC.md, decoder step 22).
+and half-up rounding (SPEC.md, decoder step 22). The fourfold cases cover
+half-up ties on each axis, a single-pixel-wide source and two-axis interpolation.
 
 ### `contrast`
 
@@ -84,7 +85,7 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then fifty-one in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then fifty-three in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
@@ -101,8 +102,13 @@ the late alignment pass, two conflicting-version maps, and one alternate
 orientation reading of an existing refinement grid, and two strict header
 rediscoveries on existing refinement grids, two reads of a selected grid's
 own mesh, five terminal quadratic-mesh reads, five low-resolution
-enlargements, and three faint codes, a faint decoy and a faint code with a
-spoiled format copy on flat paper for contrast-only thresholds).
+enlargements, three faint codes, a faint decoy and a faint code with a
+spoiled format copy on flat paper for contrast-only thresholds, and two
+grainy mirrored codes read at the intermediate reduction).
+
+`intermediate-reduction-normal.png` and `intermediate-reduction-inverted.png`
+exercise step 24 in both polarities. Both miss through step 23. Their recorded
+locations use the original picture's coordinates.
 
 The contrast-threshold regeneration adds `contrast-thresholds-dark.png`,
 `-light.png`, `-second-look.png`, `-decoy.png` and `-format-gate.png`: small,

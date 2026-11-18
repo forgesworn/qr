@@ -30,6 +30,7 @@ import { selectedMeshPicture } from './selected-mesh-fixture.js'
 import { quadraticMeshPicture } from './quadratic-mesh-fixture.js'
 import { lowResolutionPicture } from './low-resolution-fixture.js'
 import { contrastPicture } from './contrast-thresholds-fixture.js'
+import { intermediatePicture } from './intermediate-reduction-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -225,7 +226,10 @@ function build(write: boolean): Pack {
   }
   luminance.push({ width: 3, height: 1, rgba: 'ffffff00' + '000000ff' + '00000000', grey: hex(toLuminance(unhex('ffffff00000000ff00000000'), 3, 1, 4).data) })
   const enlargement: Pack['enlargement'] = []
-  for (const [width, height, factor, bytes] of [[2, 2, 4, [0, 4, 0, 4]], [2, 2, 2, [0, 100, 200, 255]]] as const) {
+  for (const [width, height, factor, bytes] of [
+    [2, 2, 4, [0, 4, 0, 4]], [2, 2, 2, [0, 100, 200, 255]],
+    [1, 2, 4, [4, 0]], [2, 2, 4, [0, 80, 170, 255]],
+  ] as const) {
     const grey = Uint8Array.from(bytes)
     enlargement.push({ width, height, factor, grey: hex(grey), enlarged: hex(enlarge({ data: grey, width, height }, factor).data) })
   }
@@ -351,6 +355,8 @@ function build(write: boolean): Pack {
   // Faint codes on flat paper read only once flat blocks leave the mixed
   // averages, one of them by that search's second look, and a faint decoy.
   for (const name of ['dark', 'light', 'second-look', 'decoy', 'format-gate'] as const) own(`contrast-thresholds-${name}`, contrastPicture(name).image)
+  own('intermediate-reduction-normal', intermediatePicture(false))
+  own('intermediate-reduction-inverted', intermediatePicture(true))
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +

@@ -410,6 +410,9 @@ pipeline:
     full-size search with flat blocks left out of every threshold average
     that also holds blocks with contrast, when that moves a pixel to the
     other side of its threshold. See step 23 below.
+24. Intermediate reduction: after earlier paths fail, retry at one third
+    resolution when an earlier reduced search repeatedly saw all three
+    finders of a ranked triple. See step 24 below.
 
 ### Reusable camera decoder
 
@@ -1551,6 +1554,28 @@ binary picture, one finder search in each polarity at both tolerances, at most
 30 maps and one second look. This is an accuracy/latency trade-off on misses
 in pictures that mix flat and textured areas, which camera frames often do.
 
+### 24. Try a threefold reduction when finders persist at a reduced size
+
+At each finder tolerance of the existing 2, 4 and 8 reductions in steps 9
+and 10, inspect the first six ranked triples before mapping them. Qualify
+the picture if any of those triples has at least three sightings of each
+finder. The counts come from that single finder pass. The qualification
+needs only one flag and adds no finder, triple or map search.
+
+After steps 1 to 23 fail, an eligible picture at least 63 pixels on each
+side receives one ordinary search at factor 3. Reduce the original
+luminance to `floor(width / 3)` by `floor(height / 3)` using non-overlapping
+3 x 3 squares. Each output pixel is `floor((sum + 4) / 9)`. Discard any
+columns or rows left over. A 3 x 3 average can smooth grain or scan lines
+that persist at factor 2 while keeping more of each module than factor 4.
+
+Use step 9's ordinary thresholds, polarity option, two-copy format gate,
+and location scaling. The separate allowance is 30 maps and one ordinary
+second look, shared by the requested polarities and outside the legacy Work
+counters. The retry searches only the threefold reduction of the original
+luminance. Earlier results retain priority and the normal version,
+Reed–Solomon, zero-data and segment validation still applies.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1663,8 +1688,9 @@ among them.
   made an inverse. Their ordinary searches share a separate 90-map,
   one-second-look and 718,750-alignment-probe allowance, all outside the
   legacy Work counters. Reduced sizes, late meshes and subsequent recoveries
-  are excluded. Active binary, threshold, edge, candidate and allocator storage
-  is additional; these byte figures are not peak-heap measurements.
+  are excluded. The interpolation can reuse two rows of horizontal weighted
+  sums. The search also holds binary, threshold, edge, candidate and
+  allocator storage.
 - Step 23 adds to earlier returns only the retained full-size block levels and
   one flat flag a block. On a miss it computes one set of contrast-only
   thresholds and tests the pixels of changed blocks until one would change
@@ -1673,6 +1699,11 @@ among them.
   718,750-alignment-probe allowance, all outside the legacy Work counters.
   Reduced sizes, inverses, enlargement, late meshes and other recoveries are
   excluded.
+- Step 24 adds one qualification flag and reads existing finder counts. On a
+  qualifying miss it makes one luminance reduction of at most one ninth of
+  the original pixels and runs one strict reduced search. Its separate
+  allowance of 30 maps, one second look and 718,750 alignment probes is
+  outside the legacy Work counters.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

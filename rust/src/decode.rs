@@ -3,7 +3,7 @@
 
 use std::rc::Rc;
 
-use crate::binarise::{binarise, contrast_thresholds, enlarge, invert, invert_luminance, level_blocks, thresholds, thresholds_from, to_luminance, BitImage, BlockLevels, Luminance, Reductions, Thresholds};
+use crate::binarise::{binarise, contrast_thresholds, enlarge, invert, invert_luminance, level_blocks, shrink, thresholds, thresholds_from, to_luminance, BitImage, BlockLevels, Luminance, Reductions, Thresholds};
 use crate::locate::{find_finders, Edges, Finder, Work};
 use crate::place::{estimate_size, finder_triples, locate, locate_corners, Location, Point};
 use crate::refine::{agreement, agreement_read, format_agrees, keep, read_quadratic_mesh, single_format_agreement, second_look_collect, second_look_collect_quadratic, sized, Candidate, QuadraticMesh, SECOND_LOOKS};
@@ -22,6 +22,8 @@ const MAX_MAPS: u32 = 4 * MAX_TRIPLES as u32 * 5 * 6;
 const LOW_RESOLUTION_MAPS: u32 = 90;
 /// Maps available to the terminal contrast-threshold search, which also has one second look.
 const CONTRAST_MAPS: u32 = 30;
+/// One intermediate reduction for a textured picture whose usual sizes all failed.
+const INTERMEDIATE_REDUCTION: usize = 3;
 /// Maps each reduced size may take, out of what the frame has left.
 const REDUCED_MAPS: u32 = 30;
 /// The size retries, in the order they are tried.
@@ -95,6 +97,7 @@ struct ConflictCandidate {
 
 /// What is left of a frame's maps and second looks, shared by every size, and
 /// of the maps this size may take.
+#[derive(Default)]
 struct Budget {
     alternate: Option<AlternateGrid>,
     rediscovered: Option<RediscoveredGrid>,
@@ -109,6 +112,7 @@ struct Budget {
     inverted_fallback: bool,
     uniform: bool,
     low_resolution: bool,
+    intermediate_reduction: bool,
     /// The original picture's full-size block levels, from its first ordinary search.
     blocks: Option<BlockLevels>,
 }
@@ -127,7 +131,7 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
         return None;
     }
     let luminance = to_luminance(data, width, height, channels, row_stride);
-    let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, inverted_fallback: false, uniform: false, low_resolution: false, blocks: None };
+    let mut budget = Budget { maps: MAX_MAPS, second: SECOND_LOOKS as u32, here: MAX_MAPS, ..Budget::default() };
     let mut hints = Vec::new();
     let mut overflow = Vec::new();
     let mut curvature = Vec::new();
@@ -190,7 +194,10 @@ pub fn decode(data: &[u8], width: usize, height: usize, channels: usize, row_str
     if let Some(found) = recover_rediscovered_grid(&budget) { return Some(found); }
     if let Some(found) = recover_quadratic_mesh(&luminance, inverse_luminance.as_ref(), &budget) { return Some(found); }
     if let Some(found) = recover_low_resolution(&luminance, inverse_luminance.as_ref(), &budget, inversion) { return Some(found); }
-    recover_contrast_thresholds(&luminance, &budget, inversion)
+    if let Some(found) = recover_contrast_thresholds(&luminance, &budget, inversion) { return Some(found); }
+    if !budget.intermediate_reduction || width.min(height) < MIN_REDUCED * INTERMEDIATE_REDUCTION { return None; }
+    let mut retry = Budget { maps: REDUCED_MAPS, second: 1, here: REDUCED_MAPS, ..Budget::default() };
+    look(&shrink(&luminance, INTERMEDIATE_REDUCTION), inversion, INTERMEDIATE_REDUCTION, &mut retry, None, false)
 }
 
 /// The ordinary search in each polarity, then the second look, on a picture
@@ -355,6 +362,12 @@ fn search_with_hints(
     for tolerance in TOLERANCES {
         let found = find_finders(image, tolerance, work.as_deref_mut(), edges);
         let triples = finder_triples(image, &found);
+        // Evidence survives even when earlier triples use this size's maps.
+        if f > 1 && f != INTERMEDIATE_REDUCTION && !budget.intermediate_reduction
+            && triples.iter().take(MAX_TRIPLES).any(|ids| ids.iter().all(|&i| found[i].count >= 3))
+        {
+            budget.intermediate_reduction = true;
+        }
         for ids in triples.iter().take(MAX_TRIPLES) {
             let triple: [Finder; 3] = ids.map(|i| found[i]);
             if f == 1 && image.width * image.height <= 512 * 512
@@ -747,9 +760,8 @@ fn recover_quadratic_mesh(luminance: &Luminance, inverse: Option<&Luminance>, bu
 /// One separately bounded ordinary search after four-times-axis enlargement.
 fn recover_low_resolution(luminance: &Luminance, inverse: Option<&Luminance>, budget: &Budget, inversion: Inversion) -> Option<Reading> {
     if !budget.low_resolution || budget.quadratic.is_some() || luminance.width * luminance.height > 512 * 512 { return None; }
-    let mut retry = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None,
-        attempted: Vec::new(), mesh_grids: Vec::new(), maps: LOW_RESOLUTION_MAPS, second: 1,
-        here: LOW_RESOLUTION_MAPS, inverted_fallback: false, uniform: false, low_resolution: false, blocks: None };
+    let mut retry = Budget { maps: LOW_RESOLUTION_MAPS, second: 1,
+        here: LOW_RESOLUTION_MAPS, ..Budget::default() };
     retry.here = LOW_RESOLUTION_MAPS;
     if let Some(found) = look(&enlarge(luminance, 4), inversion, 1, &mut retry, None, false) {
         return Some(scale_low_resolution(found, false));
@@ -771,9 +783,7 @@ fn recover_low_resolution(luminance: &Luminance, inverse: Option<&Luminance>, bu
 /// counts.
 fn recover_contrast_thresholds(luminance: &Luminance, budget: &Budget, inversion: Inversion) -> Option<Reading> {
     let levels = contrast_thresholds(luminance, budget.blocks.as_ref()?)?;
-    let mut retry = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None,
-        attempted: Vec::new(), mesh_grids: Vec::new(), maps: CONTRAST_MAPS, second: 1,
-        here: CONTRAST_MAPS, inverted_fallback: false, uniform: false, low_resolution: false, blocks: None };
+    let mut retry = Budget { maps: CONTRAST_MAPS, second: 1, here: CONTRAST_MAPS, ..Budget::default() };
     look_levels(luminance, &levels, inversion, 1, &mut retry, None, true, None, None, None, false)
 }
 
@@ -1091,7 +1101,7 @@ mod strict_format_tests {
         let luminance = to_luminance(&[255; 64], 8, 8, 1, 8);
         let finder = Finder { x: 2.0, y: 2.0, module_size: 1.0, count: 1 };
         let hint = Hint { triple: [finder; 3], size: 177, inverted: false };
-        let mut budget = Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps: 0, here: 9, second: 3, inverted_fallback: false, uniform: false, low_resolution: false, blocks: None };
+        let mut budget = Budget { maps: 0, here: 9, second: 3, ..Budget::default() };
         let mut work = Work::default();
         assert!(recover(&luminance, &[hint], &mut budget, Some(&mut work)).is_none());
         assert_eq!((budget.maps, budget.here, budget.second), (0, 9, 3));
@@ -1259,7 +1269,7 @@ mod exhausted_budget_tests {
     use crate::symbol::Ecc;
 
     fn budget(maps: u32, here: u32) -> Budget {
-        Budget { alternate: None, rediscovered: None, quadratic: None, conflict: None, version_peer: None, attempted: Vec::new(), mesh_grids: Vec::new(), maps, here, second: 4, inverted_fallback: false, uniform: false, low_resolution: false, blocks: None }
+        Budget { maps, here, second: 4, ..Budget::default() }
     }
 
     fn snapshot(b: &Budget) -> (u32, u32, u32, bool, bool) {

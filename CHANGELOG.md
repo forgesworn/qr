@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Make the four-times low-resolution enlargement faster in TypeScript, Rust
+  and Kotlin by reusing two rows of weighted pixel sums. Pixel-centre
+  sampling and half-up rounding produce the same pixels.
+- After earlier reads fail, try a threefold reduction when a reduced search
+  repeatedly saw each finder in a ranked triple. The retry helps with grainy
+  codes and keeps the reduced search's two-copy format check. It has its own
+  allowance of 30 maps and one ordinary second look.
 - After every earlier read fails, give a picture of at most 262,144 pixels
   whose finders show a small, repeatedly sighted module pitch one ordinary
   search on a four-times bilinear enlargement, with its own allowance of 90

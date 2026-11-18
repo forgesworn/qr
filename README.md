@@ -697,8 +697,10 @@ For each frame, in order, stopping at the first read:
     the picture is binarised that way and searched once more, accepting a read
     only when both copies of its format information agree. Plain background
     next to a small or faint code had pulled the code's thresholds below its
-    dark modules. Each search has its own small allowance of maps and one second
-    look, and neither changes an earlier result.
+    dark modules. Finally, if a reduced search repeatedly saw all three
+    finders of a ranked triple, one search at a threefold reduction can
+    recover codes obscured by grain. Each search has its own allowance of
+    maps and one second look.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
