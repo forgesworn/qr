@@ -1,6 +1,7 @@
 // Node >=24; rivals must be installed in a separate, disposable directory.
 // npm install --prefix /tmp/qr-rivals --ignore-scripts --no-audit --no-fund --save-exact zxing-wasm@3.1.7 qrcode@1.5.4
 // node scripts/compare-libraries.mjs /tmp/qr-rivals > results.json
+// Pass --photos-only after the rival directory to skip timings and synthetic frames.
 import { strict as assert } from 'node:assert'
 import { createHash } from 'node:crypto'
 import { createRequire } from 'node:module'
@@ -15,10 +16,13 @@ import { loadWasm, wasmUrl } from '../dist/wasm.js'
 import { readPng } from '../test/png.ts'
 import { heldOutFrames, timingFrames, rgba, summary } from './comparison-fixtures.mjs'
 const rivals = resolve(process.argv[2] ?? '/tmp/qr-rivals')
+const photosOnly = process.argv.slice(3).includes('--photos-only')
+const { version: qrVersion } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url)))
 const external = createRequire(pathToFileURL(rivals + '/package.json'))
 const zxing = await import(pathToFileURL(external.resolve('zxing-wasm/reader')))
-const qrcode = external('qrcode')
-assert.equal(external('qrcode/package.json').version, '1.5.4')
+const qrcodeVersion = photosOnly ? undefined : external('qrcode/package.json').version
+const qrcode = photosOnly ? undefined : external('qrcode')
+if (qrcode) assert.equal(qrcodeVersion, '1.5.4')
 const zxingVersion = JSON.parse(readFileSync(rivals + '/node_modules/zxing-wasm/package.json')).version
 assert.equal(zxingVersion, '3.1.7')
 const zxingBytes = readFileSync(external.resolve('zxing-wasm/reader/zxing_reader.wasm'))
@@ -44,11 +48,13 @@ const result = {
   dirty: !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
   javascriptSha256: identity.digest('hex'), wasmSha256: hash(readFileSync(new URL(wasmUrl))),
   node: process.version, cpu: cpus()[0]?.model, loadBefore: loadavg(),
-  versions: { jsqr: '1.4.0', qrcode: '1.5.4', zxing: zxingVersion },
+  versions: { qr: qrVersion, jsqr: '1.4.0', qrcode: qrcodeVersion, zxing: zxingVersion },
   zxingWasmSha256: hash(zxingBytes), externalLockSha256: hash(readFileSync(rivals + '/package-lock.json')),
-  options: zxOptions, rounds: 25, warmup: 5, startupMs: { wasm: ownStartupMs, zxing: zxingStartupMs }, decode: [], encode: [], accuracy: {},
+  options: zxOptions, rounds: photosOnly ? 0 : 25, warmup: photosOnly ? 0 : 5,
+  startupMs: { wasm: ownStartupMs, zxing: zxingStartupMs }, decode: [], encode: [], accuracy: {},
 }
-try {
+
+async function compareTimings() {
   for (const frame of timingFrames(ts.encode)) {
     const samples = Object.fromEntries(Object.keys(readers).map(n => [n, []]))
     for (let round = -5; round < 25; round++) {
@@ -85,6 +91,10 @@ try {
     }
     result.encode.push({ name, shapes, ...Object.fromEntries(Object.entries(samples).map(([n, v]) => [n, summary(v)])) })
   }
+}
+
+try {
+  if (qrcode) await compareTimings()
   const manifest = JSON.parse(readFileSync('vectors/photos.json'))
   const photos = manifest.photos.map(p => {
     const expected = readFileSync(`vectors/photos-cache/raw/${p.id}.txt`)
@@ -94,8 +104,15 @@ try {
     if (p.pixelsSha256) assert.equal(hash(grey.data), p.pixelsSha256)
     return { name: p.id, expected: new TextDecoder('utf-8', { fatal: true }).decode(expected), ...rgba(grey) }
   })
-  const generated = heldOutFrames((text, ecc) => { const qr = qrcode.create(text, { errorCorrectionLevel: ecc }); return { size: qr.modules.size, modules: qr.modules.data } })
-  for (const [name, frames] of [['existing-photos', photos], ['held-out-synthetic', generated]]) {
+  const suites = [['existing-photos', photos]]
+  if (qrcode) {
+    const generated = heldOutFrames((text, ecc) => {
+      const qr = qrcode.create(text, { errorCorrectionLevel: ecc })
+      return { size: qr.modules.size, modules: qr.modules.data }
+    })
+    suites.push(['held-out-synthetic', generated])
+  }
+  for (const [name, frames] of suites) {
     const digest = createHash('sha256'); for (const frame of frames) digest.update(frame.name).update(frame.data)
     const scores = Object.fromEntries(Object.keys(readers).map(n => [n, { correct: 0, missed: [], wrong: [], totalMs: 0 }]))
     for (let i = 0; i < frames.length; i++) {
@@ -112,6 +129,8 @@ try {
   }
   result.memoryBytes = wasm.memoryBytes; result.loadAfter = loadavg()
   console.log(JSON.stringify(result, null, 2))
-  assert.equal(result.accuracy['held-out-synthetic'].scores.typescript.wrong.length, 0)
-  assert.equal(result.accuracy['held-out-synthetic'].scores.wasm.wrong.length, 0)
+  if (qrcode) {
+    assert.equal(result.accuracy['held-out-synthetic'].scores.typescript.wrong.length, 0)
+    assert.equal(result.accuracy['held-out-synthetic'].scores.wasm.wrong.length, 0)
+  }
 } finally { wasm.dispose() }

@@ -25,4 +25,13 @@ blockquote { margin-left: 0; padding-left: 1.25rem; border-left: 4px solid #76a1
 footer { max-width: 1160px; margin: auto; border-top: 1px solid #cddbd1; padding: 1.5rem 2rem; color: #426354; font-size: .85rem; }
 .skip { position: absolute; top: -100px; left: 1rem; padding: .5rem; background: white; }
 .skip:focus { top: 1rem; }
+.qr-demo { border: 1px solid #cddbd1; border-radius: .7rem; padding: 1rem; }
+.qr-demo-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-bottom: 1rem; }
+.qr-demo button { border: 1px solid #115d48; border-radius: .4rem; background: #115d48; color: white; padding: .55rem .8rem; font: inherit; cursor: pointer; }
+.qr-demo button:disabled { opacity: .55; cursor: default; }
+.qr-demo button:focus-visible, .qr-demo input:focus-visible { outline: 3px solid #b05d12; outline-offset: 4px; }
+.qr-demo label { display: block; font-weight: 600; }
+.qr-demo input { max-width: 100%; font: inherit; }
+.qr-demo canvas { max-width: 100%; height: auto; vertical-align: top; }
+.qr-demo output:not([hidden]) { display: block; margin-top: .75rem; overflow-wrap: anywhere; font-family: ui-monospace, monospace; }
 @media (max-width: 600px) { header { padding: 1rem; } main { padding: 2rem 1rem; } nav { gap: .85rem; font-size: .9rem; } th, td { padding: .5rem; } }

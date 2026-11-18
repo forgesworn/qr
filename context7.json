@@ -1,0 +1,6 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "ForgeSworn QR",
+  "description": "QR Code Model 2 encoder and image decoder for TypeScript, WebAssembly, Kotlin/JVM and Rust, with an allocation-free embedded Rust encoder.",
+  "folders": ["docs"]
+}
