@@ -13,12 +13,12 @@ fn bundled_standard_tables_match_the_main_encoder() {
 
 #[test]
 fn compact_storage_is_independent_of_the_optional_planner() {
-    assert_eq!(core::mem::size_of::<Workspace>(), 301);
-    assert_eq!(core::mem::size_of::<Workspace>() + MODULE_BYTES, 602);
+    assert_eq!(core::mem::size_of::<Workspace>(), 242);
+    assert_eq!(core::mem::size_of::<Workspace>() + MODULE_BYTES, 543);
     #[cfg(feature = "optimal")]
     assert_eq!(
         core::mem::size_of::<forgesworn_qr_embedded::TextPlanner>(),
-        980
+        520
     );
 }
 

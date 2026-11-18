@@ -11,9 +11,9 @@ exporter below when working from a source checkout:
 
 ```toml
 [dependencies]
-forgesworn-qr-embedded = "0.1.0"
+forgesworn-qr-embedded = "0.1.1"
 # Enable mixed-mode planning only when needed:
-# forgesworn-qr-embedded = { version = "0.1.0", features = ["optimal"] }
+# forgesworn-qr-embedded = { version = "0.1.1", features = ["optimal"] }
 ```
 
 The package has its own version lifecycle, independent of the full QR crate.
@@ -29,6 +29,11 @@ alphanumeric or UTF-8 byte segment. The optional `optimal` feature adds
 `encode_text` with the main encoder's optimal segmentation and exact matrix
 contract, using a separate caller-owned `TextPlanner`. Raw bytes and simple
 text never require a planner. There is no decoder or display-driver code.
+
+The caller supplies a 242-byte `Workspace` and at least 301 bytes for the packed
+output, for 543 bytes of buffers. Optimal text adds a 520-byte `TextPlanner`,
+for 1,063 bytes in total. These figures count the named buffers only. The
+Reed-Solomon pass has 57 bytes of additional local arrays.
 
 ```rust
 use forgesworn_qr_embedded::{encode_bytes, Ecc, Options, Workspace, MODULE_BYTES};
@@ -106,6 +111,19 @@ cargo +esp build --locked --manifest-path rust/embedded/Cargo.toml --target-dir 
 ```
 
 Add `--features optimal` to check that variant.
+
+## Footprint comparison
+
+The same standalone probes, payloads and Espressif Rust 1.87.0.0 size-optimised
+build compare this source with the 0.1.0 implementation at `514449c`. The
+flash figures sum the linked `.text` and `.rodata` sections. The RAM figures
+count caller buffers.
+
+| Footprint | Default, before → after | Optimal, before → after |
+|---|---:|---:|
+| Caller buffers | 602 → 543 bytes | 1,582 → 1,063 bytes |
+| Classic ESP32 Xtensa flash | 10,358 → 8,922 bytes | 12,958 → 11,290 bytes |
+| ESP32-C6-compatible RISC-V flash | 9,586 → 7,992 bytes | 12,392 → 10,676 bytes |
 
 ## Compact iteration, 17 November 2026
 
@@ -211,7 +229,7 @@ and is not a fresh size measurement. See Heartwood's
 Board latency, physical scanning and task high-water marks remain unmeasured.
 
 The separate `release-rust-embedded.yml` workflow checks an existing
-`embedded-v0.1.0` GitHub release tag, verifies the extracted package and defaults
+`embedded-vX.Y.Z` GitHub release tag, verifies the extracted package and defaults
 to a dry run. Initial publication requires bootstrap authentication; later
 releases use the crate's configured trusted publisher.
 It does not publish the full QR crate or change its release version.
