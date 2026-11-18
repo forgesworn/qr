@@ -2,7 +2,7 @@
 //! goes: greyscale from RGBA, and for every frame the greyscale, binarised and
 //! reduced pictures by SHA-256 and the finder candidates exactly.
 
-use forgesworn_qr::binarise::{binarise, enlarge, invert, shrink, thresholds, to_luminance, Image, Reductions};
+use forgesworn_qr::binarise::{binarise, contrast_thresholds, enlarge, invert, invert_luminance, level_blocks, shrink, thresholds, to_luminance, Image, Reductions};
 use forgesworn_qr::decode::{decode, Inversion};
 use forgesworn_qr::locate::{find_finders, Edges, Finder, Work};
 use forgesworn_qr::place::{estimate_size, finder_triples, locate};
@@ -79,29 +79,65 @@ fn enlargement_matches_including_half_up_ties() {
     }
 }
 
+#[test]
+fn contrast_thresholds_leave_flat_blocks_out_of_mixed_averages() {
+    let pack = pack();
+    let cases = pack["contrast"].as_array().unwrap();
+    let mut changed = 0;
+    for (n, v) in cases.iter().enumerate() {
+        let width = v["width"].as_u64().unwrap() as usize;
+        let height = v["height"].as_u64().unwrap() as usize;
+        let grey = Image { data: unhex(v["grey"].as_str().unwrap()), width, height };
+        let want = |key: &str| v[key].as_array().map(|a| a.iter().map(|x| x.as_f64().unwrap()).collect::<Vec<f64>>());
+        assert_eq!(Some(thresholds(&grey).values), want("thresholds"), "contrast case {n}: ordinary thresholds");
+        let blocks = level_blocks(&grey).expect("at least 40 pixels a side");
+        let got = contrast_thresholds(&grey, &blocks).map(|t| t.values);
+        if got.is_some() {
+            changed += 1;
+        }
+        assert_eq!(got, want("contrast"), "contrast case {n}: contrast-only thresholds");
+    }
+    assert!(changed >= 3);
+}
+
 /// Counts what the decoder's whole search counts when it finds no finder
 /// triple, so that a frame which reads nothing and never locates a code must
 /// match the pack's `work.steps` and `work.compared`.
 fn count_work(grey: &Image) -> Work {
     let mut work = Work::default();
-    let mut pass = |image: &Image| {
+    let mut pass = |image: &Image, both: bool| {
         let bits = binarise(image, &thresholds(image));
         let mut edges = Edges::new(&bits);
         for t in TOLERANCES {
             find_finders(&bits, t, Some(&mut work), &mut edges);
         }
-        let inverse = invert(&bits);
-        for t in TOLERANCES {
-            find_finders(&inverse, t, Some(&mut work), &mut edges);
+        if both {
+            let inverse = invert(&bits);
+            for t in TOLERANCES {
+                find_finders(&inverse, t, Some(&mut work), &mut edges);
+            }
         }
     };
-    pass(grey);
+    pass(grey, true);
     let mut shrunk = Reductions::new(grey);
     for f in REDUCTIONS {
         if grey.width / f < MIN_REDUCED || grey.height / f < MIN_REDUCED {
             continue;
         }
-        pass(&shrunk.get(f));
+        pass(&shrunk.get(f), true);
+    }
+    // Step 10: flat blocks beside enough range re-threshold the luminance
+    // inverse, searched dark on light only, at full size and reduced.
+    if thresholds(grey).inverted_fallback {
+        let inverse = invert_luminance(grey);
+        pass(&inverse, false);
+        let mut inverse_shrunk = Reductions::new(&inverse);
+        for f in REDUCTIONS {
+            if grey.width / f < MIN_REDUCED || grey.height / f < MIN_REDUCED {
+                continue;
+            }
+            pass(&inverse_shrunk.get(f), false);
+        }
     }
     work
 }

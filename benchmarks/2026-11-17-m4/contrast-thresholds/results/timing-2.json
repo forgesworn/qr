@@ -1,0 +1,69 @@
+{
+ "pairs": 40,
+ "node": "v24.21.0",
+ "results": [
+  {
+   "name": "clean",
+   "read": true,
+   "baseMedianMs": 3.221,
+   "candMedianMs": 3.385,
+   "changePct": 5.09,
+   "baseP95Ms": 3.414,
+   "candP95Ms": 3.719
+  },
+  {
+   "name": "blank",
+   "read": false,
+   "baseMedianMs": 2.273,
+   "candMedianMs": 2.28,
+   "changePct": 0.31,
+   "baseP95Ms": 2.536,
+   "candP95Ms": 2.41
+  },
+  {
+   "name": "noise",
+   "read": false,
+   "baseMedianMs": 44.181,
+   "candMedianMs": 44.03,
+   "changePct": -0.34,
+   "baseP95Ms": 48.011,
+   "candP95Ms": 47.422
+  },
+  {
+   "name": "half-texture",
+   "read": false,
+   "baseMedianMs": 27.71,
+   "candMedianMs": 30.942,
+   "changePct": 11.66,
+   "baseP95Ms": 29.993,
+   "candP95Ms": 33.568
+  },
+  {
+   "name": "text-page",
+   "read": false,
+   "baseMedianMs": 15.409,
+   "candMedianMs": 16.87,
+   "changePct": 9.48,
+   "baseP95Ms": 16.281,
+   "candP95Ms": 17.234
+  },
+  {
+   "name": "objects",
+   "read": false,
+   "baseMedianMs": 20.107,
+   "candMedianMs": 23.015,
+   "changePct": 14.46,
+   "baseP95Ms": 20.773,
+   "candP95Ms": 23.735
+  },
+  {
+   "name": "damaged-code",
+   "read": false,
+   "baseMedianMs": 9.867,
+   "candMedianMs": 10.272,
+   "changePct": 4.1,
+   "baseP95Ms": 13.705,
+   "candP95Ms": 13.553
+  }
+ ]
+}

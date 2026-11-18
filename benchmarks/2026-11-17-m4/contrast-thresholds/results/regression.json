@@ -1,0 +1,457 @@
+{
+ "seconds": 94.787,
+ "count": 5783,
+ "suites": {
+  "photos184": {
+   "base": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 520.9
+   },
+   "final": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 487.6
+   }
+  },
+  "photoTransforms2944": {
+   "base": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33104,
+    "ms": 4719.8
+   },
+   "final": {
+    "correct": 2876,
+    "read": 0,
+    "miss": 68,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33104,
+    "ms": 4708.8
+   }
+  },
+  "stress256": {
+   "base": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12380,
+    "ms": 1514.1
+   },
+   "final": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12380,
+    "ms": 1591.4
+   }
+  },
+  "qualified160": {
+   "base": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14498,
+    "ms": 1921.1
+   },
+   "final": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14498,
+    "ms": 1958.7
+   }
+  },
+  "validation192": {
+   "base": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8952,
+    "ms": 1098.8
+   },
+   "final": {
+    "correct": 177,
+    "read": 0,
+    "miss": 15,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8952,
+    "ms": 1131.9
+   }
+  },
+  "synthetic96": {
+   "base": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3170,
+    "ms": 440.5
+   },
+   "final": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3170,
+    "ms": 442.3
+   }
+  },
+  "lowres224": {
+   "base": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23217,
+    "ms": 3148.8
+   },
+   "final": {
+    "correct": 113,
+    "read": 0,
+    "miss": 79,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23217,
+    "ms": 3258.2
+   }
+  },
+  "curved1120": {
+   "base": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 297589,
+    "ms": 60547.8
+   },
+   "final": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 297589,
+    "ms": 61428
+   }
+  },
+  "curvedNew256": {
+   "base": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 35495,
+    "ms": 5433.3
+   },
+   "final": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 35495,
+    "ms": 5594.6
+   }
+  },
+  "conformance94": {
+   "base": {
+    "correct": 87,
+    "read": 0,
+    "miss": 3,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 9,
+    "negativeFalse": 0,
+    "maps": 10318,
+    "ms": 2463.3
+   },
+   "final": {
+    "correct": 90,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 9,
+    "negativeFalse": 0,
+    "maps": 10318,
+    "ms": 2476.8
+   }
+  },
+  "spreadDev120": {
+   "base": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5339,
+    "ms": 1422.1
+   },
+   "final": {
+    "correct": 113,
+    "read": 0,
+    "miss": 7,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5339,
+    "ms": 1545.1
+   }
+  },
+  "step9Dev120": {
+   "base": {
+    "correct": 106,
+    "read": 0,
+    "miss": 14,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6010,
+    "ms": 1424.9
+   },
+   "final": {
+    "correct": 107,
+    "read": 0,
+    "miss": 13,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6010,
+    "ms": 1424.2
+   }
+  },
+  "negatives12": {
+   "base": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 340.7
+   },
+   "final": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 336.3
+   }
+  }
+ },
+ "differences": {
+  "final": [
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r3/n/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 57,
+    "variantMaps": 57
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r0/m/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 53,
+    "variantMaps": 53
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r3/m/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 68,
+    "variantMaps": 68
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-41/r0/m/i",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 70,
+    "variantMaps": 70
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-32",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 0,
+    "variantMaps": 0
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-128",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 7,
+    "variantMaps": 7
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-184",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 44,
+    "variantMaps": 44
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-190",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 240,
+    "variantMaps": 240
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-dark.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 0,
+    "variantMaps": 0
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-light.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 0,
+    "variantMaps": 0
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-second-look.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 0,
+    "variantMaps": 0
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-8",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 64,
+    "variantMaps": 64
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-18",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 319,
+    "variantMaps": 319
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-23",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 12,
+    "variantMaps": 12
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-90",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct",
+    "baseMaps": 0,
+    "variantMaps": 0
+   }
+  ]
+ }
+}

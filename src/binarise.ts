@@ -78,26 +78,29 @@ export interface Thresholds {
   readonly uniform: boolean
 }
 
+/** Each 8x8 block's own level, which blocks were flat, and the picture's range. */
+export interface BlockLevels {
+  readonly across: number
+  readonly down: number
+  readonly levels: Float64Array
+  readonly flats: Uint8Array
+  readonly flat: boolean
+  readonly pictureMin: number
+  readonly pictureMax: number
+}
+
 /**
- * Local thresholds: each 8x8 block's threshold is the mean of the block
- * averages in the 5x5 blocks around it, and a flat block borrows its
- * neighbours' level, so shadows and gradients across the frame do not
- * swallow the code. Pictures under 40 pixels a side get one global threshold.
+ * A block's level is its mean, or for a flat block (range at most 24) half its
+ * minimum, raised to its earlier neighbours' level when its minimum is below
+ * that. Undefined under 40 pixels a side, where one global threshold serves.
  */
-export function thresholds(image: Luminance): Thresholds {
+export function levelBlocks(image: Luminance): BlockLevels | undefined {
   const { data, width, height } = image
-  if (width < 40 || height < 40) {
-    let min = 255
-    let max = 0
-    for (const v of data) {
-      if (v < min) min = v
-      if (v > max) max = v
-    }
-    return { across: 1, down: 1, values: Float64Array.of(max - min < MIN_DYNAMIC_RANGE ? -1 : (min + max) / 2), invertedFallback: false, uniform: min === max }
-  }
+  if (width < 40 || height < 40) return undefined
   const across = Math.ceil(width / BLOCK)
   const down = Math.ceil(height / BLOCK)
   const levels = new Float64Array(across * down)
+  const flats = new Uint8Array(across * down)
   let flat = false
   let pictureMin = 255
   let pictureMax = 0
@@ -132,6 +135,7 @@ export function thresholds(image: Luminance): Thresholds {
       pictureMax = Math.max(pictureMax, max)
       if (max - min <= MIN_DYNAMIC_RANGE) {
         flat = true
+        flats[by * across + bx] = 1
         // A flat block: assume it is background unless its neighbours say otherwise.
         level = min / 2
         if (bx > 0 && by > 0) {
@@ -143,6 +147,27 @@ export function thresholds(image: Luminance): Thresholds {
       levels[by * across + bx] = level
     }
   }
+  return { across, down, levels, flats, flat, pictureMin, pictureMax }
+}
+
+/**
+ * Local thresholds: each 8x8 block's threshold is the mean of the block
+ * averages in the 5x5 blocks around it, and a flat block borrows its
+ * neighbours' level, so shadows and gradients across the frame do not
+ * swallow the code. Pictures under 40 pixels a side get one global threshold.
+ * `blocks` is levelBlocks(image), for a caller that has it already.
+ */
+export function thresholds(image: Luminance, blocks: BlockLevels | undefined = levelBlocks(image)): Thresholds {
+  if (!blocks) {
+    let min = 255
+    let max = 0
+    for (const v of image.data) {
+      if (v < min) min = v
+      if (v > max) max = v
+    }
+    return { across: 1, down: 1, values: Float64Array.of(max - min < MIN_DYNAMIC_RANGE ? -1 : (min + max) / 2), invertedFallback: false, uniform: min === max }
+  }
+  const { across, down, levels, flat, pictureMin, pictureMax } = blocks
   const values = new Float64Array(across * down)
   for (let by = 0; by < down; by++) {
     const cy = Math.min(Math.max(by, 2), down - 3)
@@ -158,6 +183,71 @@ export function thresholds(image: Luminance): Thresholds {
     }
   }
   return { across, down, values, invertedFallback: flat && pictureMax - pictureMin > MIN_DYNAMIC_RANGE, uniform: pictureMin === pictureMax }
+}
+
+/**
+ * thresholds() with the flat blocks left out of every 5x5 average that also
+ * holds a block with contrast. A flat block's level is a guess at background,
+ * often half its minimum, and beside a small or faint code it drags the
+ * threshold below the code's own dark modules. Averages of only flat or only
+ * contrasted blocks are unchanged. `blocks` is levelBlocks(image). Undefined
+ * when no changed threshold puts any of its block's 64 pixels on the other
+ * side, as the binary picture would be the same; in particular without both a
+ * flat block and over 24 levels of range in the picture.
+ */
+export function contrastThresholds(image: Luminance, blocks: BlockLevels): Thresholds | undefined {
+  const { data, width, height } = image
+  const { across, down, levels, flats, flat, pictureMin, pictureMax } = blocks
+  if (!flat || pictureMax - pictureMin <= MIN_DYNAMIC_RANGE) return undefined
+  const values = new Float64Array(across * down)
+  let changes = false
+  for (let by = 0; by < down; by++) {
+    const cy = Math.min(Math.max(by, 2), down - 3)
+    const top = Math.min(by * BLOCK, height - BLOCK)
+    for (let bx = 0; bx < across; bx++) {
+      const cx = Math.min(Math.max(bx, 2), across - 3)
+      let sum = 0
+      let contrastSum = 0
+      let contrasted = 0
+      for (let dy = -2; dy <= 2; dy++) {
+        const row = (cy + dy) * across + cx
+        for (let dx = -2; dx <= 2; dx++) {
+          const level = levels[row + dx]!
+          sum += level
+          if (flats[row + dx] === 0) {
+            contrastSum += level
+            contrasted++
+          }
+        }
+      }
+      const before = sum / 25
+      if (contrasted === 0 || contrasted === 25) {
+        values[by * across + bx] = before
+        continue
+      }
+      const after = contrastSum / contrasted
+      values[by * across + bx] = after
+      // A whole-number pixel is dark at or below floor(threshold), so it
+      // changes side exactly when it lies above the lower floor and at or
+      // below the higher one.
+      if (changes) continue
+      const low = Math.floor(Math.min(before, after))
+      const high = Math.floor(Math.max(before, after))
+      if (low === high) continue
+      const left = Math.min(bx * BLOCK, width - BLOCK)
+      for (let y = top; y < top + BLOCK && !changes; y++) {
+        for (let i = y * width + left; i < y * width + left + BLOCK; i++) {
+          const v = data[i]!
+          if (v > low && v <= high) {
+            changes = true
+            break
+          }
+        }
+      }
+    }
+  }
+  if (!changes) return undefined
+  return { across, down, values, invertedFallback: true, uniform: false }
 }
 
 /** Invert luminance before thresholding: flat-block background estimates depend on polarity. */

@@ -1,0 +1,69 @@
+{
+ "pairs": 40,
+ "node": "v24.21.0",
+ "results": [
+  {
+   "name": "clean",
+   "read": true,
+   "baseMedianMs": 3.477,
+   "candMedianMs": 3.375,
+   "changePct": -2.95,
+   "baseP95Ms": 3.69,
+   "candP95Ms": 4.332
+  },
+  {
+   "name": "blank",
+   "read": false,
+   "baseMedianMs": 2.313,
+   "candMedianMs": 2.365,
+   "changePct": 2.24,
+   "baseP95Ms": 2.49,
+   "candP95Ms": 2.708
+  },
+  {
+   "name": "noise",
+   "read": false,
+   "baseMedianMs": 44.835,
+   "candMedianMs": 45.378,
+   "changePct": 1.21,
+   "baseP95Ms": 50.562,
+   "candP95Ms": 50.513
+  },
+  {
+   "name": "half-texture",
+   "read": false,
+   "baseMedianMs": 27.908,
+   "candMedianMs": 31.127,
+   "changePct": 11.53,
+   "baseP95Ms": 30.402,
+   "candP95Ms": 34.165
+  },
+  {
+   "name": "text-page",
+   "read": false,
+   "baseMedianMs": 15.432,
+   "candMedianMs": 16.9,
+   "changePct": 9.52,
+   "baseP95Ms": 16.155,
+   "candP95Ms": 17.39
+  },
+  {
+   "name": "objects",
+   "read": false,
+   "baseMedianMs": 20.613,
+   "candMedianMs": 23.135,
+   "changePct": 12.23,
+   "baseP95Ms": 20.958,
+   "candP95Ms": 24.208
+  },
+  {
+   "name": "damaged-code",
+   "read": false,
+   "baseMedianMs": 10.27,
+   "candMedianMs": 10.549,
+   "changePct": 2.72,
+   "baseP95Ms": 14.093,
+   "candP95Ms": 14.733
+  }
+ ]
+}

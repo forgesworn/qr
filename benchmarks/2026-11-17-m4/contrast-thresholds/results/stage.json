@@ -1,0 +1,41 @@
+{
+ "count": 3000,
+ "byKind": {
+  "noise-patches": {
+   "n": 500,
+   "reach": 500,
+   "base:clean": 500,
+   "final:clean": 500
+  },
+  "fake-symbol": {
+   "n": 500,
+   "reach": 500,
+   "base:clean": 500,
+   "final:clean": 500
+  },
+  "finders": {
+   "n": 500,
+   "reach": 500,
+   "base:clean": 500,
+   "final:clean": 500
+  },
+  "text-rows": {
+   "n": 500,
+   "reach": 500,
+   "base:clean": 500,
+   "final:clean": 500
+  },
+  "mask-texture": {
+   "n": 500,
+   "reach": 500,
+   "base:clean": 500,
+   "final:clean": 500
+  },
+  "damaged-real": {
+   "n": 500,
+   "reach": 500,
+   "base:miss": 500,
+   "final:miss": 500
+  }
+ }
+}

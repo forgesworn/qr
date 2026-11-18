@@ -52,29 +52,31 @@ private const val MIN_DYNAMIC_RANGE = 24
  */
 internal class Thresholds(val across: Int, val down: Int, val values: DoubleArray, val invertedFallback: Boolean = false, val uniform: Boolean = false)
 
+/** Each 8x8 block's own level, which blocks were flat, and the picture's range. */
+internal class BlockLevels(
+    val across: Int,
+    val down: Int,
+    val levels: DoubleArray,
+    val flats: ByteArray,
+    val flat: Boolean,
+    val pictureMin: Int,
+    val pictureMax: Int,
+)
+
 /**
- * Local thresholds: each 8x8 block's threshold is the mean of the block
- * averages in the 5x5 blocks around it, and a flat block borrows its
- * neighbours' level, so shadows and gradients across the frame do not
- * swallow the code. Pictures under 40 pixels a side get one global threshold.
+ * A block's level is its mean, or for a flat block (range at most 24) half its
+ * minimum, raised to its earlier neighbours' level when its minimum is below
+ * that. Null under 40 pixels a side, where one global threshold serves.
  */
-internal fun thresholds(image: Luminance): Thresholds {
+internal fun levelBlocks(image: Luminance): BlockLevels? {
     val data = image.data
     val width = image.width
     val height = image.height
-    if (width < 40 || height < 40) {
-        var min = 255
-        var max = 0
-        for (byte in data) {
-            val v = byte.toInt() and 0xff
-            if (v < min) min = v
-            if (v > max) max = v
-        }
-        return Thresholds(1, 1, doubleArrayOf(if (max - min < MIN_DYNAMIC_RANGE) -1.0 else (min + max) / 2.0), uniform = min == max)
-    }
+    if (width < 40 || height < 40) return null
     val across = (width + BLOCK - 1) / BLOCK
     val down = (height + BLOCK - 1) / BLOCK
     val levels = DoubleArray(across * down)
+    val flats = ByteArray(across * down)
     var flat = false
     var pictureMin = 255
     var pictureMax = 0
@@ -103,6 +105,7 @@ internal fun thresholds(image: Luminance): Thresholds {
             pictureMax = maxOf(pictureMax, max)
             if (max - min <= MIN_DYNAMIC_RANGE) {
                 flat = true
+                flats[by * across + bx] = 1
                 // A flat block: assume it is background unless its neighbours say otherwise.
                 level = min / 2.0
                 if (bx > 0 && by > 0) {
@@ -114,6 +117,30 @@ internal fun thresholds(image: Luminance): Thresholds {
             levels[by * across + bx] = level
         }
     }
+    return BlockLevels(across, down, levels, flats, flat, pictureMin, pictureMax)
+}
+
+/**
+ * Local thresholds: each 8x8 block's threshold is the mean of the block
+ * averages in the 5x5 blocks around it, and a flat block borrows its
+ * neighbours' level, so shadows and gradients across the frame do not
+ * swallow the code. Pictures under 40 pixels a side get one global threshold.
+ * [blocks] is [levelBlocks] of the picture, for a caller that has it already.
+ */
+internal fun thresholds(image: Luminance, blocks: BlockLevels? = levelBlocks(image)): Thresholds {
+    if (blocks == null) {
+        var min = 255
+        var max = 0
+        for (byte in image.data) {
+            val v = byte.toInt() and 0xff
+            if (v < min) min = v
+            if (v > max) max = v
+        }
+        return Thresholds(1, 1, doubleArrayOf(if (max - min < MIN_DYNAMIC_RANGE) -1.0 else (min + max) / 2.0), uniform = min == max)
+    }
+    val across = blocks.across
+    val down = blocks.down
+    val levels = blocks.levels
     val values = DoubleArray(across * down)
     for (by in 0 until down) {
         val cy = minOf(maxOf(by, 2), down - 3)
@@ -133,7 +160,77 @@ internal fun thresholds(image: Luminance): Thresholds {
             values[by * across + bx] = sum / n
         }
     }
-    return Thresholds(across, down, values, flat && pictureMax - pictureMin > MIN_DYNAMIC_RANGE, pictureMin == pictureMax)
+    return Thresholds(across, down, values, blocks.flat && blocks.pictureMax - blocks.pictureMin > MIN_DYNAMIC_RANGE, blocks.pictureMin == blocks.pictureMax)
+}
+
+/**
+ * [thresholds] with the flat blocks left out of every 5x5 average that also
+ * holds a block with contrast (decoder step 23). A flat block's level is a
+ * guess at background, often half its minimum, and beside a small or faint
+ * code it drags the threshold below the code's own dark modules. Averages of
+ * only flat or only contrasted blocks are unchanged. [blocks] is [levelBlocks]
+ * of the picture. Null when no changed threshold puts any of its block's 64
+ * pixels on the other side, as the binary picture would be the same; in
+ * particular without both a flat block and over 24 levels of range.
+ */
+internal fun contrastThresholds(image: Luminance, blocks: BlockLevels): Thresholds? {
+    val data = image.data
+    val width = image.width
+    val height = image.height
+    val across = blocks.across
+    val down = blocks.down
+    val levels = blocks.levels
+    val flats = blocks.flats
+    if (!blocks.flat || blocks.pictureMax - blocks.pictureMin <= MIN_DYNAMIC_RANGE) return null
+    val values = DoubleArray(across * down)
+    var changes = false
+    for (by in 0 until down) {
+        val cy = minOf(maxOf(by, 2), down - 3)
+        val top = minOf(by * BLOCK, height - BLOCK)
+        for (bx in 0 until across) {
+            val cx = minOf(maxOf(bx, 2), across - 3)
+            var sum = 0.0
+            var contrastSum = 0.0
+            var contrasted = 0
+            for (dy in -2..2) {
+                val row = (cy + dy) * across + cx
+                for (dx in -2..2) {
+                    val level = levels[row + dx]
+                    sum += level
+                    if (flats[row + dx].toInt() == 0) {
+                        contrastSum += level
+                        contrasted++
+                    }
+                }
+            }
+            val before = sum / 25
+            if (contrasted == 0 || contrasted == 25) {
+                values[by * across + bx] = before
+                continue
+            }
+            val after = contrastSum / contrasted
+            values[by * across + bx] = after
+            // A whole-number pixel is dark at or below floor(threshold), so it
+            // changes side exactly when it lies above the lower floor and at or
+            // below the higher one.
+            if (changes) continue
+            val low = floor(minOf(before, after)).toInt()
+            val high = floor(maxOf(before, after)).toInt()
+            if (low == high) continue
+            val left = minOf(bx * BLOCK, width - BLOCK)
+            scan@ for (y in top until top + BLOCK) {
+                for (x in left until left + BLOCK) {
+                    val v = data[y * width + x].toInt() and 0xff
+                    if (v > low && v <= high) {
+                        changes = true
+                        break@scan
+                    }
+                }
+            }
+        }
+    }
+    if (!changes) return null
+    return Thresholds(across, down, values, invertedFallback = true, uniform = false)
 }
 
 /** Invert luminance before thresholding: flat-block background estimates depend on polarity. */

@@ -1,0 +1,30 @@
+{
+ "pairs": 40,
+ "node": "v24.21.0",
+ "results": [
+  {
+   "name": "half-texture",
+   "beforeMedianMs": 14.708,
+   "afterMedianMs": 17.186,
+   "changePct": 16.85
+  },
+  {
+   "name": "text-page",
+   "beforeMedianMs": 11.01,
+   "afterMedianMs": 11.964,
+   "changePct": 8.66
+  },
+  {
+   "name": "objects",
+   "beforeMedianMs": 9.725,
+   "afterMedianMs": 11.558,
+   "changePct": 18.84
+  },
+  {
+   "name": "damaged-code",
+   "beforeMedianMs": 4.542,
+   "afterMedianMs": 4.94,
+   "changePct": 8.77
+  }
+ ]
+}

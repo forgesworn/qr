@@ -109,6 +109,9 @@ private const val MAX_MAPS = 4 * MAX_TRIPLES * 5 * 6
 /** Maps available to the terminal enlarged search. */
 private const val LOW_RESOLUTION_MAPS = 90
 
+/** Maps available to the terminal contrast-threshold search, which also has one second look. */
+private const val CONTRAST_MAPS = 30
+
 /** The reduced-size pass's factors, coarse to fine. */
 private val REDUCTIONS = intArrayOf(8, 4, 2)
 
@@ -123,6 +126,8 @@ private class Overflow(val ranked: List<Array<Finder>>, val inverted: Boolean)
 /** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
 private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
     var lowResolution = false
+    /** The original picture's full-size block levels, from its first ordinary search. */
+    var blocks: BlockLevels? = null
     val hints = ArrayList<VersionHint>(4)
     val overflow = ArrayList<Overflow>()
     val curvature = ArrayList<Retry>(SECOND_LOOKS + 1)
@@ -239,7 +244,7 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (selectedMesh != null) return selectedMesh
     val quadratic = recoverQuadraticMesh(luminance, inverse, budget)
     if (quadratic != null) return quadratic
-    return recoverLowResolution(luminance, inverse, budget, inversion)
+    return recoverLowResolution(luminance, inverse, budget, inversion) ?: recoverContrastThresholds(luminance, budget, inversion)
 }
 
 /**
@@ -248,11 +253,19 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false, inverseCurvature: MutableList<Retry>? = null, publicInverse: Boolean = false): DecodeResult? {
-    val levels = thresholds(luminance)
-    if (f == 1 && !strictOverride) {
+private fun look(luminance: Luminance, inversion: Inversion, f: Int, budget: Budget, work: Work?, strictOverride: Boolean = false, inverseCurvature: MutableList<Retry>? = null, publicInverse: Boolean = false, given: Thresholds? = null): DecodeResult? {
+    val levels: Thresholds
+    if (given != null) {
+        levels = given
+    } else if (f == 1 && !strictOverride) {
+        // The full-size block levels stay with the frame for the terminal contrast-threshold search.
+        val blocks = levelBlocks(luminance)
+        budget.blocks = blocks
+        levels = thresholds(luminance, blocks)
         budget.invertedFallback = levels.invertedFallback
         budget.uniform = levels.uniform
+    } else {
+        levels = thresholds(luminance)
     }
     if (levels.uniform) return null
     val bits = binarise(luminance, levels)
@@ -881,6 +894,21 @@ private fun recoverLowResolution(luminance: Luminance, inverse: Luminance?, budg
         if (inverted != null) return scaleLowResolution(inverted, true)
     }
     return null
+}
+
+/**
+ * After every other path fails, one strict ordinary search of the picture
+ * thresholded without flat blocks in any average that also holds blocks with
+ * contrast (decoder step 23): both format copies must agree, as at reduced
+ * sizes. It runs only when that moves a pixel to the other side of its
+ * threshold, with its own maps and second look, and adds nothing to the Work
+ * counts.
+ */
+private fun recoverContrastThresholds(luminance: Luminance, budget: Budget, inversion: Inversion): DecodeResult? {
+    val blocks = budget.blocks ?: return null
+    val levels = contrastThresholds(luminance, blocks) ?: return null
+    val retry = Budget(CONTRAST_MAPS, 1, CONTRAST_MAPS)
+    return look(luminance, inversion, 1, retry, null, strictOverride = true, given = levels)
 }
 
 private fun scaleLowResolution(found: DecodeResult, publicInverse: Boolean): DecodeResult {

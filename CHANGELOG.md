@@ -15,8 +15,25 @@
   qualify for the new step take several times longer. See PERFORMANCE.md.
 - Speed up the TypeScript decoder without changing any result or Work
   counter. Against v0.3.14 in paired M4 runs, RGBA frames decode 19–20%
-  faster when clean, 26% when blank and 4–12% on random noise. Rust, Kotlin
-  and the packaged WASM are unchanged.
+  faster when clean, 26% when blank and 4–12% on random noise. That change
+  leaves Rust, Kotlin and the packaged WASM as they were.
+- After every other path fails, threshold the picture again with flat blocks
+  left out of each 5 x 5 average that also holds blocks with contrast. Then
+  search it once more, with its own 30 maps and one second look, when that
+  moves at least one pixel across its threshold, and accept a read only when
+  both format copies agree. Flat background had pulled the thresholds of
+  small or faint codes beside it below their dark modules. Mirror the step in
+  all three ports, with five conformance frames and five threshold vectors.
+- Read 475 and 478 of two fresh sets of 480 small or faint codes on flat
+  backgrounds, against 382 and 376 before and 472 and 469 for pinned
+  ZXing-WASM 3.1.7. No negative in either set, and none of 3,000 frames built
+  to reach the step, gave a false read, and no payload was wrong. The
+  regression corpus gains 12 reads and loses none. On the 1,016
+  low-resolution qualification positives QR now reads 812, against ZXing's
+  710. Codeless frames that mix flat and textured areas take 2–14% longer in
+  TypeScript and 7–19% in WASM, and a smooth gradient 8–9% in WASM. Clean,
+  blank and noise frames show no consistent change in TypeScript. See
+  PERFORMANCE.md.
 
 ## 0.3.14
 

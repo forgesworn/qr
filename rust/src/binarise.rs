@@ -63,26 +63,30 @@ pub fn threshold_at(t: &Thresholds, width: usize, height: usize, px: usize, py: 
     t.values[by * t.across + bx]
 }
 
-pub fn thresholds(image: &Luminance) -> Thresholds {
+/// Each 8x8 block's own level, which blocks were flat, and the picture's range.
+#[derive(Clone, Debug)]
+pub struct BlockLevels {
+    across: usize,
+    down: usize,
+    levels: Vec<f64>,
+    flats: Vec<u8>,
+    flat: bool,
+    picture_min: i32,
+    picture_max: i32,
+}
+
+/// A block's level is its mean, or for a flat block (range at most 24) half
+/// its minimum, raised to its earlier neighbours' level when its minimum is
+/// below that. `None` under 40 pixels a side, where one global threshold serves.
+pub fn level_blocks(image: &Luminance) -> Option<BlockLevels> {
     let (data, width, height) = (&image.data, image.width, image.height);
     if width < 40 || height < 40 {
-        let mut min = 255i32;
-        let mut max = 0i32;
-        for &v in data.iter() {
-            let v = v as i32;
-            if v < min {
-                min = v;
-            }
-            if v > max {
-                max = v;
-            }
-        }
-        let value = if max - min < MIN_DYNAMIC_RANGE { -1.0 } else { (min + max) as f64 / 2.0 };
-        return Thresholds { across: 1, down: 1, values: vec![value], inverted_fallback: false, uniform: min == max };
+        return None;
     }
     let across = width.div_ceil(BLOCK);
     let down = height.div_ceil(BLOCK);
     let mut levels = vec![0f64; across * down];
+    let mut flats = vec![0u8; across * down];
     let mut flat = false;
     let mut picture_min = 255i32;
     let mut picture_max = 0i32;
@@ -112,6 +116,7 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
             picture_max = picture_max.max(max);
             if max - min <= MIN_DYNAMIC_RANGE {
                 flat = true;
+                flats[by * across + bx] = 1;
                 // A flat block: background unless its neighbours say otherwise.
                 level = min as f64 / 2.0;
                 if bx > 0 && by > 0 {
@@ -124,6 +129,31 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
             levels[by * across + bx] = level;
         }
     }
+    Some(BlockLevels { across, down, levels, flats, flat, picture_min, picture_max })
+}
+
+pub fn thresholds(image: &Luminance) -> Thresholds {
+    thresholds_from(image, level_blocks(image).as_ref())
+}
+
+/// `thresholds` from the picture's `level_blocks`, for a caller that has them.
+pub(crate) fn thresholds_from(image: &Luminance, blocks: Option<&BlockLevels>) -> Thresholds {
+    let Some(blocks) = blocks else {
+        let mut min = 255i32;
+        let mut max = 0i32;
+        for &v in image.data.iter() {
+            let v = v as i32;
+            if v < min {
+                min = v;
+            }
+            if v > max {
+                max = v;
+            }
+        }
+        let value = if max - min < MIN_DYNAMIC_RANGE { -1.0 } else { (min + max) as f64 / 2.0 };
+        return Thresholds { across: 1, down: 1, values: vec![value], inverted_fallback: false, uniform: min == max };
+    };
+    let (across, down, levels) = (blocks.across, blocks.down, &blocks.levels);
     let mut values = vec![0f64; across * down];
     for by in 0..down {
         let cy = by.max(2).min(down - 3);
@@ -139,7 +169,70 @@ pub fn thresholds(image: &Luminance) -> Thresholds {
             values[by * across + bx] = sum / 25.0;
         }
     }
-    Thresholds { across, down, values, inverted_fallback: flat && picture_max - picture_min > MIN_DYNAMIC_RANGE, uniform: picture_min == picture_max }
+    Thresholds { across, down, values, inverted_fallback: blocks.flat && blocks.picture_max - blocks.picture_min > MIN_DYNAMIC_RANGE, uniform: blocks.picture_min == blocks.picture_max }
+}
+
+/// `thresholds` with the flat blocks left out of every 5x5 average that also
+/// holds a block with contrast (decoder step 23). A flat block's level is a
+/// guess at background, often half its minimum, and beside a small or faint
+/// code it drags the threshold below the code's own dark modules. Averages of
+/// only flat or only contrasted blocks are unchanged. `None` when no changed
+/// threshold puts any of its block's 64 pixels on the other side, as the
+/// binary picture would be the same; in particular without both a flat block
+/// and over 24 levels of range in the picture.
+pub fn contrast_thresholds(image: &Luminance, blocks: &BlockLevels) -> Option<Thresholds> {
+    let (data, width, height) = (&image.data, image.width, image.height);
+    let (across, down, levels, flats) = (blocks.across, blocks.down, &blocks.levels, &blocks.flats);
+    if !blocks.flat || blocks.picture_max - blocks.picture_min <= MIN_DYNAMIC_RANGE {
+        return None;
+    }
+    let mut values = vec![0f64; across * down];
+    let mut changes = false;
+    for by in 0..down {
+        let cy = by.max(2).min(down - 3);
+        let top = (by * BLOCK).min(height - BLOCK);
+        for bx in 0..across {
+            let cx = bx.max(2).min(across - 3);
+            let mut sum = 0f64;
+            let mut contrast_sum = 0f64;
+            let mut contrasted = 0usize;
+            for dy in 0..5 {
+                let row = (cy + dy - 2) * across + cx - 2;
+                for dx in 0..5 {
+                    let level = levels[row + dx];
+                    sum += level;
+                    if flats[row + dx] == 0 {
+                        contrast_sum += level;
+                        contrasted += 1;
+                    }
+                }
+            }
+            let before = sum / 25.0;
+            if contrasted == 0 || contrasted == 25 {
+                values[by * across + bx] = before;
+                continue;
+            }
+            let after = contrast_sum / contrasted as f64;
+            values[by * across + bx] = after;
+            // A whole-number pixel is dark at or below floor(threshold), so it
+            // changes side exactly when it lies above the lower floor and at
+            // or below the higher one.
+            if changes {
+                continue;
+            }
+            let low = before.min(after).floor() as i32;
+            let high = before.max(after).floor() as i32;
+            if low == high {
+                continue;
+            }
+            let left = (bx * BLOCK).min(width - BLOCK);
+            changes = (top..top + BLOCK).any(|y| data[y * width + left..y * width + left + BLOCK].iter().any(|&v| (v as i32) > low && (v as i32) <= high));
+        }
+    }
+    if !changes {
+        return None;
+    }
+    Some(Thresholds { across, down, values, inverted_fallback: true, uniform: false })
 }
 
 /// Invert luminance before thresholding: flat-block background estimates depend on polarity.

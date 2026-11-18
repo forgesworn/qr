@@ -93,6 +93,23 @@ class ConformanceTest {
     }
 
     @Test
+    fun leavesFlatBlocksOutOfMixedThresholdAveragesAsRecorded() {
+        val cases = pack["contrast"] as List<Map<String, Any?>>
+        var changed = 0
+        for (v in cases) {
+            val width = (v["width"] as Number).toInt()
+            val height = (v["height"] as Number).toInt()
+            val grey = Luminance(unhex(v["grey"] as String), width, height)
+            val want = { key: String -> (v[key] as List<Any?>?)?.map { number(it) } }
+            assertEquals("$width x $height ordinary", want("thresholds"), thresholds(grey).values.toList())
+            val got = contrastThresholds(grey, levelBlocks(grey)!!)?.values?.toList()
+            if (got != null) changed++
+            assertEquals("$width x $height contrast-only", want("contrast"), got)
+        }
+        assertTrue(changed >= 3)
+    }
+
+    @Test
     fun readsEveryModuleGridAsRecorded() {
         val symbols = pack["symbols"] as List<Map<String, Any?>>
         assertTrue(symbols.size >= 13)

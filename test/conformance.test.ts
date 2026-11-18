@@ -8,7 +8,7 @@
 import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { binarise, enlarge, shrink, toLuminance } from '../src/binarise.js'
+import { binarise, contrastThresholds, enlarge, levelBlocks, shrink, thresholds, toLuminance } from '../src/binarise.js'
 import { decodeCounted, decodeModules } from '../src/decode.js'
 import { blocksFor, encode, FORMAT_COORDS, Grid, type ErrorCorrection } from '../src/encode.js'
 import { ALIGNMENT_CENTRES, EC_BLOCKS } from '../src/tables.js'
@@ -29,6 +29,7 @@ import { headerRediscoveryPicture } from './header-rediscovery-fixture.js'
 import { selectedMeshPicture } from './selected-mesh-fixture.js'
 import { quadraticMeshPicture } from './quadratic-mesh-fixture.js'
 import { lowResolutionPicture } from './low-resolution-fixture.js'
+import { contrastPicture } from './contrast-thresholds-fixture.js'
 
 const VECTORS = new URL('../vectors/', import.meta.url)
 const PACK = new URL('conformance.json', VECTORS)
@@ -53,6 +54,7 @@ interface Pack {
   tables: { blocks: number[][][]; alignment: number[][] }
   luminance: { width: number; height: number; rgba: string; grey: string }[]
   enlargement: { width: number; height: number; factor: number; grey: string; enlarged: string }[]
+  contrast: { width: number; height: number; grey: string; thresholds: number[]; contrast: number[] | null }[]
   symbols: { name: string; size: number; rows: string[]; result: Reading | null }[]
   frames: {
     file: string
@@ -227,6 +229,20 @@ function build(write: boolean): Pack {
     const grey = Uint8Array.from(bytes)
     enlargement.push({ width, height, factor, grey: hex(grey), enlarged: hex(enlarge({ data: grey, width, height }, factor).data) })
   }
+  // Contrast-only thresholds: faint content on flat paper, then noise and
+  // black print, where no pixel would change side and the result is null.
+  const contrastRandom = prng(2311)
+  const contrast: Pack['contrast'] = []
+  for (const [width, height, kind] of [[48, 48, 'faint'], [61, 45, 'faint'], [80, 41, 'faint'], [44, 40, 'noise'], [72, 48, 'print']] as const) {
+    const grey = fill(width, height, (x, y) => {
+      if (kind === 'noise') return Math.floor(contrastRandom() * 256)
+      if (kind === 'print') return x > 15 && x < width - 16 && y > 15 && y < height - 16 && x % 7 < 3 && y % 9 < 6 ? 10 : 245
+      return x > 13 && y > 11 && x < width - 17 && y < height - 9 ? 150 + Math.floor(contrastRandom() * 60) : 200
+    })
+    const blocks = levelBlocks(grey)!
+    const changed = contrastThresholds(grey, blocks)
+    contrast.push({ width, height, grey: hex(grey.data), thresholds: [...thresholds(grey, blocks).values], contrast: changed ? [...changed.values] : null })
+  }
 
   // Module grids.
   const symbols: Pack['symbols'] = []
@@ -332,6 +348,9 @@ function build(write: boolean): Pack {
   }
   // Repeated low-pitch finder sightings admit one terminal enlarged search.
   for (const index of [10, 46, 51, 92, 94] as const) own(`low-resolution-${index}`, lowResolutionPicture(index).image)
+  // Faint codes on flat paper read only once flat blocks leave the mixed
+  // averages, one of them by that search's second look, and a faint decoy.
+  for (const name of ['dark', 'light', 'second-look', 'decoy', 'format-gate'] as const) own(`contrast-thresholds-${name}`, contrastPicture(name).image)
 
   const note =
     'Conformance vectors for ports of this encoder and decoder; vectors/README.md describes every field. ' +
@@ -341,7 +360,7 @@ function build(write: boolean): Pack {
     blocks: EC_BLOCKS.map((levels) => levels.map((b) => [...b])),
     alignment: ALIGNMENT_CENTRES.map((centres) => [...centres]),
   }
-  return { note, tables, luminance, enlargement, symbols, frames }
+  return { note, tables, luminance, enlargement, contrast, symbols, frames }
 }
 
 describe('conformance pack', () => {
@@ -390,6 +409,17 @@ describe('conformance pack', () => {
     for (const v of pack.enlargement) {
       const enlarged = enlarge({ data: unhex(v.grey), width: v.width, height: v.height }, v.factor)
       expect(hex(enlarged.data), `${v.width} x ${v.height} by ${v.factor}`).toBe(v.enlarged)
+    }
+  })
+
+  it('leaves flat blocks out of mixed threshold averages as recorded', () => {
+    expect(pack.contrast.filter((v) => v.contrast !== null).length).toBeGreaterThanOrEqual(3)
+    for (const v of pack.contrast) {
+      const grey = { data: unhex(v.grey), width: v.width, height: v.height }
+      const blocks = levelBlocks(grey)!
+      expect([...thresholds(grey, blocks).values], `${v.width} x ${v.height}`).toEqual(v.thresholds)
+      const changed = contrastThresholds(grey, blocks)
+      expect(changed ? [...changed.values] : null, `${v.width} x ${v.height}`).toEqual(v.contrast)
     }
   })
 

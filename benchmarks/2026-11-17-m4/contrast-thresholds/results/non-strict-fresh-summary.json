@@ -1,0 +1,850 @@
+{
+ "framesSha256": "6b74a0ba519530abfd42b273eae3519abc71477eb82a94fecd7c3027cdc5a597",
+ "all": {
+  "base": {
+   "correct": 382,
+   "miss": 98,
+   "wrong": 0,
+   "negativeClean": 96,
+   "negativeFalse": 0
+  },
+  "final": {
+   "correct": 475,
+   "miss": 5,
+   "wrong": 0,
+   "negativeClean": 96,
+   "negativeFalse": 0
+  },
+  "zxing": {
+   "correct": 472,
+   "miss": 8,
+   "wrong": 0,
+   "negativeClean": 96,
+   "negativeFalse": 0
+  }
+ },
+ "byContrast": {
+  "35-60": {
+   "base": {
+    "correct": 36,
+    "miss": 70,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 105,
+    "miss": 1,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 106,
+    "miss": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "60-85": {
+   "base": {
+    "correct": 81,
+    "miss": 20,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 100,
+    "miss": 1,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 97,
+    "miss": 4,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "85-110": {
+   "base": {
+    "correct": 107,
+    "miss": 5,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 111,
+    "miss": 1,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 111,
+    "miss": 1,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "110-141": {
+   "base": {
+    "correct": 158,
+    "miss": 3,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 159,
+    "miss": 2,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 158,
+    "miss": 3,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  }
+ },
+ "byScale": {
+  "1.8-2.4": {
+   "base": {
+    "correct": 90,
+    "miss": 39,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 124,
+    "miss": 5,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 121,
+    "miss": 8,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "2.4-3": {
+   "base": {
+    "correct": 114,
+    "miss": 23,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 137,
+    "miss": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 137,
+    "miss": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "3-4.1": {
+   "base": {
+    "correct": 178,
+    "miss": 36,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 214,
+    "miss": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 214,
+    "miss": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  }
+ },
+ "byBlur": {
+  "0": {
+   "base": {
+    "correct": 131,
+    "miss": 29,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 160,
+    "miss": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 158,
+    "miss": 2,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "1": {
+   "base": {
+    "correct": 184,
+    "miss": 48,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 231,
+    "miss": 1,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 229,
+    "miss": 3,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  },
+  "2": {
+   "base": {
+    "correct": 67,
+    "miss": 21,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 84,
+    "miss": 4,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 85,
+    "miss": 3,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0
+   }
+  }
+ },
+ "inverted": {
+  "base": {
+   "correct": 58,
+   "miss": 22,
+   "wrong": 0,
+   "negativeClean": 0,
+   "negativeFalse": 0
+  },
+  "final": {
+   "correct": 79,
+   "miss": 1,
+   "wrong": 0,
+   "negativeClean": 0,
+   "negativeFalse": 0
+  },
+  "zxing": {
+   "correct": 80,
+   "miss": 0,
+   "wrong": 0,
+   "negativeClean": 0,
+   "negativeFalse": 0
+  }
+ },
+ "changes": [
+  {
+   "name": "fresh-001",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-011",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-012",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-018",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-019",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-020",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-022",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-024",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-025",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-034",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-036",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-048",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-052",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-054",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-056",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-065",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-069",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-070",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-073",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-080",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-083",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-091",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-095",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-097",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-104",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-105",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-107",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-113",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-120",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-128",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-132",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-141",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-144",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-152",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-153",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-154",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-172",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-176",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-179",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-184",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-185",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-188",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-189",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-193",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-194",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-196",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-204",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-208",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-220",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-223",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-224",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-226",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-227",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-245",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-250",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-256",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-258",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-263",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-266",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-268",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-270",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-284",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-285",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-286",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-287",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-293",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-295",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-299",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-313",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-314",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-317",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-318",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-323",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-324",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-352",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-360",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-368",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-372",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-377",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-392",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-395",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-396",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-403",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-407",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-435",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-438",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-443",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-444",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-451",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-459",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-468",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-471",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  },
+  {
+   "name": "fresh-473",
+   "variant": "final",
+   "from": "miss",
+   "to": "correct"
+  }
+ ],
+ "zxingOnlyAgainstLast": [
+  "fresh-173",
+  "fresh-211",
+  "fresh-434"
+ ]
+}

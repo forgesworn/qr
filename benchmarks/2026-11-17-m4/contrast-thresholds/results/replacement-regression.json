@@ -1,0 +1,758 @@
+{
+ "note": "Flat blocks left out of mixed averages in the primary binariser, every stage: rejected. Location-only and other changed results are counted, not listed.",
+ "seconds": 84.35,
+ "count": 5778,
+ "suites": {
+  "photos184": {
+   "base": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1426,
+    "ms": 471.7
+   },
+   "alt": {
+    "correct": 180,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 1410,
+    "ms": 470.4
+   }
+  },
+  "photoTransforms2944": {
+   "base": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 33104,
+    "ms": 4458.8
+   },
+   "alt": {
+    "correct": 2872,
+    "read": 0,
+    "miss": 72,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 30347,
+    "ms": 4076.8
+   }
+  },
+  "stress256": {
+   "base": {
+    "correct": 172,
+    "read": 0,
+    "miss": 52,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12380,
+    "ms": 1443.8
+   },
+   "alt": {
+    "correct": 173,
+    "read": 0,
+    "miss": 51,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 12629,
+    "ms": 1484.3
+   }
+  },
+  "qualified160": {
+   "base": {
+    "correct": 78,
+    "read": 0,
+    "miss": 50,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14498,
+    "ms": 1838.5
+   },
+   "alt": {
+    "correct": 77,
+    "read": 0,
+    "miss": 51,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 14221,
+    "ms": 1656.3
+   }
+  },
+  "validation192": {
+   "base": {
+    "correct": 174,
+    "read": 0,
+    "miss": 18,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 8952,
+    "ms": 1020.7
+   },
+   "alt": {
+    "correct": 176,
+    "read": 0,
+    "miss": 16,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 9935,
+    "ms": 1269.2
+   }
+  },
+  "synthetic96": {
+   "base": {
+    "correct": 92,
+    "read": 0,
+    "miss": 4,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3170,
+    "ms": 405.1
+   },
+   "alt": {
+    "correct": 93,
+    "read": 0,
+    "miss": 3,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 3951,
+    "ms": 577.3
+   }
+  },
+  "lowres224": {
+   "base": {
+    "correct": 112,
+    "read": 0,
+    "miss": 80,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23217,
+    "ms": 2940.4
+   },
+   "alt": {
+    "correct": 107,
+    "read": 0,
+    "miss": 85,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 32,
+    "negativeFalse": 0,
+    "maps": 23186,
+    "ms": 2815.7
+   }
+  },
+  "curved1120": {
+   "base": {
+    "correct": 743,
+    "read": 0,
+    "miss": 377,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 297589,
+    "ms": 56557.2
+   },
+   "alt": {
+    "correct": 742,
+    "read": 0,
+    "miss": 378,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 299145,
+    "ms": 56675.5
+   }
+  },
+  "curvedNew256": {
+   "base": {
+    "correct": 118,
+    "read": 0,
+    "miss": 138,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 35495,
+    "ms": 4734.5
+   },
+   "alt": {
+    "correct": 117,
+    "read": 0,
+    "miss": 139,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 36186,
+    "ms": 4723
+   }
+  },
+  "conformance94": {
+   "base": {
+    "correct": 87,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 10318,
+    "ms": 2204.4
+   },
+   "alt": {
+    "correct": 86,
+    "read": 0,
+    "miss": 1,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 7,
+    "negativeFalse": 0,
+    "maps": 10234,
+    "ms": 2108
+   }
+  },
+  "spreadDev120": {
+   "base": {
+    "correct": 110,
+    "read": 0,
+    "miss": 10,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5339,
+    "ms": 1060.7
+   },
+   "alt": {
+    "correct": 113,
+    "read": 0,
+    "miss": 7,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5322,
+    "ms": 1069.2
+   }
+  },
+  "step9Dev120": {
+   "base": {
+    "correct": 106,
+    "read": 0,
+    "miss": 14,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 6010,
+    "ms": 1171.6
+   },
+   "alt": {
+    "correct": 109,
+    "read": 0,
+    "miss": 11,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 0,
+    "negativeFalse": 0,
+    "maps": 5844,
+    "ms": 1198.1
+   }
+  },
+  "negatives12": {
+   "base": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 304.3
+   },
+   "alt": {
+    "correct": 0,
+    "read": 0,
+    "miss": 0,
+    "none": 0,
+    "wrong": 0,
+    "negativeClean": 12,
+    "negativeFalse": 0,
+    "maps": 1708,
+    "ms": 297.4
+   }
+  }
+ },
+ "changedCounts": {
+  "photos184": 132,
+  "photoTransforms2944": 2079,
+  "stress256": 83,
+  "qualified160": 64,
+  "validation192": 38,
+  "synthetic96": 21,
+  "lowres224": 88,
+  "curved1120": 399,
+  "curvedNew256": 86,
+  "conformance94": 51,
+  "spreadDev120": 94,
+  "step9Dev120": 70
+ },
+ "gainedOrLost": [
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-06/r1/n/n",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 28,
+   "variantMaps": 54
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-06/r1/m/n",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 28,
+   "variantMaps": 58
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-06/r1/m/i",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 28,
+   "variantMaps": 88
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-06/r2/m/i",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 92,
+   "variantMaps": 26
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-06/r3/m/i",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 28,
+   "variantMaps": 88
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-08/r3/n/n",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 57,
+   "variantMaps": 37
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-08/r0/m/n",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 53,
+   "variantMaps": 32
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-08/r3/m/n",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 68,
+   "variantMaps": 35
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-13/r3/n/i",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 28,
+   "variantMaps": 74
+  },
+  {
+   "suite": "photoTransforms2944",
+   "name": "s1-qrcode-4-41/r0/m/i",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 70,
+   "variantMaps": 20
+  },
+  {
+   "suite": "stress256",
+   "name": "finder-erosion-05",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 80,
+   "variantMaps": 21
+  },
+  {
+   "suite": "stress256",
+   "name": "finder-erosion-20",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 347,
+   "variantMaps": 264
+  },
+  {
+   "suite": "stress256",
+   "name": "finder-erosion-24",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 254,
+   "variantMaps": 341
+  },
+  {
+   "suite": "qualified160",
+   "name": "holdout-051",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 62,
+   "variantMaps": 148
+  },
+  {
+   "suite": "qualified160",
+   "name": "holdout-054",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 9,
+   "variantMaps": 0
+  },
+  {
+   "suite": "qualified160",
+   "name": "holdout-072",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 231,
+   "variantMaps": 259
+  },
+  {
+   "suite": "validation192",
+   "name": "validation-24",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 3,
+   "variantMaps": 343
+  },
+  {
+   "suite": "validation192",
+   "name": "validation-32",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 0,
+   "variantMaps": 1
+  },
+  {
+   "suite": "validation192",
+   "name": "validation-128",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 7,
+   "variantMaps": 1
+  },
+  {
+   "suite": "validation192",
+   "name": "validation-184",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 44,
+   "variantMaps": 1
+  },
+  {
+   "suite": "synthetic96",
+   "name": "held-out-95",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 275,
+   "variantMaps": 254
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-011",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 2,
+   "variantMaps": 6
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-015",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 2,
+   "variantMaps": 0
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-059",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 219,
+   "variantMaps": 219
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-061",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 66,
+   "variantMaps": 66
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-074",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 80,
+   "variantMaps": 100
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-079",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 1,
+   "variantMaps": 0
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-087",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 124,
+   "variantMaps": 124
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-114",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 193,
+   "variantMaps": 130
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-115",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 232,
+   "variantMaps": 229
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-178",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 336,
+   "variantMaps": 305
+  },
+  {
+   "suite": "lowres224",
+   "name": "low-resolution-validation-190",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 240,
+   "variantMaps": 21
+  },
+  {
+   "suite": "curved1120",
+   "name": "holdout128/admission-holdout-42",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 238,
+   "variantMaps": 237
+  },
+  {
+   "suite": "curved1120",
+   "name": "fresh128/late-phase-holdout-109",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 345,
+   "variantMaps": 345
+  },
+  {
+   "suite": "curved1120",
+   "name": "headerRediscoveryFresh128/header-rediscovery-holdout-46",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 307,
+   "variantMaps": 300
+  },
+  {
+   "suite": "curvedNew256",
+   "name": "small-parabola-validation-15",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 40,
+   "variantMaps": 40
+  },
+  {
+   "suite": "curvedNew256",
+   "name": "small-parabola-validation-146",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 255,
+   "variantMaps": 276
+  },
+  {
+   "suite": "curvedNew256",
+   "name": "small-parabola-validation-199",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 94,
+   "variantMaps": 73
+  },
+  {
+   "suite": "conformance94",
+   "name": "conformance/low-resolution-51.png",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 62,
+   "variantMaps": 148
+  },
+  {
+   "suite": "spreadDev120",
+   "name": "spread-dev-8",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 64,
+   "variantMaps": 93
+  },
+  {
+   "suite": "spreadDev120",
+   "name": "spread-dev-18",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 319,
+   "variantMaps": 214
+  },
+  {
+   "suite": "spreadDev120",
+   "name": "spread-dev-19",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 294,
+   "variantMaps": 295
+  },
+  {
+   "suite": "spreadDev120",
+   "name": "spread-dev-23",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 12,
+   "variantMaps": 2
+  },
+  {
+   "suite": "spreadDev120",
+   "name": "spread-dev-118",
+   "kind": "lost",
+   "base": "correct",
+   "variant": "miss",
+   "baseMaps": 164,
+   "variantMaps": 224
+  },
+  {
+   "suite": "step9Dev120",
+   "name": "step9-dev-62",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 366,
+   "variantMaps": 259
+  },
+  {
+   "suite": "step9Dev120",
+   "name": "step9-dev-84",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 155,
+   "variantMaps": 115
+  },
+  {
+   "suite": "step9Dev120",
+   "name": "step9-dev-90",
+   "kind": "gained",
+   "base": "miss",
+   "variant": "correct",
+   "baseMaps": 0,
+   "variantMaps": 2
+  }
+ ]
+}

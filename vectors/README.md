@@ -14,7 +14,8 @@ within a tolerance.
 
 1. `encode-vectors.json`: the encoder.
 2. `conformance.json`, `tables` and `luminance`: the standard's tables, and
-   greyscale from RGBA.
+   greyscale from RGBA; then `enlargement` and `contrast`, for decoder steps
+   22 and 23.
 3. `conformance.json`, `symbols`: reading a module grid.
 4. `conformance.json`, `frames`: reading a picture, a stage at a time.
 5. `decode-frames.json` and `photos.json`: reading rates, once the rest holds.
@@ -48,6 +49,21 @@ except the three that fall on finder patterns.
 greyscale the decoder must make of it, one byte a pixel: `(77 R + 150 G +
 29 B) >> 8`, blended onto white by alpha and truncated.
 
+### `enlargement`
+
+`grey` is `width` by `height` pixels in hex; `enlarged` is the picture
+enlarged by `factor` in each axis with pixel-centre bilinear interpolation
+and half-up rounding (SPEC.md, decoder step 22).
+
+### `contrast`
+
+`grey` is `width` by `height` pixels in hex, at least 40 a side.
+`thresholds` lists the ordinary block thresholds of decoder step 2, block by
+block along each row, top row first; `contrast` lists the contrast-only
+thresholds of step 23 in the same order, or is `null` when no pixel would
+change side. Three pictures put faint content on flat paper; in the other
+two, noise and black print, nothing changes.
+
 ### `symbols`
 
 Module grids for `decodeModules`: `size` and `rows` as above, a `name` that
@@ -68,7 +84,7 @@ must match everywhere.
 ### `frames`
 
 Pictures, 8-bit greyscale PNG, named by `file` relative to this directory:
-the 48 synthetic photographs of `decode-frames/`, then thirty-four in `conformance/`
+the 48 synthetic photographs of `decode-frames/`, then fifty-one in `conformance/`
 made for the paths those do not reach (blank, a gradient, noise, finder
 patterns with no code, a picture under 40 pixels a side, a close-up read
 only at reduced size, the same refused there by the format gate, a bent
@@ -83,7 +99,24 @@ and three terminal curved-map retries covering normal, inverted and mirrored
 symbols, four conflicting-format retries, and three ordinary-only maps needing
 the late alignment pass, two conflicting-version maps, and one alternate
 orientation reading of an existing refinement grid, and two strict header
-rediscoveries on existing refinement grids).
+rediscoveries on existing refinement grids, two reads of a selected grid's
+own mesh, five terminal quadratic-mesh reads, five low-resolution
+enlargements, and three faint codes, a faint decoy and a faint code with a
+spoiled format copy on flat paper for contrast-only thresholds).
+
+The contrast-threshold regeneration adds `contrast-thresholds-dark.png`,
+`-light.png`, `-second-look.png`, `-decoy.png` and `-format-gate.png`: small,
+faint codes on flat paper, one light on dark and one read only by that
+search's second look; a symbol-like decoy with real finder patterns that must
+not read; and the dark code with four bits of its first format copy flipped,
+which step 23 would read from its intact second copy without the format gate
+and must not read with it. All five miss before step 23; the decoy and the
+format-gate frame also miss after it. Their legacy `work`
+covers steps 1 to 21 only. All 94 previous frames, stages, results and work
+counts remain unchanged.
+
+The low-resolution regeneration adds five frames read only by the terminal
+enlarged search of step 22, and `frame-07.png` now reads through it.
 
 The header-rediscovery regeneration adds an inverted version-8 picture and a
 mirrored version-31 picture. Both fail on 0.3.11 and read after both format

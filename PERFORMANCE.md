@@ -1,5 +1,71 @@
 # Performance and verification
 
+## Contrast-only threshold retry, based on the TypeScript speed-ups
+
+This is an unreleased candidate, not a release claim. After every other path
+fails, the decoder thresholds the picture again with flat blocks left out of
+every 5 x 5 average that also holds blocks with contrast, and searches it once
+more with its own 30 maps and one second look (SPEC.md step 23). It does so
+only when that moves a pixel to the other side of its threshold, and it
+accepts a read only when both format copies agree. A flat block's background
+guess, often half the paper's brightness, had pulled the thresholds of a small
+or faint code beside it below its dark modules. ZXing-WASM read three such
+validation frames from their greyscale, even with a single global threshold,
+but not from QR's black-and-white picture.
+
+| Accuracy scope | Before | Candidate | ZXing-WASM 3.1.7 |
+| --- | ---: | ---: | ---: |
+| First fresh set, 480 small or faint codes on flat backgrounds | 382 | **475** | 472 |
+| Of those, contrast of 35 to 60 grey levels (106) | 36 | **105** | 106 |
+| Second fresh set, 480 more, frozen after tuning | 376 | **478** | 469 |
+| Fresh negatives rejected, both sets | 576 | **576** | 576 |
+| Frames built to reach the step, without a false read | 3,000 | **3,000** | not run |
+| Low-resolution qualification, 1,016 positives | 808 | **812** | 710 |
+| Regression and development corpus, 5,778 images | 4,844 | **4,856** | not run |
+
+The first fresh set was frozen and hashed before any decoder saw it, then used
+to choose the allowance and the pixel test. The second, made the same way with
+another seed, was frozen after those choices and tuned nothing. Of the six
+qualification positives that ZXing read and QR missed, four now read. One of
+the two left is a QR Model 1 symbol: its format copies match the Model 1 mask
+exactly, and QR decodes Model 2 only. The corpus gains include four rotations
+or mirror images of two of the 184 photographs. No read is lost, no result or
+legacy Work counter changes, and no decoder gave a wrong payload or false
+read. Requiring both format copies to agree cost one corpus read and changed
+nothing on the other sets. The 3,000 frames built to reach the step hold
+faint fake symbols, finders, text, mask textures and damaged real symbols on
+flat paper. The packaged WASM matches the TypeScript on all 7,319 images. On
+the M4 the final tree passes the CI steps that can run there: 535 TypeScript
+tests with photographs required on Node 24.21 and 22.22, 51 Rust tests and a
+doctest, the packaged crate's tests, the WASM checks, and 125 Kotlin tests
+with the publication and Maven checks. CI's Node 22.13 was not available, and
+the JSR job, which needs Deno, did not run. The pack gains five frames and
+five threshold vectors. One of them, a faint code with a spoiled format copy,
+fails the Rust and Kotlin conformance tests when the format gate is switched
+off.
+
+| Frame, 1280 x 720 | TypeScript, four paired runs | WASM, two or three paired runs |
+| --- | ---: | ---: |
+| Clean | −3.0% to +5.1% (A/A +0.7%) | +1.2% to +4.7% (A/A +2.8%) |
+| Blank | −1.5% to +2.2% (A/A +1.1%) | +2.8% to +4.2% (A/A −1.5%) |
+| Random noise | −0.3% to +1.2% | −0.5% to +0.8% |
+| Smooth gradient, no code | not timed | +8.1% to +8.9% |
+| Half flat wall, half texture, no code | +11.5% to +12.4% | +14.3% / +16.9% |
+| Text-like rows on flat paper, no code | +7.5% to +9.5% | +7.8% / +8.7% |
+| Shaded objects on a flat gradient, no code | +12.2% to +14.5% | +19.1% / +18.8% |
+| Small code with its centre removed, on flat paper | +2.1% to +5.2% | +7.3% / +8.8% |
+
+Codeless frames that mix flat and textured areas pay for the contrast-only
+thresholds and the pixel test and, when a pixel would change side, one more
+full-size search. That is the price on ordinary camera frames without a
+readable code. A smooth gradient has no block with contrast, so no threshold
+can change, but it still pays for the pass over the blocks; an exact early
+return would remove that. Blank WASM frames take about 0.04 ms longer. Other
+sessions were using the M4 during these runs. The fresh sets are synthetic,
+and phones were not timed.
+
+[Diagnosis, alternatives, fresh sets, stage-targeted frames, corpus, parity, timings and reproduction](benchmarks/2026-11-17-m4/contrast-thresholds/README.md).
+
 ## Exact TypeScript speed-ups, based on the low-resolution candidate
 
 The TypeScript decoder reads RGBA pixels a word at a time, keeps the

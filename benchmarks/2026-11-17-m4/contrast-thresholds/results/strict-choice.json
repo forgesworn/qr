@@ -1,0 +1,342 @@
+{
+ "note": "Step 23 with and without the format-agreement gate, run side by side before the gate was chosen. final is without it; strict is the candidate.",
+ "corpus": {
+  "count": 5782,
+  "final": [
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r3/n/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r0/m/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r3/m/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-41/r0/m/i",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "stress256",
+    "name": "finder-erosion-05",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-32",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-128",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-184",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-190",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-dark.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-light.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-second-look.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-8",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-18",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-23",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-90",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   }
+  ],
+  "strict": [
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r3/n/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r0/m/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-08/r3/m/n",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "photoTransforms2944",
+    "name": "s1-qrcode-4-41/r0/m/i",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-32",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-128",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "validation192",
+    "name": "validation-184",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "lowres224",
+    "name": "low-resolution-validation-190",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-dark.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-light.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "conformance94",
+    "name": "conformance/contrast-thresholds-second-look.png",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-8",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-18",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "spreadDev120",
+    "name": "spread-dev-23",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   },
+   {
+    "suite": "step9Dev120",
+    "name": "step9-dev-90",
+    "kind": "gained",
+    "base": "miss",
+    "variant": "correct"
+   }
+  ]
+ },
+ "freshFirst": {
+  "framesSha256": "6b74a0ba519530abfd42b273eae3519abc71477eb82a94fecd7c3027cdc5a597",
+  "all": {
+   "base": {
+    "correct": 382,
+    "miss": 98,
+    "wrong": 0,
+    "negativeClean": 96,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 475,
+    "miss": 5,
+    "wrong": 0,
+    "negativeClean": 96,
+    "negativeFalse": 0
+   },
+   "strict": {
+    "correct": 475,
+    "miss": 5,
+    "wrong": 0,
+    "negativeClean": 96,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 472,
+    "miss": 8,
+    "wrong": 0,
+    "negativeClean": 96,
+    "negativeFalse": 0
+   }
+  },
+  "changes": 186
+ },
+ "freshSecond": {
+  "framesSha256": "48533c05f8ac9268b3a4006328563daa3bbab51bccd29bdcfd53177c69560b13",
+  "all": {
+   "base": {
+    "correct": 376,
+    "miss": 104,
+    "wrong": 0,
+    "negativeClean": 480,
+    "negativeFalse": 0
+   },
+   "final": {
+    "correct": 478,
+    "miss": 2,
+    "wrong": 0,
+    "negativeClean": 480,
+    "negativeFalse": 0
+   },
+   "strict": {
+    "correct": 478,
+    "miss": 2,
+    "wrong": 0,
+    "negativeClean": 480,
+    "negativeFalse": 0
+   },
+   "zxing": {
+    "correct": 469,
+    "miss": 11,
+    "wrong": 0,
+    "negativeClean": 480,
+    "negativeFalse": 0
+   }
+  },
+  "changes": 204
+ },
+ "stage": {
+  "count": 3000,
+  "byKind": {
+   "noise-patches": {
+    "n": 500,
+    "reach": 500,
+    "base:clean": 500,
+    "strict:clean": 500,
+    "final:clean": 500
+   },
+   "fake-symbol": {
+    "n": 500,
+    "reach": 500,
+    "base:clean": 500,
+    "strict:clean": 500,
+    "final:clean": 500
+   },
+   "finders": {
+    "n": 500,
+    "reach": 500,
+    "base:clean": 500,
+    "strict:clean": 500,
+    "final:clean": 500
+   },
+   "text-rows": {
+    "n": 500,
+    "reach": 500,
+    "base:clean": 500,
+    "strict:clean": 500,
+    "final:clean": 500
+   },
+   "mask-texture": {
+    "n": 500,
+    "reach": 500,
+    "base:clean": 500,
+    "strict:clean": 500,
+    "final:clean": 500
+   },
+   "damaged-real": {
+    "n": 500,
+    "reach": 500,
+    "base:miss": 500,
+    "strict:miss": 500,
+    "final:miss": 500
+   }
+  }
+ }
+}

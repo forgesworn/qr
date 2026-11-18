@@ -690,6 +690,15 @@ For each frame, in order, stopping at the first read:
    on the direct alignment mesh captured by the same refinement call. This
    adds no image sampling or alignment search and cannot displace an earlier
    successful result.
+10. **Last searches.** A picture of at most 512 x 512 pixels whose finders were
+    seen repeatedly at a pitch of 2.5 pixels or less is searched once more,
+    enlarged four times each way. Then, if leaving flat blocks out of the
+    threshold averages beside contrast would move a pixel across its threshold,
+    the picture is binarised that way and searched once more, accepting a read
+    only when both copies of its format information agree. Plain background
+    next to a small or faint code had pulled the code's thresholds below its
+    dark modules. Each search has its own small allowance of maps and one second
+    look, and neither changes an earlier result.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
@@ -766,7 +775,7 @@ on all 2,412 in that earlier qualification. Install the native crate with
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
-from the TypeScript entry. The bundled module is about 210 kB (205 KiB) before compression.
+from the TypeScript entry. The bundled module is about 269 kB (262 KiB) before compression.
 Fetch and instantiate it once, then reuse it for frames:
 
 ```ts

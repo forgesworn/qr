@@ -1,6 +1,6 @@
 import { imageLayout, type ImageLike, type DecodeOptions } from './image.js'
 export type { ImageLike, DecodeOptions } from './image.js'
-import { binarise, enlarge, invert, invertLuminance, reductions, thresholds, toLuminance, type BitImage, type Luminance } from './binarise.js'
+import { binarise, contrastThresholds, enlarge, invert, invertLuminance, levelBlocks, reductions, thresholds, toLuminance, type BitImage, type BlockLevels, type Luminance, type Thresholds } from './binarise.js'
 import { edgesOf, estimateSize, finderTriples, findFinders, locate, locateCorners, type Edges, type Finder, type Location, type Point, type Work } from './locate.js'
 import { agreement, agreementRead, singleFormatAgreement, formatAgrees, keep, SECOND_LOOKS, secondLook, sized, readQuadraticMesh, type QuadraticMesh, type Candidate } from './refine.js'
 import { agreedVersion, readSymbol, curvatureHeader, versionPeerHeader, type ModuleReader, type Payload } from './symbol.js'
@@ -105,13 +105,17 @@ export function decodeCounted(image: ImageLike, options: DecodeOptions = {}, wor
   if (selectedMesh) return selectedMesh
   const quadratic = recoverQuadraticMesh(luminance, inverse, budget)
   if (quadratic) return quadratic
-  return recoverLowResolution(luminance, inverse, budget, inversion)
+  const lowResolution = recoverLowResolution(luminance, inverse, budget, inversion)
+  if (lowResolution) return lowResolution
+  return recoverContrastThresholds(luminance, budget, inversion)
 }
 
 /** Maps sampled a frame, at most, at every size together: four passes, six triples, five sizes, six maps a size. */
 const MAX_MAPS = 4 * MAX_TRIPLES * 5 * 6
 /** Maps and second looks available to the terminal enlarged search. */
 const LOW_RESOLUTION_MAPS = 90
+/** Maps available to the terminal contrast-threshold search, which also has one second look. */
+const CONTRAST_MAPS = 30
 /** The reduced-size pass's factors, coarse to fine. */
 const REDUCTIONS = [8, 4, 2] as const
 /** A reduced picture narrower or shorter than this cannot hold a version 1 symbol at a pixel a module. */
@@ -138,6 +142,8 @@ interface Budget {
   versionPeer?: { candidate: Candidate; inverseLuminance: boolean }
   overflow?: { ranked: [Finder, Finder, Finder][]; inverted: boolean }[]
   lowResolution?: boolean
+  /** The original picture's full-size block levels, from its first ordinary search. */
+  blocks?: BlockLevels
 }
 
 interface AttemptedCandidate {
@@ -191,12 +197,16 @@ interface VersionHint {
  * only if its format copies agree on its level and mask, and locations are
  * given in full-picture coordinates.
  */
-function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false, inverseCurvature?: Candidate[], publicInverse = false): DecodeResult | undefined {
-  const levels = thresholds(luminance)
-  if (f === 1 && !strictOverride) {
+function look(luminance: Luminance, inversion: 'both' | 'normal' | 'inverted', f: number, budget: Budget, work?: Work, strictOverride = false, inverseCurvature?: Candidate[], publicInverse = false, given?: Thresholds): DecodeResult | undefined {
+  let levels: Thresholds
+  if (given) levels = given
+  else if (f === 1 && !strictOverride) {
+    // The full-size block levels stay with the frame for the terminal contrast-threshold search.
+    budget.blocks = levelBlocks(luminance)
+    levels = thresholds(luminance, budget.blocks)
     budget.invertedFallback = levels.invertedFallback
     budget.uniform = levels.uniform
-  }
+  } else levels = thresholds(luminance)
   if (levels.uniform) return undefined
   const bits = binarise(luminance, levels)
   const strict = f > 1 || strictOverride
@@ -266,6 +276,20 @@ function recoverLowResolution(luminance: Luminance, inverse: Luminance | undefin
     }
   }
   return undefined
+}
+
+/**
+ * After every other path fails, one strict ordinary search of the picture
+ * thresholded without flat blocks in any average that also holds blocks with
+ * contrast: both format copies must agree, as at reduced sizes. It runs only
+ * when that moves a pixel to the other side of its threshold, with its own
+ * maps and second look, and adds nothing to the Work counts.
+ */
+function recoverContrastThresholds(luminance: Luminance, budget: Budget, inversion: 'both' | 'normal' | 'inverted'): DecodeResult | undefined {
+  const levels = budget.blocks && contrastThresholds(luminance, budget.blocks)
+  if (!levels) return undefined
+  const retry: Budget = { maps: CONTRAST_MAPS, second: 1, here: CONTRAST_MAPS, invertedFallback: false, uniform: false, hints: [], curvature: [], meshGrids: [] }
+  return look(luminance, inversion, 1, retry, undefined, true, undefined, false, levels)
 }
 
 function search(
