@@ -401,6 +401,15 @@ pipeline:
 20. Refined header rediscovery: after earlier paths fail, validate the first
     different strict format hypothesis discovered on a failed refinement grid,
     then its existing same-call mesh if that final-grid read fails.
+21. Quadratic surface: after earlier paths fail, sample one surface from a
+    fully measured three-by-three alignment lattice.
+22. Low-resolution enlargement: after earlier paths fail, retry an ordinary
+    full-size search at four times the axis resolution when repeated finder
+    sightings establish a small module pitch. See step 22 below.
+23. Contrast-only thresholds: after earlier paths fail, retry a strict
+    full-size search with flat blocks left out of every threshold average
+    that also holds blocks with contrast, when that moves a pixel to the
+    other side of its threshold. See step 23 below.
 
 ### Reusable camera decoder
 
@@ -1448,6 +1457,100 @@ read are separate from the eight legacy second-look attempts and are not
 counted by their existing Work fields. Equal counters do not imply equal CPU
 work, latency or allocation.
 
+### 22. Enlarge a repeatedly measured low-resolution picture
+
+During the existing full-size search, inspect each of the at most six triples
+already selected for location. Qualify the picture when the three finder
+module-size estimates average at most 2.5 pixels and their repeated-sighting
+counts total at least nine. Do this only when the original picture has at most
+512 x 512 = 262,144 pixels. The counts and estimates already exist; no finder,
+cross-check or triple search is added. Reduced-size maps do not qualify a
+picture. One qualifying triple is enough; later triples do not replace it or
+add retries.
+
+After every earlier path, including step 21, fails, enlarge the original
+luminance by four in each axis. If step 21 retained a quadratic descriptor,
+its curved-surface attempt has already received the terminal opportunity: do
+not enlarge that picture. A source pixel centre is at i + 0.5. For each
+destination centre, map back to source coordinates, clamp the two source pixel
+indices to the picture, interpolate horizontally then vertically, and round to
+the nearest integer with exact half values rounded up. Thus an eligible enlarged plane has exactly 16 times the
+original pixels, at most 4,194,304 bytes. Pixel data and payload expectations
+never enter the qualification decision.
+
+Run the ordinary full-size steps 2 to 8 on this enlarged plane, with the
+caller's original polarity option. This includes the ordinary and loose finder
+passes and the ordinary second look, but no reduced sizes, inverse-luminance
+reconstruction, deferred recovery or recursive enlargement. If step 10 already
+constructed an inverse-luminance plane, repeat the same terminal ordinary
+search on its four-times enlargement only after the original fails; its reads
+are publicly inverted. Do not construct an inverse solely for this step.
+
+The two bases share one separate allowance of 90 maps and one ordinary
+second look. They use their own search and candidate state. These operations
+are outside the legacy Work counters, which continue to describe only steps 1
+to 21. Legacy results and counters retain priority and remain unchanged. All
+reads use the ordinary full-size format, version, Reed–Solomon, zero-data and
+segment validation. Return finder and alignment locations divided by four in
+each coordinate. A failed terminal search does not try another scale.
+
+Earlier successful paths pay only the bounded triple qualification arithmetic.
+A qualifying miss can pay for up to two sequential 16-times-larger ordinary
+searches. The separate second look has the ordinary mesh bound of
+718,750 alignment probes, outside `Work.probed`; no late mesh search is
+included. This is an accuracy/latency trade-off on qualifying misses, not a
+claim of unchanged total work or allocation.
+
+### 23. Re-threshold without flat blocks beside contrast
+
+Step 2 gives a flat block (range 24 or less) a guess at background for its
+level: half its minimum, or its earlier neighbours' level. Beside a small or
+faint code on flat paper, that guess, often half the paper's brightness,
+enters the 5 x 5 averages of the code's own blocks and pulls their thresholds
+below its dark modules, so finder rings and border modules break up.
+
+After every earlier path, including step 22, fails, compute contrast-only
+thresholds for the original picture from the levels and flat blocks its first
+full-size search took in step 2, items 2 and 3; nothing comes from reduced,
+inverted or enlarged pictures. A picture under 40 pixels a side has none.
+Otherwise each block takes the window of step 2, item 4:
+
+1. If none or all 25 of the window's blocks are flat, its threshold is step
+   2's: the 25 levels summed in that order and divided by 25.
+2. Otherwise its threshold is the sum of the levels of the window's
+   non-flat blocks, added in the same order, divided by how many there are.
+
+Take the step only when some block whose threshold changed covers, among its
+64 pixels as step 2, item 2 places them, a pixel `v` with
+`floor(low) < v <= floor(high)`, where `low` and `high` are the smaller and
+larger of its two thresholds: a pixel that would change side. Without a flat
+block, or with a picture range of 24 or less, no threshold changes. Pixel data
+enters only through this test, and payload expectations never do.
+`vectors/conformance.json` checks both sets of thresholds (`contrast`).
+
+Run the ordinary full-size steps 2 to 8 on the original luminance with these
+thresholds and the caller's polarity option: binarise as step 2, item 5, with
+the new thresholds, run both finder tolerances in each polarity, and give the
+ordinary second look the same thresholds. As in step 10, every read, the
+second look's included, requires both format copies to agree under the gate in
+Reduced size, rule 4. There are no reduced sizes,
+inverse-luminance reconstruction, deferred recovery, enlargement or further
+retries. The search has its own allowance of 30 maps and one ordinary second
+look, with its own search and candidate state. These operations are outside
+the legacy Work counters, which continue to describe only steps 1 to 21.
+Legacy results and counters, and step 22's results, retain priority and remain
+unchanged. Reads otherwise use the ordinary full-size format, version,
+Reed–Solomon, zero-data and segment validation, and report full-picture
+locations.
+
+Earlier successful paths pay only for keeping the full-size block levels and
+a flat flag a block, which step 2 computes anyway. A miss without a flat block
+or without range pays nothing more. Any other miss pays one pass over the
+blocks and the pixel test; when a pixel would change side, it also pays one
+binary picture, one finder search in each polarity at both tolerances, at most
+30 maps and one second look. This is an accuracy/latency trade-off on misses
+in pictures that mix flat and textured areas, which camera frames often do.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -1553,6 +1656,23 @@ among them.
   the existing threshold block buffers; none is a peak-heap bound. The legacy
   eight second looks, 720 maps and 11,500,000 alignment probes are unchanged,
   with this one separately bounded terminal sampling pass in addition.
+- Step 22 adds no work to earlier returns beyond testing existing finder
+  estimates and counts on selected full-size triples. On a qualifying miss it
+  adds one four-times-axis enlargement of at most 4,194,304 luminance bytes for
+  the original picture, and another sequential enlargement if step 10 already
+  made an inverse. Their ordinary searches share a separate 90-map,
+  one-second-look and 718,750-alignment-probe allowance, all outside the
+  legacy Work counters. Reduced sizes, late meshes and subsequent recoveries
+  are excluded. Active binary, threshold, edge, candidate and allocator storage
+  is additional; these byte figures are not peak-heap measurements.
+- Step 23 adds to earlier returns only the retained full-size block levels and
+  one flat flag a block. On a miss it computes one set of contrast-only
+  thresholds and tests the pixels of changed blocks until one would change
+  side. Only then does it binarise the original picture once more and run one
+  strict full-size search with a separate 30-map, one-second-look and
+  718,750-alignment-probe allowance, all outside the legacy Work counters.
+  Reduced sizes, inverses, enlargement, late meshes and other recoveries are
+  excluded.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map
