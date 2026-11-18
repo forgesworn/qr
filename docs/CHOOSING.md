@@ -22,14 +22,46 @@ camera permissions determine its wider privacy behaviour.
 
 ## Measured accuracy
 
-The comparison uses QR and pinned ZXing-WASM 3.1.7. The final packaged
-TypeScript and WASM results match across all 2,264 accuracy and regression cases.
-Each reader receives the same inputs. A correct read requires the expected
-payload; the synthetic suites also check its bytes.
+### Photograph comparison
+
+ForgeSworn QR 0.3.15 and ZXing-WASM 3.1.7 read the same 184 greyscale
+reference photographs. The comparison checks the exact labelled text.
+
+| Reader | Exact reads | Misses | Text mismatches |
+|---|---:|---:|---:|
+| ForgeSworn QR 0.3.15 TypeScript | **180/184** | 4 | 0 |
+| ForgeSworn QR 0.3.15 WebAssembly | **180/184** | 4 | 0 |
+| ZXing-WASM 3.1.7 | 171/184 | 12 | 1 |
+
+ZXing-WASM read one photograph that ForgeSworn missed. The photograph sets
+are reusable regression collections from existing projects. The result
+measures performance on these images. See the
+[run receipt](../benchmarks/2026-11-18/photo-comparison.json) and
+[fixture manifest](../vectors/photos.json) for exact versions and case IDs.
+
+To repeat the comparison, use Node 24 and a JDK 17 or later. Run these
+commands from the QR repository. The runner verifies the labels and pixels
+against the manifest, and prints JSON with the scores and build identities.
+
+```sh
+npm ci
+npm run fetch-photos
+(
+  qr_rivals=$(mktemp -d)
+  trap 'rm -rf -- "$qr_rivals"' EXIT
+  npm install --prefix "$qr_rivals" --ignore-scripts --no-audit --no-fund --save-exact zxing-wasm@3.1.7
+  node scripts/compare-libraries.mjs "$qr_rivals" --photos-only
+)
+```
+
+### Synthetic qualification
+
+The QR 0.3.14 TypeScript and WASM results matched across 2,264 accuracy and
+regression cases. Each reader received the same inputs. The synthetic suites
+also compare the exact payload bytes.
 
 | Dataset | QR | ZXing-WASM |
 |---|---:|---:|
-| Existing photograph collection | **180/184** | 171/184 |
 | 192-case synthetic regression set | **174/192** | 169/192 |
 | Frozen stress set: positive frames | **172/224** | 150/224 |
 | Previously qualified synthetic positives | **69/128** | 55/128 |
@@ -129,8 +161,11 @@ Treat decoded payloads as untrusted input in the application.
 
 ## Evaluate it in your application
 
-Start with the [installation and recipes](../README.md). Test your own cameras,
-lighting, printed sizes and damaged examples; measure exact payloads, misses,
-false reads and time to the first correct read. Use a worker, keep at most one
+Start with the [browser demo and recipe](BROWSER.md) or the
+[full integration guide](../README.md). For a real use of the encoder, see
+[how Signet Login generates pairing codes](https://github.com/forgesworn/signet-login/pull/85).
+Test your own cameras, lighting, printed sizes and damaged examples. Measure
+exact payloads, misses, false reads and time to the first correct read. Use a
+worker, keep at most one
 frame in flight, and reset a tracked session when changing cameras. Compare
 the TypeScript and optional WASM backends on your actual devices.

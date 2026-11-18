@@ -37,6 +37,8 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
 
 [Documentation](https://forgesworn.github.io/qr/) · [npm](https://www.npmjs.com/package/@forgesworn/qr) · [Releases](https://github.com/forgesworn/qr/releases) · [Choosing QR](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md)
 
+[Browser demo](https://forgesworn.github.io/qr/browser.html#try-it) · [Kotlin/JVM recipe](https://forgesworn.github.io/qr/kotlin.html) · [Embedded Rust recipe](https://forgesworn.github.io/qr/embedded.html)
+
 Native Rust: [`forgesworn-qr`](https://crates.io/crates/forgesworn-qr) ·
 [Rust API docs](https://docs.rs/forgesworn-qr) · [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md)
 
@@ -50,16 +52,10 @@ help with repeated frames; the plain TypeScript entry needs no WASM setup.
 Accuracy takes priority: speed changes must preserve successful regression
 reads and must not introduce incorrect payloads.
 
-The recorded photograph comparison reads **180/184 versus ZXing-WASM's
-171/184**, and the positive stress set reads **172/224 versus 150/224**.
-Version 0.3.14's qualified curved-image comparison reads **861/1,376 versus
-646/1,376**, adding 143 exact reads over 0.3.13 while preserving earlier
-successful results. This includes **118/256 versus 77/256** on a separate
-synthetic set frozen before evaluation. ZXing still reads 14 curved frames
-QR misses, and is faster on the recorded random-noise workload. These finite
-sets do not prove superiority on every image or camera. See
-[choosing a library](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md) for trade-offs and
-[reproducible evidence](https://github.com/forgesworn/qr/blob/main/benchmarks/2026-11-17-m4/quadratic-mesh-recovery/README.md).
+Version 0.3.15 returned the exact text on **180 of 184 reference
+photographs** in both TypeScript and WebAssembly. See
+[choosing a library](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md) for the pinned versions, misses,
+performance trade-offs and commands to repeat the comparison.
 
 ## Contents
 
@@ -891,6 +887,208 @@ QR Code is a registered trademark of DENSO WAVE INCORPORATED.
 
 ---
 
+<!-- Source: docs/BROWSER.md -->
+
+# Generate and read QR codes in a browser with TypeScript
+
+`@forgesworn/qr` generates standard QR codes and reads them from canvas,
+uploaded images or camera frames. It runs locally with no runtime dependencies.
+It reads one QR Code Model 2 symbol per call. Your application provides the
+camera interface and the pixels.
+
+## Try it
+
+The demo reads a small, faint QR code from the
+[conformance pack](https://github.com/forgesworn/qr/blob/main/vectors/conformance/contrast-thresholds-dark.png),
+or an image you choose. Images you choose stay in the browser. The demo
+scales down images whose longest side exceeds 1,600 pixels.
+
+<!-- demo controls -->
+
+## Generate a code and read it back
+
+Add the package to an existing browser project with a bundler.
+
+```sh
+npm install @forgesworn/qr
+```
+
+Add a canvas to the page.
+
+```html
+<canvas id="qr" aria-label="Example QR code"></canvas>
+```
+
+Run this in your TypeScript entry point.
+
+```ts
+import { decode, drawCanvas, encode } from '@forgesworn/qr'
+
+const canvas = document.querySelector<HTMLCanvasElement>('#qr')!
+const text = 'https://example.com/qr-demo'
+drawCanvas(canvas, encode(text))
+
+const context = canvas.getContext('2d')!
+const frame = context.getImageData(0, 0, canvas.width, canvas.height)
+const result = decode(frame)
+console.assert(result?.text === text)
+```
+
+Use `toSvg(encode(text))` when you need a standalone SVG string. The library
+adds a four-module quiet zone to the renderers by default.
+
+## Read a camera frame
+
+Use a reusable decoder for successive frames. Pass a video element that is
+already playing and a scratch canvas. Call `scanFrame` a few times a second,
+and call `scanner.reset()` when you switch cameras.
+
+```ts
+import { createDecoder } from '@forgesworn/qr'
+
+const scanner = createDecoder()
+
+function scanFrame(video: HTMLVideoElement, scratch: HTMLCanvasElement) {
+  const { videoWidth: width, videoHeight: height } = video
+  if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !width || !height) return
+  if (scratch.width !== width) scratch.width = width
+  if (scratch.height !== height) scratch.height = height
+
+  const context = scratch.getContext('2d', { willReadFrequently: true })!
+  context.drawImage(video, 0, 0, width, height)
+  return scanner.decode(context.getImageData(0, 0, width, height))
+}
+```
+
+The result includes text, bytes and location, or is `undefined` when no code
+reads. For a complete camera example with permission handling and cleanup,
+see the [camera recipe](https://github.com/forgesworn/qr/blob/main/README.md#scan-with-the-camera).
+
+## Migrate from jsQR
+
+`jsQR(rgba, width, height)?.data` becomes
+`decode({ data: rgba, width, height })?.text`. Use `result.bytes` for the raw
+payload. See the [migration guide](https://github.com/forgesworn/qr/blob/main/README.md#migrating-from-another-library)
+for option and position differences. Use the
+[comparison and fit guide](https://github.com/forgesworn/qr/blob/main/docs/CHOOSING.md) if you also need other barcode formats.
+
+
+---
+
+<!-- Source: docs/KOTLIN.md -->
+
+# Generate and read QR codes from luminance in Kotlin/JVM
+
+`io.github.forgesworn:qr` encodes and decodes standard QR codes on JVM 17 or
+later. It takes a greyscale camera plane or packed ARGB pixels. The core uses
+the Kotlin standard library and requires no Android API or service.
+
+Add the dependency from Maven Central in Gradle.
+
+```kotlin
+repositories { mavenCentral() }
+dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
+```
+
+## Run a round trip with a padded luminance plane
+
+This example draws the encoded modules into a one-byte-per-pixel plane with
+a four-module quiet zone. The eight padding bytes per row exercise the same
+stride argument you would use with a padded camera frame.
+
+```kotlin
+import dev.forgesworn.qr.decode
+import dev.forgesworn.qr.encode
+
+fun main() {
+    val text = "https://example.com/kotlin-qr"
+    val code = encode(text)
+    val margin = 4
+    val scale = 4
+    val side = (code.size + 2 * margin) * scale
+    val rowStride = side + 8
+    val luminance = ByteArray(rowStride * side) { 255.toByte() }
+
+    for (y in 0 until side) {
+        for (x in 0 until side) {
+            if (code.isDark(x / scale - margin, y / scale - margin)) {
+                luminance[y * rowStride + x] = 0
+            }
+        }
+    }
+
+    val result = checkNotNull(decode(luminance, side, side, rowStride = rowStride))
+    check(result.text == text)
+    println(result.text)
+}
+```
+
+With a camera, supply the luma bytes starting at the first image pixel, the
+image dimensions and the number of bytes from one row to the next. The
+decoder expects one byte per pixel within each row and ignores row padding.
+For packed ARGB, pass an `IntArray` and give the row stride in pixels.
+
+`decode` returns one result or `null`. The application owns camera permissions,
+capture and display. The Kotlin encoder and decoder use the same
+[specification](https://github.com/forgesworn/qr/blob/main/SPEC.md) and [conformance vectors](https://github.com/forgesworn/qr/blob/main/vectors/README.md)
+as the other ports.
+
+
+---
+
+<!-- Source: docs/EMBEDDED.md -->
+
+# Generate QR codes on ESP32 with allocation-free Rust
+
+`forgesworn-qr-embedded` is a `no_std` QR encoder for versions 1–8 with all
+four error-correction levels. It uses caller-owned buffers and requires no
+heap allocator, operating system or display driver. The crate supports Rust
+1.87 or later.
+
+```toml
+[dependencies]
+forgesworn-qr-embedded = "0.1.1"
+```
+
+## Encode text and inspect the modules
+
+```rust
+use forgesworn_qr_embedded::{encode_simple_text, Options, Workspace, MODULE_BYTES};
+
+fn main() {
+    let mut workspace = Workspace::new();
+    let mut output = [0; MODULE_BYTES];
+    let code = encode_simple_text(
+        "https://example.com/esp32",
+        &Options::default(),
+        &mut workspace,
+        &mut output,
+    ).expect("the example fits in versions 1–8");
+
+    assert!(code.is_dark(0, 0));
+    println!("{} modules per side", code.size());
+}
+```
+
+The host example prints the symbol size. On a board, read `code.is_dark(x, y)`
+in your display loop while the result is alive and leave a four-module
+quiet zone around it. The result clears its output buffer when dropped.
+
+The default encoder needs a **242-byte workspace and a 301-byte output
+buffer**, for **543 bytes of caller-owned buffers**. Those are buffer sizes.
+Your stack also holds call frames and temporary values. Use `encode_bytes`
+for raw bytes. Enable the `optimal` feature and supply a `TextPlanner` for
+mixed-mode text planning, bringing the caller-buffer total to 1,063 bytes.
+
+This crate encodes only. The
+[full Rust crate](https://docs.rs/forgesworn-qr) includes image decoding and
+handles versions 1–40. See the
+[embedded guide](https://github.com/forgesworn/qr/blob/main/rust/embedded/README.md#footprint-comparison) for the
+linked ESP32 probe sizes, conformance results and buffer wiping contract.
+
+
+---
+
 <!-- Source: docs/CHOOSING.md -->
 
 # Choosing a QR library
@@ -917,14 +1115,46 @@ camera permissions determine its wider privacy behaviour.
 
 ## Measured accuracy
 
-The comparison uses QR and pinned ZXing-WASM 3.1.7. The final packaged
-TypeScript and WASM results match across all 2,264 accuracy and regression cases.
-Each reader receives the same inputs. A correct read requires the expected
-payload; the synthetic suites also check its bytes.
+### Photograph comparison
+
+ForgeSworn QR 0.3.15 and ZXing-WASM 3.1.7 read the same 184 greyscale
+reference photographs. The comparison checks the exact labelled text.
+
+| Reader | Exact reads | Misses | Text mismatches |
+|---|---:|---:|---:|
+| ForgeSworn QR 0.3.15 TypeScript | **180/184** | 4 | 0 |
+| ForgeSworn QR 0.3.15 WebAssembly | **180/184** | 4 | 0 |
+| ZXing-WASM 3.1.7 | 171/184 | 12 | 1 |
+
+ZXing-WASM read one photograph that ForgeSworn missed. The photograph sets
+are reusable regression collections from existing projects. The result
+measures performance on these images. See the
+[run receipt](https://github.com/forgesworn/qr/blob/main/benchmarks/2026-11-18/photo-comparison.json) and
+[fixture manifest](https://github.com/forgesworn/qr/blob/main/vectors/photos.json) for exact versions and case IDs.
+
+To repeat the comparison, use Node 24 and a JDK 17 or later. Run these
+commands from the QR repository. The runner verifies the labels and pixels
+against the manifest, and prints JSON with the scores and build identities.
+
+```sh
+npm ci
+npm run fetch-photos
+(
+  qr_rivals=$(mktemp -d)
+  trap 'rm -rf -- "$qr_rivals"' EXIT
+  npm install --prefix "$qr_rivals" --ignore-scripts --no-audit --no-fund --save-exact zxing-wasm@3.1.7
+  node scripts/compare-libraries.mjs "$qr_rivals" --photos-only
+)
+```
+
+### Synthetic qualification
+
+The QR 0.3.14 TypeScript and WASM results matched across 2,264 accuracy and
+regression cases. Each reader received the same inputs. The synthetic suites
+also compare the exact payload bytes.
 
 | Dataset | QR | ZXing-WASM |
 |---|---:|---:|
-| Existing photograph collection | **180/184** | 171/184 |
 | 192-case synthetic regression set | **174/192** | 169/192 |
 | Frozen stress set: positive frames | **172/224** | 150/224 |
 | Previously qualified synthetic positives | **69/128** | 55/128 |
@@ -1024,9 +1254,12 @@ Treat decoded payloads as untrusted input in the application.
 
 ## Evaluate it in your application
 
-Start with the [installation and recipes](https://github.com/forgesworn/qr/blob/main/README.md). Test your own cameras,
-lighting, printed sizes and damaged examples; measure exact payloads, misses,
-false reads and time to the first correct read. Use a worker, keep at most one
+Start with the [browser demo and recipe](https://github.com/forgesworn/qr/blob/main/docs/BROWSER.md) or the
+[full integration guide](https://github.com/forgesworn/qr/blob/main/README.md). For a real use of the encoder, see
+[how Signet Login generates pairing codes](https://github.com/forgesworn/signet-login/pull/85).
+Test your own cameras, lighting, printed sizes and damaged examples. Measure
+exact payloads, misses, false reads and time to the first correct read. Use a
+worker, keep at most one
 frame in flight, and reset a tracked session when changing cameras. Compare
 the TypeScript and optional WASM backends on your actual devices.
 

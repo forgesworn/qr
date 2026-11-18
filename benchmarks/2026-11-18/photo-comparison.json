@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-18",
+  "comparison": "Exact untrimmed UTF-8 reference text on identical hash-checked reference photographs converted to greyscale RGBA.",
+  "versions": {
+    "qr": "0.3.15",
+    "zxing": "3.1.7"
+  },
+  "qrReleaseRevision": "514449c5c6b8ff2f81800a9fa75364e21e6c8f40",
+  "qrNpmArchiveSha256": "4c8973e2a73ad17d8215b9744796617fbad7b23b8db4fbb87b20fc2cb3fe2faf",
+  "qrJavaScriptSha256": "e671db9141096b44f4a9ddb396d1a7c8ab2efcf3ee63b94ac9b5679a5cd692df",
+  "qrWasmSha256": "b2427ca537e5eb4b9f5a69113baf24c2be2404a97adb8c0600244c8d1c1a7f58",
+  "zxingWasmSha256": "33c8c50be17d0bb05454b4fd3ffb5b5ab9a8e8d1c0ebeb21a1adf4a89c1a8b59",
+  "sourceManifestSha256": "f96d9951ed8771f1270e04738be1eae20498608170ab4f45263ecbb2adc28ff4",
+  "orderedRgbaSha256": "c7286393637f3efa594f10f0d5786da7353cc4f9bac4b500f384da599e4e16bc",
+  "zxingOptions": {
+    "formats": [
+      "QRCode"
+    ],
+    "maxNumberOfSymbols": 1,
+    "tryHarder": true,
+    "tryRotate": true,
+    "tryInvert": true,
+    "tryDownscale": true,
+    "textMode": "Plain"
+  },
+  "node": "v24.21.0",
+  "count": 184,
+  "scores": {
+    "typescript": {
+      "correct": 180,
+      "missed": [
+        "s1-qrcode-4-13",
+        "s1-qrcode-4-30",
+        "s1-qrcode-4-33",
+        "s2-qrcode-2-_940"
+      ],
+      "wrong": []
+    },
+    "wasm": {
+      "correct": 180,
+      "missed": [
+        "s1-qrcode-4-13",
+        "s1-qrcode-4-30",
+        "s1-qrcode-4-33",
+        "s2-qrcode-2-_940"
+      ],
+      "wrong": []
+    },
+    "zxing": {
+      "correct": 171,
+      "missed": [
+        "s1-qrcode-2-12",
+        "s1-qrcode-2-28",
+        "s1-qrcode-4-05",
+        "s1-qrcode-4-06",
+        "s1-qrcode-4-08",
+        "s1-qrcode-4-09",
+        "s1-qrcode-4-13",
+        "s1-qrcode-4-30",
+        "s1-qrcode-4-31",
+        "s1-qrcode-4-32",
+        "s1-qrcode-4-33",
+        "s1-qrcode-4-34"
+      ],
+      "wrong": [
+        "s1-qrcode-2-16"
+      ]
+    }
+  },
+  "forgeSwornOnly": [
+    "s1-qrcode-2-12",
+    "s1-qrcode-2-16",
+    "s1-qrcode-2-28",
+    "s1-qrcode-4-05",
+    "s1-qrcode-4-06",
+    "s1-qrcode-4-08",
+    "s1-qrcode-4-09",
+    "s1-qrcode-4-31",
+    "s1-qrcode-4-32",
+    "s1-qrcode-4-34"
+  ],
+  "zxingOnly": [
+    "s2-qrcode-2-_940"
+  ]
+}

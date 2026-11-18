@@ -29,7 +29,46 @@ for (const width of [1280, 390]) {
     if(innerWidth!==${width})throw Error('wrong viewport '+innerWidth);
     if(document.documentElement.scrollWidth>innerWidth+1)throw Error('horizontal page overflow');
     for(const name of ['style.css','icon.svg','llms.txt','llms-full.txt','sitemap.xml'])if(!(await fetch(name)).ok)throw Error('missing '+name);
-    await fetch('/done',{method:'POST',body:JSON.stringify({ok:true,width:innerWidth,pages:pages.length,title:document.title})});
+    const demoFrame=document.createElement('iframe');
+    demoFrame.style.cssText='position:fixed;inset:0;width:100%;height:100%;border:0;opacity:0;pointer-events:none';
+    const loaded=new Promise(resolve=>{demoFrame.onload=resolve});
+    demoFrame.src='browser.html';
+    document.body.append(demoFrame);
+    await loaded;
+    const demo=demoFrame.contentDocument;
+    if(demo.documentElement.scrollWidth>demoFrame.contentWindow.innerWidth+1)throw Error('demo page overflow');
+    const sample=demo.getElementById('qr-demo-sample');
+    const generate=demo.getElementById('qr-demo-generate');
+    const file=demo.getElementById('qr-demo-file');
+    const status=demo.getElementById('qr-demo-status');
+    const result=demo.getElementById('qr-demo-result');
+    if(sample.disabled||generate.disabled||file.disabled)throw Error('demo controls disabled');
+    function waitFor(check) {
+      if(check())return Promise.resolve();
+      return new Promise(resolve=>{
+        const observer=new MutationObserver(()=>{
+          if(check()){observer.disconnect();resolve()}
+        });
+        observer.observe(demo.querySelector('.qr-demo'),{childList:true,subtree:true,attributes:true});
+      });
+    }
+    sample.click();
+    await waitFor(()=>!result.hidden&&result.textContent==='https://example.com/c2d');
+    generate.click();
+    if(result.hidden||result.textContent!=='https://example.com/qr-demo')throw Error('generation round trip failed');
+    const blank=demo.createElement('canvas');
+    blank.width=blank.height=128;
+    const context=blank.getContext('2d');
+    context.fillStyle='white';
+    context.fillRect(0,0,128,128);
+    const png=await new Promise(resolve=>blank.toBlob(resolve));
+    const transfer=new DataTransfer();
+    transfer.items.add(new File([png],'blank.png',{type:'image/png'}));
+    file.files=transfer.files;
+    file.dispatchEvent(new demoFrame.contentWindow.Event('change'));
+    await waitFor(()=>result.hidden&&status.textContent==='No readable QR code found.');
+    demoFrame.remove();
+    await fetch('/done',{method:'POST',body:JSON.stringify({ok:true,width:innerWidth,pages:pages.length,title:document.title,demo:'sample, generation and blank upload passed'})});
   }catch(error){await fetch('/done',{method:'POST',body:JSON.stringify({ok:false,error:String(error)})})}})();</script>`
   const server = createServer(async (req, res) => {
     try {
@@ -38,9 +77,9 @@ for (const width of [1280, 390]) {
         res.end('ok'); finish(JSON.parse(body)); return
       }
       const name = req.url === '/' ? 'index.html' : req.url.slice(1)
-      if (!/^[a-zA-Z0-9.-]+$/.test(name)) { res.writeHead(404).end(); return }
+      if (!/^(?:qr-module\/)?[a-zA-Z0-9][a-zA-Z0-9.-]*$/.test(name)) { res.writeHead(404).end(); return }
       let body = await readFile(new URL(name, root))
-      const types = { html: 'text/html', css: 'text/css', svg: 'image/svg+xml', txt: 'text/plain', xml: 'application/xml' }
+      const types = { html: 'text/html', css: 'text/css', svg: 'image/svg+xml', txt: 'text/plain', xml: 'application/xml', js: 'text/javascript', png: 'image/png' }
       res.setHeader('content-type', `${types[name.split('.').pop()] ?? 'application/octet-stream'}; charset=utf-8`)
       if (req.url === '/') body = Buffer.from(body.toString().replace('</body>', `${script}</body>`))
       res.end(body)

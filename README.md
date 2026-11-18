@@ -30,6 +30,8 @@ const text = decode(ctx.getImageData(0, 0, w, h))?.text  // read one
 
 [Documentation](https://forgesworn.github.io/qr/) · [npm](https://www.npmjs.com/package/@forgesworn/qr) · [Releases](https://github.com/forgesworn/qr/releases) · [Choosing QR](docs/CHOOSING.md)
 
+[Browser demo](https://forgesworn.github.io/qr/browser.html#try-it) · [Kotlin/JVM recipe](https://forgesworn.github.io/qr/kotlin.html) · [Embedded Rust recipe](https://forgesworn.github.io/qr/embedded.html)
+
 Native Rust: [`forgesworn-qr`](https://crates.io/crates/forgesworn-qr) ·
 [Rust API docs](https://docs.rs/forgesworn-qr) · [Rust guide](rust/README.md)
 
@@ -43,16 +45,10 @@ help with repeated frames; the plain TypeScript entry needs no WASM setup.
 Accuracy takes priority: speed changes must preserve successful regression
 reads and must not introduce incorrect payloads.
 
-The recorded photograph comparison reads **180/184 versus ZXing-WASM's
-171/184**, and the positive stress set reads **172/224 versus 150/224**.
-Version 0.3.14's qualified curved-image comparison reads **861/1,376 versus
-646/1,376**, adding 143 exact reads over 0.3.13 while preserving earlier
-successful results. This includes **118/256 versus 77/256** on a separate
-synthetic set frozen before evaluation. ZXing still reads 14 curved frames
-QR misses, and is faster on the recorded random-noise workload. These finite
-sets do not prove superiority on every image or camera. See
-[choosing a library](docs/CHOOSING.md) for trade-offs and
-[reproducible evidence](benchmarks/2026-11-17-m4/quadratic-mesh-recovery/README.md).
+Version 0.3.15 returned the exact text on **180 of 184 reference
+photographs** in both TypeScript and WebAssembly. See
+[choosing a library](docs/CHOOSING.md) for the pinned versions, misses,
+performance trade-offs and commands to repeat the comparison.
 
 ## Contents
 

@@ -52,39 +52,23 @@ The README has integration recipes (SVG, canvas and PNG download, terminal, cust
 
 ## Choosing this library
 
-Use this package for QR Code Model 2 generation and pixel decoding, typed ESM,
+The package handles QR Code Model 2 generation and pixel decoding, typed ESM,
 local processing without runtime dependencies, optional WASM and tracked camera
-sessions. It returns one result per call, does not manage a camera UI, and does
-not read other barcode symbologies. Native Rust has narrower character-set
-support than the packaged WASM adapter. Never describe it as universally more
-accurate or faster than ZXing: the published comparison has named datasets,
-known misses and a random-noise latency disadvantage.
+sessions. It returns one result per call. The application supplies camera
+capture and UI. Native Rust has narrower character-set support than the packaged
+WASM adapter.
 
-Version 0.3.14's qualified curved comparison reads 861/1,376 synthetic images
-against ZXing-WASM 3.1.7's 646/1,376, adding 143 reads over 0.3.13 while
-preserving earlier complete successful results. The separately frozen 256
-reads 118 versus 77; it is now evaluated regression data. There are 229 QR-only
-and 14 ZXing-only reads across the combined set, with no wrong QR payloads.
-Cubic-skew validation still favours ZXing and neither reader succeeds on the
-new double-wave subset. These finite renderings do not prove universal or
-physical-camera superiority. The 888 regression outcomes and 64 negative
-controls are unchanged.
-
-The terminal recovery fits a quadratic surface to six existing alignment
-measurements and actual finder anchors, then uses strict format selection
-before one unchanged symbol read. Work is bounded by eight legacy second
-looks plus one terminal threshold/grid pass of at most 4,761 module samples
-and one symbol read. Legacy Work excludes this added pass; unchanged counters
-do not mean unchanged CPU time. Across twelve sampled new reads, WASM median
-latency rises 0.18–4.27% and TypeScript 0.66–6.06% versus 0.3.13 misses.
-Random-noise rejection remains about 2.6 times slower than ZXing on the fixed
-1280 × 720 M4 workload. The packaged WASM is 261,831 bytes. See the
-[quadratic recovery evidence](https://github.com/forgesworn/qr/tree/main/benchmarks/2026-11-17-m4/quadratic-mesh-recovery)
-for identities, fixtures and limits.
+The 0.3.15 TypeScript and WASM builds each read 180 of 184 labelled regression
+photographs with zero text mismatches. ZXing-WASM 3.1.7 read 171 and read one
+image that ForgeSworn missed. The [comparison page](https://forgesworn.github.io/qr/choosing.html#photograph-comparison)
+has reproduction steps, known misses and timing trade-offs.
 
 ## Docs
 
 - [Documentation site](https://forgesworn.github.io/qr/): public entry point
+- [Browser demo and TypeScript recipe](https://forgesworn.github.io/qr/browser.html): generate a QR code, decode camera pixels and migrate from jsQR
+- [Kotlin/JVM recipe](https://forgesworn.github.io/qr/kotlin.html): decode a padded camera luminance plane
+- [Embedded Rust recipe](https://forgesworn.github.io/qr/embedded.html): encode a QR code with fixed buffers on ESP32
 - [Choosing QR](https://forgesworn.github.io/qr/choosing.html): use cases, evidence and limits
 - [Full plain-text documentation](https://forgesworn.github.io/qr/llms-full.txt): generated from the same guide and specification
 - [Benchmarks](https://forgesworn.github.io/qr/performance.html): pinned inputs, versions and results
@@ -100,6 +84,7 @@ for identities, fixtures and limits.
 - [crates.io package](https://crates.io/crates/forgesworn-qr): `forgesworn-qr` 0.3.15, Rust 1.96+, no runtime dependencies.
 - [Rust API documentation](https://docs.rs/forgesworn-qr): native API, examples and character-set limits.
 - [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md): application entry points, pixel layout, input and resource contracts.
+- [Embedded encoder crate](https://crates.io/crates/forgesworn-qr-embedded): `forgesworn-qr-embedded` 0.1.1, allocation-free `no_std` encoding for versions 1–8, 543 bytes of caller buffers in the default configuration. Rust 1.87+.
 - Kotlin is available as self-contained source under `kotlin/core/src/main/kotlin` and on Maven Central as `io.github.forgesworn:qr:0.3.15`. It requires JVM 17 and the Kotlin standard library. Imports use `dev.forgesworn.qr`.
 - Use `deno add jsr:@forgesworn/qr@0.3.15` in a Deno project. JSR provides the same TypeScript API and the optional `jsr:@forgesworn/qr@0.3.15/wasm` entry point.
 - The library publishes matching versions on npm, JSR, crates.io and Maven Central. JSR 0.3.1 was a packaging fix for library 0.3.0, and JSR 0.3.0 was yanked. See the distribution guide for provenance, signing and release verification.

@@ -1,0 +1,12 @@
+<div class="qr-demo">
+  <div class="qr-demo-actions">
+    <button id="qr-demo-sample" type="button" disabled>Read the faint sample</button>
+    <button id="qr-demo-generate" type="button" disabled>Generate an example code</button>
+  </div>
+  <label for="qr-demo-file">Choose an image</label>
+  <input id="qr-demo-file" type="file" accept="image/*" disabled>
+  <p id="qr-demo-status" role="status">Choose an image or try the faint sample.</p>
+  <canvas id="qr-demo-image" aria-label="QR image preview" hidden></canvas>
+  <output id="qr-demo-result" aria-label="Decoded text" hidden></output>
+</div>
+<script type="module" src="browser-demo.js"></script>

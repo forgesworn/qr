@@ -16,6 +16,7 @@ const result = decode(imageData) // RGBA or greyscale pixels
 if (result) console.log(result.text)
 ```
 
+[Try it in your browser](BROWSER.md#try-it) ·
 [Installation, recipes and API](../README.md) ·
 [Why choose QR?](CHOOSING.md) ·
 [Benchmarks and accuracy](../PERFORMANCE.md) ·
@@ -42,11 +43,9 @@ Your application supplies pixels and decides what to do with the result.
 
 ## Accuracy is the priority
 
-The recorded WASM comparison correctly reads **180 of 184 photographs**, against
-ZXing-WASM's 171, and **172 of 224 synthetic stress frames**, against 150.
-The latter set reports no wrong payloads and no false reads on 32 negative
-controls. These results describe the named datasets; they are not a guarantee
-for every image or device. [Read the comparison and its limitations](CHOOSING.md).
+The 0.3.15 TypeScript and WebAssembly builds each read **180 of 184 labelled
+reference photographs** with zero text mismatches. The fixture manifest and
+runner let you repeat the check. [See the results and reproduce them](CHOOSING.md#photograph-comparison).
 
 ## Pick the right tool
 
@@ -57,6 +56,9 @@ other symbologies, or a camera wrapper if you want a complete scanning interface
 
 ## Documentation and distribution
 
+- [Generate and read QR codes in a browser](BROWSER.md)
+- [Decode QR codes from a luminance plane in Kotlin](KOTLIN.md)
+- [Generate QR codes without heap allocation in embedded Rust](EMBEDDED.md)
 - [Full API and integration recipes](../README.md)
 - [Choosing QR and comparing alternatives](CHOOSING.md)
 - [Specification](../SPEC.md)
