@@ -111,6 +111,8 @@ private const val LOW_RESOLUTION_MAPS = 90
 
 /** Maps available to the terminal contrast-threshold search, which also has one second look. */
 private const val CONTRAST_MAPS = 30
+/** One intermediate reduction for a textured picture whose usual sizes all failed. */
+private const val INTERMEDIATE_REDUCTION = 3
 
 /** The reduced-size pass's factors, coarse to fine. */
 private val REDUCTIONS = intArrayOf(8, 4, 2)
@@ -126,6 +128,7 @@ private class Overflow(val ranked: List<Array<Finder>>, val inverted: Boolean)
 /** What is left of a frame's maps and second looks, shared by every size, and of the maps this size may take. */
 private class Budget(var maps: Int, var second: Int, var here: Int, var invertedFallback: Boolean = false, var uniform: Boolean = false) {
     var lowResolution = false
+    var intermediateReduction = false
     /** The original picture's full-size block levels, from its first ordinary search. */
     var blocks: BlockLevels? = null
     val hints = ArrayList<VersionHint>(4)
@@ -244,7 +247,13 @@ private fun decodeLuminance(luminance: Luminance, inversion: Inversion, work: Wo
     if (selectedMesh != null) return selectedMesh
     val quadratic = recoverQuadraticMesh(luminance, inverse, budget)
     if (quadratic != null) return quadratic
-    return recoverLowResolution(luminance, inverse, budget, inversion) ?: recoverContrastThresholds(luminance, budget, inversion)
+    val lowResolution = recoverLowResolution(luminance, inverse, budget, inversion)
+    if (lowResolution != null) return lowResolution
+    val contrast = recoverContrastThresholds(luminance, budget, inversion)
+    if (contrast != null) return contrast
+    if (!budget.intermediateReduction || minOf(luminance.width, luminance.height) < MIN_REDUCED * INTERMEDIATE_REDUCTION) return null
+    val retry = Budget(REDUCED_MAPS, 1, REDUCED_MAPS)
+    return look(shrink(luminance, INTERMEDIATE_REDUCTION), inversion, INTERMEDIATE_REDUCTION, retry, null)
 }
 
 /**
@@ -322,6 +331,10 @@ private fun search(
     for (tolerance in doubleArrayOf(0.5, 0.8)) {
         val ranked = finderTriples(image, findFinders(image, tolerance, work, edges))
         val triples = ranked.take(MAX_TRIPLES)
+        // Evidence survives even when earlier triples use this size's maps.
+        if (f > 1 && f != INTERMEDIATE_REDUCTION && !budget.intermediateReduction &&
+            triples.any { triple -> triple.all { it.count >= 3 } }
+        ) budget.intermediateReduction = true
         for (triple in triples) {
             if (f == 1 && image.width * image.height <= 512 * 512 &&
                 (triple[0].moduleSize + triple[1].moduleSize + triple[2].moduleSize) / 3 <= 2.5 &&

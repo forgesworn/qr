@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.14
+# @forgesworn/qr 0.3.15
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -88,11 +88,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.14'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.14/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.15'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.14` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.15` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -704,8 +704,10 @@ For each frame, in order, stopping at the first read:
     the picture is binarised that way and searched once more, accepting a read
     only when both copies of its format information agree. Plain background
     next to a small or faint code had pulled the code's thresholds below its
-    dark modules. Each search has its own small allowance of maps and one second
-    look, and neither changes an earlier result.
+    dark modules. Finally, if a reduced search repeatedly saw all three
+    finders of a ranked triple, one search at a threefold reduction can
+    recover codes obscured by grain. Each search has its own allowance of
+    maps and one second look.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
@@ -748,7 +750,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.14") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -778,7 +780,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.14`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.15`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -1037,9 +1039,9 @@ the TypeScript and optional WASM backends on your actual devices.
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. The 0.3.14 release
-aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
-fix for the 0.3.0 library; its version number is not reused.
+published on Maven Central as `io.github.forgesworn:qr`. The library publishes
+matching versions on npm, JSR, crates.io and Maven Central. JSR 0.3.1 was a
+packaging-only fix for the 0.3.0 library.
 
 | Channel | What it provides |
 |---|---|
@@ -1060,9 +1062,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.14
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.14
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.14
+npm install --save-exact @forgesworn/qr@0.3.15
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.15
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.15
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -1072,12 +1074,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.14
+deno add jsr:@forgesworn/qr@0.3.15
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.14'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.14/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.15'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1092,7 +1094,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.14") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -1101,7 +1103,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.14
+cargo add forgesworn-qr@0.3.15
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and
@@ -1147,8 +1149,7 @@ a crate. This checks registry authentication without releasing another version.
 ## Embedded Rust encoder
 
 `forgesworn-qr-embedded` is a separate, dependency-free `no_std` crate under
-`rust/embedded`, with its own initial version, 0.1.0. It does not change the
-existing 0.3.14 package versions or their release tags.
+`rust/embedded`, with its own version and `embedded-v` release tags.
 
 The crate supports versions 1–8, fixed caller-owned buffers and optional
 optimal text planning. See the [embedded guide](https://github.com/forgesworn/qr/blob/main/rust/embedded/README.md).
@@ -1754,6 +1755,9 @@ pipeline:
     full-size search with flat blocks left out of every threshold average
     that also holds blocks with contrast, when that moves a pixel to the
     other side of its threshold. See step 23 below.
+24. Intermediate reduction: after earlier paths fail, retry at one third
+    resolution when an earlier reduced search repeatedly saw all three
+    finders of a ranked triple. See step 24 below.
 
 ### Reusable camera decoder
 
@@ -2895,6 +2899,28 @@ binary picture, one finder search in each polarity at both tolerances, at most
 30 maps and one second look. This is an accuracy/latency trade-off on misses
 in pictures that mix flat and textured areas, which camera frames often do.
 
+### 24. Try a threefold reduction when finders persist at a reduced size
+
+At each finder tolerance of the existing 2, 4 and 8 reductions in steps 9
+and 10, inspect the first six ranked triples before mapping them. Qualify
+the picture if any of those triples has at least three sightings of each
+finder. The counts come from that single finder pass. The qualification
+needs only one flag and adds no finder, triple or map search.
+
+After steps 1 to 23 fail, an eligible picture at least 63 pixels on each
+side receives one ordinary search at factor 3. Reduce the original
+luminance to `floor(width / 3)` by `floor(height / 3)` using non-overlapping
+3 x 3 squares. Each output pixel is `floor((sum + 4) / 9)`. Discard any
+columns or rows left over. A 3 x 3 average can smooth grain or scan lines
+that persist at factor 2 while keeping more of each module than factor 4.
+
+Use step 9's ordinary thresholds, polarity option, two-copy format gate,
+and location scaling. The separate allowance is 30 maps and one ordinary
+second look, shared by the requested polarities and outside the legacy Work
+counters. The retry searches only the threefold reduction of the original
+luminance. Earlier results retain priority and the normal version,
+Reed–Solomon, zero-data and segment validation still applies.
+
 ### Bounded work
 
 The search's work grows about in step with the picture's pixels, whatever
@@ -3007,8 +3033,9 @@ among them.
   made an inverse. Their ordinary searches share a separate 90-map,
   one-second-look and 718,750-alignment-probe allowance, all outside the
   legacy Work counters. Reduced sizes, late meshes and subsequent recoveries
-  are excluded. Active binary, threshold, edge, candidate and allocator storage
-  is additional; these byte figures are not peak-heap measurements.
+  are excluded. The interpolation can reuse two rows of horizontal weighted
+  sums. The search also holds binary, threshold, edge, candidate and
+  allocator storage.
 - Step 23 adds to earlier returns only the retained full-size block levels and
   one flat flag a block. On a miss it computes one set of contrast-only
   thresholds and tests the pixels of changed blocks until one would change
@@ -3017,6 +3044,11 @@ among them.
   718,750-alignment-probe allowance, all outside the legacy Work counters.
   Reduced sizes, inverses, enlargement, late meshes and other recoveries are
   excluded.
+- Step 24 adds one qualification flag and reads existing finder counts. On a
+  qualifying miss it makes one luminance reduction of at most one ninth of
+  the original pixels and runs one strict reduced search. Its separate
+  allowance of 30 maps, one second look and 718,750 alignment probes is
+  outside the legacy Work counters.
 
 When the global or current per-look map allowance is exhausted, that search
 stops before further finder, triple or location work. A successful final map

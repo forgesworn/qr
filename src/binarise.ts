@@ -343,6 +343,7 @@ export function shrink(image: Luminance, f: number): Luminance {
 
 /** Bilinear enlargement by an integer factor, with pixel centres at i + 0.5. */
 export function enlarge(image: Luminance, f: number): Luminance {
+  if (f === 4 && image.width > 0 && image.height > 0) return enlargeFour(image)
   const width = image.width * f
   const height = image.height * f
   const data = new Uint8Array(width * height)
@@ -361,6 +362,57 @@ export function enlarge(image: Luminance, f: number): Luminance {
       data[y * width + x] = Math.round(top * (1 - ay) + bottom * ay)
     }
   }
+  return { data, width, height }
+}
+
+/** At 4x, the interior weights are eighths in both axes. Keep two horizontal
+ * rows in eighths and round only after both interpolations. */
+function enlargeFour(image: Luminance): Luminance {
+  const width = image.width * 4
+  const height = image.height * 4
+  const data = new Uint8Array(width * height)
+  let top = new Uint16Array(width)
+  let bottom = new Uint16Array(width)
+  const horizontal = (out: Uint16Array, start: number) => {
+    let left = image.data[start]!
+    out[0] = out[1] = left * 8
+    for (let x = 1, i = 2; x < image.width; x++, i += 4) {
+      const right = image.data[start + x]!
+      const step = 2 * (right - left)
+      const first = 7 * left + right
+      out[i] = first
+      out[i + 1] = first + step
+      out[i + 2] = first + 2 * step
+      out[i + 3] = first + 3 * step
+      left = right
+    }
+    out[width - 2] = out[width - 1] = left * 8
+  }
+  const clampedRows = (start: number) => {
+    for (let x = 0; x < width; x++) data[start + x] = (top[x]! + 4) >> 3
+    data.copyWithin(start + width, start, start + width)
+  }
+  horizontal(top, 0)
+  clampedRows(0)
+  for (let y = 1; y < image.height; y++) {
+    horizontal(bottom, y * image.width)
+    const row0 = (4 * y - 2) * width
+    const row1 = row0 + width, row2 = row1 + width, row3 = row2 + width
+    for (let x = 0; x < width; x++) {
+      const a = top[x]!, b = bottom[x]!
+      const step = 2 * (b - a)
+      // The denominator is 64, so adding 32 gives half-up rounding.
+      const first = 7 * a + b + 32
+      data[row0 + x] = first >> 6
+      data[row1 + x] = (first + step) >> 6
+      data[row2 + x] = (first + 2 * step) >> 6
+      data[row3 + x] = (first + 3 * step) >> 6
+    }
+    const swap = top
+    top = bottom
+    bottom = swap
+  }
+  clampedRows((height - 2) * width)
   return { data, width, height }
 }
 

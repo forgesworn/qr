@@ -81,11 +81,11 @@ the version; changes are listed in [CHANGELOG.md](CHANGELOG.md).
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.14'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.14/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.15'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.14` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.15` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -697,8 +697,10 @@ For each frame, in order, stopping at the first read:
     the picture is binarised that way and searched once more, accepting a read
     only when both copies of its format information agree. Plain background
     next to a small or faint code had pulled the code's thresholds below its
-    dark modules. Each search has its own small allowance of maps and one second
-    look, and neither changes an earlier result.
+    dark modules. Finally, if a reduced search repeatedly saw all three
+    finders of a ranked triple, one search at a threefold reduction can
+    recover codes obscured by grain. Each search has its own allowance of
+    maps and one second look.
 
 Steps 3 to 5 run for dark-on-light and then light-on-dark unless
 `inversion` names one. The work a frame can take is capped, and there are
@@ -741,7 +743,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.14") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
 ```
 
 See [distribution](docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -771,7 +773,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.14`; see the [Rust guide](rust/README.md) and
+`cargo add forgesworn-qr@0.3.15`; see the [Rust guide](rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
