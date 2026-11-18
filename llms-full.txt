@@ -845,7 +845,7 @@ cargo build --release --target wasm32-unknown-unknown    # the WebAssembly modul
 TypeScript and time it.
 
 [forgesworn-qr-embedded](https://github.com/forgesworn/qr/tree/main/rust/embedded)
-is a separate, allocation-free `no_std` encoder for versions 1–8, with 602 bytes
+is a separate, allocation-free `no_std` encoder for versions 1–8, with 543 bytes
 of caller buffers and optional optimal text planning. It shares this
 specification, standard tables and encoder conformance vectors. It has its own
 version lifecycle, starting at 0.1.0. The embedded guide documents installation,
@@ -1536,10 +1536,12 @@ distinct errors. A capacity failure never silently exceeds the maximum.
 The early length check bounds text by the best-case numeric capacity in UTF-8
 bytes and raw input by byte capacity, before constructing a plan.
 
-The caller supplies a 301-byte `Workspace` and an output slice of at least
-301 bytes: 602 bytes of caller buffers. The optional planner adds 980 bytes
-on the measured host. Interleaved codewords and the reserved-module map reuse
-the same scratch buffer; mask candidates are applied and undone in the output.
+The caller supplies a 242-byte `Workspace` and an output slice of at least
+301 bytes, for 543 bytes of caller buffers. The workspace holds the interleaved
+codewords. Packed rows and columns identify the reserved modules during masking
+and data placement. Mask candidates are applied and undone in the output.
+The optional planner adds 520 bytes, storing the cheapest new mode and six
+flags for continuing the current mode in one byte per UTF-8 byte offset.
 The Reed-Solomon phase also has 57 bytes of local arrays, wiped on drop.
 These figures exclude scalar locals, call frames, input and compiler spills;
 they are not a whole-stack bound.
