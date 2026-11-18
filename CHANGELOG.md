@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.15
 
 - Make the four-times low-resolution enlargement faster in TypeScript, Rust
   and Kotlin by reusing two rows of weighted pixel sums. Pixel-centre

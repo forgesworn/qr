@@ -1,4 +1,4 @@
-# @forgesworn/qr 0.3.14
+# @forgesworn/qr 0.3.15
 
 Canonical documentation: https://forgesworn.github.io/qr/
 Generated from the versioned repository documents.
@@ -88,11 +88,11 @@ the version; changes are listed in [CHANGELOG.md](https://github.com/forgesworn/
 JSR uses the same TypeScript API, including the optional WASM entry point:
 
 ```ts
-import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.14'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.14/wasm'
+import { encode, toSvg } from 'jsr:@forgesworn/qr@0.3.15'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
 ```
 
-For Deno projects, `deno add jsr:@forgesworn/qr@0.3.14` adds the package to your
+For Deno projects, `deno add jsr:@forgesworn/qr@0.3.15` adds the package to your
 configuration. Continue to use npm for the ordinary Node/bundler installation.
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for registry publication status and
 verification.
@@ -750,7 +750,7 @@ For the Maven Central distribution, configure Gradle with:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.14") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
 ```
 
 See [distribution](https://github.com/forgesworn/qr/blob/main/docs/DISTRIBUTION.md) for publication status. The Maven group
@@ -780,7 +780,7 @@ vectors. Beyond them, its decoder was compared with the TypeScript on 603
 pictures kept outside this repository, each at four quarter turns: the
 same payload, the same location to the last bit and the same counted work
 on all 2,412 in that earlier qualification. Install the native crate with
-`cargo add forgesworn-qr@0.3.14`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
+`cargo add forgesworn-qr@0.3.15`; see the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) and
 [API documentation](https://docs.rs/forgesworn-qr) for its input contracts.
 
 The npm package includes an optional WebAssembly backend, imported separately
@@ -1039,9 +1039,9 @@ the TypeScript and optional WASM backends on your actual devices.
 
 The JavaScript/TypeScript and optional WebAssembly backends share the npm
 package `@forgesworn/qr`. The native Rust crate is `forgesworn-qr`, and Kotlin is
-published on Maven Central as `io.github.forgesworn:qr`. The 0.3.14 release
-aligns npm, JSR, Rust and Kotlin on one version. JSR 0.3.1 was a packaging-only
-fix for the 0.3.0 library; its version number is not reused.
+published on Maven Central as `io.github.forgesworn:qr`. The library publishes
+matching versions on npm, JSR, crates.io and Maven Central. JSR 0.3.1 was a
+packaging-only fix for the 0.3.0 library.
 
 | Channel | What it provides |
 |---|---|
@@ -1062,9 +1062,9 @@ The library itself never fetches an asset automatically.
 ## Install and pin
 
 ```sh
-npm install --save-exact @forgesworn/qr@0.3.14
-# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.14
-# Equivalent: yarn add --exact @forgesworn/qr@0.3.14
+npm install --save-exact @forgesworn/qr@0.3.15
+# Equivalent: pnpm add --save-exact @forgesworn/qr@0.3.15
+# Equivalent: yarn add --exact @forgesworn/qr@0.3.15
 ```
 
 Use `import` with Node 22.13+ or an ES2022-capable browser/bundler. The ordinary
@@ -1074,12 +1074,12 @@ backend from `@forgesworn/qr/wasm` and supply the bundled module bytes explicitl
 ## JSR installation
 
 ```sh
-deno add jsr:@forgesworn/qr@0.3.14
+deno add jsr:@forgesworn/qr@0.3.15
 ```
 
 ```ts
-import { encode, decode } from 'jsr:@forgesworn/qr@0.3.14'
-import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.14/wasm'
+import { encode, decode } from 'jsr:@forgesworn/qr@0.3.15'
+import { loadWasm, wasmUrl } from 'jsr:@forgesworn/qr@0.3.15/wasm'
 ```
 
 The JSR package has the same API as npm. Supply WASM bytes explicitly when using
@@ -1094,7 +1094,7 @@ For Kotlin with Gradle:
 
 ```kotlin
 repositories { mavenCentral() }
-dependencies { implementation("io.github.forgesworn:qr:0.3.14") }
+dependencies { implementation("io.github.forgesworn:qr:0.3.15") }
 ```
 
 Import `dev.forgesworn.qr.*`. JVM 17 is required; only the Kotlin standard
@@ -1103,7 +1103,7 @@ library is a runtime dependency. The Maven group and Kotlin package differ.
 ## Native Rust
 
 ```sh
-cargo add forgesworn-qr@0.3.14
+cargo add forgesworn-qr@0.3.15
 ```
 
 See the [Rust guide](https://github.com/forgesworn/qr/blob/main/rust/README.md) for API contracts, pixel layout and
@@ -1149,8 +1149,7 @@ a crate. This checks registry authentication without releasing another version.
 ## Embedded Rust encoder
 
 `forgesworn-qr-embedded` is a separate, dependency-free `no_std` crate under
-`rust/embedded`, with its own initial version, 0.1.0. It does not change the
-existing 0.3.14 package versions or their release tags.
+`rust/embedded`, with its own version and `embedded-v` release tags.
 
 The crate supports versions 1–8, fixed caller-owned buffers and optional
 optimal text planning. See the [embedded guide](https://github.com/forgesworn/qr/blob/main/rust/embedded/README.md).

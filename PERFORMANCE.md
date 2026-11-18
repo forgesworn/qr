@@ -45,16 +45,17 @@ outside the timed calls. The enlargement cases are indices 0, 10, 15,
 times. At the 95th percentile, those cases took 28.3–57.1% less time in
 TypeScript and 23.9–66.0% less time in WebAssembly. In isolation, fourfold
 enlargement was 5.6–5.8 times as fast in TypeScript across 116 × 99, 320 × 240
-and 512 × 512 inputs. These are desktop timings with the listed fixtures.
+and 512 × 512 inputs. These are desktop timings with the listed fixtures at
+`831f2f1`, before the 0.3.15 package version bump.
 [Fixed timing frames](scripts/comparison-fixtures.mjs) and
 [enlargement fixtures](benchmarks/2026-11-16-m4/overflow-recovery/fresh160/generate.mjs).
 
 ## Contrast-only threshold retry, based on the TypeScript speed-ups
 
-This is an unreleased candidate, not a release claim. After every other path
-fails, the decoder thresholds the picture again with flat blocks left out of
-every 5 x 5 average that also holds blocks with contrast, and searches it once
-more with its own 30 maps and one second look (SPEC.md step 23). It does so
+After the preceding paths fail, the decoder thresholds the picture again with
+flat blocks left out of every 5 x 5 average that also holds blocks with contrast,
+then searches it once more with its own 30 maps and one second look (SPEC.md
+step 23). It does so
 only when that moves a pixel to the other side of its threshold, and it
 accepts a read only when both format copies agree. A flat block's background
 guess, often half the paper's brightness, had pulled the thresholds of a small
@@ -168,9 +169,8 @@ against 82. These are synthetic renderings, not camera evidence.
 
 ## Low-resolution recovery candidate, based on 0.3.14
 
-This is an unreleased candidate, not a release claim. After every earlier
-path fails, a picture of at most 262,144 pixels with a repeatedly sighted
-low-pitch finder triple receives one terminal ordinary search on a
+After the preceding paths fail, a picture of at most 262,144 pixels with a
+repeatedly sighted low-pitch finder triple receives one ordinary search on a
 four-times-axis bilinear enlargement. An existing inverse luminance can receive
 a sequential attempt. The two searches share a separate 90-map/one-second-look
 allowance. A picture that retained and attempted the step-21 quadratic surface
