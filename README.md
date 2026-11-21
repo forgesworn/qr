@@ -58,6 +58,7 @@ performance trade-offs and commands to repeat the comparison.
 - [API](#api)
 - [Common mistakes](#common-mistakes)
 - [Migrating from another library](#migrating-from-another-library)
+- [Network requests](#network-requests)
 - [How the decoder works](#how-the-decoder-works)
 - [How it is tested](#how-it-is-tested)
 - [Kotlin](#kotlin)
@@ -648,6 +649,53 @@ pixels, so the camera loop becomes yours: the
 lines, and the [worker recipe](#keep-the-page-smooth-decode-in-a-worker)
 moves the work off the page. In exchange you choose the frame size, the
 scan rate and the interface. Formats other than QR codes are not read.
+
+## Network requests
+
+The library makes none. It has no runtime dependencies and no install
+scripts, and it contains no `fetch`, XHR, WebSocket or worker. The optional
+WebAssembly backend takes module bytes your code supplies to `loadWasm`;
+`wasmUrl` points at the copy inside this package, so you choose where it is
+served from. Encoding and decoding happen in the page, worker or process that
+calls them.
+
+Not every QR library works this way. On 21 November 2026 we read the
+published files of the latest npm release of 23 open-source QR libraries,
+looking for network calls, hard-coded hosts and install scripts. None of them
+sends the data it encodes or the text it scans. Four packages, all built on
+the `zxing-wasm` engine, contact a third party by default:
+
+| Package | What happens by default |
+|---|---|
+| `zxing-wasm` 3.1.7 | The browser downloads the `.wasm` decoder from `fastly.jsdelivr.net` when the engine first loads. |
+| `barcode-detector` 3.2.4 | Uses `zxing-wasm` with the same default. |
+| `@yudiel/react-qr-scanner` 2.6.0 | Always uses the `zxing-wasm` engine, even in browsers with a built-in `BarcodeDetector`, so every browser fetches the decoder from jsDelivr. |
+| `vue-qrcode-reader` 5.7.3 | Bundles an older copy of the engine code and fetches `zxing-wasm@1.1.3` from jsDelivr, in every browser. |
+
+That request gives the CDN the visitor's IP address, browser and the time,
+and usually, through the Referer header, the site they are on. `zxing-wasm`
+does not check the downloaded file against a hash before running it. Its
+README documents the default; to avoid it, serve the file yourself and point
+`setZXingModuleOverrides({ locateFile })` at it (both wrappers re-export it).
+
+Smaller points:
+
+- `qr-code-styling` 1.9.2 loads the logo from whatever URL you give it, and
+  with `saveAsBlob` (on by default) fetches it a second time by XHR. A logo
+  on someone else's server sends that server a request on each render.
+- `awesome-qr` 2.1.5-rc.0 depends on `canvas@2`, whose install script
+  downloads a prebuilt binary from GitHub.
+- `html5-qrcode` 2.3.8 shows a "Powered by ScanApp" link in its built-in
+  interface; nothing is sent unless someone clicks it.
+
+We found no network calls in the published files of `qrcode` 1.5.4,
+`qrcode-generator` 2.0.4, `qrcode.react` 4.2.0, `react-qr-code` 2.2.0,
+`qrcode-svg` 1.1.0, `qr-image` 3.2.0, `uqr` 0.1.3, `lean-qr` 2.7.4,
+`@paulmillr/qr` 0.3.0, `jsqr` 1.4.0, `qr-scanner` 1.4.2 (its worker is
+bundled), `@zxing/library` 0.23.0, `@zxing/browser` 0.2.1, `easyqrcodejs`
+4.6.2, `kjua` 0.10.0 or `qrious` 4.0.2. This was a reading of each package's
+own code, not a capture of live traffic, and it did not cover the code of
+their dependencies. Later releases may differ.
 
 ## How the decoder works
 
